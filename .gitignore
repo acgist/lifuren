@@ -1,21 +1,11 @@
-.cxx
-.idea
-.gradle
+*.a
+*.so
+*.exe
+*.dll
+*.lib
+*.out
 
-media/deps
-
-local.properties
-.project
-.settings
-.classpath
-.factorypath
-
-dist
 logs
 build
-target
-node_modules
 
 .vscode
-
-package-lock.json

@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  lifuren:
+    name: Build lifuren
+    strategy:
+      matrix:
+        runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Build xx glog
+      if: runner.os != 'windows'
+      run: |
+        cd ./xx/glog
+        mkdir build
+        cd build
+        cmake ..
+        make
+        make install
+    - name: Build xx glog
+      if: runner.os == 'windows'
+      run: |
+        cd ./xx/glog
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" ..
+        make
+        make install
