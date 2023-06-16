@@ -16,8 +16,11 @@ jobs:
       uses: actions/checkout@v3
     - name: Checkout deps
       run: |
-        cd ./deps
-        git clone https://github.com/google/glog.git
+        git submodule update --init --recursive
+        cd ./deps/glog
+        # git clone https://github.com/google/glog.git
+        cd ../glog
+        git checkout v0.6.0
     - name: Build xx glog
       if: runner.os != 'windows'
       run: |
