@@ -26,7 +26,7 @@ jobs:
         cd build
         cmake ..
         make
-        make install
+        make clean
     - name: Build xx glog
       if: runner.os == 'windows'
       run: |
@@ -35,4 +35,4 @@ jobs:
         cd build
         cmake -G "MinGW Makefiles" ..
         make
-        make install
+        make clean
