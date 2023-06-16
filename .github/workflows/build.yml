@@ -36,3 +36,21 @@ jobs:
         cmake -G "MinGW Makefiles" ..
         make
         make clean
+    - name: Build xx template
+      if: runner.os != 'windows'
+      run: |
+        cd ./xx/template
+        mkdir build
+        cd build
+        cmake ..
+        make
+        make clean
+    - name: Build xx template
+      if: runner.os == 'windows'
+      run: |
+        cd ./xx/template
+        mkdir build
+        cd build
+        cmake -G "MinGW Makefiles" ..
+        make
+        make clean
