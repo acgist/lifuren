@@ -12,48 +12,41 @@ jobs:
         runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.runs-on }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: Checkout deps
-      run: |
-        git submodule update --init --recursive
-        cd ./deps/glog
-        # git clone https://github.com/google/glog.git
-        cd ../glog
-        git checkout v0.6.0
-    - name: Build xx glog
-      if: runner.os != 'windows'
-      run: |
-        cd ./xx/glog
-        mkdir build
-        cd build
-        cmake ..
-        make
-        make clean
-    - name: Build xx glog
-      if: runner.os == 'windows'
-      run: |
-        cd ./xx/glog
-        mkdir build
-        cd build
-        cmake -G "MinGW Makefiles" ..
-        make
-        make clean
-    - name: Build xx template
-      if: runner.os != 'windows'
-      run: |
-        cd ./xx/template
-        mkdir build
-        cd build
-        cmake ..
-        make
-        make clean
-    - name: Build xx template
-      if: runner.os == 'windows'
-      run: |
-        cd ./xx/template
-        mkdir build
-        cd build
-        cmake -G "MinGW Makefiles" ..
-        make
-        make clean
+      - name: Mac Setting
+        if: matrix.runs-on == 'macos-latest'
+      - name: Linux Setting
+        if: matrix.runs-on == 'ubuntu-latest'
+      - name: Windows Setting
+        if: matrix.runs-on == 'windows-latest'
+        run: |
+          echo "cmakeFlags=-G 'MinGW Makefiles'" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Checkout deps
+        run: |
+          git submodule update --init --recursive
+          # glog
+          cd ./deps/glog
+          # git clone https://github.com/google/glog.git
+          git checkout v0.6.0
+          cd ..
+          # pytorch
+          git clone --recursive https://github.com/pytorch/pytorch.git
+          cd pytorch
+          git checkout v2.0.1
+      - name: Build xx template
+        run: |
+          cd ./xx/template
+          mkdir build
+          cd build
+          cmake ${{ env.cmakeFlags }} ..
+          make
+          make clean
+      - name: Build xx glog
+        run: |
+          cd ./xx/glog
+          mkdir build
+          cd build
+          cmake ${{ env.cmakeFlags }} ..
+          make
+          make clean
