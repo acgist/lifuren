@@ -14,8 +14,12 @@ jobs:
     steps:
       - name: Mac Setting
         if: matrix.runs-on == 'macos-latest'
+        run: |
+          echo "cmakeFlags=" >> $GITHUB_ENV
       - name: Linux Setting
         if: matrix.runs-on == 'ubuntu-latest'
+        run: |
+          echo "cmakeFlags=" >> $GITHUB_ENV
       - name: Windows Setting
         if: matrix.runs-on == 'windows-latest'
         run: |
