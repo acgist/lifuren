@@ -29,15 +29,17 @@ jobs:
       - name: Checkout deps
         run: |
           git submodule update --init --recursive
-          # glog
-          cd ./deps/glog
+          cd ./deps
+          ################ glog
           # git clone https://github.com/google/glog.git
+          cd ./glog
           git checkout v0.6.0
           cd ..
-          # pytorch
-          git clone --recursive https://github.com/pytorch/pytorch.git
-          cd pytorch
-          git checkout v2.0.1
+          ################ pytorch
+          # git clone --recursive https://github.com/pytorch/pytorch.git
+          # cd ./pytorch
+          # git checkout v2.0.1
+          # cd ..
       - name: Build xx template
         run: |
           cd ./xx/template

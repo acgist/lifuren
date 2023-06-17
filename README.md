@@ -11,6 +11,7 @@
 ----
 
 <p align="center">
+    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/acgist/lifuren?style=flat-square" />
     <a target="_blank" href="https://starchart.cc/acgist/lifuren">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/acgist/lifuren?style=flat-square&label=Github%20stars&color=crimson" />
     </a>
@@ -26,7 +27,8 @@
 
 |模块|描述|版本|
 |:--|:--|:--|
-|glog|日志|v0.6.0|
+|glog|日志框架|v0.6.0|
+|PyTorch|机器学习框架|v2.0.1|
 
 ## 模块
 
