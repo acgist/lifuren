@@ -1,39 +1,38 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(lifurentemplate VERSION 1.0.0 LANGUAGES C CXX)
-
-# -DCMAKE_BUILD_TYPE=Debug|Release
-# SET(CMAKE_BUILD_TYPE Debug)
-# SET(CMAKE_BUILD_TYPE Release)
+project(lifurenpytorch VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_FLAGS "-Wall -Wextra")
+set(CMAKE_C_FLAGS "-Wall -Wextra -Wunused-parameter")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c17 -O0 -g")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c17 -O3")
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wunused-parameter")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
 
 if(CMAKE_HOST_UNIX)
-    # add_library()
-    # link_libraries()
     # link_directories()
     # include_directories()
 elseif(CMAKE_HOST_WIN32)
-    # add_library()
-    # link_libraries()
-    # link_directories()
-    # include_directories()
+    link_directories(
+        D:/develop/libtorch/lib
+    )
+    include_directories(
+        D:/develop/libtorch/include
+        D:/develop/libtorch/include/torch/csrc/api/include
+    )
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} D:/develop/libtorch)
 elseif(CMAKE_HOST_APPLE)
-    # add_library()
-    # link_libraries()
     # link_directories()
     # include_directories()
 else()
     # message("不支持的系统")
 endif()
+
+find_package(Torch REQUIRED)
+# find_package(OpenCV REQUIRED)
 
 set(WITH_GTEST  OFF)
 set(WITH_GFLAGS OFF)
@@ -54,7 +53,6 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 set(
     HEADER_FILES
     ${HEADER_DIR}/Glog.hpp
-    ${HEADER_DIR}/Template.hpp
 )
 
 install(
@@ -73,9 +71,23 @@ install(
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog::glog
+    -lc10
+    -ltorch
+    -ltorch_cpu
 )
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
     ${HEADER_DIR}
 )
+
+# if(MSVC)
+#     file(GLOB TORCH_DLLS "D:/develop/libtorch/lib/*.dll")
+#     add_custom_command(
+#         TARGET ${PROJECT_NAME}
+#         POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#         ${TORCH_DLLS}
+#         $<TARGET_FILE_DIR:${PROJECT_NAME}>
+#     )
+# endif(MSVC)

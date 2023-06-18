@@ -29,6 +29,7 @@
 |:--|:--|:--|
 |glog|日志框架|v0.6.0|
 |PyTorch|机器学习框架|v2.0.1|
+|chinese-poetry|中华诗词|master|
 
 ## 模块
 
@@ -54,3 +55,9 @@
 ### 模型训练
 
 ### 模型使用
+
+## 相关下载
+
+```
+https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
+```

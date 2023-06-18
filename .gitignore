@@ -4,6 +4,7 @@
 *.dll
 *.lib
 *.out
+*.log
 
 logs
 build
