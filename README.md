@@ -45,5 +45,12 @@
 ## 相关下载
 
 ```
+https://opencv.org/releases/
+https://ffmpeg.org/download.html
+https://pytorch.org/get-started/locally/
+https://www.nvidia.cn/Download/index.aspx
+https://developer.nvidia.com/rdp/cudnn-download
+https://developer.nvidia.com/cuda-11-8-0-download-archive
+
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
 ```
