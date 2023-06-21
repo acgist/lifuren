@@ -6,7 +6,10 @@
 *.out
 *.log
 
+package-lock.json
+
 logs
 build
+node_modules
 
 .vscode
