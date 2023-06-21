@@ -11,7 +11,6 @@
 ----
 
 <p align="center">
-    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/acgist/lifuren?style=flat-square" />
     <a target="_blank" href="https://starchart.cc/acgist/lifuren">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/acgist/lifuren?style=flat-square&label=Github%20stars&color=crimson" />
     </a>
@@ -27,10 +26,15 @@
 
 |模块|描述|版本|
 |:--|:--|:--|
-|GLog|日志框架|v0.6.0|
+|curl|日志框架|v8.1.2|
+|glog|日志框架|v0.6.0|
+|cppjieba|分词框架|v5.1.0|
 |FFmpeg|图片视频框架|v5.1.2|
 |OpenCV|机器视觉框架|v4.6.0|
 |PyTorch|机器学习框架|v2.0.1|
+|Vue|UI框架|v3.2.44|
+|Electron|UI框架|v25.1.1|
+|Element-Plus|UI框架|v2.2.32|
 
 ## 模块
 
@@ -42,15 +46,21 @@
 |xx|学习测试|
 |yy|综合应用|
 
-## 相关下载
+## 相关链接
 
 ```
+https://github.com/curl/curl
+https://github.com/google/glog
+https://github.com/yanyiwu/cppjieba
 https://opencv.org/releases/
 https://ffmpeg.org/download.html
 https://pytorch.org/get-started/locally/
 https://www.nvidia.cn/Download/index.aspx
 https://developer.nvidia.com/rdp/cudnn-download
 https://developer.nvidia.com/cuda-11-8-0-download-archive
+https://cn.vuejs.org/
+https://www.electronjs.org/zh/
+https://element-plus.gitee.io/zh-CN/
 
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
 ```

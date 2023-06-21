@@ -3,8 +3,8 @@ const { app } = require('electron');
 
 process.title = 'lifuren';
 
-app.env = {};
-const argv = process.argv;
+app.setting = {};
+const argv  = process.argv;
 for(let arg of argv) {
   if(arg.indexOf('--') === 0) {
     arg = arg.substring(2);
@@ -13,9 +13,9 @@ for(let arg of argv) {
     if(index >= 0) {
       key   = arg.substring(0, index);
       value = arg.substring(index + 1);
-      app.env[key] = value;
+      app.setting[key] = value;
     } else {
-      app.env[key] = key;
+      app.setting[key] = key;
     }
     console.info('配置参数', key, "=", value);
   }

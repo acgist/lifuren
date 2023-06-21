@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' 'unsafe-inline';" />
   <link rel="stylesheet" href="./element-plus/index.css" />
+  <link rel="stylesheet" href="./css/index.css" />
   <script src="./vue/vue.global.prod.js"></script>
   <script src="./element-plus/index.full.min.js"></script>
 </head>
@@ -16,14 +17,14 @@
     <el-button>{{ message }}</el-button>
   </div>
   <script>
-    const App = {
+    const lifuren = {
       data() {
         return {
           message: "李夫人",
         };
       },
     };
-    const app = Vue.createApp(App);
+    const app = Vue.createApp(lifuren);
     app.use(ElementPlus);
     app.mount("#app");
   </script>

@@ -9,12 +9,11 @@ function createWindow() {
     width : 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, './src/index.js')
     }
   });
   menu.buildMenu();
   window.loadFile('./src/index.html');
-  if(app.env.env === 'dev') {
+  if(app.setting.env === 'dev') {
     window.webContents.openDevTools();
   }
 }
