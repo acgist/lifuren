@@ -26,14 +26,14 @@
 
 |模块|描述|版本|
 |:--|:--|:--|
-|curl|日志框架|v8.1.2|
+|curl|HTTP框架|v8.1.2|
 |glog|日志框架|v0.6.0|
 |cppjieba|分词框架|v5.1.0|
 |FFmpeg|图片视频框架|v5.1.2|
 |OpenCV|机器视觉框架|v4.6.0|
 |PyTorch|机器学习框架|v2.0.1|
-|Vue|UI框架|v3.2.44|
-|Electron|UI框架|v25.1.1|
+|Vue|JavaScript框架|v3.2.44|
+|Electron|GUI框架|v25.1.1|
 |Element-Plus|UI框架|v2.2.32|
 
 ## 模块
