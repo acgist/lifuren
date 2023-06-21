@@ -1,4 +1,4 @@
-#include "GLog.hpp"
+#include "Test.hpp"
 
 int main(int argc, char const *argv[]) {
     std::filesystem::create_directories("logs");

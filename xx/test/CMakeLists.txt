@@ -1,26 +1,15 @@
-project(lifurentemplate VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurentest VERSION 1.0.0 LANGUAGES C CXX)
 
-set(HEADER_DIR src/header/)
-set(SOURCE_DIR src/source/)
-
-aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
-
-add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} src/Test.cpp)
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog
 )
 
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC
-    ${HEADER_DIR}
-)
-
 set(
     HEADER_FILES
-    src/header/GLog.hpp
-    src/header/Template.hpp
+    src/Test.hpp
 )
 
 install(

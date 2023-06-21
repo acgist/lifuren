@@ -12,20 +12,6 @@ jobs:
         runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.runs-on }}
     steps:
-      - name: Mac Setting
-        if: matrix.runs-on == 'macos-latest'
-        run: |
-          echo "cmakeFlags=" >> $GITHUB_ENV
-      - name: Linux Setting
-        if: matrix.runs-on == 'ubuntu-latest'
-        run: |
-          echo "cmakeFlags=" >> $GITHUB_ENV
-      - name: Windows Setting
-        if: matrix.runs-on == 'windows-latest'
-        run: |
-          echo "cmakeFlags=-G 'MinGW Makefiles'" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Checkout repository
-        uses: actions/checkout@v3
       - name: Checkout deps
         run: |
           git submodule update --init --recursive
@@ -35,24 +21,42 @@ jobs:
           cd ./glog
           git checkout v0.6.0
           cd ..
+          ################ curl
+          # git clone https://github.com/curl/curl.git
+          cd ./curl
+          git checkout curl-8_1_2
+          cd ..
+          ################ cppjieba
+          git clone https://github.com/yanyiwu/cppjieba.git
+          cd ./cppjieba
+          git checkout v5.1.0
+          cd ..
           ################ pytorch
-          # git clone --recursive https://github.com/pytorch/pytorch.git
-          # cd ./pytorch
-          # git checkout v2.0.1
-          # cd ..
-      - name: Build xx template
+          git clone --recursive https://github.com/pytorch/pytorch.git
+          cd ./pytorch
+          git checkout v2.0.1
+          cd ..
+      - name: Build Mac lifuren
+        if: matrix.runs-on == 'macos-latest'
         run: |
-          cd ./xx/template
           mkdir build
           cd build
-          cmake ${{ env.cmakeFlags }} ..
+          cmake ..
           make
           make clean
-      - name: Build xx glog
+      - name: Build Linux lifuren
+        if: matrix.runs-on == 'ubuntu-latest'
         run: |
-          cd ./xx/glog
           mkdir build
           cd build
-          cmake ${{ env.cmakeFlags }} ..
+          cmake ..
+          make
+          make clean
+      - name: Build Windows lifuren
+        if: matrix.runs-on == 'windows-latest'
+        run: |
+          mkdir build
+          cd build
+          cmake -G "MinGW Makefiles" ..
           make
           make clean

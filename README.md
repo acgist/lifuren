@@ -29,7 +29,7 @@
 |curl|HTTP框架|v8.1.2|
 |glog|日志框架|v0.6.0|
 |cppjieba|分词框架|v5.1.0|
-|FFmpeg|图片视频框架|v5.1.2|
+|FFmpeg|图片视频框架|v5.1.3|
 |OpenCV|机器视觉框架|v4.6.0|
 |PyTorch|机器学习框架|v2.0.1|
 |Vue|JavaScript框架|v3.2.44|
@@ -43,7 +43,6 @@
 |ff|数据采集|
 |gu|画骨（自然语言：诗词）|
 |pi|画皮（视觉媒体：图片、视频）|
-|xx|学习测试|
 |yy|综合应用|
 
 ## 相关链接
@@ -51,7 +50,9 @@
 ```
 https://github.com/curl/curl
 https://github.com/google/glog
+https://github.com/FFmpeg/FFmpeg
 https://github.com/yanyiwu/cppjieba
+https://github.com/BtbN/FFmpeg-Builds
 https://opencv.org/releases/
 https://ffmpeg.org/download.html
 https://pytorch.org/get-started/locally/

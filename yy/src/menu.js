@@ -54,6 +54,9 @@ function exit() {
 function help() {
 }
 
+/**
+ * 创建菜单
+ */
 function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }

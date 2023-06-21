@@ -1,10 +1,11 @@
-const path                   = require('path');
 const menu                   = require('./src/menu');
 const config                 = require('./src/config');
-const process                = require('process');
 const { app, BrowserWindow } = require('electron');
 
-function createWindow() {
+/**
+ * 创建窗口
+ */
+function buildWindow() {
   const window = new BrowserWindow({
     width : 800,
     height: 600,
@@ -19,7 +20,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow();
+  config.initSetting();
+  buildWindow();
 });
 
 app.on('window-all-closed', () => {

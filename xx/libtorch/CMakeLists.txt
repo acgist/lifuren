@@ -1,4 +1,4 @@
-project(lifurentemplate VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurenlibtorch VERSION 1.0.0 LANGUAGES C CXX)
 
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
@@ -19,8 +19,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    src/header/GLog.hpp
-    src/header/Template.hpp
+    ${HEADER_DIR}/GLog.hpp
 )
 
 install(
