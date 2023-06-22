@@ -1,7 +1,7 @@
 #include <iostream>
 #include "torch/script.h"
 // #include "torch/library.h"
-#include "header/Glog.hpp"
+#include "header/LibTorch.hpp"
 
 int main(int argc, char const *argv[]) {
     lifuren::initGlog(argc, argv);

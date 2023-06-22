@@ -34,18 +34,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
-    deps/libtorch
+    deps/ffmpeg
     deps/opencv/build
+    deps/libtorch
 )
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/target/)
 # set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX}/include/)
 
 link_directories(
-	${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    deps/ffmpeg/lib
+    deps/opencv/build/x64/vc14/lib
     deps/libtorch/lib
 )
   
 include_directories(
+    cc/src/header
+    deps/ffmpeg/include
+    deps/opencv/build/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
@@ -53,8 +59,9 @@ include_directories(
 find_package(Torch REQUIRED)
 
 add_subdirectory(deps)
+add_subdirectory(cc)
 # add_subdirectory(ff)
-# add_subdirectory(gu)
-# add_subdirectory(pi)
+# add_subdirectory(gg)
+# add_subdirectory(pp)
 add_subdirectory(xx)
 # add_subdirectory(yy)

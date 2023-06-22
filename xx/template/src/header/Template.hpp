@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Glog.hpp"
+#include "GLog.hpp"
 
 /**
  * 模板

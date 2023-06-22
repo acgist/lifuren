@@ -1,4 +1,4 @@
-#include "../header/Glog.hpp"
+#include "../header/GLog.hpp"
 
 namespace lifuren {
 

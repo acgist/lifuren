@@ -1,4 +1,3 @@
-#include "header/GLog.hpp"
 #include "header/Template.hpp"
 
 int main(int argc, char const* argv[]) {

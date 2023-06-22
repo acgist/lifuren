@@ -1,16 +1,15 @@
-project(lifurentemplate VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurencc VERSION 1.0.0 LANGUAGES C CXX)
 
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog
-    lifurencc
 )
 
 target_include_directories(
@@ -20,7 +19,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    src/header/Template.hpp
+    ${HEADER_DIR}/GLog.hpp
 )
 
 install(
