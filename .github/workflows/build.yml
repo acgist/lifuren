@@ -16,26 +16,28 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd ./deps
-          ################ glog
-          # git clone https://github.com/google/glog.git
-          cd ./glog
-          git checkout v0.6.0
-          cd ..
           ################ curl
           # git clone https://github.com/curl/curl.git
           cd ./curl
           git checkout curl-8_1_2
           cd ..
+          ################ glog
+          # git clone https://github.com/google/glog.git
+          cd ./glog
+          git checkout v0.6.0
+          cd ..
           ################ cppjieba
-          git clone https://github.com/yanyiwu/cppjieba.git
+          # git clone https://github.com/yanyiwu/cppjieba.git
           cd ./cppjieba
           git checkout v5.1.0
           cd ..
-          ################ pytorch
-          git clone --recursive https://github.com/pytorch/pytorch.git
-          cd ./pytorch
-          git checkout v2.0.1
-          cd ..
+          ################ ffmpeg
+          ################ opencv
+          ################ libtorch
+          # git clone --recursive https://github.com/pytorch/pytorch.git
+          # cd ./pytorch
+          # git checkout v2.0.1
+          # cd ..
       - name: Build Mac lifuren
         if: matrix.runs-on == 'macos-latest'
         run: |
