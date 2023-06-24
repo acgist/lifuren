@@ -1,0 +1,9 @@
+[
+  {
+    "ID"   : "规则ID",
+    "title": "规则名称",
+    "fontSize": 28,
+    "segmentSize": 4,
+    "rule": [7, 7, 7, 7]
+  }
+]

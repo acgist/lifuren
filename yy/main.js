@@ -1,5 +1,5 @@
-const menu                   = require('./src/menu');
-const config                 = require('./src/config');
+const menu                   = require('./menu');
+const config                 = require('./config');
 const { app, BrowserWindow } = require('electron');
 
 /**
@@ -13,7 +13,7 @@ function buildWindow() {
     }
   });
   menu.buildMenu();
-  window.loadFile('./src/index.html');
+  window.loadFile('./index.html');
   if(app.setting.env === 'dev') {
     window.webContents.openDevTools();
   }

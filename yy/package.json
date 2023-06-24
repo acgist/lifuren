@@ -16,10 +16,10 @@
     "lifuren"
   ],
   "dependencies": {
-    "vue": "^3.2.44",
+    "vue"         : "^3.2.44",
     "element-plus": "^2.2.32"
   },
   "devDependencies": {
-    "electron": "^25.1.1"
+    "electron": "^25.2.0"
   }
 }

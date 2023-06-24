@@ -5,6 +5,7 @@ const template = [
     label: '文件',
     submenu: [
       { label: '设置', click: setting },
+      { label: '清理' },
       { label: '退出', click: exit }
     ]
   },
@@ -33,7 +34,11 @@ const template = [
     ]
   },
   {
-    label: '李夫人'
+    label: '李夫人',
+    submenu: [
+      { label: '桃面' },
+      { label: '楚腰' }
+    ]
   },
   {
     label: '关于',

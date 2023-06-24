@@ -1,0 +1,30 @@
+[
+  {
+    "name": "抖音",
+    "type": "www",
+    "href": [
+      "https://www.douyin.com"
+    ]
+  },
+  {
+    "name": "快手",
+    "type": "www",
+    "href": [
+      "https://www.kuaishou.com"
+    ]
+  },
+  {
+    "name": "微博",
+    "type": "www",
+    "href": [
+      "https://www.weibo.com"
+    ]
+  },
+  {
+    "name": "哔哩哔哩",
+    "type": "www",
+    "href": [
+      "https://www.bilibili.com"
+    ]
+  }
+]
