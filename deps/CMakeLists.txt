@@ -1,7 +1,5 @@
-set(WITH_GTEST    OFF)
-set(WITH_GFLAGS   OFF)
-set(BUILD_TESTING OFF)
+set(WITH_GTEST  OFF)
+set(WITH_GFLAGS OFF)
 
-add_subdirectory(curl)
 add_subdirectory(glog)
-add_subdirectory(cppjieba)
+add_subdirectory(nlohmann_json)

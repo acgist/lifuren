@@ -18,28 +18,26 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd ./deps
-          ################ curl
-          # git clone https://github.com/curl/curl.git
-          cd ./curl
-          git checkout curl-8_1_2
-          cd ..
           ################ glog
           # git clone https://github.com/google/glog.git
           cd ./glog
           git checkout v0.6.0
           cd ..
-          ################ cppjieba
-          # git clone https://github.com/yanyiwu/cppjieba.git
-          cd ./cppjieba
-          git checkout v5.1.0
+          ################ nlohmann_json
+          # git clone https://github.com/nlohmann/json.git
+          cd ./nlohmann_json
+          git checkout v3.11.2
           cd ..
           ################ ffmpeg
+          # wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n5.1-latest-win64-lgpl-shared-5.1.zip
+          # wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n5.1-latest-linux64-lgpl-shared-5.1.tar.xz
           ################ opencv
-          ################ libtorch
-          # git clone --recursive https://github.com/pytorch/pytorch.git
-          # cd ./pytorch
-          # git checkout v2.0.1
+          # git clone https://github.com/opencv/opencv.git
+          # git checkout 4.6.0
           # cd ..
+          ################ libtorch
+          # wget https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip
+          # wget https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.0.1%2Bcpu.zip
       - name: Build Mac lifuren
         if: matrix.runs-on == 'macos-latest'
         run: |

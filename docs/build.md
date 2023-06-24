@@ -20,6 +20,19 @@ make
 # make install
 ```
 
+# LibTorch
+
+```
+https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip
+https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
+https://download.pytorch.org/libtorch/cu118/libtorch-shared-with-deps-2.0.1%2Bcu118.zip
+https://download.pytorch.org/libtorch/cu118/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcu118.zip
+https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.0.1%2Bcpu.zip
+https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-2.0.1%2Bcpu.zip
+https://download.pytorch.org/libtorch/cu118/libtorch-win-shared-with-deps-2.0.1%2Bcu118.zip
+https://download.pytorch.org/libtorch/cu118/libtorch-win-shared-with-deps-debug-2.0.1%2Bcu118.zip
+```
+
 ## NVIDA
 
 ```
@@ -34,21 +47,10 @@ CPU/GPU/CUDA/cuDNN
 * https://developer.nvidia.com/cuda-11-8-0-download-archive
 
 ```
-# debian
-wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-debian11-11-8-local_11.8.0-520.61.05-1_amd64.deb
-sudo dpkg -i cuda-repo-debian11-11-8-local_11.8.0-520.61.05-1_amd64.deb
-sudo cp /var/cuda-repo-debian11-11-8-local/cuda-*-keyring.gpg /usr/share/keyrings/
-sudo add-apt-repository contrib
-sudo apt-get update
-sudo apt-get -y install cuda
-# ubuntu
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-ubuntu2004-11-8-local_11.8.0-520.61.05-1_amd64.deb
-sudo dpkg -i cuda-repo-ubuntu2004-11-8-local_11.8.0-520.61.05-1_amd64.deb
-sudo cp /var/cuda-repo-ubuntu2004-11-8-local/cuda-*-keyring.gpg /usr/share/keyrings/
-sudo apt-get update
-sudo apt-get -y install cuda
+# https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_522.06_windows.exe
+# https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-debian11-11-8-local_11.8.0-520.61.05-1_amd64.deb
+# https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+# https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-ubuntu2004-11-8-local_11.8.0-520.61.05-1_amd64.deb
 ```
 
 ## cuDNN
@@ -64,17 +66,4 @@ sudo apt-get -y install cuda
 # https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-linux-x86_64-8.9.2.26_cuda11-archive.tar.xz/
 # https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-local-repo-debian11-8.9.2.26_1.0-1_amd64.deb/
 # https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-local-repo-ubuntu2004-8.9.2.26_1.0-1_amd64.deb/
-
-sudo apt-get install zlib1g
-
-sudo dpkg -i cudnn-local-repo-${distro}-8.x.x.x_1.0-1_amd64.deb
-sudo cp /var/cudnn-local-repo-*/cudnn-local-*-keyring.gpg /usr/share/keyrings/
-sudo apt-get update
-sudo apt-get install libcudnn8=8.x.x.x-1+cudaX.Y
-sudo apt-get install libcudnn8-dev=8.x.x.x-1+cudaX.Y
-sudo apt-get install libcudnn8-samples=8.x.x.x-1+cudaX.Y
-
-sudo apt-get install libcudnn8=${cudnn_version}-1+${cuda_version}
-sudo apt-get install libcudnn8-dev=${cudnn_version}-1+${cuda_version}
-sudo apt-get install libcudnn8-samples=${cudnn_version}-1+${cuda_version}
 ```

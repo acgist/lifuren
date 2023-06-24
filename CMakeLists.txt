@@ -50,6 +50,9 @@ link_directories(
   
 include_directories(
     cc/src/header
+    deps/curl/include
+    deps/myhtml/include
+    deps/nlohmann_json/include
     deps/ffmpeg/include
     deps/opencv/build/include
     deps/libtorch/include
@@ -57,6 +60,7 @@ include_directories(
 )
 
 find_package(Torch REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(cc)

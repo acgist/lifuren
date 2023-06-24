@@ -26,9 +26,8 @@
 
 |模块|描述|版本|
 |:--|:--|:--|
-|curl|网络框架|v8.1.2|
 |glog|日志框架|v0.6.0|
-|cppjieba|分词框架|v5.1.0|
+|nlohmann_json|JSON框架|v5.1.0|
 |FFmpeg|图片视频框架|v5.1.3|
 |OpenCV|机器视觉框架|v4.6.0|
 |LibTorch|机器学习框架|v2.0.1|
@@ -47,23 +46,8 @@
 |xx|学习测试|
 |yy|应用|
 
-## 相关链接
+## 相关下载
 
 ```
-https://github.com/curl/curl
-https://github.com/google/glog
-https://github.com/FFmpeg/FFmpeg
-https://github.com/yanyiwu/cppjieba
-https://github.com/BtbN/FFmpeg-Builds
-https://opencv.org/releases/
-https://ffmpeg.org/download.html
-https://pytorch.org/get-started/locally/
-https://www.nvidia.cn/Download/index.aspx
-https://developer.nvidia.com/rdp/cudnn-download
-https://developer.nvidia.com/cuda-11-8-0-download-archive
-https://cn.vuejs.org/
-https://www.electronjs.org/zh/
-https://element-plus.gitee.io/zh-CN/
-
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
 ```

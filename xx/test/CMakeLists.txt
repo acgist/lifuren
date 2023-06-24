@@ -3,28 +3,9 @@ project(lifurentest VERSION 1.0.0 LANGUAGES C CXX)
 add_executable(
     ${PROJECT_NAME}
     src/Test.cpp
-    src/GLogTest.cpp
 )
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    glog
-)
-
-set(
-    HEADER_FILES
-    src/Test.hpp
-)
-
-install(
-    FILES
-    ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-)
-
-install(
-    TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
+    lifurencc
 )
