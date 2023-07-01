@@ -6,6 +6,13 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 # SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
+if(CMAKE_HOST_UNIX)
+elseif(CMAKE_HOST_WIN32)
+elseif(CMAKE_HOST_APPLE)
+else()
+    message("不支持的系统")
+endif()
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c17 -O0 -g")
@@ -15,13 +22,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
-
-if(CMAKE_HOST_UNIX)
-elseif(CMAKE_HOST_WIN32)
-elseif(CMAKE_HOST_APPLE)
-else()
-    message("不支持的系统")
-endif()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/debug/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/debug/lib)
@@ -38,8 +38,14 @@ set(
     deps/opencv/build
     deps/libtorch
 )
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/target/)
-# set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX}/include/)
+set(
+    CMAKE_INSTALL_PREFIX
+    ${CMAKE_SOURCE_DIR}/target/
+)
+set(
+    CMAKE_INSTALL_INCLUDEDIR
+    ${CMAKE_INSTALL_PREFIX}/include/
+)
 
 link_directories(
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
@@ -50,8 +56,6 @@ link_directories(
   
 include_directories(
     cc/src/header
-    deps/curl/include
-    deps/myhtml/include
     deps/nlohmann_json/include
     deps/ffmpeg/include
     deps/opencv/build/include
@@ -60,11 +64,9 @@ include_directories(
 )
 
 find_package(Torch REQUIRED)
-find_package(OpenSSL REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(cc)
-# add_subdirectory(ff)
 # add_subdirectory(gg)
 # add_subdirectory(pp)
 add_subdirectory(xx)

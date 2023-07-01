@@ -1,27 +1,36 @@
-const menu                   = require('./menu');
-const config                 = require('./config');
+const process = require('process');
 const { app, BrowserWindow } = require('electron');
+
+const menu    = require('./menu');
+const event   = require('./event');
+
+process.title = 'lifuren';
 
 /**
  * 创建窗口
  */
-function buildWindow() {
+function createWindow() {
   const window = new BrowserWindow({
     width : 800,
     height: 600,
     webPreferences: {
+      nodeIntegration : true,
+      contextIsolation: false,
     }
   });
-  menu.buildMenu();
-  window.loadFile('./index.html');
-  if(app.setting.env === 'dev') {
+  menu.createMenu(window);
+  event.listenEvent(window);
+  window.loadFile('./index.html').then(() => {
+  });
+  const env = process.env.NODE_ENV;
+  if(env && env.trim() === 'dev') {
     window.webContents.openDevTools();
   }
+  return window;
 }
 
 app.whenReady().then(() => {
-  config.initSetting();
-  buildWindow();
+  createWindow();
 });
 
 app.on('window-all-closed', () => {

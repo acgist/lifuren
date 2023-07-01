@@ -1,33 +1,210 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <title>李夫人</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' 'unsafe-inline';" />
-  <link rel="stylesheet" href="./css/index.css" />
-  <link rel="stylesheet" href="./node_modules/element-plus/dist/index.css" />
   <script src="./node_modules/vue/dist/vue.global.prod.js"></script>
   <script src="./node_modules/element-plus/dist/index.full.min.js"></script>
+  <script src="./node_modules/element-plus/dist/locale/zh-cn.min.js"></script>
+  <link rel="stylesheet" href="./resources/css/index.css" />
+  <link rel="stylesheet" href="./node_modules/element-plus/dist/index.css" />
 </head>
 
 <body>
-  <div id="app">
-    <el-button>{{ message }}</el-button>
+  <div id="app" class="app">
+    <div v-show="tabs === 'main'" ref="main" class="main"></div>
+    <el-tabs v-show="tabs === 'file'" ref="file" class="file" v-model="tabsModel" tab-position="left">
+      <el-tab-pane label="设置" name="file-setting">
+        <el-form :model="setting" label-width="100px">
+          <el-form-item label="软件名称">
+            <el-input v-model="setting.name" />
+          </el-form-item>
+          <el-form-item label="软件版本">
+            <el-input v-model="setting.version" />
+          </el-form-item>
+          <el-form-item label="诗词目录">
+            <el-input v-model="storage.poetry" />
+          </el-form-item>
+          <el-form-item label="图片目录">
+            <el-input v-model="storage.image" />
+          </el-form-item>
+          <el-form-item label="视频目录">
+            <el-input v-model="storage.video" />
+          </el-form-item>
+          <el-form-item label="模型目录">
+            <el-input v-model="storage.model" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveSetting">保存</el-button>
+            <el-button @click="fileCancel">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="诗词" name="file-poetry">
+        <el-form :model="setting.poetry" label-width="100px">
+          <el-form-item label="最小字数">
+            <el-input v-model="poetry.minLength">
+              <template #append>个字</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大字数">
+            <el-input v-model="poetry.maxLength">
+              <template #append>个字</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveSetting">保存</el-button>
+            <el-button @click="fileCancel">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="图片" name="file-image">
+        <el-form :model="setting.image" label-width="100px">
+          <el-form-item label="最小宽度">
+            <el-input v-model="image.minWidth">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大宽度">
+            <el-input v-model="image.maxWidth">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最小高度">
+            <el-input v-model="image.minHeight">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大高度">
+            <el-input v-model="image.minHeight">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveSetting">保存</el-button>
+            <el-button @click="fileCancel">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="视频" name="file-video">
+        <el-form :model="setting.video" label-width="100px">
+          <el-form-item label="最小时长">
+            <el-input v-model="video.minLength">
+              <template #append>秒钟</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大时长">
+            <el-input v-model="video.maxLength">
+              <template #append>秒钟</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最小宽度">
+            <el-input v-model="video.minWidth">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大宽度">
+            <el-input v-model="video.maxWidth">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最小高度">
+            <el-input v-model="video.minHeight">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="最大高度">
+            <el-input v-model="video.minHeight">
+              <template #append>像素</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveSetting">保存</el-button>
+            <el-button @click="fileCancel">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="清理" name="file-clean">
+        <el-form :model="clean" label-width="100px">
+          <el-form-item label="诗词数据">
+            <el-checkbox label="清理训练数据" />
+          </el-form-item>
+          <el-form-item label="诗词模型">
+            <el-checkbox label="清理训练模型" />
+          </el-form-item>
+          <el-form-item label="图片数据">
+            <el-checkbox label="清理训练数据" />
+          </el-form-item>
+          <el-form-item label="图片模型">
+            <el-checkbox label="清理训练模型" />
+          </el-form-item>
+          <el-form-item label="视频数据">
+            <el-checkbox label="清理训练数据" />
+          </el-form-item>
+          <el-form-item label="视频模型">
+            <el-checkbox label="清理训练模型" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="fileClean">清理</el-button>
+            <el-button @click="fileCancel">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
   </div>
   <script>
+    const { ipcRenderer } = require('electron');
     const lifuren = {
       data() {
         return {
-          message: "李夫人",
+          tabs     : "file",
+          tabsModel: "file-setting",
+          setting  : {},
+          storage  : {},
+          poetry   : [],
+          image    : [],
+          video    : [],
+          clean    : {},
         };
       },
+      mounted() {
+        const me = this;
+        ipcRenderer.on('setting', (event, message) => {
+          console.info("加载配置", message);
+          me.setting = message;
+          me.storage = message.storage;
+          me.poetry  = message.poetry;
+          me.image   = message.image;
+          me.video   = message.video;
+        });
+        ipcRenderer.on('menu-tabs', (event, message) => {
+          const { tabs, label } = message;
+          me.tabs      = tabs;
+          me.tabsModel = `${tabs}-${label}`;
+        });
+        // 加载配置
+        ipcRenderer.send("event-setting");
+      },
+      methods: {
+        fileClean() {
+          ipcRenderer.send("event-file-clean", {
+          });
+        },
+        fileCancel() {
+          const me = this;
+          me.tabs  = "main";
+        },
+        saveSetting() {
+        }
+      }
     };
     const app = Vue.createApp(lifuren);
-    app.use(ElementPlus);
+    app.use(ElementPlus, {
+      locale: ElementPlusLocaleZhCn
+    });
     app.mount("#app");
   </script>
 </body>
-
 </html>

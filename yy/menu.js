@@ -1,41 +1,57 @@
-const { app, Menu } = require('electron')
+const { app, shell, Menu } = require('electron')
+
+let window;
 
 const template = [
   {
     label: '文件',
     submenu: [
-      { label: '设置', click: setting },
-      { label: '清理' },
-      { label: '退出', click: exit }
+      {
+        label: '设置',
+        click: () => menuTabs("file", "setting")
+      },
+      {
+        label: '诗词',
+        click: () => menuTabs("file", "poetry")
+      },
+      {
+        label: '图片',
+        click: () => menuTabs("file", "image")
+      },
+      {
+        label: '视频',
+        click: () => menuTabs("file", "video")
+      },
+      {
+        label: '清理',
+        click: () => menuTabs("file", "clean")
+      },
+      {
+        label: '退出',
+        click: () => app.exit()
+      }
     ]
   },
   {
-    label: '图片',
+    label: '画皮',
     submenu: [
-      { label: '采集' },
-      { label: '训练' },
-      { label: '预测' }
+      { label: '图片标记' },
+      { label: '图片训练' },
+      { label: '视频标记' },
+      { label: '视频训练' },
     ]
   },
   {
-    label: '视频',
+    label: '画骨',
     submenu: [
-      { label: '采集' },
-      { label: '训练' },
-      { label: '预测' }
-    ]
-  },
-  {
-    label: '诗词',
-    submenu: [
-      { label: '采集' },
-      { label: '训练' },
-      { label: '预测' }
+      { label: '诗词标记' },
+      { label: '诗词训练' },
     ]
   },
   {
     label: '李夫人',
     submenu: [
+      { label: '吟诗' },
       { label: '桃面' },
       { label: '楚腰' }
     ]
@@ -43,27 +59,55 @@ const template = [
   {
     label: '关于',
     submenu: [
-      { label: '关于' },
-      { label: '帮助', click: help }
+      {
+        label: '源码',
+        click: async () => {
+          await shell.openExternal('https://gitee.com/acgist/lifuren')
+        }
+      },
+      {
+        label: '关于',
+        click: async () => {
+          await shell.openExternal('https://gitee.com/acgist/lifuren')
+        }
+      },
+      {
+        label: '帮助',
+        click: async () => {
+          await shell.openExternal('https://gitee.com/acgist/lifuren')
+        }
+      },
+      {
+        label: '作者',
+        click: async () => {
+          await shell.openExternal('https://www.acgist.com')
+        }
+      },
     ]
   }
 ];
 
-function setting() {
-}
-
-function exit() {
-  app.exit();
-}
-
-function help() {
-}
-
 /**
  * 创建菜单
+ * 
+ * @param {*} _window 窗口
  */
-function buildMenu() {
+function createMenu(_window) {
+  window = _window;
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-module.exports = { buildMenu };
+/**
+ * 菜单切换
+ * 
+ * @param {*} tabs  tabs
+ * @param {*} label label
+ */
+function menuTabs(tabs, label) {
+  window.webContents.send("menu-tabs", {
+    tabs,
+    label
+  });
+}
+
+module.exports = { createMenu };

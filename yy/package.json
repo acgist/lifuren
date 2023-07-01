@@ -5,12 +5,12 @@
   "license"    : "Apache-2.0",
   "description": "倾国倾城的李夫人",
   "scripts": {
-    "dev"        : "electron main.js --env=dev",
-    "prd"        : "electron main.js --env=prd",
-    "build"      : "",
-    "build:win"  : "",
-    "build:mac"  : "",
-    "build:linux": ""
+    "dev"       : "set NODE_ENV=dev && electron main.js",
+    "prd"       : "set NODE_ENV=prd && electron main.js",
+    "dev:mac"   : "NODE_ENV=dev && electron main.js",
+    "prd:mac"   : "NODE_ENV=prd && electron main.js",
+    "dev:linux" : "NODE_ENV=dev && electron main.js",
+    "prd:linux" : "NODE_ENV=prd && electron main.js"
   },
   "keywords": [
     "lifuren"

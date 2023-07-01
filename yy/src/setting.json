@@ -1,0 +1,28 @@
+{
+  "name"   : "李夫人",
+  "version": "1.0.0",
+  "storage": {
+    "model": "D:/tmp/lifuren/model",
+    "image": "D:/tmp/lifuren/image",
+    "video": "D:/tmp/lifuren/video",
+    "poetry": "D:/tmp/lifuren/poetry"
+  },
+  "poetry": {
+    "minLength": 8,
+    "maxLength": 1024
+  },
+  "image": {
+    "minWidth": 128,
+    "maxWidth": 4096,
+    "minHeight": 64,
+    "maxHeight": 2048
+  },
+  "video": {
+    "minLength": 2,
+    "maxLength": 28800,
+    "minWidth": 128,
+    "maxWidth": 4096,
+    "minHeight": 64,
+    "maxHeight": 2048
+  }
+}
