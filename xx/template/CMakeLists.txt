@@ -20,7 +20,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    src/header/Template.hpp
+    ${HEADER_DIR}/Template.hpp
 )
 
 install(

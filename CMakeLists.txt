@@ -15,12 +15,12 @@ endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "-Wall -Wextra")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -std=c17 -O0 -g")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c17 -O0 -g")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c17 -O3")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O0 -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c++17 -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/debug/lib)
@@ -34,8 +34,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
-    deps/ffmpeg
-    deps/opencv/build
+    # deps/ffmpeg
+    # deps/opencv/build
     deps/libtorch
 )
 set(
@@ -49,16 +49,16 @@ set(
 
 link_directories(
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    deps/ffmpeg/lib
-    deps/opencv/build/x64/vc14/lib
+    # deps/ffmpeg/lib
+    # deps/opencv/build/x64/vc14/lib
     deps/libtorch/lib
 )
   
 include_directories(
     cc/src/header
     deps/nlohmann_json/include
-    deps/ffmpeg/include
-    deps/opencv/build/include
+    # deps/ffmpeg/include
+    # deps/opencv/build/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
