@@ -14,7 +14,7 @@ add_definitions(-DC10_USE_GLOG)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog
-    lifurencc
+    lifurengg
     ${TORCH_LIBRARIES}
 )
 

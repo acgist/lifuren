@@ -50,7 +50,7 @@ link_directories(
 )
   
 include_directories(
-    cc/src/header
+    gg/src/header
     deps/nlohmann_json/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
@@ -59,8 +59,7 @@ include_directories(
 find_package(Torch REQUIRED)
 
 add_subdirectory(deps)
-add_subdirectory(cc)
-# add_subdirectory(gg)
-# add_subdirectory(pp)
+add_subdirectory(gg)
+add_subdirectory(oo)
 add_subdirectory(xx)
 # add_subdirectory(yy)

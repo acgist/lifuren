@@ -33,8 +33,10 @@ const template = [
     ]
   },
   {
-    label: '画皮',
+    label: '训练',
     submenu: [
+      { label: '诗词标记' },
+      { label: '诗词训练' },
       { label: '图片标记' },
       { label: '图片训练' },
       { label: '视频标记' },
@@ -42,14 +44,7 @@ const template = [
     ]
   },
   {
-    label: '画骨',
-    submenu: [
-      { label: '诗词标记' },
-      { label: '诗词训练' },
-    ]
-  },
-  {
-    label: '李夫人',
+    label: '预测',
     submenu: [
       { label: '吟诗' },
       { label: '桃面' },

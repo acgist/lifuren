@@ -1,3 +1,0 @@
-// poetry
-// gushiwen
-// chinese-poetry
