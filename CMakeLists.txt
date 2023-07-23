@@ -60,6 +60,6 @@ find_package(Torch REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(gg)
-add_subdirectory(oo)
+add_subdirectory(hh)
 add_subdirectory(xx)
 # add_subdirectory(yy)
