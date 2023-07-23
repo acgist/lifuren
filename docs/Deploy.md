@@ -1,6 +1,8 @@
-# 编译
+# 部署
 
-## linux
+## 源码编译
+
+### Linux
 
 ```
 mkdir build
@@ -10,17 +12,22 @@ make
 # make install
 ```
 
-## windows
+### Windows
 
-```
+```make
 mkdir build
 cd build
-cmake -G "MinGW Makefiles" ..
-make
-# make install
+cmake -G "Visual Studio 17 2022" ..
+cmake --build . --config Debug
+# cmake --install . --config Debug
 ```
 
-# LibTorch
+## 开发环境
+
+* https://code.visualstudio.com/
+* https://visualstudio.microsoft.com/zh-hans/downloads/
+
+## LibTorch
 
 ```
 https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip

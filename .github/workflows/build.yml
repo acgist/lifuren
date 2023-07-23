@@ -7,10 +7,7 @@ on:
 jobs:
   lifuren:
     name: Build lifuren
-    strategy:
-      matrix:
-        runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,36 +26,18 @@ jobs:
           git checkout v3.11.2
           cd ..
           ################ ffmpeg
-          # wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n5.1-latest-win64-lgpl-shared-5.1.zip
           # wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n5.1-latest-linux64-lgpl-shared-5.1.tar.xz
           ################ opencv
           # git clone https://github.com/opencv/opencv.git
           # git checkout 4.6.0
           # cd ..
           ################ libtorch
-          # wget https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.0.1%2Bcpu.zip
-          # wget https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.0.1%2Bcpu.zip
-      - name: Build Mac lifuren
-        if: matrix.runs-on == 'macos-latest'
+          wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
+          unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip
+      - name: Build lifuren
         run: |
           mkdir build
           cd build
           cmake ..
-          make
-          make clean
-      - name: Build Linux lifuren
-        if: matrix.runs-on == 'ubuntu-latest'
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          make
-          make clean
-      - name: Build Windows lifuren
-        if: matrix.runs-on == 'windows-latest'
-        run: |
-          mkdir build
-          cd build
-          cmake -G "MinGW Makefiles" ..
           make
           make clean
