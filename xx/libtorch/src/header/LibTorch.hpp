@@ -1,8 +1,8 @@
 #pragma once
 
-#include <filesystem>
-
-// #include "GLog.h"
+#include <iostream>
+#include "GLog.hpp"
+#include "torch/torch.h"
 
 namespace lifuren {
 }

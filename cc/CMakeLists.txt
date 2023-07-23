@@ -5,7 +5,7 @@ set(SOURCE_DIR src/source/)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
