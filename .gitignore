@@ -9,10 +9,13 @@
 package-lock.json
 
 .vscode
+
 logs
 build
 target
 node_modules
+
+deps/glog
 deps/opencv
-deps/ffmpeg
 deps/libtorch
+deps/nlohmann_json

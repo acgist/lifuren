@@ -5,4 +5,9 @@
 #include "torch/torch.h"
 
 namespace lifuren {
+
+    void testPlus();
+
+    void testLinear();
+
 }

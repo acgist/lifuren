@@ -1,4 +1,8 @@
-const { app, shell, Menu } = require('electron')
+const {
+  app,
+  shell,
+  Menu
+} = require('electron')
 
 let window;
 

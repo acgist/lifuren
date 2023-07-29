@@ -1,5 +1,9 @@
 const fs = require('fs');
-const { app, shell, ipcMain } = require('electron')
+const {
+  app,
+  shell,
+  ipcMain
+} = require('electron')
 
 let window;
 

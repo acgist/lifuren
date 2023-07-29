@@ -28,12 +28,10 @@
 |:--|:--|:--|
 |glog|日志框架|v0.6.0|
 |nlohmann_json|JSON框架|v5.1.0|
-|FFmpeg|图片视频框架|v5.1.3|
 |OpenCV|机器视觉框架|v4.6.0|
 |LibTorch|机器学习框架|v2.0.1|
-|Vue|JavaScript框架|v3.2.44|
+|Vue|JS框架|v3.2.44|
 |Electron|GUI框架|v25.1.1|
-|Element-Plus|UI框架|v2.2.32|
 
 ## 模块
 
@@ -42,7 +40,7 @@
 |gg|公共代码|
 |hh|画骨画皮|
 |xx|学习测试|
-|yy|应用|
+|yy|应用入口|
 
 ## 相关下载
 

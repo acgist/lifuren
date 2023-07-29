@@ -25,8 +25,6 @@ jobs:
           cd ./nlohmann_json
           git checkout v3.11.2
           cd ..
-          ################ ffmpeg
-          # wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n5.1-latest-linux64-lgpl-shared-5.1.tar.xz
           ################ opencv
           # git clone https://github.com/opencv/opencv.git
           # git checkout 4.6.0

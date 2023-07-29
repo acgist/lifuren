@@ -1,8 +1,11 @@
+const menu    = require('./src/menu');
+const event   = require('./src/event');
+const config  = require('./src/config');
 const process = require('process');
-const { app, BrowserWindow } = require('electron');
-
-const menu    = require('./menu');
-const event   = require('./event');
+const {
+  app,
+  BrowserWindow
+} = require('electron');
 
 process.title = 'lifuren';
 
@@ -20,10 +23,9 @@ function createWindow() {
   });
   menu.createMenu(window);
   event.listenEvent(window);
-  window.loadFile('./index.html').then(() => {
+  window.loadFile('./src/index.html').then(() => {
   });
-  const env = process.env.NODE_ENV;
-  if(env && env.trim() === 'dev') {
+  if(config.env.trim() === 'dev') {
     window.webContents.openDevTools();
   }
   return window;
