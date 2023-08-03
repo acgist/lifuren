@@ -37,6 +37,7 @@ jobs:
           cd ..
           ################ opencv
           git clone https://github.com/opencv/opencv.git
+          cd ./opencv
           git checkout 4.6.0
           cd ..
           ################ libtorch
