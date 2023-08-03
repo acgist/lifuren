@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Checkout deps
         run: |
-          git submodule update --init --recursive --depth 1
+          git submodule update --init --recursive
           cd ./deps
           ################ dlib
           # git clone https://github.com/davisking/dlib.git
