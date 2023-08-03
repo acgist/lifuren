@@ -51,7 +51,7 @@ link_directories(
   
 include_directories(
     gg/src/header
-    deps/nlohmann_json/include
+    deps/json/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )

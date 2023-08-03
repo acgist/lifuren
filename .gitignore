@@ -15,7 +15,9 @@ build
 target
 node_modules
 
+deps/dlib
 deps/glog
+deps/json
+deps/mlpack
 deps/opencv
 deps/libtorch
-deps/nlohmann_json

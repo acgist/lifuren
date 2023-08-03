@@ -4,22 +4,26 @@
 
 #include "glog/logging.h"
 
-/**
- * 日志
- */
 namespace lifuren {
 
 /**
- * 加载Glog
- * 
- * @param argc 参数数量
- * @param argv 参数值
+ * 日志
  */
-extern void initGlog(int argc, char const* argv[]);
+namespace glog {
 
-/**
- * 关闭Glog
- */
-extern void shutdownGlog();
+    /**
+     * 加载GLog
+     * 
+     * @param argc 参数数量
+     * @param argv 参数值
+     */
+    extern void init(int argc, char const* argv[]);
+
+    /**
+     * 关闭GLog
+     */
+    extern void shutdown();
+
+}
 
 }

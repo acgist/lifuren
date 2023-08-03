@@ -21,6 +21,7 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Json.hpp
+    ${HEADER_DIR}/ECharts.hpp
 )
 
 install(

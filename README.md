@@ -1,6 +1,6 @@
 # 李夫人
 
-基于`PyTorch`实现`AIGC`
+才貌双全的李夫人
 
 ```
 北方有佳人，绝世而独立。
@@ -27,11 +27,13 @@
 |模块|描述|版本|
 |:--|:--|:--|
 |glog|日志框架|v0.6.0|
-|nlohmann_json|JSON框架|v5.1.0|
-|OpenCV|机器视觉框架|v4.6.0|
-|LibTorch|机器学习框架|v2.0.1|
-|Vue|JS框架|v3.2.44|
-|Electron|GUI框架|v25.1.1|
+|json|JSON框架|v3.11.2|
+|DLib|机器学习框架|v19.24.2|
+|MLPack|机器学习框架|4.2.0|
+|OpenCV|机器视觉框架|4.6.0|
+|LibTorch|深度学习框架|v2.0.1|
+|Vue|JavaScript框架|v3.2.44|
+|Electron|Gui框架|v25.1.1|
 
 ## 模块
 
@@ -41,9 +43,3 @@
 |hh|画骨画皮|
 |xx|学习测试|
 |yy|应用入口|
-
-## 相关下载
-
-```
-https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
-```

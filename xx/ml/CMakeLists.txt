@@ -1,8 +1,8 @@
-project(lifurentest VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurenml VERSION 1.0.0 LANGUAGES C CXX)
 
 add_executable(
     ${PROJECT_NAME}
-    src/Test.cpp
+    src/ML.cpp
 )
 
 target_link_libraries(

@@ -1,8 +1,8 @@
 #include "header/Template.hpp"
 
 int main(int argc, char const* argv[]) {
-    lifuren::initGlog(argc, argv);
+    lifuren::glog::init(argc, argv);
     lifuren::lifuren();
-    lifuren::shutdownGlog();
+    lifuren::glog::shutdown();
     return 0;
 }

@@ -1,8 +1,10 @@
-#include "Test.hpp"
+#include "ML.hpp"
 
 int main(int argc, char const* argv[]) {
-    testGLog(argc, argv);
-    testJson();
+    // testGLog(argc, argv);
+    // testJson();
+    // testString();
+    testECharts();
     return 0;
 }
 
@@ -37,5 +39,23 @@ void testJson() {
         "happy": true
     }
     )");
-    std::cout << json["pi"] << std::endl;
+    LOG(INFO) << json["pi"];
+    std::string strings[] = { "1", "2" };
+    LOG(INFO) << lifuren::json::toJSON(strings, 2);
+    int ints[] = { 1, 2, 3 };
+    LOG(INFO) << lifuren::json::toJSON(ints);
+    // LOG(INFO) << lifuren::json::toJSON({ 1, 2, 3 }, 3);
+}
+
+void testString() {
+    std::string format = "li{}ren{}";
+    std::string args[] = { "fu", "!!" };
+    lifuren::string::format(format, args, 2);
+    LOG(INFO) << format;
+}
+
+void testECharts() {
+    const std::string xAxis[] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+    const double     series[] = { 150, 230, 224, 218, 135, 147, 260 };
+    lifuren::echarts::writeLineSimple(xAxis, series);
 }
