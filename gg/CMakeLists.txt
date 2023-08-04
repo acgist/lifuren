@@ -9,7 +9,9 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
+    dlib
     glog
+    nlohmann_json
 )
 
 target_include_directories(
@@ -21,7 +23,7 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Json.hpp
-    ${HEADER_DIR}/ECharts.hpp
+    ${HEADER_DIR}/String.hpp
 )
 
 install(

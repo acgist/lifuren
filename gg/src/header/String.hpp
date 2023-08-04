@@ -4,7 +4,7 @@
 
 namespace lifuren {
 
-namespace string {
+namespace gg {
 
     /**
      * 占位符

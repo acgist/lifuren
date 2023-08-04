@@ -2,7 +2,7 @@
 
 namespace lifuren {
 
-namespace json {
+namespace gg {
 
 }
 

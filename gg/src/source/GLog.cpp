@@ -2,7 +2,7 @@
 
 namespace lifuren {
 
-namespace glog {
+namespace gg {
 
     void init(int argc, char const* argv[]) {
         std::filesystem::create_directories("logs");

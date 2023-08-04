@@ -9,7 +9,7 @@ namespace lifuren {
 /**
  * 日志
  */
-namespace glog {
+namespace gg {
 
     /**
      * 加载GLog

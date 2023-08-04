@@ -5,8 +5,6 @@
 ```
 # 克隆仓库
 git clone --branch branch --depth 1 https://github.com/git.git
-# 同步标签
- git fetch --tags --force
 # 更新模块
 git submodule update --init --recursive --depth 1
 # 新增模块

@@ -2,7 +2,7 @@
 
 namespace lifuren {
 
-namespace string {
+namespace gg {
 
     void format(std::string& format, const std::string* args, int length) {
         for (int index = 0; index < length; index++) {

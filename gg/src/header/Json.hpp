@@ -9,7 +9,7 @@ namespace lifuren {
 /**
  * JSON
  */
-namespace json {
+namespace gg {
     
     /**
      * 数组->JSON

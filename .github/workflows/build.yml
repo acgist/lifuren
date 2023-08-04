@@ -30,11 +30,6 @@ jobs:
           cd ./json
           git checkout v3.11.2
           cd ..
-          ################ mlpack
-          # git clone https://github.com/mlpack/mlpack.git
-          cd ./mlpack
-          git checkout 4.2.0
-          cd ..
           ################ opencv
           git clone https://github.com/opencv/opencv.git
           cd ./opencv

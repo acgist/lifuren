@@ -29,7 +29,6 @@
 |glog|日志框架|v0.6.0|
 |json|JSON框架|v3.11.2|
 |DLib|机器学习框架|v19.24.2|
-|MLPack|机器学习框架|4.2.0|
 |OpenCV|机器视觉框架|4.6.0|
 |LibTorch|深度学习框架|v2.0.1|
 |Vue|JavaScript框架|v3.2.44|

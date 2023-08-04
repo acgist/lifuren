@@ -7,6 +7,3 @@
 [submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json.git
-[submodule "deps/mlpack"]
-	path = deps/mlpack
-	url = https://github.com/mlpack/mlpack.git
