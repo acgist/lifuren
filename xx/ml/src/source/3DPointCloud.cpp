@@ -30,6 +30,20 @@ namespace ml {
         win.wait_until_closed();
     }
 
+    void testSinCos() {
+        std::vector<dlib::perspective_window::overlay_dot> points;
+        for (double i = 0; i < 20; i += 0.001) {
+            dlib::vector<double> val(sin(i), cos(i), i / 4);
+            dlib::rgb_pixel color = dlib::colormap_jet(i, 0, 20);
+            points.push_back(dlib::perspective_window::overlay_dot(val, color));
+        }
+        dlib::perspective_window win;
+        win.set_title("SinCos");
+        win.set_size(512, 512);
+        win.add_overlay(points);
+        win.wait_until_closed();
+    }
+
 }
 
 }

@@ -6,9 +6,9 @@ namespace gg {
 
     void init(int argc, char const* argv[]) {
         std::filesystem::create_directories("logs");
-        FLAGS_v                = 4;    // 输出级别
-        FLAGS_alsologtostderr  = true; // 文件和控制台
-        FLAGS_colorlogtostderr = true; // 颜色输出
+        FLAGS_v                = 4;
+        FLAGS_alsologtostderr  = true;
+        FLAGS_colorlogtostderr = true;
         google::SetLogDestination(google::GLOG_INFO,    "logs/info_");
         google::SetLogDestination(google::GLOG_WARNING, "logs/warning_");
         google::SetLogDestination(google::GLOG_ERROR,   "logs/error_");

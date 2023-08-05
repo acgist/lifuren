@@ -7,6 +7,7 @@ int main(int argc, char const* argv[]) {
     // testGLog(argc, argv);
     // testJson();
     // testString();
-    lifuren::ml::test3DPointCloud();
+    // lifuren::ml::test3DPointCloud();
+    lifuren::ml::testSinCos();
     return 0;
 }
