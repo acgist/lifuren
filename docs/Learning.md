@@ -5,7 +5,6 @@
 * http://dlib.net/
 * https://opencv.org/
 * https://pytorch.org/
-* https://www.mlpack.org/
 
 ## 硬件驱动
 
