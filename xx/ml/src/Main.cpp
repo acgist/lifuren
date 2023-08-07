@@ -1,4 +1,3 @@
-#include "ML.hpp"
 #include "header/DLibAll.hpp"
 #include "header/LifurenGG.hpp"
 
@@ -8,6 +7,6 @@ int main(int argc, char const* argv[]) {
     // testJson();
     // testString();
     // lifuren::ml::test3DPointCloud();
-    lifuren::ml::testSinCos();
+    lifuren::ml::testBase64Encoder();
     return 0;
 }

@@ -2,9 +2,11 @@ project(lifurenml VERSION 1.0.0 LANGUAGES C CXX)
 
 add_executable(
     ${PROJECT_NAME}
-    src/ML.cpp
+    src/Main.cpp
     src/source/LifurenGG.cpp
     src/source/3DPointCloud.cpp
+    src/source/AssignmentLearning.cpp
+    src/source/Base64Encoder.cpp
 )
 
 target_link_libraries(

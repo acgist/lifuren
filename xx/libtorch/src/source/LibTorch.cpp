@@ -23,6 +23,7 @@ namespace lifuren {
         at::Tensor xTrain = torch::randint(0, 10, {15, 1}, torch::TensorOptions(torch::kFloat).device(device));
         at::Tensor yTrain = torch::randint(0, 10, {15, 1}, torch::TensorOptions(torch::kFloat).device(device));
         torch::nn::Linear model(1, 1);
+        LOG(INFO) << model->weight;
         // torch::nn::Linear model(10, 5);
         model->to(device);
         // 优化算法：梯度下降
@@ -41,6 +42,25 @@ namespace lifuren {
             }
         }
         LOG(INFO) << "训练结束";
+    }
+
+    void testReLU() {
+        torch::nn::ReLU relu;
+        LOG(INFO) << relu;
+        at::Tensor input = torch::randint(0, 10, {1, 1, 4});
+        at::Tensor output = relu->forward(input);
+        LOG(INFO) << input;
+        LOG(INFO) << output;
+    }
+
+    void testTanh() {
+        torch::nn::Tanh tanh;
+        LOG(INFO) << tanh;
+        at::Tensor tensor;
+        at::Tensor input = torch::randint(0, 10, {1, 1, 4});
+        at::Tensor output = tanh->forward(input);
+        LOG(INFO) << input;
+        LOG(INFO) << output;
     }
 
 }
