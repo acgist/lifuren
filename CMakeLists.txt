@@ -46,12 +46,13 @@ set(
 
 link_directories(
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    deps/mathgl/lib
     deps/libtorch/lib
 )
-  
+
 include_directories(
     gg/src/header
-    deps/json/include
+    deps/mathgl/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )

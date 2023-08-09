@@ -7,6 +7,7 @@ int main(int argc, char const* argv[]) {
     // testJson();
     // testString();
     // lifuren::ml::test3DPointCloud();
-    lifuren::ml::testBase64Encoder();
+    // lifuren::ml::testBase64Encoder();
+    lifuren::ml::testLinearRegression();
     return 0;
 }

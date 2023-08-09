@@ -23,6 +23,8 @@ namespace ml {
     */
     extern void testBase64Encoder();
 
+    extern void testLinearRegression();
+
 }
 
 }

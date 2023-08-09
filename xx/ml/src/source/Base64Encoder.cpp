@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
-#include <iostream>
 
 #include "dlib/base64.h"
 #include "dlib/compress_stream.h"
@@ -30,7 +29,7 @@ namespace ml {
             sout << line;
             std::getline(sin, line);
         }
-        std::cout << "sout = " << sout.str() << std::endl;
+        LOG(INFO) << "sout = " << sout.str() << std::endl;
         sin.clear();
         sin.str(sout.str());
         sout.clear();
@@ -41,7 +40,7 @@ namespace ml {
         sout.clear();
         sout.str("");
         compressor.decompress(sin, sout);
-        std::cout << "sout = " << sout.str() << std::endl;
+        LOG(INFO) << "sout = " << sout.str() << std::endl;
         in.close();
     }
     
