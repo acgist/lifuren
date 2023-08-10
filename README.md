@@ -29,9 +29,9 @@
 |glog|日志框架|v0.6.0|
 |json|JSON框架|v3.11.2|
 |DLib|机器学习框架|v19.24.2|
-|MathGL|可视化框架|8.0.1|
 |OpenCV|机器视觉框架|4.8.0|
 |LibTorch|深度学习框架|v2.0.1|
+|matplotlib|可视化框架|v0.3.1|
 |Vue|JavaScript框架|v3.2.44|
 |Electron|Gui框架|v25.2.0|
 

@@ -1,9 +1,9 @@
 project(lifurenlibtorch VERSION 1.0.0 LANGUAGES C CXX)
 
+find_package(Torch REQUIRED)
+
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
-
-find_package(Torch REQUIRED)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 

@@ -6,15 +6,15 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 # SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD   17)
 set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_HOST_UNIX)
-    set(CMAKE_C_FLAGS "-Wall -Wextra")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c17 -O0 -g")
+    set(CMAKE_C_FLAGS         "-Wall -Wextra")
+    set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c17 -O0 -g")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -std=c17 -O3")
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c++17 -O0 -g")
+    set(CMAKE_CXX_FLAGS         "-Wall -Wextra")
+    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c++17 -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
 elseif(CMAKE_HOST_WIN32)
 elseif(CMAKE_HOST_APPLE)
@@ -33,7 +33,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
-    C:/develop/vcpkg/packages/mathgl_x86-windows
     deps/libtorch
 )
 set(
@@ -54,14 +53,12 @@ link_directories(
 
 include_directories(
     gg/src/header
-    C:/develop/vcpkg/packages/mathgl_x86-windows/include
     deps/opencv/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
 
 find_package(Torch REQUIRED)
-find_package(MathGL2 REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(gg)

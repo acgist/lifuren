@@ -25,7 +25,6 @@ cmake --build . --config Debug
 ### 依赖
 
 ```
-sudo apt install build-essential
 sudo apt install libmgl-dev
 
 vcpkg install dlib

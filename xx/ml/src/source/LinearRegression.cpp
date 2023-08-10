@@ -2,9 +2,9 @@
 
 #include <vector>
 #include <random>
-#include <dlib/svm.h>
-#include <dlib/matrix.h>
-#include "dlib/gui_widgets.h"
+
+#include "dlib/svm.h"
+#include "dlib/matrix.h"
 
 namespace lifuren {
 
@@ -34,26 +34,14 @@ namespace ml {
         trainer.set_kernel(kernel_type());
         dlib::decision_function<kernel_type> predict = trainer.train(x, y);
         std::vector<dlib::matrix<double>> new_x;
-        std::vector<dlib::image_window::overlay_circle> points;
         for(int index = 0; index < x.size(); index++) {
             double xx = x.at(index);
             double yy = y.at(index);
-            points.push_back(dlib::image_window::overlay_circle(dlib::point(yy, xx), 1, dlib::rgb_pixel(0, 0, 0)));
         }
         for (std::vector<dlib::matrix<double>>::iterator::value_type& v : x) {
             double xx = *v.begin();
             double prediction = predict(v);
-            points.push_back(dlib::image_window::overlay_circle(dlib::point(prediction, xx), 1, dlib::rgb_pixel(255, 0, 0)));
         }
-        dlib::image_window win;
-        // dlib::perspective_window win;
-        win.set_title("LinearRegression");
-        win.set_size(512, 512);
-        win.add_overlay(points);
-        win.set_background_color(255, 255, 255);
-        // win.add_overlay()
-        // win.add_overlay(points, dlib::rgb_pixel(255, 0, 0));
-        win.wait_until_closed();
     }
 }
 
