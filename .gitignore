@@ -18,6 +18,6 @@ node_modules
 deps/dlib
 deps/glog
 deps/json
+deps/mathgl
 deps/opencv
-deps/gnuplot
 deps/libtorch

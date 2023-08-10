@@ -16,25 +16,24 @@ jobs:
           git submodule update --init --recursive
           cd ./deps
           ################ dlib
-          # git clone https://github.com/davisking/dlib.git
           cd ./dlib
           git checkout v19.24.2
           cd ..
           ################ glog
-          # git clone https://github.com/google/glog.git
           cd ./glog
           git checkout v0.6.0
           cd ..
           ################ json
-          # git clone https://github.com/nlohmann/json.git
           cd ./json
           git checkout v3.11.2
           cd ..
           ################ opencv
-          # git clone https://github.com/opencv/opencv.git
           cd ./opencv
-          git checkout 4.6.0
+          git checkout 4.8.0
           cd ..
+          ################ mathgl
+          sudo apt install build-essential
+          sudo apt install libmgl-dev
           ################ libtorch
           wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip

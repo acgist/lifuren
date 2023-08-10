@@ -33,6 +33,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
+    C:/develop/vcpkg/packages/mathgl_x86-windows
     deps/libtorch
 )
 set(
@@ -46,18 +47,21 @@ set(
 
 link_directories(
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    deps/mathgl/lib
+    opencv/x64/vc15/bin
+    opencv/x64/vc15/lib
     deps/libtorch/lib
 )
 
 include_directories(
     gg/src/header
-    deps/mathgl/include
+    C:/develop/vcpkg/packages/mathgl_x86-windows/include
+    deps/opencv/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
 
 find_package(Torch REQUIRED)
+find_package(MathGL2 REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(gg)

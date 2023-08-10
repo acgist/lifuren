@@ -3,8 +3,6 @@
 #include <vector>
 #include <random>
 #include <dlib/svm.h>
-// #include <dlib/rand.h>
-#include "mgl2/mgl.h"
 #include <dlib/matrix.h>
 #include "dlib/gui_widgets.h"
 

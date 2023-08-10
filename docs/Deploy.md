@@ -22,6 +22,18 @@ cmake --build . --config Debug
 # cmake --install . --config Debug
 ```
 
+### 依赖
+
+```
+sudo apt install build-essential
+sudo apt install libmgl-dev
+
+vcpkg install dlib
+vcpkg install glog
+vcpkg install mathgl
+vcpkg install nlohmann-json
+```
+
 ## 开发环境
 
 * https://code.visualstudio.com/

@@ -8,6 +8,7 @@ add_executable(
     src/source/Base64Encoder.cpp
     src/source/LifurenGG.cpp
     src/source/LinearRegression.cpp
+    src/source/MathGL.cpp
 )
 
 target_link_libraries(

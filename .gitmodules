@@ -10,6 +10,3 @@
 [submodule "deps/opencv"]
 	path = deps/opencv
 	url = https://github.com/opencv/opencv.git
-[submodule "deps/gnuplot"]
-	path = deps/gnuplot
-	url = https://git.code.sf.net/p/gnuplot/gnuplot-main
