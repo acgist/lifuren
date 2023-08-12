@@ -15,6 +15,9 @@ namespace gg {
         google::SetLogDestination(google::GLOG_FATAL,   "logs/fatal_");
         google::SetLogFilenameExtension(".log");
         google::InitGoogleLogging(argc > 0 ? argv[0] : nullptr);
+        cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
+        cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_FATAL);
+        cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
     }
 
     void shutdown() {
