@@ -14,11 +14,20 @@ git submodule add -branch branch --depth 1 https://github.com/git.git deps/git
 ## Linux常用命令
 
 ```
-
+sudo apt install libmgl-dev
+sudo apt install libcv-dev
+sudo apt install libopencv-dev
 ```
 
 ## Windows常用命令
 
 ```
+vcpkg install mathgl
+vcpkg install opencv
 
+vcpkg install dlib
+vcpkg install glog
+vcpkg install nlohmann-json
+
+vcpkg export mathgl --zip
 ```

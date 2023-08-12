@@ -7,11 +7,11 @@ namespace lifuren {
 namespace gg {
 
     /**
-     * 占位符
+     * 占位标记
      */
     const static std::string FLAG        = "{}";
     /**
-     * 占位符的长度
+     * 占位标记长度
      */
     const static int         FLAG_LENGTH = 2;
 

@@ -7,16 +7,13 @@
 
 namespace lifuren {
 
-/**
- * 日志
- */
 namespace gg {
 
     /**
      * 加载GLog
      * 
      * @param argc 参数数量
-     * @param argv 参数值
+     * @param argv 参数配置
      */
     extern void init(int argc, char const* argv[]);
 

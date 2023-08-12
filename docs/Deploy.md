@@ -22,16 +22,9 @@ cmake --build . --config Debug
 # cmake --install . --config Debug
 ```
 
-### 依赖
+### 注意事项
 
-```
-sudo apt install libmgl-dev
-
-vcpkg install dlib
-vcpkg install glog
-vcpkg install mathgl
-vcpkg install nlohmann-json
-```
+* `Windows`中`MathGL`需要删除`zip`/`png`/`jpeg`头文件才能编译通过
 
 ## 开发环境
 

@@ -28,13 +28,12 @@ jobs:
           git checkout v3.11.2
           cd ..
           ################ opencv
-          cd ./opencv
-          git checkout 4.8.0
-          cd ..
+          sudo apt install libcv-dev
+          sudo apt install libopencv-dev
           ################ mathgl
           sudo apt install libmgl-dev
           ################ libtorch
-          wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip
       - name: Deploy lifuren
         run: |

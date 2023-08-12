@@ -7,6 +7,3 @@
 [submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json.git
-[submodule "deps/opencv"]
-	path = deps/opencv
-	url = https://github.com/opencv/opencv.git

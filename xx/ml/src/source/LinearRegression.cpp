@@ -3,8 +3,10 @@
 #include <vector>
 #include <random>
 
+#include "mgl2/mgl.h"
 #include "dlib/svm.h"
 #include "dlib/matrix.h"
+#include "opencv2/opencv.hpp"
 
 namespace lifuren {
 
@@ -42,6 +44,20 @@ namespace ml {
             double xx = *v.begin();
             double prediction = predict(v);
         }
+
+         mglGraph gr;
+         gr.Title("MathGL Demo");
+         gr.SetOrigin(0, 0);
+         gr.SetRanges(0, 10, -2.5, 2.5);
+         gr.FPlot("sin(1.7*2*pi*x) + sin(1.9*2*pi*x)", "r-2");
+         gr.Axis();
+         gr.Grid();
+         gr.GetRGB();
+         cv::Mat pic(gr.GetHeight(), gr.GetWidth(), CV_8UC3);
+         pic.data = const_cast<uchar*>(gr.GetRGB());
+        cv::imshow("test", pic);
+        cv::waitKey();
+        std::cout << "dd";
     }
 }
 

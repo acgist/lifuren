@@ -23,7 +23,7 @@ void testJson() {
     LOG(INFO) << lifuren::gg::toJSON(strings, 2);
     int ints[] = { 1, 2, 3 };
     LOG(INFO) << lifuren::gg::toJSON(ints);
-    // 不能自动推到
+    // 不能自动推导
     // LOG(INFO) << lifuren::gg::toJSON({ 1, 2, 3 }, 3);
 }
 
