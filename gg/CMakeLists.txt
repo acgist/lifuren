@@ -9,9 +9,11 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
+    mgl
     dlib
     glog
     nlohmann_json
+    ${OpenCV_LIBS}
 )
 
 target_include_directories(
@@ -24,6 +26,7 @@ set(
     ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Json.hpp
     ${HEADER_DIR}/String.hpp
+    ${HEADER_DIR}/Visual.hpp
 )
 
 install(

@@ -3,6 +3,7 @@
 #include "GLog.hpp"
 #include "Json.hpp"
 #include "String.hpp"
+#include "Visual.hpp"
 
 namespace lifuren {
 

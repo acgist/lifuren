@@ -10,8 +10,6 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurengg
-    mgl
-    ${OpenCV_LIBS}
 )
 
 target_include_directories(
