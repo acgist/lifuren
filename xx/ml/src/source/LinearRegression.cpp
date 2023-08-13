@@ -51,6 +51,7 @@ namespace ml {
         lifuren::gg::dots(&xv, &yv, 100, 100, 1000);
         lifuren::gg::dots(&xv, &yv, 100, 100, 1000, &pxv, &pyv);
     }
+    
 }
 
 }
