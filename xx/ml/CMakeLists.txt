@@ -44,7 +44,7 @@ if(CMAKE_HOST_WIN32)
 endif()
 
 if(CMAKE_HOST_WIN32)
-    file(GLOB OPENCV_DLLS "${OpenCV_INSTALL_PATH}/x64/vc15/bin/*.dll")
+    file(GLOB OPENCV_DLLS "${OpenCV_INSTALL_PATH}/x64/vc16/bin/*.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)

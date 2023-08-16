@@ -54,7 +54,7 @@ set(
 link_directories(
     ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     deps/mathgl/lib
-    deps/opencv/x64/vc15/lib
+    deps/opencv/x64/vc16/lib
     deps/libtorch/lib
 )
 
@@ -73,4 +73,4 @@ add_subdirectory(deps)
 add_subdirectory(gg)
 add_subdirectory(hh)
 add_subdirectory(xx)
-# add_subdirectory(yy)
+add_subdirectory(yy)

@@ -24,16 +24,14 @@
 
 ## 依赖
 
-|模块|描述|版本|
-|:--|:--|:--|
-|glog|日志框架|v0.6.0|
-|nlohmann_json|JSON框架|v3.11.2|
-|DLib|机器学习框架|v19.24.2|
-|MathGL|可视化框架|8.0.1|
-|OpenCV|机器视觉框架|4.8.0|
-|LibTorch|机器学习框架|v2.0.1|
-|Vue|JavaScript框架|v3.2.44|
-|Electron|Gui框架|v25.2.0|
+|模块|描述|版本|官网|
+|:--|:--|:--|:--|
+|glog|日志框架|v0.6.0|https://github.com/google/glog|
+|json|JSON框架|v3.11.2| https://github.com/nlohmann/json|
+|DLib|机器学习框架|v19.24.2|https://github.com/davisking/dlib|
+|MathGL|图形图表框架|8.0.1|https://mathgl.sourceforge.net|
+|OpenCV|机器视觉框架|4.8.0|https://github.com/opencv/opencv|
+|LibTorch|机器学习框架|v2.0.1|https://github.com/pytorch/pytorch|
 
 ## 模块
 
@@ -42,4 +40,4 @@
 |gg|公共代码|
 |hh|画骨画皮|
 |xx|学习测试|
-|yy|应用入口|
+|yy|综合应用|
