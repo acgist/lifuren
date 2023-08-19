@@ -44,6 +44,17 @@ set(
     ${CMAKE_INSTALL_PREFIX}/include/
 )
 
+set(
+    CMAKE_PREFIX_PATH
+    ${CMAKE_PREFIX_PATH}
+    deps/libtorch
+)
+
+include_directories(
+    deps/libtorch/include
+    deps/libtorch/include/torch/csrc/api/include
+)
+
 if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
@@ -52,7 +63,6 @@ if(CMAKE_HOST_WIN32)
         deps/fltk
         deps/mathgl
         deps/opencv
-        deps/libtorch
     )
 
     include_directories(
@@ -60,19 +70,10 @@ if(CMAKE_HOST_WIN32)
         deps/fltk/include
         deps/mathgl/include
         deps/opencv/include
-        deps/libtorch/include
-        deps/libtorch/include/torch/csrc/api/include
     )
 
     set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 endif()
-
-
-find_package(dlib    REQUIRED)
-find_package(FLTK    REQUIRED)
-find_package(Torch   REQUIRED)
-find_package(OpenCV  REQUIRED)
-find_package(MathGL2 REQUIRED)
 
 if(CMAKE_HOST_WIN32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -84,9 +85,15 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
         file(GLOB MATHGL_DLLS "deps/mathgl/bin/*.dll")
     endif()
-    file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
+    file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
 endif()
+
+find_package(dlib    REQUIRED)
+find_package(FLTK    REQUIRED)
+find_package(Torch   REQUIRED)
+find_package(OpenCV  REQUIRED)
+find_package(MathGL2 REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(gg)
