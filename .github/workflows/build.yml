@@ -28,9 +28,10 @@ jobs:
           sudo apt install libdlib-dev
           ################ fltk
           sudo apt install libfltk1.3-dev
+          sudo apt install libwxgtk3.0-gtk3-dev
           ################ mathgl
           sudo apt install udav
-          # sudo apt install mathgl
+          sudo apt install mathgl
           sudo apt install libmgl-dev
           ################ opencv
           sudo apt install libopencv-dev
