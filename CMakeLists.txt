@@ -65,6 +65,16 @@ if(CMAKE_HOST_WIN32)
     )
 
     set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
+else()
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        deps/libtorch
+    )
+    include_directories(
+        deps/libtorch/include
+        deps/libtorch/include/torch/csrc/api/include
+    )
 endif()
 
 
@@ -85,6 +95,8 @@ if(CMAKE_HOST_WIN32)
         file(GLOB MATHGL_DLLS "deps/mathgl/bin/*.dll")
     endif()
     file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
+    file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
+else()
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
 endif()
 
