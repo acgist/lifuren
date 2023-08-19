@@ -4,8 +4,25 @@
 #include "Json.hpp"
 #include "String.hpp"
 
-extern void testGLog(int argc, char const *argv[]);
+namespace lifuren {
 
-extern void testJson();
+namespace ml {
 
-extern void testString();
+    /**
+     * 日志测试
+     */
+    extern void testGLog(int argc, char const *argv[]);
+
+    /**
+     * JSON测试
+     */
+    extern void testJson();
+
+    /**
+     * 字符串测试
+     */
+    extern void testString();
+
+}
+
+}

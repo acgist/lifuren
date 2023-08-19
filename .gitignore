@@ -6,14 +6,11 @@
 *.out
 *.log
 
-package-lock.json
-
 .vscode
 
 logs
 build
 target
-node_modules
 
 deps/dlib
 deps/fltk

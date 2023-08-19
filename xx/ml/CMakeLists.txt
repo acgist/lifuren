@@ -1,8 +1,5 @@
 project(lifurenml VERSION 1.0.0 LANGUAGES C CXX)
 
-set(HEADER_DIR src/header/)
-set(SOURCE_DIR src/source/)
-
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
 add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
@@ -25,6 +22,7 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/DLibAll.hpp
     ${HEADER_DIR}/LifurenGG.hpp
+    ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/Visual.hpp
 )
 

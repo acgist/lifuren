@@ -1,16 +1,13 @@
 project(lifurengg VERSION 1.0.0 LANGUAGES C CXX)
 
-set(HEADER_DIR src/header/)
-set(SOURCE_DIR src/source/)
-
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    glog
-    nlohmann_json
+    glog::glog
+    nlohmann_json::nlohmann_json
 )
 
 target_include_directories(
