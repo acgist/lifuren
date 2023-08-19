@@ -10,6 +10,10 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurengg
+    mgl
+    dlib::dlib
+    ${OpenCV_LIBS}
+    ${FLTK_LIBRARIES}
 )
 
 target_include_directories(
@@ -21,6 +25,7 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/DLibAll.hpp
     ${HEADER_DIR}/LifurenGG.hpp
+    ${HEADER_DIR}/Visual.hpp
 )
 
 install(
@@ -37,14 +42,15 @@ install(
 )
 
 if(CMAKE_HOST_WIN32)
-    file(GLOB MATHGL_DLLS "${MathGL2_LIBRARIES_DIRS}/../bin/*.dll")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${DLIB_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${FLTK_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${MATHGL_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-endif()
-
-if(CMAKE_HOST_WIN32)
-    file(GLOB OPENCV_DLLS "${OpenCV_INSTALL_PATH}/x64/vc16/bin/*.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)

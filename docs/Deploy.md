@@ -22,9 +22,32 @@ cmake --build . --config Debug
 # cmake --install . --config Debug
 ```
 
-### 注意事项
+## 依赖下载
 
-* `Windows`中`MathGL`需要删除`zip`/`png`/`jpeg`头文件才能编译通过
+```
+# Linux
+sudo apt install libmgl-dev
+sudo apt install libdlib-dev
+sudo apt install libopencv-dev
+sudo apt install libfltk1.3-dev
+
+# Windows配置环境
+VCPKG_DEFAULT_TRIPLET=x64-windows
+
+# Windows安装依赖
+vcpkg install dlib
+vcpkg install fltk
+vcpkg install glog
+vcpkg install mathgl
+vcpkg install opencv
+vcpkg install nlohmann-json
+
+# Windows导出依赖
+vcpkg export dlib   --zip
+vcpkg export fltk   --zip
+vcpkg export mathgl --zip
+vcpkg export opencv --zip
+```
 
 ## 开发环境
 
@@ -83,4 +106,13 @@ CPU/GPU/CUDA/cuDNN
 
 ```
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
+```
+
+## Git常用命令
+
+```
+# 更新模块
+git submodule update --init --recursive --depth 1
+# 新增模块
+git submodule add https://github.com/git.git deps/git --depth 1
 ```

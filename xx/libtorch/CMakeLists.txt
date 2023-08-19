@@ -41,7 +41,6 @@ install(
 add_definitions(-DC10_USE_GLOG)
 
 if(CMAKE_HOST_WIN32)
-    file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)

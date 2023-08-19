@@ -4,7 +4,6 @@
 #include <filesystem>
 
 #include "glog/logging.h"
-#include "opencv2/core/utils/logger.hpp"
 
 namespace lifuren {
 

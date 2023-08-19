@@ -16,6 +16,7 @@ target
 node_modules
 
 deps/dlib
+deps/fltk
 deps/glog
 deps/json
 deps/mathgl

@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.21.0)
 
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
-# -DCMAKE_BUILD_TYPE=Debug|Release
 SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
+# https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
+# https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
 set(CMAKE_C_STANDARD   17)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -34,14 +35,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 
 set(
-    CMAKE_PREFIX_PATH
-    ${CMAKE_PREFIX_PATH}
-    deps/mathgl
-    deps/opencv
-    deps/libtorch
-)
-
-set(
     CMAKE_INSTALL_PREFIX
     ${CMAKE_SOURCE_DIR}/target/
 )
@@ -51,23 +44,49 @@ set(
     ${CMAKE_INSTALL_PREFIX}/include/
 )
 
-link_directories(
-    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    deps/mathgl/lib
-    deps/opencv/x64/vc16/lib
-    deps/libtorch/lib
-)
+if(CMAKE_HOST_WIN32)
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        deps/dlib
+        deps/fltk
+        deps/mathgl
+        deps/opencv
+        deps/libtorch
+    )
 
-include_directories(
-    deps/mathgl/include
-    deps/opencv/include
-    deps/libtorch/include
-    deps/libtorch/include/torch/csrc/api/include
-)
+    include_directories(
+        deps/dlib/include
+        deps/fltk/include
+        deps/mathgl/include
+        deps/opencv/include
+        deps/libtorch/include
+        deps/libtorch/include/torch/csrc/api/include
+    )
 
+    set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
+endif()
+
+
+find_package(dlib    REQUIRED)
+find_package(FLTK    REQUIRED)
 find_package(Torch   REQUIRED)
 find_package(OpenCV  REQUIRED)
 find_package(MathGL2 REQUIRED)
+
+if(CMAKE_HOST_WIN32)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+        file(GLOB DLIB_DLLS   "deps/dlib/debug/bin/*.dll")
+        file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
+        file(GLOB MATHGL_DLLS "deps/mathgl/debug/bin/*.dll")
+    else()
+        file(GLOB DLIB_DLLS   "deps/dlib/bin/*.dll")
+        file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
+        file(GLOB MATHGL_DLLS "deps/mathgl/bin/*.dll")
+    endif()
+    file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
+    file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
+endif()
 
 add_subdirectory(deps)
 add_subdirectory(gg)
