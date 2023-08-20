@@ -37,9 +37,9 @@ jobs:
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip
           ################ config
-          # sudo apt install libgif-dev
-          # sudo apt install libhdf5-dev
-          # sudo apt install libhpdf-dev
+          sudo apt install libgif-dev
+          sudo apt install libhdf5-dev
+          sudo apt install libhpdf-dev
           sudo mkdir -p /usr/lib/cgi-bin
           sudo ln -sf /usr/bin/mgl.cgi       /usr/lib/cgi-bin/mgl.cgi
           sudo ln -sf /usr/lib/libdf.so.0    /usr/lib/libdf.so
