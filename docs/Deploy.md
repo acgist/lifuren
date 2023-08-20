@@ -26,6 +26,8 @@ cmake --build . --config Debug
 
 ```
 # Linux
+sudo apt install udav
+sudo apt install mathgl
 sudo apt install libmgl-dev
 sudo apt install libdlib-dev
 sudo apt install libopencv-dev
