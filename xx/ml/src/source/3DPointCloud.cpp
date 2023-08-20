@@ -1,5 +1,7 @@
 #include "../header/DLibAll.hpp"
 
+#ifdef WIN32
+
 #include <cmath>
 
 #include "dlib/gui_widgets.h"
@@ -39,3 +41,5 @@ namespace ml {
 }
 
 }
+
+#endif
