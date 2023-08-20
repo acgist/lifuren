@@ -26,14 +26,10 @@ cmake --build . --config Debug
 
 ```
 # Linux
-sudo apt install udav
-sudo apt install mathgl
 sudo apt install libmgl-dev
-sudo apt install libx11-dev
 sudo apt install libdlib-dev
 sudo apt install libopencv-dev
 sudo apt install libfltk1.3-dev
-sudo apt install libwxgtk3.0-gtk3-dev
 
 # Windows配置环境
 VCPKG_DEFAULT_TRIPLET=x64-windows
