@@ -1,17 +1,10 @@
 #pragma once
 
 #include "GLog.hpp"
-#include "Json.hpp"
+#include "Mark.hpp"
 #include "String.hpp"
 
 namespace lifuren {
-
-namespace ml {
-
-    /**
-     * 日志测试
-     */
-    extern void testGLog(int argc, char const *argv[]);
 
     /**
      * JSON测试
@@ -19,10 +12,13 @@ namespace ml {
     extern void testJson();
 
     /**
+     * Mark测试
+     */
+    extern void testMark();
+
+    /**
      * 字符串测试
      */
     extern void testString();
-
-}
 
 }

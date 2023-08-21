@@ -18,7 +18,8 @@ target_include_directories(
 set(
     HEADER_FILES
     ${HEADER_DIR}/GLog.hpp
-    ${HEADER_DIR}/Json.hpp
+    ${HEADER_DIR}/Label.hpp
+    ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/String.hpp
 )
 

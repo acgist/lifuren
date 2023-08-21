@@ -3,13 +3,13 @@
 #include "header/OpenCV.hpp"
 
 int main(int argc, char const* argv[]) {
-    lifuren::ml::offOpenCVLogin();
-    lifuren::gg::init(argc, argv);
-    // lifuren::ml::testGLog(argc, argv);
-    // lifuren::ml::testJson();
-    // lifuren::ml::testString();
-    // lifuren::ml::test3DPointCloud();
-    // lifuren::ml::testBase64Encoder();
-    lifuren::ml::testLinearRegression();
+    lifuren::init(argc, argv);
+    lifuren::offOpenCVLogin();
+    // lifuren::testJson();
+    // lifuren::testMark();
+    // lifuren::testString();
+    // lifuren::test3DPointCloud();
+    // lifuren::testBase64Encoder();
+    // lifuren::testLinearRegression();
     return 0;
 }

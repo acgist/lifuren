@@ -1,13 +1,10 @@
 #pragma once
 
 #include "GLog.hpp"
-#include "Json.hpp"
 #include "String.hpp"
 #include "Visual.hpp"
 
 namespace lifuren {
-
-namespace ml {
 
     /**
      * http://dlib.net/3d_point_cloud_ex.cpp.html
@@ -25,7 +22,5 @@ namespace ml {
     extern void testBase64Encoder();
 
     extern void testLinearRegression();
-
-}
 
 }

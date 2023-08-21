@@ -4,26 +4,14 @@
 
 namespace lifuren {
 
-namespace gg {
-
-    /**
-     * 占位标记
-     */
-    const static std::string FLAG        = "{}";
-    /**
-     * 占位标记长度
-     */
-    const static int         FLAG_LENGTH = 2;
-
     /**
      * 字符串格式化
      * 
      * @param format 模板
+     * @param flag   占位标记
      * @param args   参数
      * @param length 参数长度
      */
-    extern void format(std::string& format, const std::string* args, int length);
-
-}
+    extern void format(std::string& format, std::string& flag, const std::string* args, int length);
 
 }

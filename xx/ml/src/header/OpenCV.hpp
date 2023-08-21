@@ -4,8 +4,6 @@
 
 namespace lifuren {
 
-namespace ml {
-
     /**
      * 关闭日志
      */
@@ -14,7 +12,5 @@ namespace ml {
         cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_FATAL);
         cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
     }
-
-}
     
 }

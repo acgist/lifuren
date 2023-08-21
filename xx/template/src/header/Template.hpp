@@ -7,9 +7,9 @@
  */
 namespace lifuren {
 
-/**
- * 模板输出
- */
-extern void lifuren();
+    /**
+     * 模板输出
+     */
+    extern void lifuren();
 
 }

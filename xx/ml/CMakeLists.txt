@@ -11,6 +11,7 @@ target_link_libraries(
     dlib::dlib
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
+    nlohmann_json::nlohmann_json
 )
 
 target_include_directories(

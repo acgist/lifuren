@@ -7,8 +7,6 @@
 
 namespace lifuren {
 
-namespace gg {
-
     /**
      * 加载GLog
      * 
@@ -21,7 +19,5 @@ namespace gg {
      * 关闭GLog
      */
     extern void shutdown();
-
-}
 
 }
