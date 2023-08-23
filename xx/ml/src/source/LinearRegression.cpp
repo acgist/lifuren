@@ -6,6 +6,8 @@
 #include "dlib/svm.h"
 #include "dlib/matrix.h"
 
+namespace lifuren {
+
 typedef dlib::matrix<double, 1, 1> sample_type;
 typedef dlib::radial_basis_kernel<sample_type> kernel_type;
 
@@ -21,10 +23,12 @@ void setTrainDataSet(std::vector<dlib::matrix<double>>& x, std::vector<double>& 
     }
 }
 
+}
+
 void lifuren::testLinearRegression() {
     std::vector<dlib::matrix<double>> x;
     std::vector<double> y;
-    setTrainDataSet(x, y);
+    lifuren::setTrainDataSet(x, y);
     dlib::krr_trainer<kernel_type> trainer;
     trainer.set_kernel(kernel_type());
     dlib::decision_function<kernel_type> predict = trainer.train(x, y);
