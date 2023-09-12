@@ -25,31 +25,31 @@ cmake --build . --config Debug
 ## 依赖下载
 
 ```
-# Linux
-sudo apt install udav
-sudo apt install mathgl
-sudo apt install libmgl-dev
-sudo apt install libdlib-dev
+# Linux安装依赖
+
+sudo apt install libmlpack-dev
 sudo apt install libopencv-dev
 sudo apt install libfltk1.3-dev
 
-# Windows配置环境
+# Windows配置环境变量
+
 VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # Windows安装依赖
-vcpkg install dlib
+
 vcpkg install fltk
-vcpkg install glog
-vcpkg install mathgl
-vcpkg install opencv
-vcpkg install nlohmann-json
+vcpkg install mlpack
 
 # Windows导出依赖
-vcpkg export dlib   --zip
+
 vcpkg export fltk   --zip
-vcpkg export mathgl --zip
-vcpkg export opencv --zip
+vcpkg export mlpack --zip
 ```
+
+> `Windows`开发时`OpenCV`和`LibTorch`直接官网下载
+
+* https://opencv.org/releases/
+* https://pytorch.org/get-started/locally/
 
 ## 开发环境
 

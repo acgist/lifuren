@@ -1,4 +1,4 @@
-project(lifurengg VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurenboot VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
@@ -20,7 +20,6 @@ set(
     ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Label.hpp
     ${HEADER_DIR}/Mark.hpp
-    ${HEADER_DIR}/String.hpp
 )
 
 install(

@@ -12,10 +12,9 @@ logs
 build
 target
 
-deps/dlib
 deps/fltk
 deps/glog
 deps/json
-deps/mathgl
+deps/mlpack
 deps/opencv
 deps/libtorch

@@ -23,30 +23,15 @@ jobs:
           cd ./json
           git checkout v3.11.2
           cd ..
-          ################ dlib
-          sudo apt install libdlib-dev
           ################ fltk
           sudo apt install libfltk1.3-dev
-          ################ mathgl
-          sudo apt install udav
-          sudo apt install mathgl
-          sudo apt install libmgl-dev
+          ################ mlpack
+          sudo apt install libmlpack-dev
           ################ opencv
           sudo apt install libopencv-dev
           ################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip
-          ################ config
-          sudo apt install libgif-dev
-          sudo apt install libhdf5-dev
-          sudo apt install libhpdf-dev
-          sudo mkdir -p /usr/lib/cgi-bin
-          sudo ln -sf /usr/bin/mgl.cgi       /usr/lib/cgi-bin/mgl.cgi
-          sudo ln -sf /usr/lib/libdf.so.0    /usr/lib/libdf.so
-          sudo ln -sf /usr/lib/libmfhdf.so.0 /usr/lib/libmfhdf.so
-          sudo ln -sf /usr/lib/x86_64-linux-gnu/libblas.so.3    /usr/lib/x86_64-linux-gnu/libblas.so
-          sudo ln -sf /usr/lib/x86_64-linux-gnu/liblapack.so.3  /usr/lib/x86_64-linux-gnu/liblapack.so
-          sudo ln -sf /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 /usr/lib/x86_64-linux-gnu/libsqlite3.so
       - name: Deploy lifuren
         run: |
           mkdir build

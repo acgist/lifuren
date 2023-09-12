@@ -1,3 +1,3 @@
 add_subdirectory(ml)
-add_subdirectory(libtorch)
+add_subdirectory(yuzan)
 add_subdirectory(template)

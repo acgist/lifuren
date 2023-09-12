@@ -1,4 +1,4 @@
-#include "../header/LifurenGG.hpp"
+#include "../header/Boot.hpp"
 
 void lifuren::testJson() {
     nlohmann::json json = nlohmann::json::parse(R"(
@@ -26,12 +26,4 @@ void lifuren::testMark() {
     Mark mark;
     mark.file = "lifuren.json";
     LOG(INFO) << mark.toJSON();
-}
-
-void lifuren::testString() {
-    std::string format = "li{}ren{}";
-    std::string args[] = { "fu", "!!" };
-    std::string flag   = "{}";
-    lifuren::format(format, flag, args, 2);
-    LOG(INFO) << format;
 }

@@ -6,12 +6,15 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    lifurengg
-    mgl
-    dlib::dlib
+    lifurenboot
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
-    nlohmann_json::nlohmann_json
+    ${TORCH_LIBRARIES}
+    # LAPACK::LAPACK
+    # OpenBLAS::OpenBLAS
+    ${ARMADILLO_LIBRARY}
+    ${LAPACK_lapack_LIBRARY}
+    ${LAPACK_openblas_LIBRARY}
 )
 
 target_include_directories(
@@ -21,10 +24,11 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/DLibAll.hpp
-    ${HEADER_DIR}/LifurenGG.hpp
+    ${HEADER_DIR}/Boot.hpp
+    ${HEADER_DIR}/Fltk.hpp
+    ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/OpenCV.hpp
-    ${HEADER_DIR}/Visual.hpp
+    ${HEADER_DIR}/LibTorch.hpp
 )
 
 install(
@@ -40,16 +44,19 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 
+# 使用GLOG日志
+add_definitions(-DC10_USE_GLOG)
+
 if(CMAKE_HOST_WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${DLIB_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${FLTK_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${MATHGL_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+        ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${MLPACK_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)

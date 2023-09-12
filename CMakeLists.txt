@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21.0)
 
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
-SET(CMAKE_BUILD_TYPE Debug)
+# SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
@@ -18,10 +18,14 @@ if(CMAKE_HOST_UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c++17 -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
 elseif(CMAKE_HOST_WIN32)
-    if(!MSVC)
+    if(MSVC)
+        # /wd4804 = 忽略告警
+        # /wd4819 = 忽略告警
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4804 /wd4819")
+        add_compile_options("/Zc:__cplusplus")
+    else()
         message("需要安装MSVC")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4819")
 else()
     message("不支持的系统：${CMAKE_HOST_SYSTEM_NAME}")
 endif()
@@ -62,43 +66,37 @@ if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
         ${CMAKE_PREFIX_PATH}
-        deps/dlib
         deps/fltk
-        deps/mathgl
+        deps/mlpack
         deps/opencv
     )
 
     include_directories(
-        deps/dlib/include
         deps/fltk/include
-        deps/mathgl/include
+        deps/mlpack/include
         deps/opencv/include
     )
 
     set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
-endif()
-
-if(CMAKE_HOST_WIN32)
+    
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
-        file(GLOB DLIB_DLLS   "deps/dlib/debug/bin/*.dll")
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
-        file(GLOB MATHGL_DLLS "deps/mathgl/debug/bin/*.dll")
+        file(GLOB MLPACK_DLLS "deps/mlpack/debug/bin/*.dll")
     else()
-        file(GLOB DLIB_DLLS   "deps/dlib/bin/*.dll")
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
-        file(GLOB MATHGL_DLLS "deps/mathgl/bin/*.dll")
+        file(GLOB MLPACK_DLLS "deps/mlpack/bin/*.dll")
     endif()
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
     file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
 endif()
 
-find_package(dlib    REQUIRED)
-find_package(FLTK    REQUIRED)
-find_package(Torch   REQUIRED)
-find_package(OpenCV  REQUIRED)
-find_package(MathGL2 REQUIRED)
+find_package(FLTK      REQUIRED)
+find_package(Torch     REQUIRED)
+find_package(OpenCV    REQUIRED)
+find_package(LAPACK    REQUIRED)
+find_package(Armadillo REQUIRED)
 
 add_subdirectory(deps)
-add_subdirectory(gg)
-add_subdirectory(hh)
-add_subdirectory(xx)
+add_subdirectory(boot)
+add_subdirectory(ego)
+add_subdirectory(launcher)

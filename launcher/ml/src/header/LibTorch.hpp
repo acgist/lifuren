@@ -12,11 +12,6 @@ extern void testPlus();
  */
 extern void testLinear();
 
-/**
- * https://blog.csdn.net/qq_44886601/article/details/127284028
- */
-extern void testLogic();
-
 extern void testReLU();
 
 extern void testTanh();
