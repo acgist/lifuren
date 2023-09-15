@@ -24,10 +24,21 @@ jobs:
           git checkout v3.11.2
           cd ..
           ################ fltk
+          # sudo apt install libfltk1.3-dev=1.3.8-4
           sudo apt install libfltk1.3-dev
           ################ mlpack
-          sudo apt install libmlpack-dev
+          # sudo apt install libmlpack-dev
+          sudo apt install libstb-dev libcereal-dev libarmadillo-dev libensmallen-dev
+          git clone https://github.com/mlpack/mlpack.git
+          checkout 4.2.0
+          cd mlpack
+          mkdir build
+          cd build
+          cmake ..
+          sudo make -j 8 install
+          cd ../../
           ################ opencv
+          # sudo apt install libopencv-dev=4.5.4+dfsg-9ubuntu4
           sudo apt install libopencv-dev
           ################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip

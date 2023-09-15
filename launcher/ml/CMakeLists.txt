@@ -8,11 +8,11 @@ target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurenboot
     LAPACK::LAPACK
-    OpenBLAS::OpenBLAS
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
     ${TORCH_LIBRARIES}
     ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
 )
 
 target_include_directories(

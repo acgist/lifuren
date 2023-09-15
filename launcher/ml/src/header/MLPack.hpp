@@ -1,7 +1,11 @@
 #pragma once
 
 #include "GLog.hpp"
+#ifdef _WIN32
 #include "mlpack/mlpack.hpp"
+#elif
+#include "mlpack.hpp"
+#endif
 
 namespace lifuren {
 
