@@ -30,7 +30,7 @@ jobs:
           # sudo apt install libmlpack-dev
           sudo apt install libstb-dev libcereal-dev libarmadillo-dev libensmallen-dev
           git clone https://github.com/mlpack/mlpack.git
-          checkout 4.2.0
+          git checkout 4.2.0
           cd mlpack
           mkdir build
           cd build
