@@ -3,7 +3,7 @@
 #include "GLog.hpp"
 #ifdef _WIN32
 #include "mlpack/mlpack.hpp"
-#elif
+#else
 #include "mlpack.hpp"
 #endif
 
