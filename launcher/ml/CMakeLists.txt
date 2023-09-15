@@ -7,14 +7,12 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurenboot
+    LAPACK::LAPACK
+    OpenBLAS::OpenBLAS
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
     ${TORCH_LIBRARIES}
-    # LAPACK::LAPACK
-    # OpenBLAS::OpenBLAS
     ${ARMADILLO_LIBRARY}
-    ${LAPACK_lapack_LIBRARY}
-    ${LAPACK_openblas_LIBRARY}
 )
 
 target_include_directories(

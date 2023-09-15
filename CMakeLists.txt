@@ -94,6 +94,7 @@ find_package(FLTK      REQUIRED)
 find_package(Torch     REQUIRED)
 find_package(OpenCV    REQUIRED)
 find_package(LAPACK    REQUIRED)
+find_package(OpenBLAS  REQUIRED)
 find_package(Armadillo REQUIRED)
 
 add_subdirectory(deps)
