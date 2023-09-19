@@ -19,11 +19,11 @@ public:
     std::string hash;
     // 标签数组
     std::vector<std::string> labels;
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::Mark, file, hash, labels);
 public:
-    virtual ~Mark() {
-    }
-
-public:
+    Mark();
+    virtual ~Mark();
     /**
      * @return JSON
      */
@@ -35,6 +35,10 @@ public:
  * 文件标记
  */
 class MarkFile : public Mark {
+
+public:
+    MarkFile();
+    virtual ~MarkFile();
 
 };
 
@@ -48,8 +52,11 @@ public:
     std::string name;
     // 文本内容
     std::string text;
-
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::MarkText, name, text, lifuren::Mark::file, lifuren::Mark::hash, lifuren::Mark::labels);
 public:
+    MarkText();
+    virtual ~MarkText();
     /**
      * @return JSON
      */

@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "nlohmann/json.hpp"
+
 namespace lifuren {
 
 /**
@@ -14,9 +16,19 @@ class Label {
 public:
     // 标签名称
     std::string name;
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::Label, name);
 public:
-    virtual ~Label() {
-    }
+    Label();
+    virtual ~Label();
+    /**
+     * @param json JSON
+     */
+    Label(const std::string& json);
+    /**
+     * @return JSON
+     */
+    virtual std::string toJSON();
 
 };
 
@@ -30,6 +42,19 @@ public:
     std::vector<std::string> labels;
     // 下级标签
     std::map<std::string, LabelConfig> children;
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::LabelConfig, lifuren::Label::name, labels, children);
+public:
+    LabelConfig();
+    virtual ~LabelConfig();
+    /**
+     * @param json JSON
+     */
+    LabelConfig(const std::string& json);
+    /**
+     * @return JSON
+     */
+    std::string toJSON() override;
 
 };
 
@@ -45,6 +70,19 @@ public:
     int segmentSize;
     // 分词规则
     std::vector<int> segmentRule;
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::LabelSegment, lifuren::Label::name, fontSize, segmentSize, segmentRule);
+public:
+    LabelSegment();
+    virtual ~LabelSegment();
+    /**
+     * @param json JSON
+     */
+    LabelSegment(const std::string& json);
+    /**
+     * @return JSON
+     */
+    std::string toJSON() override;
 
 };
 

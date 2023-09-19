@@ -22,6 +22,7 @@ elseif(CMAKE_HOST_WIN32)
         # /wd4804 = 忽略告警
         # /wd4819 = 忽略告警
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4804 /wd4819")
+        add_compile_options("/utf-8")
         add_compile_options("/Zc:__cplusplus")
     else()
         message("需要安装MSVC")

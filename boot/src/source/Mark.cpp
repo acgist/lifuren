@@ -1,27 +1,29 @@
 #include "../header/Mark.hpp"
 
+lifuren::Mark::Mark() {
+}
+
+lifuren::Mark::~Mark() {
+}
+
 std::string lifuren::Mark::toJSON() {
-    nlohmann::json mark   = nlohmann::json::object();
-    nlohmann::json labels = nlohmann::json::array();
-    for(std::vector<std::string>::iterator iterator = this->labels.begin(); iterator != this->labels.end(); iterator++) {
-        labels.push_back(*iterator);
-    }
-    mark["file"] = this->file;
-    mark["hash"] = this->hash;
-    mark["labels"] = labels;
-    return mark.dump();
+    const nlohmann::json json = *this;
+    return json.dump();
+}
+
+lifuren::MarkFile::MarkFile() {
+}
+
+lifuren::MarkFile::~MarkFile() {
+}
+
+lifuren::MarkText::MarkText() {
+}
+
+lifuren::MarkText::~MarkText() {
 }
 
 std::string lifuren::MarkText::toJSON() {
-    nlohmann::json mark   = nlohmann::json::object();
-    nlohmann::json labels = nlohmann::json::array();
-    for(std::vector<std::string>::iterator iterator = this->labels.begin(); iterator != this->labels.end(); iterator++) {
-        labels.push_back(*iterator);
-    }
-    mark["file"] = this->file;
-    mark["hash"] = this->hash;
-    mark["name"] = this->name;
-    mark["text"] = this->text;
-    mark["labels"] = labels;
-    return mark.dump();
+    const nlohmann::json json = *this;
+    return json.dump();
 }

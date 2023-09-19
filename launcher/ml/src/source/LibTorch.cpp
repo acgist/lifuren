@@ -26,7 +26,7 @@ void lifuren::testLinear() {
     model->to(device);
     // 优化算法：梯度下降
     torch::optim::SGD optimizer(model->parameters(), torch::optim::SGDOptions(learningRate));
-    LOG(INFO) << "开始训练.";
+    LOG(INFO) << "开始训练";
     for (size_t epoch = 0; epoch < numEpochs; ++epoch) {
         at::Tensor output = model->forward(xTrain);
         // 损失函数
