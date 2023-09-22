@@ -25,6 +25,10 @@ public:
     Mark();
     virtual ~Mark();
     /**
+     * @param json JSON
+     */
+    Mark(const std::string& json);
+    /**
      * @return JSON
      */
     virtual std::string toJSON();
@@ -39,6 +43,10 @@ class MarkFile : public Mark {
 public:
     MarkFile();
     virtual ~MarkFile();
+    /**
+     * @param json JSON
+     */
+    MarkFile(const std::string& json);
 
 };
 
@@ -58,9 +66,13 @@ public:
     MarkText();
     virtual ~MarkText();
     /**
+     * @param json JSON
+     */
+    MarkText(const std::string& json);
+    /**
      * @return JSON
      */
-    std::string toJSON() override;
+    virtual std::string toJSON() override;
 
 };
 

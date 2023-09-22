@@ -10,7 +10,6 @@
 
 logs
 build
-target
 
 deps/fltk
 deps/glog

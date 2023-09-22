@@ -54,7 +54,7 @@ public:
     /**
      * @return JSON
      */
-    std::string toJSON() override;
+    virtual std::string toJSON() override;
 
 };
 
@@ -82,7 +82,7 @@ public:
     /**
      * @return JSON
      */
-    std::string toJSON() override;
+    virtual std::string toJSON() override;
 
 };
 

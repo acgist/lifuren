@@ -47,6 +47,7 @@ void lifuren::testReLU() {
     LOG(INFO) << relu;
     at::Tensor input  = torch::randint(0, 10, {1, 1, 4});
     at::Tensor output = relu->forward(input);
+    // relu(input); // TODO：测试
     LOG(INFO) << input;
     LOG(INFO) << output;
 }

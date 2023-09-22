@@ -9,10 +9,10 @@ int main(int argc, char const* argv[]) {
     lifuren::shutdownOpenCVLogger();
     LOG(INFO) << "测试";
     // lifuren::testJson();
-    lifuren::testMark();
-    lifuren::testLabel();
+    // lifuren::testMark();
+    // lifuren::testLabel();
     // lifuren::matrix();
-    // lifuren::linearRegression();
+    lifuren::linearRegression();
     // lifuren::testPlus();
     // lifuren::testLinear();
     // lifuren::testReLU();

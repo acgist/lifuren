@@ -40,6 +40,8 @@ void lifuren::testMark() {
     markText.labels.push_back("acgist");
     markText.labels.push_back("lifuren");
     LOG(INFO) << markText.toJSON();
+    lifuren::Mark* markPtr = new lifuren::MarkFile();
+    delete markPtr;
 }
 
 void lifuren::testLabel() {
