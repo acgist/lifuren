@@ -46,6 +46,12 @@
 
 ## 生成网络算法
 
+## 各种模型
+
+* ResNet（残差神经网络）：图片分类
+* LSTM（长短期记忆网络）：语音识别、连续手写识别
+* HMM（隐马尔可夫模型）：自然语言处理、语音识别、模式识别
+
 ## 学习资料
 
 * https://scikit-learn.org/stable/modules/classes.html

@@ -27,7 +27,3 @@
 * RMSProp
 * ADADELTA
 * SparseAdam
-
-## 已有模型
-
-* ResNet（残差神经网络）：图片分类
