@@ -6,23 +6,27 @@
 
 int main(int argc, char const* argv[]) {
     lifuren::init(argc, argv);
-    lifuren::shutdownOpenCVLogger();
     LOG(INFO) << "测试";
-    // lifuren::testJson();
-    // lifuren::testMark();
-    // lifuren::testLabel();
-    // lifuren::matrix();
-    // lifuren::linearRegression();
-    // lifuren::testPlus();
-    // lifuren::testLinear();
-    // lifuren::testReLU();
-    // lifuren::testTanh();
+    // lifuren
+    lifuren::testJson();
+    lifuren::testMark();
+    lifuren::testLabel();
+    // mlpack
+    lifuren::testMLPackMatrix();
+    lifuren::testMLPackLinearRegression();
+    // opencv
+    // lifuren::shutdownOpenCVLogger();
+    // libtorch
+    lifuren::testMatrix();
+    lifuren::testReLU();
+    lifuren::testTanh();
+    lifuren::testLinearRegression();
     LOG(INFO) << "完成";
     lifuren::LifurenWindow* windowPtr = new lifuren::LifurenWindow(200, 100, "李夫人");
     windowPtr->init();
     windowPtr->show();
     const int ret = Fl::run();
     lifuren::shutdown();
-    // return 0;
-    return ret;
+    // return ret;
+    return 0;
 }

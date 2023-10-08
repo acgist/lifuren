@@ -1,6 +1,6 @@
 #include "../header/MLPack.hpp"
 
-void lifuren::linearRegression() {
+void lifuren::testMLPackLinearRegression() {
     try {
         arma::mat    xTrain = arma::randu<arma::mat>(100, 5);
         arma::rowvec yTrain = arma::randu<arma::rowvec>(5);
@@ -14,6 +14,5 @@ void lifuren::linearRegression() {
         LOG(INFO) << yPred;
     } catch(const std::exception& e) {
         LOG(ERROR) << e.what();
-    }
-    
+    }   
 }

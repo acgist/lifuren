@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.21.0)
 
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
+#  -D CMAKE_BUILD_TYPE=Debug|Release
 # SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
@@ -11,16 +12,17 @@ set(CMAKE_C_STANDARD   17)
 set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_HOST_UNIX)
-    set(CMAKE_C_FLAGS           "-Wall -Wextra")
-    set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c17 -O0 -g")
-    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} -std=c17 -O3")
-    set(CMAKE_CXX_FLAGS         "-Wall -Wextra")
-    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -Wattributes -Wunused-parameter -std=c++17 -O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3")
+    set(CMAKE_C_FLAGS           "-std=c17 -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter")
+    set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -Wunused-variable -Wunused-parameter -std=c17 -O0 -g")
+    set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} -Wunused-variable -Wunused-parameter -std=c17 -O3")
+    set(CMAKE_CXX_FLAGS         "-std=c++17 -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -Wunused-variable -Wunused-parameter -std=c++17 -O0 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wunused-variable -Wunused-parameter -std=c++17 -O3")
 elseif(CMAKE_HOST_WIN32)
     if(MSVC)
         # /wd4804 = 忽略告警
         # /wd4819 = 忽略告警
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4804 /wd4819")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4804 /wd4819")
         add_compile_options("/utf-8")
         add_compile_options("/Zc:__cplusplus")

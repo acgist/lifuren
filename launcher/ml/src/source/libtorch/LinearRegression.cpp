@@ -1,20 +1,6 @@
-#include "../header/LibTorch.hpp"
+#include "../../header/LibTorch.hpp"
 
-void lifuren::testPlus() {
-    const torch::Tensor a = torch::randn({ 3, 2 });
-    const torch::Tensor b = torch::randn({ 3, 2 });
-    LOG(INFO) << a;
-    LOG(INFO) << b;
-    LOG(INFO) << (a + b);
-    // torch::Tensor output = torch::randn({ 3, 2 });
-    // LOG(INFO) << output;
-    // torch::kCPU;
-    // torch::kCUDA;
-    // LOG(INFO) << "是否支持CUDA："  << torch::cuda::is_available();
-    // LOG(INFO) << "是否支持CUDNN：" << torch::cuda::cudnn_is_available();
-}
-
-void lifuren::testLinear() {
+void lifuren::testLinearRegression() {
     const size_t numEpochs    = 60;
     const double learningRate = 0.001;
     torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
@@ -40,24 +26,4 @@ void lifuren::testLinear() {
         }
     }
     LOG(INFO) << "训练结束";
-}
-
-void lifuren::testReLU() {
-    torch::nn::ReLU relu;
-    LOG(INFO) << relu;
-    at::Tensor input  = torch::randint(0, 10, {1, 1, 4});
-    at::Tensor output = relu->forward(input);
-    // relu(input); // TODO：测试
-    LOG(INFO) << input;
-    LOG(INFO) << output;
-}
-
-void lifuren::testTanh() {
-    torch::nn::Tanh tanh;
-    LOG(INFO) << tanh;
-    at::Tensor tensor;
-    at::Tensor input  = torch::randint(0, 10, {1, 1, 4});
-    at::Tensor output = tanh->forward(input);
-    LOG(INFO) << input;
-    LOG(INFO) << output;
 }

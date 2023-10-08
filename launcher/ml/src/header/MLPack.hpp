@@ -12,11 +12,11 @@ namespace lifuren {
 /**
  * 矩阵
  */
-extern void matrix();
+extern void testMLPackMatrix();
 
 /**
  * 线性回归
  */
-extern void linearRegression();
+extern void testMLPackLinearRegression();
 
 }

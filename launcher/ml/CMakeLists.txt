@@ -2,7 +2,15 @@ project(lifurenml VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
+file(
+    GLOB SUB_SOURCE_FILES
+    "src/source/fltk/*.cpp"
+    "src/source/opencv/*.cpp"
+    "src/source/mlpack/*.cpp"
+    "src/source/libtorch/*.cpp"
+)
+
+add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
@@ -24,8 +32,8 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/Boot.hpp
     ${HEADER_DIR}/Fltk.hpp
-    ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/OpenCV.hpp
+    ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/LibTorch.hpp
 )
 
