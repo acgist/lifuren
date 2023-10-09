@@ -8,24 +8,24 @@ int main(int argc, char const* argv[]) {
     lifuren::init(argc, argv);
     LOG(INFO) << "测试";
     // lifuren
-    lifuren::testJson();
-    lifuren::testMark();
-    lifuren::testLabel();
-    // mlpack
-    lifuren::testMLPackMatrix();
-    lifuren::testMLPackLinearRegression();
+    // lifuren::testJson();
+    // lifuren::testMark();
+    // lifuren::testLabel();
     // opencv
     // lifuren::shutdownOpenCVLogger();
+    // mlpack
+    lifuren::testMLPackMatrix();
+    // lifuren::testMLPackLinearRegression();
     // libtorch
-    lifuren::testMatrix();
-    lifuren::testReLU();
-    lifuren::testTanh();
-    lifuren::testLinearRegression();
+    // lifuren::testMatrix();
+    // lifuren::testReLU();
+    // lifuren::testTanh();
+    // lifuren::testLinearRegression();
     LOG(INFO) << "完成";
-    lifuren::LifurenWindow* windowPtr = new lifuren::LifurenWindow(200, 100, "李夫人");
-    windowPtr->init();
-    windowPtr->show();
-    const int ret = Fl::run();
+    // lifuren::LifurenWindow* windowPtr = new lifuren::LifurenWindow(200, 100, "李夫人");
+    // windowPtr->init();
+    // windowPtr->show();
+    // const int ret = Fl::run();
     lifuren::shutdown();
     // return ret;
     return 0;

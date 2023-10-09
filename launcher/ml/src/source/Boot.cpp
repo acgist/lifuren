@@ -57,7 +57,7 @@ void lifuren::testLabel() {
     labelSegment.name = "segment";
     LOG(INFO) << labelSegment.toJSON();
     lifuren::LabelSegment labelJson(R"(
-        {"fontSize":0,"lifuren::Label::name":"segment","segmentRule":[],"segmentSize":0}
+        {"fontSize":0,"name":"segment","segmentRule":[],"segmentSize":0}
     )");
     LOG(INFO) << labelJson.name;
     LOG(INFO) << labelJson.fontSize;

@@ -61,7 +61,7 @@ public:
     // 文本内容
     std::string text;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::MarkText, name, text, lifuren::Mark::file, lifuren::Mark::hash, lifuren::Mark::labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::MarkText, name, text, file, hash, labels);
 public:
     MarkText();
     virtual ~MarkText();
