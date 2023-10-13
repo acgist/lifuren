@@ -25,8 +25,13 @@ extern void testMLPackMatrix();
 extern void testMLPackLinearRegression();
 
 /**
- * 逻辑回归
+ * 逻辑回归（二分类问题）
  */
 extern void testMLPackLogisticRegression();
+
+/**
+ * Softmax多分类问题
+ */
+extern void testMLPackSoftmaxRegression();
 
 }

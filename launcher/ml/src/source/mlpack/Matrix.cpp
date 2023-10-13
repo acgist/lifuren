@@ -238,6 +238,28 @@ void testInit() {
     LOG(INFO) << std::endl << mat.tail_rows(2) << std::endl;
 }
 
+void testEquals() {
+    arma::mat source = {
+        { 1, 2, 3, 4 },
+        { 1, 2, 3, 4 },
+        { 1, 2, 3, 4 },
+    };
+    arma::mat target = {
+        { 1, 2, 3, 4 },
+        { 1, 2, 1, 4 },
+        { 1, 2, 3, 4 },
+    };
+    LOG(INFO) << std::endl << source << std::endl;
+    LOG(INFO) << std::endl << target << std::endl;
+    double accu = arma::accu(source == target);
+    LOG(INFO) << std::endl << (source == target) << std::endl;
+    LOG(INFO) << std::endl << arma::sum(source) << std::endl;
+    LOG(INFO) << std::endl << arma::accu(source) << std::endl;
+    LOG(INFO) << std::endl << arma::accu(target) << std::endl;
+    LOG(INFO) << std::endl << arma::affmul(source, target) << std::endl;
+    LOG(INFO) << accu << std::endl;
+}
+
 void lifuren::testMLPackMatrix() {
     // testPlus();
     // testFill();
@@ -250,5 +272,6 @@ void lifuren::testMLPackMatrix() {
     // testSvd();
     // testResize();
     // testShuffle();
-    testInit();
+    // testInit();
+    testEquals();
 }

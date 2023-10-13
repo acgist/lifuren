@@ -17,7 +17,8 @@ int main(int argc, char const* argv[]) {
     // lifuren::testLoadFile();
     // lifuren::testMLPackMatrix();
     // lifuren::testMLPackLinearRegression();
-    lifuren::testMLPackLogisticRegression();
+    // lifuren::testMLPackLogisticRegression();
+    lifuren::testMLPackSoftmaxRegression();
     // libtorch
     // lifuren::testMatrix();
     // lifuren::testReLU();

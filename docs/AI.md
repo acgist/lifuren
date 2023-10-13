@@ -64,6 +64,13 @@
 
 常用优化算法：SGD/LBFGS
 
+#### Softmax逻辑回归算法（softmax regression）
+
+* https://baike.baidu.com/item/softmax 逻辑回归
+* https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/softmax_regression
+* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/softmax_regression_test.cpp
+* https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+
 #### 支持向量机（SVM）
 
 #### 邻近算法（KNN）
