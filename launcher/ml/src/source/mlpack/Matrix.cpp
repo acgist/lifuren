@@ -181,6 +181,63 @@ void testSvd() {
     LOG(INFO) << std::endl << V;
 }
 
+void testResize() {
+    double array[] = {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 5,
+        6, 7, 8,
+    };
+    arma::mat mat(array, 3, 4);
+    LOG(INFO) << std::endl << mat << std::endl;
+    LOG(INFO) << std::endl << mat.t() << std::endl;
+    LOG(INFO) << std::endl << mat.st() << std::endl;
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat.shed_col(0);
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat.shed_row(0);
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat.resize(2, 2);
+    LOG(INFO) << std::endl << mat << std::endl;
+}
+
+void testShuffle() {
+    double array[] = {
+        1, 2, 3,
+        4, 5, 6,
+        7, 8, 5,
+        6, 7, 8,
+    };
+    arma::mat mat(array, 3, 4);
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat = arma::shuffle(mat, 0);
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat = arma::shuffle(mat, 0);
+    LOG(INFO) << std::endl << mat << std::endl;
+    mat = arma::shuffle(mat, 0);
+    LOG(INFO) << std::endl << mat << std::endl;
+}
+
+void testInit() {
+    arma::mat mat = {
+        { 1, 2, 3, 4 },
+        { 1, 2, 3, 4 },
+        { 1, 2, 3, 4 },
+    };
+    double array[] = {
+        1, 2, 3, 4,
+        1, 2, 3, 4,
+        1, 2, 3, 4,
+    };
+    LOG(INFO) << std::endl << arma::mat(array, 3, 4) << std::endl;
+    LOG(INFO) << std::endl << arma::mat(array, 4, 3) << std::endl;
+    LOG(INFO) << std::endl << mat << std::endl;
+    arma::mat tail = mat.tail_cols(2);
+    LOG(INFO) << std::endl << tail << std::endl;
+    LOG(INFO) << std::endl << mat.tail_cols(2) << std::endl;
+    LOG(INFO) << std::endl << mat.tail_rows(2) << std::endl;
+}
+
 void lifuren::testMLPackMatrix() {
     // testPlus();
     // testFill();
@@ -189,6 +246,9 @@ void lifuren::testMLPackMatrix() {
     // testDotProduct();
     // testCrossProduct();
     // testOuterProduct();
-    testSchur();
-    testSvd();
+    // testSchur();
+    // testSvd();
+    // testResize();
+    // testShuffle();
+    testInit();
 }

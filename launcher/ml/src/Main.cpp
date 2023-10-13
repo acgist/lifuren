@@ -14,8 +14,10 @@ int main(int argc, char const* argv[]) {
     // opencv
     // lifuren::shutdownOpenCVLogger();
     // mlpack
-    lifuren::testMLPackMatrix();
+    // lifuren::testLoadFile();
+    // lifuren::testMLPackMatrix();
     // lifuren::testMLPackLinearRegression();
+    lifuren::testMLPackLogisticRegression();
     // libtorch
     // lifuren::testMatrix();
     // lifuren::testReLU();

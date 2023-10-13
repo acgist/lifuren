@@ -12,12 +12,43 @@
 * 非监督学习：聚类
 * 强化学习
 
+## 非线性激活函数
+
+* tanh
+* ReLU
+* sigmoid
+* Leaky ReLU 
+
+## 损失函数
+
+* L1 Loss：L1正则化
+* L2 Loss：L2正则化
+* MSE Loss：回归问题
+* NLL Loss：分类问题
+* NLL Loss2d：像素分类（图像分割）
+* Cross-entropy Loss：分类问题
+
+## 优化算法
+
+* SGD
+* ASGD
+* SGDM
+* Adam
+* Rprop
+* LBFGS
+* Adamax
+* Adagrad
+* RMSProp
+* ADADELTA
+* SparseAdam
+
 ## 回归算法
 
 #### 线性回归算法（linear regression）
 
-* https://baike.baidu.com/item/线性回归/8190345
+* https://baike.baidu.com/item/线性回归
 * https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/linear_regression
+* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/linear_regression_test.cpp
 * https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
 
 #### 多项式回归算法
@@ -25,6 +56,13 @@
 ## 分类算法
 
 #### 逻辑回归算法（logistic regression）
+
+* https://baike.baidu.com/item/logistic回归
+* https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/logistic_regression
+* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/logistic_regression_test.cpp
+* https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+
+常用优化算法：SGD/LBFGS
 
 #### 支持向量机（SVM）
 

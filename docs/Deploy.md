@@ -10,6 +10,7 @@ cd build
 cmake ..
 make
 # make install
+# export LD_LIBRARY_PATH=/data/dev/lifuren/target/lib/:/data/dev/lifuren/deps/libtorch/lib/:$LD_LIBRARY_PATH
 ```
 
 ### Windows
