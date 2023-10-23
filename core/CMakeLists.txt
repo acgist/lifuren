@@ -1,4 +1,4 @@
-project(lifurenego VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 

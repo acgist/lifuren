@@ -30,7 +30,7 @@ extern void testMLPackLinearRegression();
 extern void testMLPackLogisticRegression();
 
 /**
- * Softmax多分类问题
+ * Softmax逻辑回归（多分类问题）
  */
 extern void testMLPackSoftmaxRegression();
 
