@@ -16,7 +16,6 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/Setting.hpp
 )
 
 install(

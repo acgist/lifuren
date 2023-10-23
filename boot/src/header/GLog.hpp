@@ -1,3 +1,8 @@
+/**
+ * GLog
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include <iostream>

@@ -31,7 +31,7 @@ std::string lifuren::LabelConfig::toJSON() {
 }
 
 lifuren::LabelSegment::LabelSegment() {
-    this->fontSize    = 0;
+    this->fontSize = 0;
     this->segmentSize = 0;
 }
 

@@ -63,3 +63,40 @@ void lifuren::testLabel() {
     LOG(INFO) << labelJson.fontSize;
     LOG(INFO) << labelJson.segmentRule.size();
 }
+
+void lifuren::testSetting() {
+    lifuren::Setting setting;
+    setting.path = "路径";
+    setting.activation = lifuren::Activation::RELU;
+    LOG(INFO) << setting.toJSON();
+    lifuren::Setting settingJson(R"(
+        {"activation":0,"learningRate":0.01,"path":"路径","regularization":0,"regularizationRate":0.01}
+    )");
+    LOG(INFO) << settingJson.path;
+    LOG(INFO) << settingJson.activation;
+    LOG(INFO) << settingJson.learningRate;
+    LOG(INFO) << settingJson.regularization;
+    LOG(INFO) << settingJson.regularizationRate;
+    lifuren::Settings settings;
+    settings.load(R"(
+        {
+            "ImageGC": {
+                "path": "",
+                "activation": 0,
+                "learningRate": 0.01,
+                "regularization": 1,
+                "regularizationRate": 0.01
+            },
+            "ImageTS": {
+                "path": "",
+                "activation": 0,
+                "learningRate": 0.01
+            }
+        }
+    )");
+    std::map<std::string, lifuren::Setting>::iterator iterator = settings.settings.begin();
+    std::map<std::string, lifuren::Setting>::iterator end = settings.settings.end();
+    for(; iterator != end; iterator++) {
+        LOG(INFO) << "key = " << iterator->first << " value = " << iterator->second.toJSON();
+    }
+}

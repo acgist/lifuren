@@ -20,6 +20,7 @@ set(
     ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/Label.hpp
+    ${HEADER_DIR}/Setting.hpp
 )
 
 install(

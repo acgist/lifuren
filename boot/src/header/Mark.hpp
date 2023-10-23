@@ -1,3 +1,8 @@
+/**
+ * 标记
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include <string>

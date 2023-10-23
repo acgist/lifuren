@@ -3,6 +3,7 @@
 #include "GLog.hpp"
 #include "Mark.hpp"
 #include "Label.hpp"
+#include "Setting.hpp"
 
 namespace lifuren {
 
@@ -20,5 +21,10 @@ extern void testMark();
  * Label测试
  */
 extern void testLabel();
+
+/**
+ * Setting测试
+ */
+extern void testSetting();
 
 }
