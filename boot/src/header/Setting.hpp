@@ -49,7 +49,7 @@ public:
     // 正则速率
     double regularizationRate;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(lifuren::Setting, path, activation, learningRate, regularization, regularizationRate);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, path, activation, learningRate, regularization, regularizationRate);
 public:
     Setting() {
         this->activation = lifuren::Activation::RELU;
@@ -78,7 +78,7 @@ class Settings {
 
 public:
     // 配置
-    std::map<std::string, lifuren::Setting> settings;
+    std::map<std::string, Setting> settings;
 
 public:
     // 加载

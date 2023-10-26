@@ -22,7 +22,7 @@ public:
     // 标签名称
     std::string name;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::Label, name);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name);
 public:
     Label() {};
     virtual ~Label() {};
@@ -50,7 +50,7 @@ public:
     // 下级标签
     std::map<std::string, LabelConfig> children;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::LabelConfig, name, labels, children);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelConfig, name, labels, children);
 public:
     LabelConfig() {};
     virtual ~LabelConfig() {};
@@ -80,7 +80,7 @@ public:
     // 分词规则
     std::vector<int> segmentRule;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::LabelSegment, name, fontSize, segmentSize, segmentRule);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelSegment, name, fontSize, segmentSize, segmentRule);
 public:
     LabelSegment() {};
     virtual ~LabelSegment() {};

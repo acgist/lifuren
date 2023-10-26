@@ -26,8 +26,14 @@ public:
     AudioGCModel(lifuren::Setting& setting) : LFRModel(setting) {};
 
 public:
-    void lifuren::AudioGCModel::predict(lifuren::AudioGCPredictSetting& setting) override;
-    void lifuren::AudioGCModel::training(lifuren::AudioGCTrainingSetting& setting) override;
+    /**
+     * @param setting 预测配置
+     */
+    void predict(lifuren::AudioGCPredictSetting& setting) override;
+    /**
+     * @param setting 训练配置
+     */
+    void training(lifuren::AudioGCTrainingSetting& setting) override;
 
 };
 

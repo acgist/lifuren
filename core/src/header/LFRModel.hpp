@@ -37,13 +37,21 @@ public:
      */
     LFRModel(lifuren::Setting& setting) : setting(setting) {};
     /**
-     * 预测
+     * 保存模型
+     */
+    virtual void save();
+    /**
+     * 加载模型
+     */
+    virtual void load();
+    /**
+     * 模型预测
      * 
      * @param 预测设置
      */
     virtual void predict(P& setting) = 0;
     /**
-     * 训练
+     * 训练模型
      * 
      * @param setting 训练设置
      */
