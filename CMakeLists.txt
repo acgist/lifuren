@@ -103,3 +103,8 @@ add_subdirectory(deps)
 add_subdirectory(boot)
 add_subdirectory(core)
 add_subdirectory(launcher)
+
+install(
+    FILES
+    "LICENSE" DESTINATION ${CMAKE_INSTALL_PREFIX}/
+)

@@ -37,6 +37,10 @@ set(
     ${HEADER_DIR}/LFRModel.hpp
 )
 
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/data/)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/logs/)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/model/)
+
 install(
     FILES
     ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
@@ -44,7 +48,7 @@ install(
 
 install(
     DIRECTORY
-    "src/setting/" DESTINATION ${CMAKE_INSTALL_PREFIX}/setting/
+    "src/config/" DESTINATION ${CMAKE_INSTALL_PREFIX}/config/
 )
 
 install(
