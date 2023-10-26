@@ -16,6 +16,18 @@ target_include_directories(
 
 set(
     HEADER_FILES
+    ${HEADER_DIR}/Audio.hpp
+    ${HEADER_DIR}/AudioGC.hpp
+    ${HEADER_DIR}/AudioTS.hpp
+    ${HEADER_DIR}/Image.hpp
+    ${HEADER_DIR}/ImageGC.hpp
+    ${HEADER_DIR}/ImageTS.hpp
+    ${HEADER_DIR}/Video.hpp
+    ${HEADER_DIR}/VideoGC.hpp
+    ${HEADER_DIR}/VideoTS.hpp
+    ${HEADER_DIR}/Poetry.hpp
+    ${HEADER_DIR}/PoetryGC.hpp
+    ${HEADER_DIR}/PoetryTS.hpp
 )
 
 install(

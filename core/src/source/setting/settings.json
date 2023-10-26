@@ -1,4 +1,18 @@
 {
+  "AudioGC": {
+    "path": "",
+    "activation": "",
+    "learningRate": "",
+    "regularization": "",
+    "regularizationRate": ""
+  },
+  "AudioTS": {
+    "path": "",
+    "activation": "",
+    "learningRate": "",
+    "regularization": "",
+    "regularizationRate": ""
+  },
   "ImageGC": {
     "path": "",
     "activation": "",
@@ -28,6 +42,13 @@
     "regularizationRate": ""
   },
   "PoetryGC": {
+    "path": "",
+    "activation": "",
+    "learningRate": "",
+    "regularization": "",
+    "regularizationRate": ""
+  },
+  "PoetryTS": {
     "path": "",
     "activation": "",
     "learningRate": "",

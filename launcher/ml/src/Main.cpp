@@ -11,7 +11,7 @@ int main(int argc, char const* argv[]) {
     // lifuren::testJson();
     // lifuren::testMark();
     // lifuren::testLabel();
-    lifuren::testSetting();
+    // lifuren::testSetting();
     // opencv
     // lifuren::shutdownOpenCVLogger();
     // mlpack
@@ -20,6 +20,7 @@ int main(int argc, char const* argv[]) {
     // lifuren::testMLPackLinearRegression();
     // lifuren::testMLPackLogisticRegression();
     // lifuren::testMLPackSoftmaxRegression();
+    lifuren::testEmbedding();
     // libtorch
     // lifuren::testMatrix();
     // lifuren::testReLU();
