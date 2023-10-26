@@ -43,6 +43,11 @@ install(
 )
 
 install(
+    DIRECTORY
+    "src/setting/" DESTINATION ${CMAKE_INSTALL_PREFIX}/setting/
+)
+
+install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
