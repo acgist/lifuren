@@ -4,10 +4,8 @@ aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
 file(
     GLOB SUB_SOURCE_FILES
-    "src/source/fltk/*.cpp"
-    "src/source/opencv/*.cpp"
-    "src/source/mlpack/*.cpp"
-    "src/source/libtorch/*.cpp"
+    "src/source/*.cpp"
+    "src/source/*/*.cpp"
 )
 
 add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})

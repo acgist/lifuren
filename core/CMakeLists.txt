@@ -2,7 +2,13 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+file(
+    GLOB SUB_SOURCE_FILES
+    "src/source/*.cpp"
+    "src/source/*/*.cpp"
+)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
@@ -28,6 +34,7 @@ set(
     ${HEADER_DIR}/Poetry.hpp
     ${HEADER_DIR}/PoetryGC.hpp
     ${HEADER_DIR}/PoetryTS.hpp
+    ${HEADER_DIR}/LFRModel.hpp
 )
 
 install(

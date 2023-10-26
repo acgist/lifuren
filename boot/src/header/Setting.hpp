@@ -79,4 +79,16 @@ public:
 
 };
 
+/**
+ * 预测配置
+ */
+class PredictSetting {
+};
+
+/**
+ * 训练配置
+ */
+class TrainingSetting {
+};
+
 }

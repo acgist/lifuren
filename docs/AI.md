@@ -87,6 +87,14 @@
 
 #### 卷积神经网络（CNN）
 
+RNN
+CNN
+LSTM
+GAN
+DCGAN
+
+https://github.com/pytorch/examples/blob/main/dcgan/main.py
+
 ## 深度学习算法
 
 ## 生成网络算法

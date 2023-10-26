@@ -49,7 +49,8 @@ void lifuren::testMLPackSoftmaxRegression() {
         10,
         20
     };
-    for (int i = 0; i < sizeof(lambda) / sizeof(double); ++i) {
+    int size = sizeof(lambda) / sizeof(double);
+    for (int i = 0; i < size; ++i) {
         double value = lambda[i];
         mlpack::SoftmaxRegression softmax(xTrain, yTrain, 3, value);
         mlpack::SoftmaxRegression softmaxFit(xTrain, yTrain, 3, value, true);
