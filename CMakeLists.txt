@@ -104,7 +104,13 @@ add_subdirectory(boot)
 add_subdirectory(core)
 add_subdirectory(launcher)
 
+set(HELP "LICENSE" "README.md")
+
 install(
     FILES
-    "LICENSE" DESTINATION ${CMAKE_INSTALL_PREFIX}/
+    ${HELP} DESTINATION ${CMAKE_INSTALL_PREFIX}/
 )
+
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/data/)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/logs/)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX}/model/)
