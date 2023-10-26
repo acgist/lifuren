@@ -51,12 +51,19 @@ public:
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(lifuren::Setting, path, activation, learningRate, regularization, regularizationRate);
 public:
-    Setting();
-    virtual ~Setting();
+    Setting() {
+        this->activation = lifuren::Activation::RELU;
+        this->learningRate = 0.0;
+        this->regularization = lifuren::Regularization::NONE;
+        this->regularizationRate = 0.0;
+    };
+    virtual ~Setting() {};
     /**
      * @param json JSON
      */
-    Setting(const std::string& json);
+    Setting(const std::string& json) {
+        *this = nlohmann::json::parse(json);
+    };
     /**
      * @return JSON
      */

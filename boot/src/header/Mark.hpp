@@ -27,12 +27,14 @@ public:
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::Mark, file, hash, labels);
 public:
-    Mark();
-    virtual ~Mark();
+    Mark() {};
+    virtual ~Mark() {};
     /**
      * @param json JSON
      */
-    Mark(const std::string& json);
+    Mark(const std::string& json) {
+        *this = nlohmann::json::parse(json);
+    };
     /**
      * @return JSON
      */
@@ -46,12 +48,14 @@ public:
 class MarkFile : public Mark {
 
 public:
-    MarkFile();
-    virtual ~MarkFile();
+    MarkFile() {};
+    virtual ~MarkFile() {};
     /**
      * @param json JSON
      */
-    MarkFile(const std::string& json);
+    MarkFile(const std::string& json) {
+        *this = nlohmann::json::parse(json);
+    };
 
 };
 
@@ -68,12 +72,14 @@ public:
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(lifuren::MarkText, name, text, file, hash, labels);
 public:
-    MarkText();
-    virtual ~MarkText();
+    MarkText() {};
+    virtual ~MarkText() {};
     /**
      * @param json JSON
      */
-    MarkText(const std::string& json);
+    MarkText(const std::string& json) {
+        *this = nlohmann::json::parse(json);
+    };
     /**
      * @return JSON
      */
