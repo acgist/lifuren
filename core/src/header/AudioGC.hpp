@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "./LFRModel.hpp"
+#include "./Model.hpp"
 
 namespace lifuren {
 

@@ -1,4 +1,4 @@
-#include "../header/LFRModel.hpp"
+#include "../header/Model.hpp"
 
 template<class P, class T>
 void lifuren::LFRModel<P, T>::save() {
