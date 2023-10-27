@@ -34,7 +34,7 @@ jobs:
           git checkout 4.2.0
           mkdir build
           cd build
-          cmake ..
+          cmake .. -D BUILD_CLI_EXECUTABLES=OFF
           sudo make -j 8 install
           cd ../../
           ################ opencv
