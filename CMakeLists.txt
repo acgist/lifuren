@@ -100,9 +100,8 @@ find_package(LAPACK    REQUIRED)
 find_package(Armadillo REQUIRED)
 
 add_subdirectory(deps)
-add_subdirectory(boot)
 add_subdirectory(core)
-add_subdirectory(launcher)
+add_subdirectory(boot)
 
 set(HELP "LICENSE" "README.md")
 

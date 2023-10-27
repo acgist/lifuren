@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    lifurenboot
+    lifurencore
     LAPACK::LAPACK
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}

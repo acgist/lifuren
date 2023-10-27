@@ -12,7 +12,8 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    lifurenboot
+    glog::glog
+    nlohmann_json::nlohmann_json
 )
 
 target_include_directories(
@@ -22,6 +23,11 @@ target_include_directories(
 
 set(
     HEADER_FILES
+    ${HEADER_DIR}/GLog.hpp
+    ${HEADER_DIR}/Mark.hpp
+    ${HEADER_DIR}/Label.hpp
+    ${HEADER_DIR}/Setting.hpp
+    ${HEADER_DIR}/Model.hpp
     ${HEADER_DIR}/Audio.hpp
     ${HEADER_DIR}/AudioGC.hpp
     ${HEADER_DIR}/AudioTS.hpp
@@ -34,7 +40,6 @@ set(
     ${HEADER_DIR}/Poetry.hpp
     ${HEADER_DIR}/PoetryGC.hpp
     ${HEADER_DIR}/PoetryTS.hpp
-    ${HEADER_DIR}/LFRModel.hpp
 )
 
 install(

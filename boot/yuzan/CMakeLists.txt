@@ -1,4 +1,4 @@
-project(lifurentemplate VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurenyuzan VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
@@ -6,7 +6,7 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    lifurenboot
+    lifurencore
 )
 
 target_include_directories(
@@ -16,7 +16,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/Template.hpp
+    ${HEADER_DIR}/Window.hpp
 )
 
 install(
