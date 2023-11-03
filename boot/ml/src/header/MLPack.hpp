@@ -1,10 +1,12 @@
 #pragma once
 
 #include "GLog.hpp"
-#ifdef _WIN32
+#if defined(__unix__) || defined(__linux__)
+#include "mlpack.hpp"
+#elif defined(_WIN32)
 #include "mlpack/mlpack.hpp"
 #else
-#include "mlpack.hpp"
+#error "不支持的操作系统"
 #endif
 
 namespace lifuren {

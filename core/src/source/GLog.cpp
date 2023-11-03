@@ -11,6 +11,12 @@ void lifuren::init(int argc, char const* argv[]) {
     google::SetLogDestination(google::GLOG_FATAL,   "logs/fatal_");
     google::SetLogFilenameExtension(".log");
     google::InitGoogleLogging(argc > 0 ? argv[0] : nullptr);
+    LOG(INFO) << R"(
+        
+        北方有佳人，绝世而独立。
+        一顾倾人城，再顾倾人国。
+        宁不知倾城与倾国，佳人难再得。
+    )";
 }
 
 void lifuren::shutdown() {

@@ -1,3 +1,8 @@
+/**
+ * 机器学习测试代码
+ * 
+ * @author acgist
+ */
 #include "header/Boot.hpp"
 #include "header/Fltk.hpp"
 #include "header/MLPack.hpp"
@@ -20,7 +25,7 @@ int main(int argc, char const* argv[]) {
     // lifuren::testMLPackLinearRegression();
     // lifuren::testMLPackLogisticRegression();
     // lifuren::testMLPackSoftmaxRegression();
-    lifuren::testEmbedding();
+    // lifuren::testEmbedding();
     // libtorch
     // lifuren::testMatrix();
     // lifuren::testReLU();

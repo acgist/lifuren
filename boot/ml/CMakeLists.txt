@@ -4,7 +4,6 @@ aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
 file(
     GLOB SUB_SOURCE_FILES
-    "src/source/*.cpp"
     "src/source/*/*.cpp"
 )
 
@@ -13,12 +12,8 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurencore
-    LAPACK::LAPACK
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
-    ${TORCH_LIBRARIES}
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
 )
 
 target_include_directories(
@@ -48,7 +43,6 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 
-# 使用GLOG日志
 add_definitions(-DC10_USE_GLOG)
 
 if(CMAKE_HOST_WIN32)
