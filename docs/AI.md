@@ -1,23 +1,31 @@
 # 人工智能
 
-#### 分类
+## 分类
 
 * 人工智能（AI）
 * 机器学习（ML）
 * 神经网络（NN）
 * 深度学习（DL）
 
-#### 应用
+## 应用
 
 * 传统任务：回归、分类、聚类
-* 深度学习：计算机视觉、自然语言处理
+* 深度学习：机器视觉、自然语言处理
+
+#### 机器视觉
+
+图像分类、物体检测和图像分割等等
+
+#### 自然语言处理
+
+语音识别、机器翻译、自动摘要、观点提取、文本分类、问题回答等等
 
 ## 非线性激活函数
 
 * tanh
 * ReLU
 * sigmoid
-* Leaky ReLU 
+* Leaky ReLU
 
 ## 损失函数
 
@@ -44,38 +52,31 @@
 
 ## 回归算法
 
-#### 线性回归算法（linear regression）
-
-* https://baike.baidu.com/item/线性回归
-* https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/linear_regression
-* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/linear_regression_test.cpp
-* https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
+#### 线性回归算法（Linear Regression）
 
 #### 多项式回归算法
 
 ## 分类算法
 
-#### 逻辑回归算法（logistic regression）
-
-* https://baike.baidu.com/item/logistic回归
-* https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/logistic_regression
-* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/logistic_regression_test.cpp
-* https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-
-常用优化算法：SGD/LBFGS
-
-#### Softmax逻辑回归算法（softmax regression）
-
-* https://baike.baidu.com/item/softmax 逻辑回归
-* https://github.com/mlpack/mlpack/tree/master/src/mlpack/methods/softmax_regression
-* https://github.com/mlpack/mlpack/blob/master/src/mlpack/tests/softmax_regression_test.cpp
-* https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+#### 邻近算法（KNN）
 
 #### 支持向量机（SVM）
 
-#### 邻近算法（KNN）
+#### 随机森林算法（Random Forest）
 
-#### 随机森林算法
+#### 逻辑回归算法（Logistic Regression）
+
+二分类问题
+
+#### 隐马尔可夫模型（HMM）
+
+自然语言处理、语音识别、模式识别
+
+> 逐步RNN/LSTM取代
+
+#### Softmax逻辑回归算法（Softmax Regression）
+
+多分类问题
 
 ## 聚类算法
 
@@ -83,28 +84,53 @@
 
 #### 基于密度的聚类算法（DBSCAN）
 
-## 神经网络算法
+## 神经网络算法 & 深度学习算法 & 生成网络算法
+
+#### 人工神经网络（ANN）
+
+基本的神经网络结构，包括输入层、隐藏层和输出层。
 
 #### 卷积神经网络（CNN）
 
-RNN
-CNN
-LSTM
-GAN
-DCGAN
+机器视觉
 
-https://github.com/pytorch/examples/blob/main/dcgan/main.py
+#### 视觉几何组（VGG）
 
-## 深度学习算法
+#### 残差神经网络（ResNet）
 
-## 生成网络算法
+#### 循环神经网络（RNN）
 
-## 各种模型
+自然语言处理（序列数据建模）
 
-* ResNet（残差神经网络）：图片分类
-* LSTM（长短期记忆网络）：语音识别、连续手写识别
-* HMM（隐马尔可夫模型）：自然语言处理、语音识别、模式识别
+#### 长短时记忆网络（LSTM）
+
+#### 生成对抗网络（GAN）
+
+生成对抗网络：一种生成式模型，由生成器和判别器组成，用于生成新的数据样本。
+
+#### 循环生成对抗网络（CycleGAN）
+
+风格迁移
+
+#### 深度卷积生成对抗网络（DCGAN）
+
+#### 基于样式的生成对抗网络（StyleGAN）
+
+#### 自注意力机制
+
+#### Transformer
+
+基于自注意力机制的神经网络结构，用于处理序列数据。
+
+#### BERT
+
+基于Transformer的预训练模型
+
+#### GPT/GTP-2/GPT-3/GPT-4
+
+基于Transformer的生成式预训练模型
 
 ## 学习资料
 
+* https://zh-v2.d2l.ai/
 * https://scikit-learn.org/stable/modules/classes.html
