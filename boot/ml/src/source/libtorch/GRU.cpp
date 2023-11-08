@@ -1,4 +1,4 @@
 #include "../../header/RNN.hpp"
 
-void lifuren::testLSTM() {
+void lifuren::testGRU() {
 }

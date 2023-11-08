@@ -1,4 +1,4 @@
 #include "../../header/GAN.hpp"
 
-void lifuren::testDCGAN() {
+void lifuren::testGAN() {
 }
