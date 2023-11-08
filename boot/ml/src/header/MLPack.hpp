@@ -12,14 +12,16 @@
 namespace lifuren {
 
 /**
- * 加载数据
- */
-extern void testLoadFile();
-
-/**
  * 矩阵
  */
 extern void testMLPackMatrix();
+
+/**
+ * 加载数据
+ * 
+ * @param path 文件路径
+ */
+extern void testMLPackLoadFile(const char* path);
 
 /**
  * 线性回归
@@ -27,13 +29,13 @@ extern void testMLPackMatrix();
 extern void testMLPackLinearRegression();
 
 /**
- * 逻辑回归（二分类问题）
- */
-extern void testMLPackLogisticRegression();
-
-/**
  * Softmax逻辑回归（多分类问题）
  */
 extern void testMLPackSoftmaxRegression();
+
+/**
+ * 逻辑回归（二分类问题）
+ */
+extern void testMLPackLogisticRegression();
 
 }

@@ -12,8 +12,11 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurencore
+    LAPACK::LAPACK
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
 )
 
 target_include_directories(

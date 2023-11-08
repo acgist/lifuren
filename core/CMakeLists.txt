@@ -12,10 +12,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog::glog
-    LAPACK::LAPACK
     ${TORCH_LIBRARIES}
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
     nlohmann_json::nlohmann_json
 )
 

@@ -21,18 +21,24 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
-add_executable(testLoadFile ./TestLoadFile.cpp ../src/source/mlpack/LoadFile.cpp)
-add_test(NAME testLoadFile COMMAND testLoadFile)
-target_link_libraries(
-    testLoadFile PUBLIC
-    lifurencore
-)
-
 add_executable(testMLPackMatrix ./TestMLPackMatrix.cpp ../src/source/mlpack/Matrix.cpp)
 add_test(NAME testMLPackMatrix COMMAND testMLPackMatrix)
 target_link_libraries(
     testMLPackMatrix PUBLIC
     lifurencore
+    LAPACK::LAPACK
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
+)
+
+add_executable(testMLPackLoadFile ./TestMLPackLoadFile.cpp ../src/source/mlpack/LoadFile.cpp)
+add_test(NAME testMLPackLoadFile COMMAND testMLPackLoadFile)
+target_link_libraries(
+    testMLPackLoadFile PUBLIC
+    lifurencore
+    LAPACK::LAPACK
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
 )
 
 add_executable(testMLPackLinearRegression ./TestMLPackLinearRegression.cpp ../src/source/mlpack/LinearRegression.cpp)
@@ -40,13 +46,9 @@ add_test(NAME testMLPackLinearRegression COMMAND testMLPackLinearRegression)
 target_link_libraries(
     testMLPackLinearRegression PUBLIC
     lifurencore
-)
-
-add_executable(testMLPackLogisticRegression ./TestMLPackLogisticRegression.cpp ../src/source/mlpack/LogisticRegression.cpp)
-add_test(NAME testMLPackLogisticRegression COMMAND testMLPackLogisticRegression)
-target_link_libraries(
-    testMLPackLogisticRegression PUBLIC
-    lifurencore
+    LAPACK::LAPACK
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
 )
 
 add_executable(testMLPackSoftmaxRegression ./TestMLPackSoftmaxRegression.cpp ../src/source/mlpack/SoftmaxRegression.cpp)
@@ -54,6 +56,19 @@ add_test(NAME testMLPackSoftmaxRegression COMMAND testMLPackSoftmaxRegression)
 target_link_libraries(
     testMLPackSoftmaxRegression PUBLIC
     lifurencore
+    LAPACK::LAPACK
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
+)
+
+add_executable(testMLPackLogisticRegression ./TestMLPackLogisticRegression.cpp ../src/source/mlpack/LogisticRegression.cpp)
+add_test(NAME testMLPackLogisticRegression COMMAND testMLPackLogisticRegression)
+target_link_libraries(
+    testMLPackLogisticRegression PUBLIC
+    lifurencore
+    LAPACK::LAPACK
+    ${ARMADILLO_LIBRARY}
+    # OpenBLAS::OpenBLAS
 )
 
 add_executable(testMatrix ./TestMatrix.cpp ../src/source/libtorch/Matrix.cpp)
@@ -63,16 +78,16 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testActivationFunction ./TestActivationFunction.cpp ../src/source/libtorch/ActivationFunction.cpp)
-add_test(NAME testActivationFunction COMMAND testActivationFunction)
-target_link_libraries(
-    testActivationFunction PUBLIC
-    lifurencore
-)
-
 add_executable(testLinearRegression ./TestLinearRegression.cpp ../src/source/libtorch/LinearRegression.cpp)
 add_test(NAME testLinearRegression COMMAND testLinearRegression)
 target_link_libraries(
     testLinearRegression PUBLIC
+    lifurencore
+)
+
+add_executable(testActivationFunction ./TestActivationFunction.cpp ../src/source/libtorch/ActivationFunction.cpp)
+add_test(NAME testActivationFunction COMMAND testActivationFunction)
+target_link_libraries(
+    testActivationFunction PUBLIC
     lifurencore
 )

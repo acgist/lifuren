@@ -1,13 +1,20 @@
 #include "../../header/MLPack.hpp"
 
-/**
- * 向量、矩阵
- */
-
 void testPlus() {
-    arma::mat a = arma::randu<arma::mat>(2, 3);
-    arma::mat b = arma::randu<arma::mat>(2, 3);
-    arma::mat c = arma::randu<arma::mat>(2, 2);
+    // arma::mat a = arma::randu<arma::mat>(2, 3);
+    // arma::mat b = arma::randu<arma::mat>(2, 3);
+    // arma::mat c = arma::randu<arma::mat>(2, 2);
+    double array[] = {
+        1, 2, 3,
+        4, 5, 6
+    };
+    double square[] = {
+        1, 2,
+        3, 4
+    };
+    arma::mat a(array, 3, 2);
+    arma::mat b(array, 3, 2);
+    arma::mat c(square, 2, 2);
     LOG(INFO) << "a = " << std::endl << a;
     LOG(INFO) << "b = " << std::endl << b;
     LOG(INFO) << "c = " << std::endl << c;
@@ -26,8 +33,10 @@ void testPlus() {
     LOG(INFO) << "n_rows = " << a.n_rows;
     LOG(INFO) << "sum = "   << std::endl << arma::sum(a);
     LOG(INFO) << "mean = "  << std::endl << arma::mean(a);
+    // 乘积
     LOG(INFO) << "prod = "  << std::endl << arma::prod(a);
     LOG(INFO) << "trace = " << arma::trace(a);
+    LOG(INFO) << std::endl << std::endl << std::endl << std::endl;
 }
 
 void testFill() {
@@ -261,7 +270,7 @@ void testEquals() {
 }
 
 void lifuren::testMLPackMatrix() {
-    // testPlus();
+    testPlus();
     // testFill();
     // testMult();
     // testTransfer();
@@ -273,5 +282,5 @@ void lifuren::testMLPackMatrix() {
     // testResize();
     // testShuffle();
     // testInit();
-    testEquals();
+    // testEquals();
 }
