@@ -5,7 +5,7 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testFltk ./testFltk.cpp ../src/source/fltk/Fltk.cpp)
+add_executable(testFltk ./TestFltk.cpp ../src/source/fltk/Fltk.cpp)
 add_test(NAME testFltk COMMAND testFltk)
 target_link_libraries(
     testFltk PUBLIC

@@ -79,10 +79,16 @@ class Settings {
 public:
     // 配置
     std::map<std::string, Setting> settings;
+    // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Settings, settings);
 
 public:
     // 加载
     void load(const std::string& settings);
+    /**
+     * @return JSON
+     */
+    std::string toJSON();
 
 };
 

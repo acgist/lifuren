@@ -1,3 +1,8 @@
+/**
+ * 测试：日志、标记、标签、设置
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include "GLog.hpp"

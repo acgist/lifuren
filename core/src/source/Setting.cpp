@@ -8,7 +8,13 @@ std::string lifuren::Setting::toJSON() {
 void lifuren::Settings::load(const std::string& settings) {
     try {
         nlohmann::json json = nlohmann::json::parse(settings);
-        for(const char* key : { "ImageGC", "ImageTS", "VideoGC", "VideoTS", "PoetryGC" }) {
+        const char* keys[] = {
+            "ImageGC", "ImageTS",
+            "AudioGC", "AudioTS",
+            "VideoGC", "VideoTS",
+            "PoetryGC", "PoetryTS",
+        };
+        for(const char* key : keys) {
             if(!json.contains(key)) {
                 continue;
             }
@@ -17,4 +23,9 @@ void lifuren::Settings::load(const std::string& settings) {
     } catch(const std::exception& e) {
         LOG(ERROR) << e.what();
     }
+}
+
+std::string lifuren::Settings::toJSON() {
+    const nlohmann::json json = *this;
+    return json.dump();
 }
