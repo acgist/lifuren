@@ -1,3 +1,8 @@
+/**
+ * 窗口
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include <iostream>
@@ -11,9 +16,31 @@
 
 namespace lifuren {
 
+/**
+ * 窗口
+ */
 class LifurenWindow : public Fl_Window {
 
 public:
+    /**
+     * 输入框
+     */
+    Fl_Input* inputPtr;
+    /**
+     * 按钮
+     */
+    Fl_Button* buttonPtr;
+    /**
+     * 按钮
+     */
+    Fl_Button* buttonProxyPtr;
+
+public:
+    ~LifurenWindow() {
+        delete this->inputPtr;
+        delete this->buttonPtr;
+        delete this->buttonProxyPtr;
+    };
     /**
      * @param width    窗口宽度
      * @param height   窗口高度
@@ -25,9 +52,13 @@ public:
      */
     void init();
     /**
-     * 静态函数
+     * 按钮回调函数
+     * 如果想要按钮直接调用需要改为静态函数
+     * 
+     * @param widgetPtr 窗口指针
+     * @param voidPtr   当前窗口指针
      */
-    static void buttonCallback(Fl_Widget* widgetPtr, void* voidPtr);
+    void buttonCallback(Fl_Widget* widgetPtr, void* voidPtr);
 };
 
 }
