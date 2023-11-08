@@ -13,6 +13,4 @@ extern void testTanh();
 
 extern void testLinearRegression();
 
-extern void testEmbedding();
-
 }

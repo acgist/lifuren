@@ -23,11 +23,15 @@ target_include_directories(
 
 set(
     HEADER_FILES
+    ${HEADER_DIR}/CNN.hpp
+    ${HEADER_DIR}/RNN.hpp
+    ${HEADER_DIR}/GAN.hpp
     ${HEADER_DIR}/Boot.hpp
     ${HEADER_DIR}/Fltk.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/LibTorch.hpp
+    ${HEADER_DIR}/Transformer.hpp
 )
 
 install(
@@ -58,7 +62,6 @@ if(CMAKE_HOST_WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-    if(MSVC)
-        add_compile_options("/NODEFAULTLIB:msvcrt.lib")
-    endif()
 endif()
+
+add_subdirectory(test)

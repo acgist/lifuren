@@ -2,11 +2,12 @@
 
 #include <iostream>
 
+#include "GLog.hpp"
+
 #include "FL/Fl.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
-#include "GLog.hpp"
 
 namespace lifuren {
 
