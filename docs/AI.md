@@ -20,11 +20,12 @@
 
 语音识别、机器翻译、自动摘要、观点提取、文本分类、问题回答等等
 
-## 非线性激活函数
+## 激活函数
 
 * tanh
 * ReLU
 * sigmoid
+* softmax
 * Leaky ReLU
 
 ## 损失函数
@@ -54,7 +55,7 @@
 
 #### 线性回归算法（Linear Regression）
 
-#### 多项式回归算法
+#### 多项式回归算法（Polynomial Regression）
 
 ## 分类算法
 

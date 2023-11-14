@@ -14,11 +14,13 @@ void buttonCallbackProxy(Fl_Widget* widgetPtr, void* voidPtr) {
     ((lifuren::LifurenWindow*) voidPtr)->buttonCallback(widgetPtr, voidPtr);
 }
 
-lifuren::LifurenWindow::LifurenWindow(int width, int height, const char* titlePtr) : Fl_Window(width, height, titlePtr) {
+lifuren::LifurenWindow::~LifurenWindow() {
+    delete this->inputPtr;
+    delete this->buttonPtr;
+    delete this->buttonProxyPtr;
 }
 
-void lifuren::LifurenWindow::buttonCallback(Fl_Widget* widgetPtr, void* voidPtr) {
-    LOG(INFO) << "你点击了按钮（this）：" << this->inputPtr->value();
+lifuren::LifurenWindow::LifurenWindow(int width, int height, const char* titlePtr) : Fl_Window(width, height, titlePtr) {
 }
 
 void lifuren::LifurenWindow::init() {
@@ -30,4 +32,9 @@ void lifuren::LifurenWindow::init() {
     this->buttonProxyPtr = new Fl_Button(110, 40, 60, 20, "提交");
     buttonProxyPtr->callback(::buttonCallbackProxy, this);
     this->end();
+}
+
+// 如果想要按钮直接调用需要改为静态函数
+void lifuren::LifurenWindow::buttonCallback(Fl_Widget* widgetPtr, void* voidPtr) {
+    LOG(INFO) << "你点击了按钮（this）：" << this->inputPtr->value();
 }

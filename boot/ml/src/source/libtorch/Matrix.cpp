@@ -1,6 +1,6 @@
 #include "../../header/LibTorch.hpp"
 
-void lifuren::testMatrix() {
+void lifuren::testLibTorchMatrix() {
     const torch::Tensor a = torch::randn({ 3, 2 });
     const torch::Tensor b = torch::randn({ 3, 2 });
     LOG(INFO) << a;

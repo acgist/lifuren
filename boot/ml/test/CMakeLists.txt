@@ -71,23 +71,23 @@ target_link_libraries(
     # OpenBLAS::OpenBLAS
 )
 
-add_executable(testMatrix ./TestMatrix.cpp ../src/source/libtorch/Matrix.cpp)
-add_test(NAME testMatrix COMMAND testMatrix)
+add_executable(testLibTorchMatrix ./TestLibTorchMatrix.cpp ../src/source/libtorch/Matrix.cpp)
+add_test(NAME testLibTorchMatrix COMMAND testLibTorchMatrix)
 target_link_libraries(
-    testMatrix PUBLIC
+    testLibTorchMatrix PUBLIC
     lifurencore
 )
 
-add_executable(testLinearRegression ./TestLinearRegression.cpp ../src/source/libtorch/LinearRegression.cpp)
-add_test(NAME testLinearRegression COMMAND testLinearRegression)
+add_executable(testLibTorchLinearRegression ./TestLibTorchLinearRegression.cpp ../src/source/libtorch/LinearRegression.cpp)
+add_test(NAME testLibTorchLinearRegression COMMAND testLibTorchLinearRegression)
 target_link_libraries(
-    testLinearRegression PUBLIC
+    testLibTorchLinearRegression PUBLIC
     lifurencore
 )
 
-add_executable(testActivationFunction ./TestActivationFunction.cpp ../src/source/libtorch/ActivationFunction.cpp)
-add_test(NAME testActivationFunction COMMAND testActivationFunction)
+add_executable(testLibTorchActivationFunction ./TestLibTorchActivationFunction.cpp ../src/source/libtorch/ActivationFunction.cpp)
+add_test(NAME testLibTorchActivationFunction COMMAND testLibTorchActivationFunction)
 target_link_libraries(
-    testActivationFunction PUBLIC
+    testLibTorchActivationFunction PUBLIC
     lifurencore
 )

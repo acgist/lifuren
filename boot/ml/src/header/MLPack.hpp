@@ -1,3 +1,8 @@
+/**
+ * MLPack
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include "GLog.hpp"
@@ -11,31 +16,10 @@
 
 namespace lifuren {
 
-/**
- * 矩阵
- */
 extern void testMLPackMatrix();
-
-/**
- * 加载数据
- * 
- * @param path 文件路径
- */
 extern void testMLPackLoadFile(const char* path);
-
-/**
- * 线性回归
- */
 extern void testMLPackLinearRegression();
-
-/**
- * Softmax逻辑回归（多分类问题）
- */
 extern void testMLPackSoftmaxRegression();
-
-/**
- * 逻辑回归（二分类问题）
- */
 extern void testMLPackLogisticRegression();
 
 }

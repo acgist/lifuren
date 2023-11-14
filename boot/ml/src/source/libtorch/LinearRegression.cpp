@@ -1,6 +1,6 @@
 #include "../../header/LibTorch.hpp"
 
-void lifuren::testLinearRegression() {
+void lifuren::testLibTorchLinearRegression() {
     const size_t numEpochs    = 60;
     const double learningRate = 0.001;
     torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);

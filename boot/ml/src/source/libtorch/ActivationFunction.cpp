@@ -1,6 +1,6 @@
 #include "../../header/LibTorch.hpp"
 
-void lifuren::testReLU() {
+void lifuren::testLibTorchReLU() {
     torch::nn::ReLU relu;
     LOG(INFO) << relu;
     at::Tensor input  = torch::randint(0, 10, {1, 1, 4});
@@ -10,7 +10,7 @@ void lifuren::testReLU() {
     LOG(INFO) << output;
 }
 
-void lifuren::testTanh() {
+void lifuren::testLibTorchTanh() {
     torch::nn::Tanh tanh;
     LOG(INFO) << tanh;
     at::Tensor tensor;

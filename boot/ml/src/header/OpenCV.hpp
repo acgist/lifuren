@@ -1,3 +1,8 @@
+/**
+ * OpenCV
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include "GLog.hpp"
@@ -6,9 +11,6 @@
 
 namespace lifuren {
 
-/**
- * 关闭日志
- */
 extern void shutdownOpenCVLogger();
     
 }

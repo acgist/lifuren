@@ -1,3 +1,8 @@
+/**
+ * LibTorch
+ * 
+ * @author acgist
+ */
 #pragma once
 
 #include "GLog.hpp"
@@ -5,12 +10,9 @@
 
 namespace lifuren {
 
-extern void testMatrix();
-
-extern void testReLU();
-
-extern void testTanh();
-
-extern void testLinearRegression();
+extern void testLibTorchMatrix();
+extern void testLibTorchReLU();
+extern void testLibTorchTanh();
+extern void testLibTorchLinearRegression();
 
 }
