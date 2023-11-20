@@ -30,12 +30,14 @@ public:
     lifuren::Setting setting;
 
 public:
-    LFRModel() {};
-    virtual ~LFRModel() {};
+    LFRModel();
+    virtual ~LFRModel();
     /**
      * @param setting 基本配置
      */
-    LFRModel(lifuren::Setting& setting) : setting(setting) {};
+    LFRModel(lifuren::Setting& setting);
+
+public:
     /**
      * 保存模型
      */

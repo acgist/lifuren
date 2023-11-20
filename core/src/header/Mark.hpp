@@ -26,15 +26,16 @@ public:
     std::vector<std::string> labels;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Mark, file, hash, labels);
+
 public:
-    Mark() {};
-    virtual ~Mark() {};
+    Mark();
+    virtual ~Mark();
     /**
      * @param json JSON
      */
-    Mark(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    Mark(const std::string& json);
+
+public:
     /**
      * @return JSON
      */
@@ -48,14 +49,12 @@ public:
 class MarkFile : public Mark {
 
 public:
-    MarkFile() {};
-    virtual ~MarkFile() {};
+    MarkFile();
+    virtual ~MarkFile();
     /**
      * @param json JSON
      */
-    MarkFile(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    MarkFile(const std::string& json);
 
 };
 
@@ -71,15 +70,16 @@ public:
     std::string text;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(MarkText, name, text, file, hash, labels);
+    
 public:
-    MarkText() {};
-    virtual ~MarkText() {};
+    MarkText();
+    virtual ~MarkText();
     /**
      * @param json JSON
      */
-    MarkText(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    MarkText(const std::string& json);
+
+public:
     /**
      * @return JSON
      */

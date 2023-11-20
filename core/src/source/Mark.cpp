@@ -1,11 +1,16 @@
 #include "../header/Mark.hpp"
 
-std::string lifuren::Mark::toJSON() {
-    const nlohmann::json json = *this;
-    return json.dump();
+lifuren::Mark::Mark() {
 }
 
-std::string lifuren::MarkText::toJSON() {
+lifuren::Mark::~Mark() {
+}
+
+lifuren::Mark::Mark(const std::string& json) {
+    *this = nlohmann::json::parse(json);
+}
+
+std::string lifuren::Mark::toJSON() {
     const nlohmann::json json = *this;
     return json.dump();
 }

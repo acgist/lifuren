@@ -23,15 +23,16 @@ public:
     std::string name;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name);
+
 public:
-    Label() {};
-    virtual ~Label() {};
+    Label();
+    virtual ~Label();
     /**
      * @param json JSON
      */
-    Label(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    Label(const std::string& json);
+
+public:
     /**
      * @return JSON
      */
@@ -51,15 +52,16 @@ public:
     std::map<std::string, LabelConfig> children;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelConfig, name, labels, children);
+
 public:
-    LabelConfig() {};
-    virtual ~LabelConfig() {};
+    LabelConfig();
+    virtual ~LabelConfig();
     /**
      * @param json JSON
      */
-    LabelConfig(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    LabelConfig(const std::string& json);
+
+public:
     /**
      * @return JSON
      */
@@ -81,15 +83,16 @@ public:
     std::vector<int> segmentRule;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelSegment, name, fontSize, segmentSize, segmentRule);
+
 public:
-    LabelSegment() {};
-    virtual ~LabelSegment() {};
+    LabelSegment();
+    virtual ~LabelSegment();
     /**
      * @param json JSON
      */
-    LabelSegment(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    LabelSegment(const std::string& json);
+
+public:
     /**
      * @return JSON
      */

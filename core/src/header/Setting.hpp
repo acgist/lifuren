@@ -50,20 +50,16 @@ public:
     double regularizationRate;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, path, activation, learningRate, regularization, regularizationRate);
+
 public:
-    Setting() {
-        this->activation = lifuren::Activation::RELU;
-        this->learningRate = 0.0;
-        this->regularization = lifuren::Regularization::NONE;
-        this->regularizationRate = 0.0;
-    };
-    virtual ~Setting() {};
+    Setting();
+    virtual ~Setting();
     /**
      * @param json JSON
      */
-    Setting(const std::string& json) {
-        *this = nlohmann::json::parse(json);
-    };
+    Setting(const std::string& json);
+
+public:
     /**
      * @return JSON
      */
