@@ -41,7 +41,7 @@ void lifuren::Settings::load(const std::string& settings) {
 
 void lifuren::Settings::loadFile(const std::string& path) {
     std::ifstream input;
-    input.open(path.data(), std::ios::in);
+    input.open(path, std::ios_base::in);
     if(!input.is_open()) {
         LOG(WARNING) << "打开文件失败：" << path;
         return;
@@ -57,7 +57,7 @@ void lifuren::Settings::loadFile(const std::string& path) {
 
 void lifuren::Settings::saveFile(const std::string& path) {
     std::ofstream output;
-    output.open(path.data(), std::ios::out | std::ios::beg);
+    output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
         LOG(WARNING) << "打开文件失败：" << path;
         return;
