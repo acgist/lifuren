@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <fstream>
 
 #include "GLog.hpp"
 #include "nlohmann/json.hpp"
@@ -68,19 +69,35 @@ public:
 };
 
 /**
- * 设置
+ * 设置集合
  */
 class Settings {
 
 public:
-    // 配置
+    // 设置
     std::map<std::string, Setting> settings;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Settings, settings);
 
 public:
-    // 加载
+    /**
+     * 加载设置
+     * 
+     * @param settings JSON配置文本
+     */
     void load(const std::string& settings);
+    /**
+     * 加载文件设置
+     * 
+     * @param path 文件路径
+     */
+    void loadFile(const std::string& path);
+    /**
+     * 保存文件
+     * 
+     * @param path 文件路径
+     */
+    void saveFile(const std::string& path);
     /**
      * @return JSON
      */
@@ -89,13 +106,13 @@ public:
 };
 
 /**
- * 预测配置
+ * 预测设置
  */
 class PredictSetting {
 };
 
 /**
- * 训练配置
+ * 训练设置
  */
 class TrainingSetting {
 };

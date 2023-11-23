@@ -71,10 +71,10 @@ target_link_libraries(
     # OpenBLAS::OpenBLAS
 )
 
-add_executable(testLibTorchMatrix ./TestLibTorchMatrix.cpp ../src/source/libtorch/Matrix.cpp)
-add_test(NAME testLibTorchMatrix COMMAND testLibTorchMatrix)
+add_executable(testLibTorchTensor ./TestLibTorchTensor.cpp ../src/source/libtorch/Tensor.cpp)
+add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
-    testLibTorchMatrix PUBLIC
+    testLibTorchTensor PUBLIC
     lifurencore
 )
 

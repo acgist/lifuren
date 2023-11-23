@@ -39,6 +39,34 @@ void lifuren::Settings::load(const std::string& settings) {
     }
 }
 
+void lifuren::Settings::loadFile(const std::string& path) {
+    std::ifstream input;
+    input.open(path.data(), std::ios::in);
+    if(!input.is_open()) {
+        LOG(WARNING) << "打开文件失败：" << path;
+        return;
+    }
+    std::string line;
+    std::string settings;
+    while(std::getline(input, line)) {
+        settings += line;
+    }
+    input.close();
+    *this = nlohmann::json::parse(settings);
+}
+
+void lifuren::Settings::saveFile(const std::string& path) {
+    std::ofstream output;
+    output.open(path.data(), std::ios::out | std::ios::beg);
+    if(!output.is_open()) {
+        LOG(WARNING) << "打开文件失败：" << path;
+        return;
+    }
+    const std::string settings = this->toJSON();
+    output << settings;
+    output.close();
+}
+
 std::string lifuren::Settings::toJSON() {
     const nlohmann::json json = *this;
     return json.dump();

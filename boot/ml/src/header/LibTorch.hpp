@@ -10,9 +10,10 @@
 
 namespace lifuren {
 
-extern void testLibTorchMatrix();
 extern void testLibTorchReLU();
 extern void testLibTorchTanh();
+extern void testLibTorchMatrix();
+extern void testLibTorchTensor();
 extern void testLibTorchLinearRegression();
 
 }

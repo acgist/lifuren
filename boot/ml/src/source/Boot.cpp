@@ -1,22 +1,22 @@
 #include "../header/Boot.hpp"
 
 void lifuren::testJson() {
-    // const nlohmann::json json = nlohmann::json::parse(R"(
-    // {
-    //     "pi"   : 3.141,
-    //     "happy": true
-    // }
-    // )");
+    const nlohmann::json json{
+        { "pi"   , 3.141 },
+        { "happy", true  }
+    };
     // const nlohmann::json json = R"(
     //     {
     //         "pi"   : 3.141,
     //         "happy": true
     //     }
     // )"_json;
-    const nlohmann::json json{
-        { "pi"   , 3.141 },
-        { "happy", true  }
-    };
+    // const nlohmann::json json = nlohmann::json::parse(R"(
+    // {
+    //     "pi"   : 3.141,
+    //     "happy": true
+    // }
+    // )");
     LOG(INFO) << "pi = " << json["pi"];
     nlohmann::json array = nlohmann::json::array();
     const int ints[] = { 1, 2 };
@@ -115,4 +115,8 @@ void lifuren::testSetting() {
     }
     settings.settings["acgist"] = setting;
     LOG(INFO) << "settings = " << settings.toJSON();
+    settings.saveFile("D:/tmp/settings.json");
+    lifuren::Settings reload;
+    reload.loadFile("D:/tmp/settings.json");
+    assert(reload.toJSON() == settings.toJSON());
 }

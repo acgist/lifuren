@@ -32,6 +32,7 @@ public:
     ~LifurenWindow();
     LifurenWindow(int width, int height, const char* titlePtr);
 
+public:
     void init();
     void buttonCallback(Fl_Widget* widgetPtr, void* voidPtr);
     
