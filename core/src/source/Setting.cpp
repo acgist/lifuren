@@ -12,7 +12,7 @@ lifuren::Setting::~Setting() {
 
 lifuren::Setting::Setting(const std::string& json) {
     *this = nlohmann::json::parse(json);
-};
+}
 
 std::string lifuren::Setting::toJSON() {
     const nlohmann::json json = *this;
@@ -21,11 +21,11 @@ std::string lifuren::Setting::toJSON() {
 
 void lifuren::Settings::load(const std::string& settings) {
     try {
-        nlohmann::json json = nlohmann::json::parse(settings);
+        const nlohmann::json json = nlohmann::json::parse(settings);
         const char* keys[] = {
-            "ImageGC", "ImageTS",
-            "AudioGC", "AudioTS",
-            "VideoGC", "VideoTS",
+            "ImageGC",  "ImageTS",
+            "AudioGC",  "AudioTS",
+            "VideoGC",  "VideoTS",
             "PoetryGC", "PoetryTS",
         };
         for(const char* key : keys) {
@@ -52,6 +52,7 @@ void lifuren::Settings::loadFile(const std::string& path) {
         settings += line;
     }
     input.close();
+    LOG(INFO) << "加载配置：" << settings;
     *this = nlohmann::json::parse(settings);
 }
 
@@ -63,6 +64,7 @@ void lifuren::Settings::saveFile(const std::string& path) {
         return;
     }
     const std::string settings = this->toJSON();
+    LOG(INFO) << "保存配置：" << settings;
     output << settings;
     output.close();
 }

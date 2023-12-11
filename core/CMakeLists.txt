@@ -2,10 +2,7 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-file(
-    GLOB SUB_SOURCE_FILES
-    "src/source/*/*.cpp"
-)
+file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
@@ -42,10 +39,7 @@ set(
     ${HEADER_DIR}/PoetryTS.hpp
 )
 
-install(
-    FILES
-    ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-)
+install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
@@ -55,7 +49,4 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 
-install(
-    DIRECTORY
-    "src/config/" DESTINATION ${CMAKE_INSTALL_PREFIX}/config/
-)
+install(DIRECTORY "src/config/" DESTINATION ${CMAKE_INSTALL_PREFIX}/config/)

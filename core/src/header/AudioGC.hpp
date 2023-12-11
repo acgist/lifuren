@@ -10,12 +10,21 @@
 
 namespace lifuren {
 
+/**
+ * 音频生成预测设置
+ */
 class AudioGCPredictSetting : public lifuren::PredictSetting {
 };
 
+/**
+ * 音频生成训练设置
+ */
 class AudioGCTrainingSetting : public lifuren::TrainingSetting {
 };
 
+/**
+ * 音频生成模型
+ */
 class AudioGCModel : public LFRModel<AudioGCPredictSetting, AudioGCTrainingSetting> {
 
 public:
