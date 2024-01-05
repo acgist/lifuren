@@ -85,9 +85,9 @@ void testSelf() {
     LOG(INFO) << std::endl << std::endl << std::endl << std::endl;
 }
 
+// 张量积
 // 克罗内克积
-// 外积、张量积
-// 叉积、叉乘、向量积
+// 叉积、叉乘、外积、向量积
 // 点积、内积、数量积、标量积
 // 元素积、舒尔积、逐项积、哈达玛积
 void testProduct() {

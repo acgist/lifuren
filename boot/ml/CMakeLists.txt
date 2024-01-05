@@ -32,6 +32,8 @@ set(
     ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/LibTorch.hpp
     ${HEADER_DIR}/Transformer.hpp
+    ${HEADER_DIR}/nn/NNModel.hpp
+    ${HEADER_DIR}/nn/NNDataset.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})

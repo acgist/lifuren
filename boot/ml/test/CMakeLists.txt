@@ -71,6 +71,13 @@ target_link_libraries(
     # OpenBLAS::OpenBLAS
 )
 
+add_executable(testNN ./TestNN.cpp ../src/source/libtorch/nn/NNModel.cpp ../src/source/libtorch/nn/NNTrainer.cpp ../src/source/libtorch/nn/NNDataset.cpp)
+add_test(NAME testNN COMMAND testNN)
+target_link_libraries(
+    testNN PUBLIC
+    lifurencore
+)
+
 add_executable(testLibTorchTensor ./TestLibTorchTensor.cpp ../src/source/libtorch/Tensor.cpp)
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
