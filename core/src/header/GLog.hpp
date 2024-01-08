@@ -18,7 +18,7 @@ namespace lifuren {
  * @param argc 参数数量
  * @param argv 参数配置
  */
-extern void init(int argc, char const* argv[]);
+extern void init(const int argc, const char * const argv[]);
 
 /**
  * 关闭GLog

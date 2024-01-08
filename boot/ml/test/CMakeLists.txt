@@ -21,6 +21,22 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
+add_executable(testOpenCVColor ./TestOpenCVColor.cpp ../src/source/opencv/OpenCV.cpp ../src/source/opencv/OpenCVColor.cpp)
+add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
+target_link_libraries(
+    testOpenCVColor PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
+add_executable(testOpenCVResize ./TestOpenCVResize.cpp ../src/source/opencv/OpenCV.cpp ../src/source/opencv/OpenCVResize.cpp)
+add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
+target_link_libraries(
+    testOpenCVResize PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
 add_executable(testMLPackMatrix ./TestMLPackMatrix.cpp ../src/source/mlpack/Matrix.cpp)
 add_test(NAME testMLPackMatrix COMMAND testMLPackMatrix)
 target_link_libraries(
@@ -71,10 +87,17 @@ target_link_libraries(
     # OpenBLAS::OpenBLAS
 )
 
-add_executable(testNN ./TestNN.cpp ../src/source/libtorch/nn/NNModel.cpp ../src/source/libtorch/nn/NNTrainer.cpp ../src/source/libtorch/nn/NNDataset.cpp)
-add_test(NAME testNN COMMAND testNN)
+add_executable(testLibTorchNN ./TestLibTorchNN.cpp ../src/source/libtorch/nn/NNModel.cpp ../src/source/libtorch/nn/NNTrainer.cpp ../src/source/libtorch/nn/NNDataset.cpp)
+add_test(NAME testLibTorchNN COMMAND testLibTorchNN)
 target_link_libraries(
-    testNN PUBLIC
+    testLibTorchNN PUBLIC
+    lifurencore
+)
+
+add_executable(testLibTorchLayer ./TestLibTorchLayer.cpp)
+add_test(NAME testLibTorchLayer COMMAND testLibTorchLayer)
+target_link_libraries(
+    testLibTorchLayer PUBLIC
     lifurencore
 )
 

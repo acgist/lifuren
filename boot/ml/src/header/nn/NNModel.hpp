@@ -24,6 +24,7 @@ public:
 private:
     torch::nn::Conv2d conv1 = nullptr;
     torch::nn::Conv2d conv2 = nullptr;
+    // 不能设置为空
     torch::nn::Dropout2d conv2Drop;
     torch::nn::Linear fc1 = nullptr;
     torch::nn::Linear fc2 = nullptr;

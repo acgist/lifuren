@@ -1,6 +1,6 @@
 #include "../src/header/Fltk.hpp"
 
-int main(int argc, char const *argv[]) {
+int main(const int argc, const char * const argv[]) {
     lifuren::init(argc, argv);
     LOG(INFO) << "测试";
     lifuren::LifurenWindow* windowPtr = new lifuren::LifurenWindow(200, 100, "李夫人");

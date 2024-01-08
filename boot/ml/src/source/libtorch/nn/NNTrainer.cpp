@@ -16,9 +16,9 @@ void lifuren::NNTrainer::train(
 ) {
     model.train();
     auto dataset = trainDataset.mnistDataset
-      // 正则化：均值、标准差
-      .map(torch::data::transforms::Normalize<>(0.1307, 0.3081))
-      .map(torch::data::transforms::Stack<>());
+        // 正则化：均值、标准差
+        .map(torch::data::transforms::Normalize<>(0.1307, 0.3081))
+        .map(torch::data::transforms::Stack<>());
     auto dataLoader = torch::data::make_data_loader(
         dataset,
         torch::data::DataLoaderOptions()
@@ -30,13 +30,13 @@ void lifuren::NNTrainer::train(
     // 网络训练
     for (const auto& batch : *dataLoader) {
         auto data = batch.data.to(device);
-        auto targets = batch.target.to(device);
+        auto target = batch.target.to(device);
         optimizer.zero_grad();
         auto output = model.forward(data);
-        auto loss = torch::nll_loss(output, targets);
+        auto loss = torch::nll_loss(output, target);
         loss.backward();
         optimizer.step();
-        if (batchIndex++ % this->logInterval == 0) {
+        if (++batchIndex % this->logInterval == 0) {
             LOG(INFO) <<
             "train epoch" << epoch <<
             " " << (batchIndex * batch.data.size(0)) <<
@@ -69,16 +69,16 @@ void lifuren::NNTrainer::test(
     auto datasetSize = dataset.size().value();
     for (const auto& batch : *dataLoader) {
         auto data = batch.data.to(device);
-        auto targets = batch.target.to(device);
+        auto target = batch.target.to(device);
         auto output = model.forward(data);
         testLoss += torch::nll_loss(
             output,
-            targets,
+            target,
             {},
             torch::Reduction::Sum
         ).item<float>();
         auto pred = output.argmax(1);
-        correct += pred.eq(targets).sum().template item<int64_t>();
+        correct += pred.eq(target).sum().template item<int64_t>();
     }
     testLoss /= datasetSize;
     LOG(INFO) <<

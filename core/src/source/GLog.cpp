@@ -1,6 +1,6 @@
 #include "../header/GLog.hpp"
 
-void lifuren::init(int argc, char const* argv[]) {
+void lifuren::init(const int argc, const char * const argv[]) {
     std::filesystem::create_directories("logs");
     FLAGS_v                = 4;
     FLAGS_alsologtostderr  = true;
