@@ -29,6 +29,14 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
+add_executable(testOpenCVFace ./TestOpenCVFace.cpp ../src/source/opencv/OpenCV.cpp ../src/source/opencv/OpenCVFace.cpp)
+add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
+target_link_libraries(
+    testOpenCVFace PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
 add_executable(testOpenCVResize ./TestOpenCVResize.cpp ../src/source/opencv/OpenCV.cpp ../src/source/opencv/OpenCVResize.cpp)
 add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
 target_link_libraries(
