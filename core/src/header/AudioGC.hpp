@@ -28,12 +28,12 @@ class AudioGCTrainingSetting : public lifuren::TrainingSetting {
 class AudioGCModel : public LFRModel<AudioGCPredictSetting, AudioGCTrainingSetting> {
 
 public:
-    AudioGCModel() {};
-    ~AudioGCModel() {};
+    AudioGCModel();
+    ~AudioGCModel();
     /**
      * @param setting 基本配置
      */
-    AudioGCModel(lifuren::Setting& setting) : LFRModel(setting) {};
+    AudioGCModel(lifuren::Setting& setting);
 
 public:
     /**

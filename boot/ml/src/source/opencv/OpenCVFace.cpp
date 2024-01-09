@@ -11,7 +11,7 @@ void lifuren::face(const std::string& model, const std::string& path) {
         return;
     }
     std::vector<cv::Rect> vector;
-    classifier.detectMultiScale(image, vector, 1.1, 10);
+    classifier.detectMultiScale(image, vector);
     for(int i = 0; i < vector.size(); ++i) {
         cv::rectangle(image, vector[i].tl(), vector[i].br(), cv::Scalar(255, 0, 255), 3);
     }

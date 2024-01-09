@@ -1,5 +1,5 @@
 /**
- * 通用：JSON、标记、标签、设置
+ * 通用
  * 
  * @author acgist
  */
@@ -12,9 +12,21 @@
 
 namespace lifuren {
 
+/**
+ * JSON测试
+ */
 extern void testJson();
+/**
+ * Mark测试
+ */
 extern void testMark();
+/**
+ * Label测试
+ */
 extern void testLabel();
+/**
+ * Setting测试
+ */
 extern void testSetting();
 
 }

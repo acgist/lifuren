@@ -10,10 +10,25 @@
 
 namespace lifuren {
 
+/**
+ * LibTorch ReLU测试
+ */
 extern void testLibTorchReLU();
+/**
+ * LibTorch Tanh测试
+ */
 extern void testLibTorchTanh();
+/**
+ * LibTorch Matrix测试
+ */
 extern void testLibTorchMatrix();
+/**
+ * LibTorch Tensor测试
+ */
 extern void testLibTorchTensor();
+/**
+ * LibTorch LinearRegression测试
+ */
 extern void testLibTorchLinearRegression();
 
 }

@@ -9,6 +9,11 @@
 
 namespace lifuren {
 
+/**
+ * 数据集
+ * 
+ * @author acgist
+ */
 class NNDataset {
 
 public:
@@ -19,6 +24,9 @@ public:
     NNDataset(const std::string& path, torch::data::datasets::MNIST::Mode mode);
 
 public:
+    /**
+     * MNIST数据集
+     */
     torch::data::datasets::MNIST mnistDataset;
 
 };
