@@ -33,6 +33,7 @@ set(
     ${HEADER_DIR}/LibTorch.hpp
     ${HEADER_DIR}/Transformer.hpp
     ${HEADER_DIR}/nn/NNModel.hpp
+    ${HEADER_DIR}/nn/NNTrainer.hpp
     ${HEADER_DIR}/nn/NNDataset.hpp
 )
 
