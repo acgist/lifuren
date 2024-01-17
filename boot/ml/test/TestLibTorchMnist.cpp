@@ -1,6 +1,4 @@
-#include "../src/header/nn/NNModel.hpp"
-#include "../src/header/nn/NNTrainer.hpp"
-#include "../src/header/nn/NNDataset.hpp"
+#include "../src/header/Mnist.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::init(argc, argv);

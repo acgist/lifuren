@@ -28,13 +28,11 @@ set(
     ${HEADER_DIR}/GAN.hpp
     ${HEADER_DIR}/Boot.hpp
     ${HEADER_DIR}/Fltk.hpp
+    ${HEADER_DIR}/Mnist.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/LibTorch.hpp
     ${HEADER_DIR}/Transformer.hpp
-    ${HEADER_DIR}/nn/NNModel.hpp
-    ${HEADER_DIR}/nn/NNTrainer.hpp
-    ${HEADER_DIR}/nn/NNDataset.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})

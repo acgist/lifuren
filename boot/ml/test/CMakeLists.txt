@@ -95,10 +95,10 @@ target_link_libraries(
     # OpenBLAS::OpenBLAS
 )
 
-add_executable(testLibTorchNN ./TestLibTorchNN.cpp ../src/source/libtorch/nn/NNModel.cpp ../src/source/libtorch/nn/NNTrainer.cpp ../src/source/libtorch/nn/NNDataset.cpp)
-add_test(NAME testLibTorchNN COMMAND testLibTorchNN)
+add_executable(testLibTorchMnist ./TestLibTorchMnist.cpp ../src/source/libtorch/Mnist.cpp)
+add_test(NAME testLibTorchMnist COMMAND testLibTorchMnist)
 target_link_libraries(
-    testLibTorchNN PUBLIC
+    testLibTorchMnist PUBLIC
     lifurencore
 )
 
