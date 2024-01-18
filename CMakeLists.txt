@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21.0)
 
-project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
+project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 #  -D CMAKE_BUILD_TYPE=Debug|Release
 # SET(CMAKE_BUILD_TYPE Debug)
@@ -44,21 +44,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
-set(
-    CMAKE_INSTALL_PREFIX
-    ${CMAKE_SOURCE_DIR}/target/
-)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} deps/libtorch)
 
-set(
-    CMAKE_INSTALL_INCLUDEDIR
-    ${CMAKE_INSTALL_PREFIX}/include/
-)
-
-set(
-    CMAKE_PREFIX_PATH
-    ${CMAKE_PREFIX_PATH}
-    deps/libtorch
-)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/target/)
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX}/include/)
 
 include_directories(
     deps/libtorch/include

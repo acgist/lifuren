@@ -1,4 +1,4 @@
-project(lifurenyuzan VERSION 1.0.0 LANGUAGES C CXX)
+project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
