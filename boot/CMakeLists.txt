@@ -1,2 +1,2 @@
-add_subdirectory(ml)
 add_subdirectory(main)
+add_subdirectory(test)
