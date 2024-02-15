@@ -17,3 +17,6 @@ deps/json
 deps/mlpack
 deps/opencv
 deps/libtorch
+deps/libtorch-cpu
+deps/libtorch-gpu
+deps/libtorch-cuda

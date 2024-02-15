@@ -27,6 +27,7 @@ set(
     ${HEADER_DIR}/RNN.hpp
     ${HEADER_DIR}/GAN.hpp
     ${HEADER_DIR}/Boot.hpp
+    ${HEADER_DIR}/CUDA.hpp
     ${HEADER_DIR}/Fltk.hpp
     ${HEADER_DIR}/Mnist.hpp
     ${HEADER_DIR}/OpenCV.hpp
@@ -159,6 +160,13 @@ target_link_libraries(
     LAPACK::LAPACK
     ${ARMADILLO_LIBRARY}
     # OpenBLAS::OpenBLAS
+)
+
+add_executable(testLibTorchCUDA src/TestLibTorchCUDA.cpp src/source/libtorch/CUDA.cpp)
+add_test(NAME testLibTorchCUDA COMMAND testLibTorchCUDA)
+target_link_libraries(
+    testLibTorchCUDA PUBLIC
+    lifurencore
 )
 
 add_executable(testLibTorchMnist src/TestLibTorchMnist.cpp src/source/libtorch/Mnist.cpp)
