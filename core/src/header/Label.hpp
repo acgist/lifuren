@@ -23,7 +23,10 @@ public:
     // 标签名称
     std::string name;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name);
+    // NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name);
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Label, name);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Label, name);
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Label, name);
 
 public:
     Label();
@@ -52,7 +55,7 @@ public:
     // 下级标签
     std::map<std::string, LabelConfig> children;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelConfig, name, labels, children);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelConfig, name, labels, children);
 
 public:
     LabelConfig();
@@ -83,7 +86,7 @@ public:
     // 分词规则
     std::vector<int> segmentRule;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(LabelSegment, name, fontSize, segmentSize, segmentRule);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelSegment, name, fontSize, segmentSize, segmentRule);
 
 public:
     LabelSegment();

@@ -35,6 +35,9 @@ void lifuren::testJson() {
     object["name"] = "碧螺萧萧";
     object.push_back({ "age", 4 });
     LOG(INFO) << "object = " << object.dump();
+    object.clear();
+    LOG(INFO) << "\r\n";
+    LOG(INFO) << "\r\n";
 }
 
 void lifuren::testMark() {
@@ -56,6 +59,8 @@ void lifuren::testMark() {
     markTextPtr->labels.push_back("lifuren");
     LOG(INFO) << "mark text = " << markTextPtr->toJSON();
     delete markTextPtr;
+    LOG(INFO) << "\r\n";
+    LOG(INFO) << "\r\n";
 }
 
 void lifuren::testLabel() {
@@ -76,6 +81,8 @@ void lifuren::testLabel() {
     LOG(INFO) << "label segment name = " << labelJson.name;
     LOG(INFO) << "label segment font size = " << labelJson.fontSize;
     LOG(INFO) << "label segment segment rule = " << labelJson.segmentRule.size();
+    LOG(INFO) << "\r\n";
+    LOG(INFO) << "\r\n";
 }
 
 void lifuren::testSetting() {
@@ -109,7 +116,7 @@ void lifuren::testSetting() {
         }
     )");
     std::map<std::string, lifuren::Setting>::iterator iterator = settings.settings.begin();
-    std::map<std::string, lifuren::Setting>::iterator end = settings.settings.end();
+    std::map<std::string, lifuren::Setting>::iterator end      = settings.settings.end();
     for(; iterator != end; iterator++) {
         LOG(INFO) << "key = " << iterator->first << " value = " << iterator->second.toJSON();
     }

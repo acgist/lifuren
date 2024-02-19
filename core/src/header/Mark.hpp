@@ -1,6 +1,6 @@
 /**
  * 标记
- * 标记训练文件标签信息
+ * 训练文件标签信息
  * 
  * @author acgist
  */
@@ -26,7 +26,7 @@ public:
     // 标签数组
     std::vector<std::string> labels;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Mark, file, hash, labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Mark, file, hash, labels);
 
 public:
     Mark();
@@ -70,7 +70,7 @@ public:
     // 文本内容
     std::string text;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(MarkText, name, text, file, hash, labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkText, name, text, file, hash, labels);
     
 public:
     MarkText();

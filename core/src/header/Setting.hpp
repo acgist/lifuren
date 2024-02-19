@@ -18,19 +18,23 @@ namespace lifuren {
  * 激活函数
  */
 enum Activation {
+
     RELU,
     TANH,
-    LINEAR,
     SIGMOID,
+
 };
 
 /**
  * 正则函数
  */
 enum Regularization {
+
     NONE,
     L1,
     L2,
+    MSE,
+
 };
 
 /**
@@ -80,10 +84,14 @@ public:
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Settings, settings);
 
 public:
+    Settings();
+    ~Settings();
+
+public:
     /**
      * 加载设置
      * 
-     * @param settings JSON配置文本
+     * @param settings JSON
      */
     void load(const std::string& settings);
     /**

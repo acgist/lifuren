@@ -1,6 +1,8 @@
 #include "../header/Label.hpp"
 
 lifuren::LabelSegment::LabelSegment() {
+    this->fontSize    = 0;
+    this->segmentSize = 0;
 }
 
 lifuren::LabelSegment::~LabelSegment() {
