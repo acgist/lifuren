@@ -3,7 +3,7 @@
 void lifuren::testLibTorchReLU() {
     torch::nn::ReLU relu;
     LOG(INFO) << relu;
-    at::Tensor input  = torch::randint(0, 10, {1, 1, 4});
+    at::Tensor input  = torch::randint(0, 10, { 1, 1, 4 });
     at::Tensor output = relu->forward(input);
     // relu(input); // TODO：测试
     LOG(INFO) << input;

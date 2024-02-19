@@ -24,17 +24,11 @@ namespace lifuren {
 class LifurenWindow : public Fl_Window {
 
 public:
-    /**
-     * 输入框
-     */
-    Fl_Input*  inputPtr;
-    /**
-     * 按钮
-     */
+    // 输入框
+    Fl_Input* inputPtr;
+    // 按钮
     Fl_Button* buttonPtr;
-    /**
-     * 代理按钮
-     */
+    // 代理按钮
     Fl_Button* buttonProxyPtr;
 
 public:

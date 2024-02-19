@@ -4,8 +4,8 @@ void lifuren::testLibTorchLinearRegression() {
     const size_t numEpochs    = 60;
     const double learningRate = 0.001;
     torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
-    at::Tensor xTrain = torch::randint(0, 10, {15, 1}, torch::TensorOptions(torch::kFloat).device(device));
-    at::Tensor yTrain = torch::randint(0, 10, {15, 1}, torch::TensorOptions(torch::kFloat).device(device));
+    at::Tensor xTrain = torch::randint(0, 10, { 15, 1 }, torch::TensorOptions(torch::kFloat).device(device));
+    at::Tensor yTrain = torch::randint(0, 10, { 15, 1 }, torch::TensorOptions(torch::kFloat).device(device));
     torch::nn::Linear model(1, 1);
     LOG(INFO) << model->weight;
     // torch::nn::Linear model(10, 5);
