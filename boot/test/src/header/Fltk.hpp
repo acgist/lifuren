@@ -33,17 +33,12 @@ public:
 
 public:
     /**
-     * 构造函数
-     * 
      * @param width    窗口宽度
      * @param height   窗口高度
      * @param titlePtr 窗口名称
      */
     LifurenWindow(int width, int height, const char* titlePtr);
-    /**
-     * 析构函数
-     */
-    ~LifurenWindow();
+    virtual ~LifurenWindow();
 
 public:
     /**

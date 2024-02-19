@@ -69,12 +69,12 @@ if(CMAKE_HOST_WIN32)
         deps/opencv/include
     )
 
-    set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
-    
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
+        set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
         file(GLOB MLPACK_DLLS "deps/mlpack/debug/bin/*.dll")
     else()
+        set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
         file(GLOB MLPACK_DLLS "deps/mlpack/bin/*.dll")
     endif()
@@ -84,6 +84,7 @@ endif()
 
 find_package(FLTK      REQUIRED)
 find_package(Torch     REQUIRED)
+find_package(libpng    REQUIRED)
 find_package(OpenCV    REQUIRED)
 find_package(LAPACK    REQUIRED)
 find_package(Armadillo REQUIRED)
