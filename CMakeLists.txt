@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21.0)
 
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
-#  -D CMAKE_BUILD_TYPE=Debug|Release
+# -D CMAKE_BUILD_TYPE=Debug|Release
 # SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 

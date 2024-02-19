@@ -1,5 +1,5 @@
 /**
- * 窗口
+ * 窗口定义
  * 
  * @author acgist
  */
@@ -17,38 +17,80 @@ class LFRWindow {
 /**
  * 主窗口
  */
-class MainWindow {
+class MainWindow : public LFRWindow {
 
 public:
-// void about();
-// void setting();
+    /**
+     * 关于
+     */
+    void about();
+    /**
+     * 设置
+     */
+    void setting();
+
 };
 
 /**
  * 设置窗口
  */
-class SettingWindow {
+class SettingWindow : public LFRWindow {
 
 };
 
-
-class ImageGCWindow {
-
-};
-
-class ImageTSWindow {
+/**
+ * @see AudioGC
+ */
+class AudioGCWindow : public LFRWindow {
 
 };
 
-class VideoGCWindow {
+/**
+ * @see AudioTS
+ */
+class AudioTSWindow : public LFRWindow {
 
 };
 
-class VideoTSWindow {
+/**
+ * @see ImageGC
+ */
+class ImageGCWindow : public LFRWindow {
 
 };
 
-class PoetryGCWindow {
+/**
+ * @see ImageTS
+ */
+class ImageTSWindow : public LFRWindow {
+
+};
+
+/**
+ * @see PoetryGC
+ */
+class PoetryGCWindow : public LFRWindow {
+
+};
+
+/**
+ * @see PoetryTS
+ */
+class PoetryTSWindow : public LFRWindow {
+
+};
+
+/**
+ * @see VideoGC
+ */
+class VideoGCWindow : public LFRWindow {
+
+};
+
+/**
+ * @see VideoTS
+ */
+class VideoTSWindow : public LFRWindow {
 
 };
 
