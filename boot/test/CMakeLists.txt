@@ -168,13 +168,6 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testLibTorchLayer src/TestLibTorchLayer.cpp)
-add_test(NAME testLibTorchLayer COMMAND testLibTorchLayer)
-target_link_libraries(
-    testLibTorchLayer PUBLIC
-    lifurencore
-)
-
 add_executable(testLibTorchTensor src/TestLibTorchTensor.cpp src/source/libtorch/Tensor.cpp)
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(

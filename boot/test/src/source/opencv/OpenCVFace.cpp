@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "opencv2/objdetect.hpp"
+
 #include "../../header/OpenCV.hpp"
 
 void lifuren::face(const std::string& model, const std::string& path) {

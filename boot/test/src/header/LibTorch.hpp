@@ -6,6 +6,7 @@
 #pragma once
 
 #include "GLog.hpp"
+
 #include "torch/torch.h"
 
 namespace lifuren {
@@ -18,10 +19,6 @@ extern void testLibTorchReLU();
  * LibTorch Tanh测试
  */
 extern void testLibTorchTanh();
-/**
- * LibTorch Matrix测试
- */
-extern void testLibTorchMatrix();
 /**
  * LibTorch Tensor测试
  */

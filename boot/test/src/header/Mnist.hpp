@@ -5,9 +5,9 @@
 
 #include <string>
 
-#include "torch/torch.h"
-
 #include "GLog.hpp"
+
+#include "torch/torch.h"
 
 namespace lifuren {
 
