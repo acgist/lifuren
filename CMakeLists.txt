@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21.0)
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 # -D CMAKE_BUILD_TYPE=Debug|Release
-# SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Debug)
 # SET(CMAKE_BUILD_TYPE Release)
 
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
@@ -41,13 +41,23 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release/bin)
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/debug/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/debug/lib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/debug/bin)
+else()
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release/lib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release/bin)
+endif()
+
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} deps/libtorch)
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/target/)
-set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX}/include/)
+set(CMAKE_INSTALL_PREFIX      ${CMAKE_SOURCE_DIR}/target/)
+set(CMAKE_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include/)
 
 include_directories(
     deps/libtorch/include
@@ -78,13 +88,15 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
         file(GLOB MLPACK_DLLS "deps/mlpack/bin/*.dll")
     endif()
+
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
     file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
+
+    find_package(libpng REQUIRED)
 endif()
 
 find_package(FLTK      REQUIRED)
 find_package(Torch     REQUIRED)
-find_package(libpng    REQUIRED)
 find_package(OpenCV    REQUIRED)
 find_package(LAPACK    REQUIRED)
 find_package(Armadillo REQUIRED)

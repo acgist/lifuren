@@ -23,7 +23,7 @@ set(
     ${HEADER_DIR}/Window.hpp
 )
 
-install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
@@ -33,6 +33,18 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 
+set(
+    IMAGES_FILES
+    src/images/logo.png
+)
+
+install(FILES ${IMAGES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/images/)
+
+if(CMAKE_HOST_WIN32)
+    install(FILES ${FLTK_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TORCH_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+endif()
+
 add_definitions(-DC10_USE_GLOG)
 
 if(MSVC)
@@ -40,12 +52,13 @@ if(MSVC)
 endif()
 
 if(CMAKE_HOST_WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${FLTK_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+    string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
+    foreach(image_file ${IMAGES_FILES})
+        file(COPY ${image_file} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/images)
+    endforeach(image_file)
 endif()
-
-install(DIRECTORY "src/images/" DESTINATION ${CMAKE_INSTALL_PREFIX}/images/)

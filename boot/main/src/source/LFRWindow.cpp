@@ -7,6 +7,10 @@ lifuren::LFRWindow::LFRWindow(int width, int height, const char* titlePtr) : Fl_
 }
 
 lifuren::LFRWindow::~LFRWindow() {
+    if(this->iconImagePtr != nullptr) {
+        delete this->iconImagePtr;
+        this->iconImagePtr = nullptr;
+    }
 }
 
 void lifuren::LFRWindow::init() {
@@ -15,8 +19,9 @@ void lifuren::LFRWindow::init() {
 }
 
 void lifuren::LFRWindow::icon() {
-    Fl_PNG_Image iconImage("images/logo.png");
-    Fl_Window::default_icon(&iconImage);
+    Fl_PNG_Image iconImage("../images/logo.png");
+    this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
+    Fl_Window::default_icon(this->iconImagePtr);
 }
 
 void lifuren::LFRWindow::center() {
