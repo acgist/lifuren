@@ -44,6 +44,12 @@ protected:
      */
     void center();
 
+protected:
+    /**
+     * 图标指针
+     */
+    Fl_PNG_Image* iconImagePtr;
+
 };
 
 /**
