@@ -38,7 +38,7 @@ set(
     src/images/logo.png
 )
 
-install(FILES ${IMAGES_FILES}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/images/)
+install(FILES ${IMAGES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/images/)
 
 if(CMAKE_HOST_WIN32)
     install(FILES ${FLTK_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
@@ -57,7 +57,8 @@ if(CMAKE_HOST_WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
+    string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
     foreach(image_file ${IMAGES_FILES})
-        file(COPY ${image_file} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/images)
+        file(COPY ${image_file} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/images)
     endforeach(image_file)
 endif()

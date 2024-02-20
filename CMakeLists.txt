@@ -91,11 +91,12 @@ if(CMAKE_HOST_WIN32)
 
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
     file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
+
+    find_package(libpng REQUIRED)
 endif()
 
 find_package(FLTK      REQUIRED)
 find_package(Torch     REQUIRED)
-find_package(libpng    REQUIRED)
 find_package(OpenCV    REQUIRED)
 find_package(LAPACK    REQUIRED)
 find_package(Armadillo REQUIRED)
