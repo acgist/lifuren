@@ -12,7 +12,7 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
-#include "FL/Fl_JPEG_Image.H"
+#include "FL/Fl_Text_Display.H"
 
 namespace lifuren {
 
@@ -20,6 +20,12 @@ namespace lifuren {
  * 抽象窗口
  */
 class LFRWindow : public Fl_Window {
+
+protected:
+    /**
+     * 图标指针
+     */
+    Fl_PNG_Image* iconImagePtr = nullptr;
 
 public:
     /**
@@ -30,11 +36,17 @@ public:
     LFRWindow(int width, int height, const char* titlePtr);
     virtual ~LFRWindow();
 
-protected:
+public:
     /**
      * 加载窗口
      */
     virtual void init();
+
+protected:
+    /**
+     * 加载组件
+     */
+    virtual void drawElement() = 0;
     /**
      * 设置图标
      */
@@ -44,18 +56,44 @@ protected:
      */
     void center();
 
-protected:
-    /**
-     * 图标指针
-     */
-    Fl_PNG_Image* iconImagePtr;
-
 };
+
+class AboutWindow;
 
 /**
  * 主窗口
  */
 class MainWindow : public LFRWindow {
+
+private:
+    // AudioGC按钮
+    Fl_Button* audioGcPtr = nullptr;
+    // AudioTS按钮
+    Fl_Button* audioTsPtr = nullptr;
+    // Audio分组
+    Fl_Group* audioGroupPtr = nullptr;
+    // ImageGC按钮
+    Fl_Button* imageGcPtr = nullptr;
+    // ImageTS按钮
+    Fl_Button* imageTsPtr = nullptr;
+    // Image分组
+    Fl_Group* imageGroupPtr = nullptr;
+    // VideoGC按钮
+    Fl_Button* videoGcPtr = nullptr;
+    // VideoTS按钮
+    Fl_Button* videoTsPtr = nullptr;
+    // Video分组
+    Fl_Group* videoGroupPtr = nullptr;
+    // PoetryGC按钮
+    Fl_Button* poetryGcPtr = nullptr;
+    // PoetryTS按钮
+    Fl_Button* poetryTsPtr = nullptr;
+    // Poetry分组
+    Fl_Group* poetryGroupPtr = nullptr;
+    // 关于按钮
+    Fl_Button* aboutButtonPtr = nullptr;
+    // 关于窗口
+    AboutWindow* aboutWindowPtr = nullptr;
 
 public:
     /**
@@ -71,20 +109,40 @@ public:
      * 关于
      */
     void about();
-    /**
-     * 设置
-     */
-    void setting();
 
 protected:
-    void init() override;
+    /**
+     * 加载组件
+     */
+    virtual void drawElement() override;
 
 };
 
 /**
- * 设置窗口
+ * 关于窗口
  */
-class SettingWindow : public LFRWindow {
+class AboutWindow : public LFRWindow {
+
+private:
+    // 官网
+    Fl_Button* homePagePtr = nullptr;
+    // 关于
+    Fl_Text_Display* aboutTextPtr = nullptr;
+
+public:
+    /**
+     * @param width    窗口宽度
+     * @param height   窗口高度
+     * @param titlePtr 窗口名称
+     */
+    AboutWindow(int width, int height, const char* titlePtr);
+    virtual ~AboutWindow();
+
+protected:
+    /**
+     * 加载组件
+     */
+    virtual void drawElement() override;
 
 };
 

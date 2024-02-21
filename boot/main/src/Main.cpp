@@ -9,15 +9,16 @@
 int main(const int argc, const char * const argv[]) {
     lifuren::init(argc, argv);
     LOG(INFO) << "启动系统";
-    lifuren::MainWindow* window = new lifuren::MainWindow(512, 256, "李夫人");
-    window->show();
+    lifuren::MainWindow* mainPtr = new lifuren::MainWindow(1200, 800, "李夫人");
+    mainPtr->init();
+    mainPtr->show();
     const int code = Fl::run();
     LOG(INFO) << "启动完成";
-    lifuren::shutdown();
     // 释放窗口
-    if(window != nullptr) {
-        delete window;
-        window = nullptr;
+    if(mainPtr != nullptr) {
+        delete mainPtr;
+        mainPtr = nullptr;
     }
+    lifuren::shutdown();
     return code;
 }

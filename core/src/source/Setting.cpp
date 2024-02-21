@@ -1,10 +1,6 @@
 #include "../header/Setting.hpp"
 
 lifuren::Setting::Setting() {
-    this->activation = lifuren::Activation::RELU;
-    this->learningRate = 0.0;
-    this->regularization = lifuren::Regularization::NONE;
-    this->regularizationRate = 0.0;
 }
 
 lifuren::Setting::~Setting() {

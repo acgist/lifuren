@@ -54,11 +54,9 @@ endif()
 
 add_definitions(-DC10_USE_GLOG)
 
-if(MSVC)
-	set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
-endif()
-
 if(CMAKE_HOST_WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+    
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>

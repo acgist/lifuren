@@ -54,7 +54,7 @@ public:
      * 
      * @param x 张量
      * 
-     * @returns 张量
+     * @return 张量
      */
     torch::Tensor forward(torch::Tensor x);
 
