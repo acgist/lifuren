@@ -15,6 +15,5 @@ target
 deps/fltk
 deps/glog
 deps/json
-deps/mlpack
 deps/opencv
 deps/libtorch

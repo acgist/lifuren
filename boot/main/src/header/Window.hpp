@@ -8,10 +8,10 @@
 #include "GLog.hpp"
 
 #include "FL/Fl.H"
-#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
+#include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
 namespace lifuren {
@@ -126,8 +126,10 @@ class AboutWindow : public LFRWindow {
 private:
     // 官网
     Fl_Button* homePagePtr = nullptr;
+    // 关于内容
+    Fl_Text_Buffer* aboutBufferPtr = nullptr;
     // 关于
-    Fl_Text_Display* aboutTextPtr = nullptr;
+    Fl_Text_Display* aboutDisplayPtr = nullptr;
 
 public:
     /**

@@ -69,28 +69,26 @@ if(CMAKE_HOST_WIN32)
         CMAKE_PREFIX_PATH
         ${CMAKE_PREFIX_PATH}
         deps/fltk
-        deps/mlpack
         deps/opencv
     )
 
     include_directories(
         deps/fltk/include
-        deps/mlpack/include
         deps/opencv/include
     )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
+
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
-        file(GLOB MLPACK_DLLS "deps/mlpack/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
         )
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
+
         file(GLOB FLTK_DLLS   "deps/fltk/release/bin/*.dll")
-        file(GLOB MLPACK_DLLS "deps/mlpack/release/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
@@ -105,8 +103,6 @@ endif()
 find_package(FLTK      REQUIRED)
 find_package(Torch     REQUIRED)
 find_package(OpenCV    REQUIRED)
-find_package(LAPACK    REQUIRED)
-find_package(Armadillo REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(core)

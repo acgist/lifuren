@@ -23,28 +23,30 @@ cmake --build . --config Debug
 # cmake --install . --config Debug
 ```
 
-## 依赖下载
+## Linux依赖下载
 
 ```
-# Linux安装依赖
-
-sudo apt install libmlpack-dev
 sudo apt install libopencv-dev
 sudo apt install libfltk1.3-dev
+```
 
-# Windows配置环境变量
+## Windows依赖下载
 
+```
+# 配置环境
 VCPKG_DEFAULT_TRIPLET=x64-windows
 
-# Windows安装依赖
+# 安装依赖
 
 vcpkg install fltk
-vcpkg install mlpack
+vcpkg install opencv
+vcpkg install libtorch
 
-# Windows导出依赖
+# 导出依赖
 
-vcpkg export fltk   --zip
-vcpkg export mlpack --zip
+vcpkg export fltk     --zip
+vcpkg export opencv   --zip
+vcpkg export libtorch --zip
 ```
 
 > `Windows`开发时`OpenCV`和`LibTorch`直接官网下载
