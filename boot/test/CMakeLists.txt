@@ -25,7 +25,6 @@ set(
     ${HEADER_DIR}/GAN.hpp
     ${HEADER_DIR}/Core.hpp
     ${HEADER_DIR}/Fltk.hpp
-    ${HEADER_DIR}/Mnist.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/LibTorch.hpp
 )

@@ -33,6 +33,6 @@ void lifuren::AboutWindow::drawElement() {
     // 主页
     this->homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
     this->homePagePtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {
-        fl_open
+        // fl_open
     }, this);
 }
