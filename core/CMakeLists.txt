@@ -9,8 +9,8 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     glog::glog
-    ${TORCH_LIBRARIES}
     nlohmann_json::nlohmann_json
+    ${TORCH_LIBRARIES}
 )
 
 target_include_directories(

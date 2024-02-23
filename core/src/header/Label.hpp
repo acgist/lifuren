@@ -80,9 +80,9 @@ class LabelSegment : public Label {
 
 public:
     // 字数
-    int fontSize;
+    int fontSize = 0;
     // 段数
-    int segmentSize;
+    int segmentSize = 0;
     // 分词规则
     std::vector<int> segmentRule;
     // JSON序列化

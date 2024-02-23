@@ -9,11 +9,8 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurencore
-    LAPACK::LAPACK
     ${OpenCV_LIBS}
     ${FLTK_LIBRARIES}
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
 )
 
 target_include_directories(
@@ -27,13 +24,9 @@ set(
     ${HEADER_DIR}/RNN.hpp
     ${HEADER_DIR}/GAN.hpp
     ${HEADER_DIR}/Boot.hpp
-    ${HEADER_DIR}/CUDA.hpp
     ${HEADER_DIR}/Fltk.hpp
-    ${HEADER_DIR}/Mnist.hpp
     ${HEADER_DIR}/OpenCV.hpp
-    ${HEADER_DIR}/MLPack.hpp
     ${HEADER_DIR}/LibTorch.hpp
-    ${HEADER_DIR}/Transformer.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})
@@ -49,32 +42,28 @@ install(
 if(CMAKE_HOST_WIN32)
     install(FILES ${FLTK_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     install(FILES ${TORCH_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${MLPACK_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     install(FILES ${OPENCV_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 endif()
 
 add_definitions(-DC10_USE_GLOG)
 
-if(MSVC)
-	set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
-endif()
-
 if(CMAKE_HOST_WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+    
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MLPACK_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()
 
 # 测试
 
-add_executable(testBoot src/TestBoot.cpp src/source/Boot.cpp)
-add_test(NAME testBoot COMMAND testBoot)
+add_executable(testCore src/TestCore.cpp src/source/Core.cpp)
+add_test(NAME testCore COMMAND testCore)
 target_link_libraries(
-    testBoot PUBLIC
+    testCore PUBLIC
     lifurencore
 )
 
@@ -86,86 +75,11 @@ target_link_libraries(
     ${FLTK_LIBRARIES}
 )
 
-add_executable(testOpenCV src/TestOpenCV.cpp src/source/opencv/OpenCV.cpp)
-add_test(NAME testOpenCV COMMAND testOpenCV)
+add_executable(testLibTorchVGG src/TestLibTorchVGG.cpp src/source/libtorch/VGG.cpp)
+add_test(NAME testLibTorchVGG COMMAND testLibTorchVGG)
 target_link_libraries(
-    testOpenCV PUBLIC
+    testLibTorchVGG PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
-)
-
-add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVColor.cpp)
-add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
-target_link_libraries(
-    testOpenCVColor PUBLIC
-    lifurencore
-    ${OpenCV_LIBS}
-)
-
-add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVFace.cpp)
-add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
-target_link_libraries(
-    testOpenCVFace PUBLIC
-    lifurencore
-    ${OpenCV_LIBS}
-)
-
-add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVResize.cpp)
-add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
-target_link_libraries(
-    testOpenCVResize PUBLIC
-    lifurencore
-    ${OpenCV_LIBS}
-)
-
-add_executable(testMLPackMatrix src/TestMLPackMatrix.cpp src/source/mlpack/Matrix.cpp)
-add_test(NAME testMLPackMatrix COMMAND testMLPackMatrix)
-target_link_libraries(
-    testMLPackMatrix PUBLIC
-    lifurencore
-    LAPACK::LAPACK
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
-)
-
-add_executable(testMLPackLoadFile src/TestMLPackLoadFile.cpp src/source/mlpack/LoadFile.cpp)
-add_test(NAME testMLPackLoadFile COMMAND testMLPackLoadFile)
-target_link_libraries(
-    testMLPackLoadFile PUBLIC
-    lifurencore
-    LAPACK::LAPACK
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
-)
-
-add_executable(testMLPackLinearRegression src/TestMLPackLinearRegression.cpp src/source/mlpack/LinearRegression.cpp)
-add_test(NAME testMLPackLinearRegression COMMAND testMLPackLinearRegression)
-target_link_libraries(
-    testMLPackLinearRegression PUBLIC
-    lifurencore
-    LAPACK::LAPACK
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
-)
-
-add_executable(testMLPackSoftmaxRegression src/TestMLPackSoftmaxRegression.cpp src/source/mlpack/SoftmaxRegression.cpp)
-add_test(NAME testMLPackSoftmaxRegression COMMAND testMLPackSoftmaxRegression)
-target_link_libraries(
-    testMLPackSoftmaxRegression PUBLIC
-    lifurencore
-    LAPACK::LAPACK
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
-)
-
-add_executable(testMLPackLogisticRegression src/TestMLPackLogisticRegression.cpp src/source/mlpack/LogisticRegression.cpp)
-add_test(NAME testMLPackLogisticRegression COMMAND testMLPackLogisticRegression)
-target_link_libraries(
-    testMLPackLogisticRegression PUBLIC
-    lifurencore
-    LAPACK::LAPACK
-    ${ARMADILLO_LIBRARY}
-    # OpenBLAS::OpenBLAS
 )
 
 add_executable(testLibTorchCUDA src/TestLibTorchCUDA.cpp src/source/libtorch/CUDA.cpp)
@@ -201,4 +115,36 @@ add_test(NAME testLibTorchActivationFunction COMMAND testLibTorchActivationFunct
 target_link_libraries(
     testLibTorchActivationFunction PUBLIC
     lifurencore
+)
+
+add_executable(testOpenCV src/TestOpenCV.cpp src/source/opencv/OpenCV.cpp)
+add_test(NAME testOpenCV COMMAND testOpenCV)
+target_link_libraries(
+    testOpenCV PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
+add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVColor.cpp)
+add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
+target_link_libraries(
+    testOpenCVColor PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
+add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVFace.cpp)
+add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
+target_link_libraries(
+    testOpenCVFace PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
+add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVResize.cpp)
+add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
+target_link_libraries(
+    testOpenCVResize PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
 )

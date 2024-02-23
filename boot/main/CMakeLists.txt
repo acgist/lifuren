@@ -47,16 +47,15 @@ endif()
 
 add_definitions(-DC10_USE_GLOG)
 
-if(MSVC)
-	set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
-endif()
-
 if(CMAKE_HOST_WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+    
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
+
     string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
     foreach(image_file ${IMAGES_FILES})
         file(COPY ${image_file} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/images)

@@ -1,9 +1,14 @@
 #include "../header/Window.hpp"
 
+/**
+ * @param source 原始值
+ * @param target 比较值
+ * 
+ * @return 绝对值
+ */
+int abs(int source, int target);
+
 lifuren::LFRWindow::LFRWindow(int width, int height, const char* titlePtr) : Fl_Window(width, height, titlePtr) {
-    this->begin();
-    this->init();
-    this->end();
 }
 
 lifuren::LFRWindow::~LFRWindow() {
@@ -14,16 +19,34 @@ lifuren::LFRWindow::~LFRWindow() {
 }
 
 void lifuren::LFRWindow::init() {
+    this->begin();
     this->icon();
     this->center();
+    this->drawElement();
+    this->end();
 }
 
 void lifuren::LFRWindow::icon() {
-    Fl_PNG_Image iconImage("../images/logo.png");
+    const char* iconPath = "../images/logo.png";
+    LOG(INFO) << "加载图标" << iconPath;
+    Fl_PNG_Image iconImage(iconPath);
     this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
     Fl_Window::default_icon(this->iconImagePtr);
 }
 
 void lifuren::LFRWindow::center() {
-    this->position(200, 200);
+    LOG(INFO) << "窗口居中";
+    const int fullWidth  = Fl::w();
+    const int fullHeight = Fl::h();
+    const int width  = this->w();
+    const int height = this->h();
+    this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
+}
+
+int abs(int source, int target) {
+    if(source > target) {
+        return source - target;
+    } else {
+        return target - source;
+    }
 }

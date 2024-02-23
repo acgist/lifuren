@@ -46,13 +46,13 @@ public:
     // 训练文件路径
     std::string path;
     // 激活函数
-    lifuren::Activation activation;
+    lifuren::Activation activation = lifuren::Activation::RELU;
     // 学习速率
-    double learningRate;
+    double learningRate = 0.0;
     // 正则函数
-    lifuren::Regularization regularization;
+    lifuren::Regularization regularization = lifuren::Regularization::NONE;
     // 正则速率
-    double regularizationRate;
+    double regularizationRate = 0.0;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, path, activation, learningRate, regularization, regularizationRate);
 

@@ -23,28 +23,30 @@ cmake --build . --config Debug
 # cmake --install . --config Debug
 ```
 
-## 依赖下载
+## Linux依赖下载
 
 ```
-# Linux安装依赖
-
-sudo apt install libmlpack-dev
 sudo apt install libopencv-dev
 sudo apt install libfltk1.3-dev
+```
 
-# Windows配置环境变量
+## Windows依赖下载
 
+```
+# 配置环境
 VCPKG_DEFAULT_TRIPLET=x64-windows
 
-# Windows安装依赖
+# 安装依赖
 
 vcpkg install fltk
-vcpkg install mlpack
+vcpkg install opencv
+vcpkg install libtorch
 
-# Windows导出依赖
+# 导出依赖
 
-vcpkg export fltk   --zip
-vcpkg export mlpack --zip
+vcpkg export fltk     --zip
+vcpkg export opencv   --zip
+vcpkg export libtorch --zip
 ```
 
 > `Windows`开发时`OpenCV`和`LibTorch`直接官网下载
@@ -105,17 +107,10 @@ CPU/GPU/CUDA/cuDNN
 # https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installers/11.x/cudnn-local-repo-ubuntu2004-8.9.2.26_1.0-1_amd64.deb/
 ```
 
+> 不用单独安装`CUDA`已经包含
+
 ## 相关下载
 
 ```
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
-```
-
-## Git常用命令
-
-```
-# 更新模块
-git submodule update --init --recursive --depth 1
-# 新增模块
-git submodule add https://github.com/git.git deps/git --depth 1
 ```
