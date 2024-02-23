@@ -9,7 +9,8 @@
 #include <string>
 #include <fstream>
 
-#include "GLog.hpp"
+#include "Logger.hpp"
+
 #include "nlohmann/json.hpp"
 
 namespace lifuren {

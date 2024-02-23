@@ -6,7 +6,7 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const char* titlePtr) :
 }
 
 lifuren::AboutWindow::~AboutWindow() {
-    LOG(INFO) << "关闭AboutWindow";
+    SPDLOG_DEBUG("关闭AboutWindow");
     if(this->homePagePtr != nullptr) {
         delete this->homePagePtr;
         this->homePagePtr = nullptr;
@@ -36,6 +36,6 @@ void lifuren::AboutWindow::drawElement() {
     this->homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
     this->homePagePtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {
         const int ret = fl_open_uri("https://gitee.com/acgist/lifuren");
-        LOG(INFO) << "打开主页：" << ret;
+        SPDLOG_DEBUG("打开主页：{}", ret);
     }, this);
 }

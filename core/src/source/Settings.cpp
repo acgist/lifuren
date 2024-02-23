@@ -18,13 +18,13 @@ void lifuren::Settings::load(const std::string& settings) {
         const nlohmann::json json = nlohmann::json::parse(settings);
         for(const char* key : keys) {
             if(!json.contains(key)) {
-                LOG(INFO) << "缺少模型配置：" << key;
+                SPDLOG_DEBUG("缺少模型配置：{}", key);
                 continue;
             }
             this->settings.insert(std::pair<std::string, lifuren::Setting>(key, json.at(key)));
         }
     } catch(const std::exception& e) {
-        LOG(ERROR) << "加载配置异常：" << e.what();
+        SPDLOG_ERROR("加载配置异常：{}", e.what());
     }
 }
 
@@ -32,7 +32,7 @@ void lifuren::Settings::loadFile(const std::string& path) {
     std::ifstream input;
     input.open(path, std::ios_base::in);
     if(!input.is_open()) {
-        LOG(WARNING) << "打开文件失败：" << path;
+        SPDLOG_WARN("打开文件失败：{}", path);
         return;
     }
     std::string line;
@@ -41,8 +41,8 @@ void lifuren::Settings::loadFile(const std::string& path) {
         settings += line;
     }
     input.close();
-    LOG(INFO) << "加载配置文件：" << path;
-    LOG(INFO) << "加载配置内容：" << settings;
+    SPDLOG_DEBUG("加载配置文件：{}", path);
+    SPDLOG_DEBUG("加载配置内容：{}", settings);
     *this = nlohmann::json::parse(settings);
 }
 
@@ -50,12 +50,12 @@ void lifuren::Settings::saveFile(const std::string& path) {
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
-        LOG(WARNING) << "打开文件失败：" << path;
+        SPDLOG_WARN("打开文件失败：{}", path);
         return;
     }
     const std::string settings = this->toJSON();
-    LOG(INFO) << "保存配置路径：" << path;
-    LOG(INFO) << "保存配置内容：" << settings;
+    SPDLOG_DEBUG("保存配置路径：{}", path);
+    SPDLOG_DEBUG("保存配置内容：{}", settings);
     output << settings;
     output.close();
 }

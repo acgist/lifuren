@@ -1,5 +1,5 @@
 #include "../../header/CNN.hpp"
 
 void lifuren::testVGG() {
-    LOG(INFO) << "VGG等待实现";
+    SPDLOG_DEBUG("VGG等待实现");
 }

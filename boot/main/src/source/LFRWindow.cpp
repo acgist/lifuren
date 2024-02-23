@@ -28,14 +28,13 @@ void lifuren::LFRWindow::init() {
 
 void lifuren::LFRWindow::icon() {
     const char* iconPath = "../images/logo.png";
-    LOG(INFO) << "加载图标" << iconPath;
+    SPDLOG_DEBUG("加载图标：{}", iconPath);
     Fl_PNG_Image iconImage(iconPath);
     this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
     Fl_Window::default_icon(this->iconImagePtr);
 }
 
 void lifuren::LFRWindow::center() {
-    LOG(INFO) << "窗口居中";
     const int fullWidth  = Fl::w();
     const int fullHeight = Fl::h();
     const int width  = this->w();

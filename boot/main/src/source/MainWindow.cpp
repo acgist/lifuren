@@ -4,7 +4,7 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* titlePtr) : L
 }
 
 lifuren::MainWindow::~MainWindow() {
-    LOG(INFO) << "关闭MainWindow";
+    SPDLOG_DEBUG("关闭MainWindow");
     if(this->audioGcPtr != nullptr) {
         delete this->audioGcPtr;
         this->audioGcPtr = nullptr;

@@ -13,9 +13,9 @@ build
 target
 
 deps/fltk
-deps/glog
 deps/json
 deps/opencv
+deps/spdlog
 deps/libtorch
 deps/libtorch-cpu
 deps/libtorch-gpu

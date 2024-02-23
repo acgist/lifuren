@@ -1,10 +1,10 @@
 #include "../src/header/CNN.hpp"
 
 int main(const int argc, const char * const argv[]) {
-    lifuren::init(argc, argv);
-    LOG(INFO) << "测试";
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
     lifuren::testVGG();
-    LOG(INFO) << "完成";
-    lifuren::shutdown();
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
     return 0;
 }

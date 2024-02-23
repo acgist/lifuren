@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "GLog.hpp"
+#include "Logger.hpp"
 
 #include "torch/torch.h"
 
@@ -23,9 +23,5 @@ extern void testLibTorchTanh();
  * LibTorch Tensor测试
  */
 extern void testLibTorchTensor();
-/**
- * LibTorch LinearRegression测试
- */
-extern void testLibTorchLinearRegression();
 
 }

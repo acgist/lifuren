@@ -26,9 +26,9 @@
 
 |模块|描述|版本|官网|
 |:--|:--|:--|:--|
-|fltk|界面框架|1.3.8|https://github.com/fltk/fltk|
-|glog|日志框架|v0.6.0|https://github.com/google/glog|
+|fltk|GUI框架|1.3.8|https://github.com/fltk/fltk|
 |json|JSON框架|v3.11.2|https://github.com/nlohmann/json|
+|spdlog|日志框架|v1.12.0|https://github.com/gabime/spdlog|
 |OpenCV|机器视觉框架|4.8.0|https://github.com/opencv/opencv|
 |LibTorch|机器学习框架|v2.2.1|https://github.com/pytorch/pytorch|
 

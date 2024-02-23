@@ -210,11 +210,7 @@ void lifuren::NNTrainer::train(
         loss.backward();
         optimizer.step();
         if (++batchIndex % this->logInterval == 0) {
-            LOG(INFO) <<
-            "train epoch" << epoch <<
-            " " << (batchIndex * batch.data.size(0)) <<
-            " / " << datasetSize <<
-            " LOSS " << loss.template item<float>() << "\n";
+            SPDLOG_DEBUG("train epoch {} {} / {} LOSS {} \r\n", epoch, (batchIndex * batch.data.size(0)), datasetSize, loss.template item<float>());
         }
     }
 }
@@ -254,9 +250,7 @@ void lifuren::NNTrainer::test(
         correct += pred.eq(target).sum().template item<int64_t>();
     }
     testLoss /= datasetSize;
-    LOG(INFO) <<
-    "avg loss " << testLoss <<
-    " Accuracy " << (static_cast<double>(correct) / datasetSize) << "\n";
+    SPDLOG_DEBUG("avg loss {} Accuracy {}\r\n", testLoss, (static_cast<double>(correct) / datasetSize));
 }
 
 void lifuren::testMNIST() {

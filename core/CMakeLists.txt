@@ -8,7 +8,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    glog::glog
+    spdlog::spdlog
     nlohmann_json::nlohmann_json
     ${TORCH_LIBRARIES}
 )
@@ -20,10 +20,11 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/GLog.hpp
     ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/Label.hpp
     ${HEADER_DIR}/Model.hpp
+    ${HEADER_DIR}/Logger.hpp
+    ${HEADER_DIR}/Format.hpp
     ${HEADER_DIR}/Setting.hpp
     ${HEADER_DIR}/Audio.hpp
     ${HEADER_DIR}/AudioGC.hpp

@@ -45,8 +45,6 @@ if(CMAKE_HOST_WIN32)
     install(FILES ${OPENCV_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 endif()
 
-add_definitions(-DC10_USE_GLOG)
-
 if(CMAKE_HOST_WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
     
@@ -100,13 +98,6 @@ add_executable(testLibTorchTensor src/TestLibTorchTensor.cpp src/source/libtorch
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
     testLibTorchTensor PUBLIC
-    lifurencore
-)
-
-add_executable(testLibTorchLinearRegression src/TestLibTorchLinearRegression.cpp src/source/libtorch/LinearRegression.cpp)
-add_test(NAME testLibTorchLinearRegression COMMAND testLibTorchLinearRegression)
-target_link_libraries(
-    testLibTorchLinearRegression PUBLIC
     lifurencore
 )
 

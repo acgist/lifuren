@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include "GLog.hpp"
 #include "Mark.hpp"
 #include "Label.hpp"
+#include "Logger.hpp"
 #include "Setting.hpp"
 
 namespace lifuren {

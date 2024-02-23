@@ -17,27 +17,27 @@ void lifuren::testJson() {
     //     "happy": true
     // }
     // )");
-    LOG(INFO) << "pi = " << json["pi"];
+    double pi = json["pi"];
+    SPDLOG_DEBUG("pi = {}", pi);
     nlohmann::json array = nlohmann::json::array();
     const int ints[] = { 1, 2 };
     for(int index = 0; index < 2; index++) {
         array.push_back(ints[index]);
     }
-    LOG(INFO) << "int array = " << array.dump();
+    SPDLOG_DEBUG("int array = {}", array.dump());
     array.clear();
     const std::string strings[] = { "1", "2" };
     for(int index = 0; index < 2; index++) {
         array.push_back(strings[index]);
     }
-    LOG(INFO) << "string array = " << array.dump();
+    SPDLOG_DEBUG("string array = {}", array.dump());
     array.clear();
     nlohmann::json object = nlohmann::json::object();
     object["name"] = "碧螺萧萧";
     object.push_back({ "age", 4 });
-    LOG(INFO) << "object = " << object.dump();
+    SPDLOG_DEBUG("object = {}", object.dump());
     object.clear();
-    LOG(INFO) << "\r\n";
-    LOG(INFO) << "\r\n";
+    SPDLOG_DEBUG("");
 }
 
 void lifuren::testMark() {
@@ -45,59 +45,57 @@ void lifuren::testMark() {
     mark.file = "lifuren.json";
     mark.labels.push_back("acgist");
     mark.labels.push_back("lifuren");
-    LOG(INFO) << "mark = " << mark.toJSON();
+    SPDLOG_DEBUG("mark = ", mark.toJSON());
     lifuren::MarkFile markFile;
     markFile.file = "lifuren.json";
     markFile.labels.push_back("acgist");
     markFile.labels.push_back("lifuren");
-    LOG(INFO) << "mark file = " << markFile.toJSON();
+    SPDLOG_DEBUG("mark file = {}", markFile.toJSON());
     lifuren::MarkText* markTextPtr = new lifuren::MarkText();
     markTextPtr->name = "水调歌头";
     markTextPtr->text = "明月几时有 把酒问青天";
     markTextPtr->file = "lifuren.json";
     markTextPtr->labels.push_back("acgist");
     markTextPtr->labels.push_back("lifuren");
-    LOG(INFO) << "mark text = " << markTextPtr->toJSON();
+    SPDLOG_DEBUG("mark text = {}", markTextPtr->toJSON());
     delete markTextPtr;
-    LOG(INFO) << "\r\n";
-    LOG(INFO) << "\r\n";
+    SPDLOG_DEBUG("");
 }
 
 void lifuren::testLabel() {
     lifuren::Label label;
     label.name = "acgist";
-    LOG(INFO) << "label = " << label.toJSON();
+    SPDLOG_DEBUG("label = {}", label.toJSON());
     lifuren::LabelConfig labelConfig;
     labelConfig.name = "lifuren";
     labelConfig.labels.push_back("acgist");
     labelConfig.labels.push_back("lifuren");
-    LOG(INFO) << "label config = " << labelConfig.toJSON();
+    SPDLOG_DEBUG("label config = {}", labelConfig.toJSON());
     lifuren::LabelSegment labelSegment;
     labelSegment.name = "segment";
-    LOG(INFO) << "label segment = " << labelSegment.toJSON();
+    SPDLOG_DEBUG("label segment = {}", labelSegment.toJSON());
     lifuren::LabelSegment labelJson(R"(
         {"fontSize":0,"name":"segment","segmentRule":[],"segmentSize":0}
     )");
-    LOG(INFO) << "label segment name = " << labelJson.name;
-    LOG(INFO) << "label segment font size = " << labelJson.fontSize;
-    LOG(INFO) << "label segment segment rule = " << labelJson.segmentRule.size();
-    LOG(INFO) << "\r\n";
-    LOG(INFO) << "\r\n";
+    SPDLOG_DEBUG("label segment name = {}", labelJson.name);
+    SPDLOG_DEBUG("label segment font size = {}", labelJson.fontSize);
+    SPDLOG_DEBUG("label segment segment rule = {}", labelJson.segmentRule.size());
+    SPDLOG_DEBUG("");
 }
 
 void lifuren::testSetting() {
     lifuren::Setting setting;
     setting.path = "路径";
     setting.activation = lifuren::Activation::RELU;
-    LOG(INFO) << "setting = " << setting.toJSON();
+    SPDLOG_DEBUG("setting = {}", setting.toJSON());
     lifuren::Setting settingJson(R"(
         {"activation":0,"learningRate":0.01,"path":"路径","regularization":0,"regularizationRate":0.01}
     )");
-    LOG(INFO) << "setting path = " << settingJson.path;
-    LOG(INFO) << "setting activation = " << settingJson.activation;
-    LOG(INFO) << "setting learning rate = " << settingJson.learningRate;
-    LOG(INFO) << "setting regularization = " << settingJson.regularization;
-    LOG(INFO) << "setting regularization rate = " << settingJson.regularizationRate;
+    SPDLOG_DEBUG("setting path = {}", settingJson.path);
+    SPDLOG_DEBUG("setting activation = {}", settingJson.activation);
+    SPDLOG_DEBUG("setting learning rate = {}", settingJson.learningRate);
+    SPDLOG_DEBUG("setting regularization = {}", settingJson.regularization);
+    SPDLOG_DEBUG("setting regularization rate = {}", settingJson.regularizationRate);
     lifuren::Settings settings;
     settings.load(R"(
         {
@@ -118,10 +116,10 @@ void lifuren::testSetting() {
     std::map<std::string, lifuren::Setting>::iterator iterator = settings.settings.begin();
     std::map<std::string, lifuren::Setting>::iterator end      = settings.settings.end();
     for(; iterator != end; iterator++) {
-        LOG(INFO) << "key = " << iterator->first << " value = " << iterator->second.toJSON();
+        SPDLOG_DEBUG("key = {} value = {}", iterator->first, iterator->second.toJSON());
     }
     settings.settings["acgist"] = setting;
-    LOG(INFO) << "settings = " << settings.toJSON();
+    SPDLOG_DEBUG("settings = {}", settings.toJSON());
     settings.saveFile("D:/tmp/settings.json");
     lifuren::Settings reload;
     reload.loadFile("D:/tmp/settings.json");

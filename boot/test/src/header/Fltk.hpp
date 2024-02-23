@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "GLog.hpp"
+#include "Logger.hpp"
 
 #include "FL/Fl.H"
 #include "FL/Fl_Input.H"

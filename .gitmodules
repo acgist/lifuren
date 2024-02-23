@@ -1,6 +1,6 @@
-[submodule "deps/glog"]
-  path = deps/glog
-  url = https://github.com/google/glog.git
 [submodule "deps/json"]
   path = deps/json
   url = https://github.com/nlohmann/json.git
+[submodule "deps/spdlog"]
+	path = deps/spdlog
+	url = https://github.com/gabime/spdlog.git

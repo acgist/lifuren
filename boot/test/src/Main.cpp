@@ -3,12 +3,12 @@
  * 
  * @author acgist
  */
-#include "GLog.hpp"
+#include "Logger.hpp"
 
 int main(const int argc, const char * const argv[]) {
-    lifuren::init(argc, argv);
-    LOG(INFO) << "测试";
-    LOG(INFO) << "完成";
-    lifuren::shutdown();
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
     return 0;
 }

@@ -1,6 +1,11 @@
+/**
+ * CUDA
+ * 
+ * @author acgist
+ */
 #pragma once
 
-#include "GLog.hpp"
+#include "Logger.hpp"
 
 #include "torch/torch.h"
 

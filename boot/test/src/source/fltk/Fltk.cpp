@@ -4,7 +4,7 @@
  * 点击事件
  */
 void buttonCallback(Fl_Widget* widgetPtr, void* voidPtr) {
-    LOG(INFO) << "你点击了按钮（local）：" << ((lifuren::LifurenWindow*) voidPtr)->inputPtr->value();
+    SPDLOG_DEBUG("你点击了按钮（local）：{}", ((lifuren::LifurenWindow*) voidPtr)->inputPtr->value());
 }
 
 /**
@@ -47,5 +47,5 @@ void lifuren::LifurenWindow::init() {
  * 如果想要按钮直接调用需要改为静态函数
  */
 void lifuren::LifurenWindow::buttonCallback(Fl_Widget* widgetPtr, void* voidPtr) {
-    LOG(INFO) << "你点击了按钮（this）：" << this->inputPtr->value();
+    SPDLOG_DEBUG("你点击了按钮（this）：{}", this->inputPtr->value());
 }

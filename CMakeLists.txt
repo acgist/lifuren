@@ -100,9 +100,11 @@ if(CMAKE_HOST_WIN32)
     find_package(libpng REQUIRED)
 endif()
 
-find_package(FLTK      REQUIRED)
-find_package(Torch     REQUIRED)
-find_package(OpenCV    REQUIRED)
+find_package(FLTK   REQUIRED)
+find_package(Torch  REQUIRED)
+find_package(OpenCV REQUIRED)
+
+add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
 
 add_subdirectory(deps)
 add_subdirectory(core)
