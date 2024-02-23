@@ -102,7 +102,9 @@ void lifuren::MainWindow::about() {
     this->aboutWindowPtr->init();
     this->aboutWindowPtr->show();
     this->aboutWindowPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {
+        // 隐藏关于窗口
         widgetPtr->hide();
+        // 释放关于窗口
         MainWindow* mainPtr = (MainWindow*) voidPtr;
         delete mainPtr->aboutWindowPtr;
         mainPtr->aboutWindowPtr = nullptr;

@@ -75,6 +75,13 @@ target_link_libraries(
     ${FLTK_LIBRARIES}
 )
 
+add_executable(testLibTorchVGG src/TestLibTorchVGG.cpp src/source/libtorch/VGG.cpp)
+add_test(NAME testLibTorchVGG COMMAND testLibTorchVGG)
+target_link_libraries(
+    testLibTorchVGG PUBLIC
+    lifurencore
+)
+
 add_executable(testLibTorchMnist src/TestLibTorchMnist.cpp src/source/libtorch/Mnist.cpp)
 add_test(NAME testLibTorchMnist COMMAND testLibTorchMnist)
 target_link_libraries(
