@@ -15,23 +15,31 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd ./deps
-          ################ glog
+          ################################
+          # glog
+          ################################
           cd ./glog
           git checkout v0.6.0
           cd ..
-          ################ json
+          ################################
+          # json
+          ################################
           cd ./json
           git checkout v3.11.2
           cd ..
-          ################ fltk
-          # sudo apt install libfltk1.3-dev=1.3.8-4
+          ################################
+          # fltk
+          ################################
           sudo apt install libfltk1.3-dev
-          ################ opencv
-          # sudo apt install libopencv-dev=4.5.4+dfsg-9ubuntu4
+          ################################
+          # opencv
+          ################################
           sudo apt install libopencv-dev
-          ################ libtorch
-          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.0.1%2Bcpu.zip
-          unzip libtorch-cxx11-abi-shared-with-deps-2.0.1+cpu.zip
+          ################################
+          # libtorch
+          ################################
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip
+          unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip
       - name: Deploy lifuren
         run: |
           mkdir build

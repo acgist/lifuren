@@ -30,7 +30,7 @@
 |glog|日志框架|v0.6.0|https://github.com/google/glog|
 |json|JSON框架|v3.11.2|https://github.com/nlohmann/json|
 |OpenCV|机器视觉框架|4.8.0|https://github.com/opencv/opencv|
-|LibTorch|机器学习框架|v2.0.1|https://github.com/pytorch/pytorch|
+|LibTorch|机器学习框架|v2.2.1|https://github.com/pytorch/pytorch|
 
 ## 模块
 
@@ -38,6 +38,7 @@
 |:--|:--|
 |boot|启动模块|
 |core|核心模块|
-|deps|依赖模块|
+|deps|依赖|
+|docs|文档|
 
 > 白衣卿相 红袖添香
