@@ -3,7 +3,7 @@
 void lifuren::logger::init() {
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
-    #if defined(_DEBUG) || defined(__debug__)
+    #if defined(__DEBUG__)
     auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     sinks.push_back(stdoutSink);
     #endif
