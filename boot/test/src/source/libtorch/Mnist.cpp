@@ -1,3 +1,6 @@
+/**
+ * 参考文章：https://zhuanlan.zhihu.com/p/638954796
+ */
 #include "../../header/CNN.hpp"
 
 namespace lifuren {
@@ -7,14 +10,14 @@ namespace lifuren {
  * 
  * @author acgist
  */
-class NNDataset {
+class MnistDataset {
 
 public:
     /**
      * @param path 数据路径
      * @param mode 模型类型
      */
-    NNDataset(const std::string& path, torch::data::datasets::MNIST::Mode mode);
+    MnistDataset(const std::string& path, torch::data::datasets::MNIST::Mode mode);
 
 public:
     /**
@@ -29,17 +32,11 @@ public:
  * 
  * @author acgist
  */
-class NNModel : public torch::nn::Module {
+class MnistModel : public torch::nn::Module {
 
 public:
-    /**
-     * 构造函数
-     */
-    NNModel();
-    /**
-     * 析构函数
-     */
-    ~NNModel();
+    MnistModel();
+    ~MnistModel();
     /**
      * 正向传播
      * 
@@ -52,7 +49,6 @@ public:
 private:
     /**
      * 卷积层
-     * 必须设置为空
      */
     torch::nn::Conv2d conv1 = nullptr;
     /**
@@ -61,12 +57,10 @@ private:
     torch::nn::Conv2d conv2 = nullptr;
     /**
      * 避免过拟合
-     * 不能设置为空
      */
     torch::nn::Dropout2d conv2Drop;
     /**
      * 全连接层
-     * 必须设置为空
      */
     torch::nn::Linear fc1 = nullptr;
     /**
@@ -81,7 +75,7 @@ private:
  * 
  * @author acgist
  */
-class NNTrainer {
+class MnistTrainer {
 
 public:
     /**
@@ -89,7 +83,7 @@ public:
      * 
      * @param logInterval 训练打印批次
      */
-    NNTrainer(int logInterval);
+    MnistTrainer(int logInterval);
     /**
      * 训练
      * 
@@ -103,10 +97,10 @@ public:
      */
     void train(
         size_t epoch,
-        lifuren::NNModel& model,
+        lifuren::MnistModel& model,
         torch::optim::Optimizer& optimizer,
         torch::Device device,
-        lifuren::NNDataset& trainDataset,
+        lifuren::MnistDataset& trainDataset,
         int batchSize,
         int numWorkers
     );
@@ -120,9 +114,9 @@ public:
      * @param numWorkers  线程数量
      */
     void test(
-        lifuren::NNModel& model,
+        lifuren::MnistModel& model,
         torch::Device device,
-        lifuren::NNDataset& testDataset,
+        lifuren::MnistDataset& testDataset,
         int batchSize,
         int numWorkers
     );
@@ -137,13 +131,13 @@ private:
 
 }
 
-lifuren::NNDataset::NNDataset(
+lifuren::MnistDataset::MnistDataset(
     const std::string& path,
     torch::data::datasets::MNIST::Mode mode
 ) : mnistDataset(torch::data::datasets::MNIST(path, mode)) {
 }
 
-lifuren::NNModel::NNModel() {
+lifuren::MnistModel::MnistModel() {
     this->conv1 = torch::nn::Conv2d(torch::nn::Conv2dOptions(1,  10, 5));
     this->conv2 = torch::nn::Conv2d(torch::nn::Conv2dOptions(10, 20, 5));
     this->fc1 = torch::nn::Linear(320, 50);
@@ -155,10 +149,10 @@ lifuren::NNModel::NNModel() {
     this->register_module("fc2", this->fc2);
 }
 
-lifuren::NNModel::~NNModel() {
+lifuren::MnistModel::~MnistModel() {
 }
 
-torch::Tensor lifuren::NNModel::forward(torch::Tensor x) {
+torch::Tensor lifuren::MnistModel::forward(torch::Tensor x) {
     x = this->conv1->forward(x);
     x = torch::max_pool2d(x, 2);
     x = torch::relu(x);
@@ -175,15 +169,15 @@ torch::Tensor lifuren::NNModel::forward(torch::Tensor x) {
     return x;
 }
 
-lifuren::NNTrainer::NNTrainer(int logInterval) : logInterval(logInterval) {
+lifuren::MnistTrainer::MnistTrainer(int logInterval) : logInterval(logInterval) {
 }
 
-void lifuren::NNTrainer::train(
+void lifuren::MnistTrainer::train(
     size_t epoch,
-    lifuren::NNModel& model,
+    lifuren::MnistModel& model,
     torch::optim::Optimizer& optimizer,
     torch::Device device,
-    lifuren::NNDataset& trainDataset,
+    lifuren::MnistDataset& trainDataset,
     int batchSize,
     int numWorkers
 ) {
@@ -215,10 +209,10 @@ void lifuren::NNTrainer::train(
     }
 }
 
-void lifuren::NNTrainer::test(
-    lifuren::NNModel& model,
+void lifuren::MnistTrainer::test(
+    lifuren::MnistModel& model,
     torch::Device device,
-    lifuren::NNDataset& testDataset,
+    lifuren::MnistDataset& testDataset,
     int batchSize,
     int numWorkers
 ) {
@@ -253,7 +247,7 @@ void lifuren::NNTrainer::test(
     SPDLOG_DEBUG("avg loss {} Accuracy {}\r\n", testLoss, (static_cast<double>(correct) / datasetSize));
 }
 
-void lifuren::testMNIST() {
+void lifuren::testMnist() {
     std::string data_root = "D:/tmp/MNIST";
     int numWorkers = 32;
     int logInterval = 10;
@@ -266,12 +260,12 @@ void lifuren::testMNIST() {
         device_type = torch::kCUDA;
     }
     torch::Device device(device_type);
-    lifuren::NNModel model;
+    lifuren::MnistModel model;
     model.to(device);
     torch::optim::SGD optimizer(model.parameters(), torch::optim::SGDOptions(0.01).momentum(0.5));
-    lifuren::NNDataset trainDataset(data_root, torch::data::datasets::MNIST::Mode::kTrain);
-    lifuren::NNDataset testDataset(data_root, torch::data::datasets::MNIST::Mode::kTest);
-    auto trainer = lifuren::NNTrainer(logInterval);
+    lifuren::MnistDataset trainDataset(data_root, torch::data::datasets::MNIST::Mode::kTrain);
+    lifuren::MnistDataset testDataset(data_root, torch::data::datasets::MNIST::Mode::kTest);
+    auto trainer = lifuren::MnistTrainer(logInterval);
     for (int epoch = 1; epoch <= totalEpochNum; ++epoch) {
         trainer.train(epoch, model, optimizer, device, trainDataset, trainBatchSize, numWorkers);
         trainer.test(model, device, testDataset, testBatchSize, numWorkers);

@@ -2,7 +2,7 @@
 
 void lifuren::logger::init() {
     std::vector<spdlog::sink_ptr> sinks{};
-    // 控制台日志
+    // 开发日志
     #if defined(_DEBUG) || defined(__debug__)
     auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     sinks.push_back(stdoutSink);
@@ -24,6 +24,7 @@ void lifuren::logger::init() {
 }
 
 void lifuren::logger::shutdown() {
+    SPDLOG_DEBUG("关闭日志");
     spdlog::drop_all();
     spdlog::shutdown();
 }

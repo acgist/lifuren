@@ -116,18 +116,18 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
-add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVColor.cpp)
-add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
-target_link_libraries(
-    testOpenCVColor PUBLIC
-    lifurencore
-    ${OpenCV_LIBS}
-)
-
 add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVFace.cpp)
 add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
 target_link_libraries(
     testOpenCVFace PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
+)
+
+add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVColor.cpp)
+add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
+target_link_libraries(
+    testOpenCVColor PUBLIC
     lifurencore
     ${OpenCV_LIBS}
 )

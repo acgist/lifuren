@@ -1,6 +1,9 @@
 /**
  * 日志
  * 
+ * st：单线程版本（效率更高）
+ * mt：多线程版本（线程安全）
+ * 
  * @author acgist
  */
 #pragma once

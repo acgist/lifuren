@@ -18,7 +18,7 @@ extern void testVGG();
 /**
  * MNIST测试
  */
-extern void testMNIST();
+extern void testMnist();
 /**
  * ResNet测试
  */
