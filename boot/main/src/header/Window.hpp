@@ -69,52 +69,25 @@ class PoetryGCWindow;
 class PoetryTSWindow;
 class AboutWindow;
 
+#ifndef MEDIA_MODULE
+#define MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)                     \
+    Fl_Button* ##mediaTypeLower##GcPtr = nullptr;                        \
+    Fl_Button* ##mediaTypeLower##TsPtr = nullptr;                        \
+    ##mediaTypeUpper##GCWindow* ##mediaTypeLower##GcWindowPtr = nullptr; \
+    ##mediaTypeUpper##GCWindow* ##mediaTypeLower##TsWindowPtr = nullptr; \
+    Fl_Group* ##mediaTypeLower##GroupPtr = nullptr;
+#endif
+
 /**
  * 主窗口
  */
 class MainWindow : public LFRWindow {
 
 private:
-    // AudioGC按钮
-    Fl_Button* audioGcPtr = nullptr;
-    // AudioTS按钮
-    Fl_Button* audioTsPtr = nullptr;
-    // AudioGC窗口
-    AudioGCWindow* audioGcWindowPtr = nullptr;
-    // AudioTS窗口
-    AudioGCWindow* audioTsWindowPtr = nullptr;
-    // Audio分组
-    Fl_Group* audioGroupPtr = nullptr;
-    // ImageGC按钮
-    Fl_Button* imageGcPtr = nullptr;
-    // ImageTS按钮
-    Fl_Button* imageTsPtr = nullptr;
-    // ImageGC窗口
-    ImageGCWindow* imageGcWindowPtr = nullptr;
-    // ImageTS窗口
-    ImageGCWindow* imageTsWindowPtr = nullptr;
-    // Image分组
-    Fl_Group* imageGroupPtr = nullptr;
-    // VideoGC按钮
-    Fl_Button* videoGcPtr = nullptr;
-    // VideoTS按钮
-    Fl_Button* videoTsPtr = nullptr;
-    // VideoGC窗口
-    VideoGCWindow* videoGcWindowPtr = nullptr;
-    // VideoTS窗口
-    VideoGCWindow* videoTsWindowPtr = nullptr;
-    // Video分组
-    Fl_Group* videoGroupPtr = nullptr;
-    // PoetryGC按钮
-    Fl_Button* poetryGcPtr = nullptr;
-    // PoetryTS按钮
-    Fl_Button* poetryTsPtr = nullptr;
-    // PoetryGC窗口
-    PoetryGCWindow* poetryGcWindowPtr = nullptr;
-    // PoetryTS窗口
-    PoetryTSWindow* poetryTsWindowPtr = nullptr;
-    // Poetry分组
-    Fl_Group* poetryGroupPtr = nullptr;
+    MEDIA_MODULE(audio, Audio);
+    MEDIA_MODULE(image, Image);
+    MEDIA_MODULE(video, Video);
+    MEDIA_MODULE(poetry, Poetry);
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
     // 关于窗口
