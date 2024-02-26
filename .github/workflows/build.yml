@@ -45,7 +45,7 @@ jobs:
           # 输出版本
           gcc   -v
           g++   -v
-          cmake -v
+          cmake -version
           # 开始编译
           mkdir build
           cd build
