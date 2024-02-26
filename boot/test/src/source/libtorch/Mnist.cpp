@@ -6,7 +6,7 @@
 namespace lifuren {
 
 /**
- * 数据集
+ * Mnist数据集
  * 
  * @author acgist
  */
@@ -28,7 +28,7 @@ public:
 };
 
 /**
- * 模型
+ * Mnist模型
  * 
  * @author acgist
  */
@@ -47,31 +47,21 @@ public:
     torch::Tensor forward(torch::Tensor x);
 
 private:
-    /**
-     * 卷积层
-     */
+    // 卷积层
     torch::nn::Conv2d conv1 = nullptr;
-    /**
-     * 卷积层
-     */
+    // 卷积层
     torch::nn::Conv2d conv2 = nullptr;
-    /**
-     * 避免过拟合
-     */
-    torch::nn::Dropout2d conv2Drop;
-    /**
-     * 全连接层
-     */
+    // 避免过拟合
+    torch::nn::Dropout2d dropout;
+    // 全连接层
     torch::nn::Linear fc1 = nullptr;
-    /**
-     * 全连接层
-     */
+    // 全连接层
     torch::nn::Linear fc2 = nullptr;
 
 };
 
 /**
- * 训练器
+ * Mnist训练器
  * 
  * @author acgist
  */
@@ -79,8 +69,6 @@ class MnistTrainer {
 
 public:
     /**
-     * 训练器
-     * 
      * @param logInterval 训练打印批次
      */
     MnistTrainer(int logInterval);
@@ -88,37 +76,37 @@ public:
      * 训练
      * 
      * @param epoch        训练周期
-     * @param model        模型
-     * @param optimizer    优化器
-     * @param device       训练设备
-     * @param trainDataset 数据集
+     * @param workers      线程数量
      * @param batchSize    每次训练数据大小
-     * @param numWorkers   线程数量
+     * @param model        模型
+     * @param trainDataset 数据集
+     * @param device       训练设备
+     * @param optimizer    优化器
      */
     void train(
-        size_t epoch,
-        lifuren::MnistModel& model,
+        size_t                   epoch,
+        int                      workers,
+        int                      batchSize,
+        torch::Device&           device,
         torch::optim::Optimizer& optimizer,
-        torch::Device device,
-        lifuren::MnistDataset& trainDataset,
-        int batchSize,
-        int numWorkers
+        lifuren::MnistModel&     model,
+        lifuren::MnistDataset&   trainDataset
     );
     /**
      * 测试
      * 
-     * @param model       模型
-     * @param device      训练设备
-     * @param testDataset 数据集
+     * @param workers     线程数量
      * @param batchSize   每次测试数据大小
-     * @param numWorkers  线程数量
+     * @param device      训练设备
+     * @param model       模型
+     * @param testDataset 数据集
      */
     void test(
-        lifuren::MnistModel& model,
-        torch::Device device,
-        lifuren::MnistDataset& testDataset,
-        int batchSize,
-        int numWorkers
+        int                    workers,
+        int                    batchSize,
+        torch::Device&         device,
+        lifuren::MnistModel&   model,
+        lifuren::MnistDataset& testDataset
     );
 
 private:
@@ -144,7 +132,7 @@ lifuren::MnistModel::MnistModel() {
     this->fc2 = torch::nn::Linear(50,  10);
     this->register_module("conv1", this->conv1);
     this->register_module("conv2", this->conv2);
-    this->register_module("conv2_drop", this->conv2Drop);
+    this->register_module("dropout", this->dropout);
     this->register_module("fc1", this->fc1);
     this->register_module("fc2", this->fc2);
 }
@@ -157,7 +145,7 @@ torch::Tensor lifuren::MnistModel::forward(torch::Tensor x) {
     x = torch::max_pool2d(x, 2);
     x = torch::relu(x);
     x = this->conv2->forward(x);
-    x = this->conv2Drop->forward(x);
+    x = this->dropout->forward(x);
     x = torch::max_pool2d(x, 2);
     x = torch::relu(x);
     x = x.view({-1, 320});
@@ -173,13 +161,13 @@ lifuren::MnistTrainer::MnistTrainer(int logInterval) : logInterval(logInterval) 
 }
 
 void lifuren::MnistTrainer::train(
-    size_t epoch,
-    lifuren::MnistModel& model,
+    size_t                   epoch,
+    int                      workers,
+    int                      batchSize,
+    torch::Device&           device,
     torch::optim::Optimizer& optimizer,
-    torch::Device device,
-    lifuren::MnistDataset& trainDataset,
-    int batchSize,
-    int numWorkers
+    lifuren::MnistModel&     model,
+    lifuren::MnistDataset&   trainDataset
 ) {
     model.train();
     auto dataset = trainDataset.mnistDataset
@@ -190,31 +178,31 @@ void lifuren::MnistTrainer::train(
         dataset,
         torch::data::DataLoaderOptions()
             .batch_size(batchSize)
-            .workers(numWorkers)
+            .workers(workers)
     );
     auto datasetSize = dataset.size().value();
     size_t batchIndex = 0;
     // 网络训练
     for (const auto& batch : *dataLoader) {
-        auto data = batch.data.to(device);
+        auto data   = batch.data.to(device);
         auto target = batch.target.to(device);
         optimizer.zero_grad();
         auto output = model.forward(data);
-        auto loss = torch::nll_loss(output, target);
+        auto loss   = torch::nll_loss(output, target);
         loss.backward();
         optimizer.step();
         if (++batchIndex % this->logInterval == 0) {
-            SPDLOG_DEBUG("train epoch {} {} / {} LOSS {} \r\n", epoch, (batchIndex * batch.data.size(0)), datasetSize, loss.template item<float>());
+            SPDLOG_DEBUG("train epoch {} {} / {} LOSS {}", epoch, batchIndex * batch.data.size(0), datasetSize, loss.template item<float>());
         }
     }
 }
 
 void lifuren::MnistTrainer::test(
-    lifuren::MnistModel& model,
-    torch::Device device,
-    lifuren::MnistDataset& testDataset,
-    int batchSize,
-    int numWorkers
+    int                    workers,
+    int                    batchSize,
+    torch::Device&         device,
+    lifuren::MnistModel&   model,
+    lifuren::MnistDataset& testDataset
 ) {
     // 测试设置eval模式
     model.eval();
@@ -227,11 +215,11 @@ void lifuren::MnistTrainer::test(
         dataset,
         torch::data::DataLoaderOptions()
             .batch_size(batchSize)
-            .workers(numWorkers)
+            .workers(workers)
     );
     auto datasetSize = dataset.size().value();
     for (const auto& batch : *dataLoader) {
-        auto data = batch.data.to(device);
+        auto data   = batch.data.to(device);
         auto target = batch.target.to(device);
         auto output = model.forward(data);
         testLoss += torch::nll_loss(
@@ -244,12 +232,12 @@ void lifuren::MnistTrainer::test(
         correct += pred.eq(target).sum().template item<int64_t>();
     }
     testLoss /= datasetSize;
-    SPDLOG_DEBUG("avg loss {} Accuracy {}\r\n", testLoss, (static_cast<double>(correct) / datasetSize));
+    SPDLOG_DEBUG("avg loss {} Accuracy {}", testLoss, static_cast<double>(correct) / datasetSize);
 }
 
 void lifuren::testMnist() {
     std::string data_root = "D:/tmp/MNIST";
-    int numWorkers = 32;
+    int workers = 32;
     int logInterval = 10;
     int totalEpochNum = 32;
     int trainBatchSize = 128;
@@ -267,8 +255,8 @@ void lifuren::testMnist() {
     lifuren::MnistDataset testDataset(data_root, torch::data::datasets::MNIST::Mode::kTest);
     auto trainer = lifuren::MnistTrainer(logInterval);
     for (int epoch = 1; epoch <= totalEpochNum; ++epoch) {
-        trainer.train(epoch, model, optimizer, device, trainDataset, trainBatchSize, numWorkers);
-        trainer.test(model, device, testDataset, testBatchSize, numWorkers);
+        trainer.train(epoch, workers, trainBatchSize, device, optimizer, model, trainDataset);
+        trainer.test(workers, testBatchSize, device, model, testDataset);
     }
     torch::serialize::OutputArchive output;
     model.save(output);

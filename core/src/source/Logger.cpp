@@ -4,12 +4,12 @@ void lifuren::logger::init() {
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
     #if defined(__DEBUG__)
-    auto stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    sinks.push_back(stdoutSink);
+    auto stdoutColorSinkSPtr = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    sinks.push_back(stdoutColorSinkSPtr);
     #endif
     // 文件日志
-    auto dailyFileSink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/lifuren.log", 0, 0);
-    sinks.push_back(dailyFileSink);
+    auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/lifuren.log", 0, 0);
+    sinks.push_back(dailyFileSinkSPtr);
     // 默认日志
     auto logger = std::make_shared<spdlog::logger>("lifurenLogger", sinks.begin(), sinks.end());
     logger->set_level(spdlog::level::debug);

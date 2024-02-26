@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include "Ptr.hpp"
 #include "Logger.hpp"
 
 #include "FL/Fl.H"
@@ -58,6 +59,14 @@ protected:
 
 };
 
+class AudioGCWindow;
+class AudioTSWindow;
+class ImageGCWindow;
+class ImageTSWindow;
+class VideoGCWindow;
+class VideoTSWindow;
+class PoetryGCWindow;
+class PoetryTSWindow;
 class AboutWindow;
 
 /**
@@ -70,24 +79,40 @@ private:
     Fl_Button* audioGcPtr = nullptr;
     // AudioTS按钮
     Fl_Button* audioTsPtr = nullptr;
+    // AudioGC窗口
+    AudioGCWindow* audioGcWindowPtr = nullptr;
+    // AudioTS窗口
+    AudioGCWindow* audioTsWindowPtr = nullptr;
     // Audio分组
     Fl_Group* audioGroupPtr = nullptr;
     // ImageGC按钮
     Fl_Button* imageGcPtr = nullptr;
     // ImageTS按钮
     Fl_Button* imageTsPtr = nullptr;
+    // ImageGC窗口
+    ImageGCWindow* imageGcWindowPtr = nullptr;
+    // ImageTS窗口
+    ImageGCWindow* imageTsWindowPtr = nullptr;
     // Image分组
     Fl_Group* imageGroupPtr = nullptr;
     // VideoGC按钮
     Fl_Button* videoGcPtr = nullptr;
     // VideoTS按钮
     Fl_Button* videoTsPtr = nullptr;
+    // VideoGC窗口
+    VideoGCWindow* videoGcWindowPtr = nullptr;
+    // VideoTS窗口
+    VideoGCWindow* videoTsWindowPtr = nullptr;
     // Video分组
     Fl_Group* videoGroupPtr = nullptr;
     // PoetryGC按钮
     Fl_Button* poetryGcPtr = nullptr;
     // PoetryTS按钮
     Fl_Button* poetryTsPtr = nullptr;
+    // PoetryGC窗口
+    PoetryGCWindow* poetryGcWindowPtr = nullptr;
+    // PoetryTS窗口
+    PoetryTSWindow* poetryTsWindowPtr = nullptr;
     // Poetry分组
     Fl_Group* poetryGroupPtr = nullptr;
     // 关于按钮
@@ -105,9 +130,9 @@ public:
     virtual ~MainWindow();
 
 public:
-    /**
-     * 关于
-     */
+    // ImageGC
+    void imageGc();
+    // 关于
     void about();
 
 protected:
@@ -166,6 +191,21 @@ class AudioTSWindow : public LFRWindow {
  * @see ImageGC
  */
 class ImageGCWindow : public LFRWindow {
+
+public:
+    /**
+     * @param width    窗口宽度
+     * @param height   窗口高度
+     * @param titlePtr 窗口名称
+     */
+    ImageGCWindow(int width, int height, const char* titlePtr);
+    virtual ~ImageGCWindow();
+
+protected:
+    /**
+     * 加载组件
+     */
+    virtual void drawElement() override;
 
 };
 

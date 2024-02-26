@@ -1,66 +1,50 @@
 #include "../header/Window.hpp"
 
+// 回调绑定
+#ifndef CALLBACK_BINDER
+#define CALLBACK_BINDER(name)                                                           \
+    this->##name##ButtonPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
+        ((MainWindow*) voidPtr)->##name##();                                            \
+    }, this);
+#endif
+
+// 删除资源指针
+#ifndef DELETE_MEDIA_PTR
+#define DELETE_MEDIA_PTR(mediaType)                 \
+    SPDLOG_DEBUG("释放" #mediaType "资源");          \
+    if(this->##mediaType##GcPtr != nullptr) {       \
+        delete this->##mediaType##GcPtr;            \
+        this->##mediaType##GcPtr = nullptr;         \
+    }                                               \
+    if(this->##mediaType##TsPtr != nullptr) {       \
+        delete this->##mediaType##TsPtr;            \
+        this->##mediaType##TsPtr = nullptr;         \
+    }                                               \
+    if(this->##mediaType##GcWindowPtr != nullptr) { \
+        delete this->##mediaType##GcWindowPtr;      \
+        this->##mediaType##GcWindowPtr = nullptr;   \
+    }                                               \
+    if(this->##mediaType##TsWindowPtr != nullptr) { \
+        delete this->##mediaType##TsWindowPtr;      \
+        this->##mediaType##TsWindowPtr = nullptr;   \
+    }                                               \
+    if(this->##mediaType##GroupPtr != nullptr) {    \
+        delete this->##mediaType##GroupPtr;         \
+        this->##mediaType##GroupPtr = nullptr;      \
+    }
+#endif
+
 lifuren::MainWindow::MainWindow(int width, int height, const char* titlePtr) : LFRWindow(width, height, titlePtr) {
 }
 
 lifuren::MainWindow::~MainWindow() {
     SPDLOG_DEBUG("关闭MainWindow");
-    if(this->audioGcPtr != nullptr) {
-        delete this->audioGcPtr;
-        this->audioGcPtr = nullptr;
-    }
-    if(this->audioTsPtr != nullptr) {
-        delete this->audioTsPtr;
-        this->audioTsPtr = nullptr;
-    }
-    if(this->audioGroupPtr != nullptr) {
-        delete this->audioGroupPtr;
-        this->audioGroupPtr = nullptr;
-    }
-    if(this->imageGcPtr != nullptr) {
-        delete this->imageGcPtr;
-        this->imageGcPtr = nullptr;
-    }
-    if(this->imageTsPtr != nullptr) {
-        delete this->imageTsPtr;
-        this->imageTsPtr = nullptr;
-    }
-    if(this->imageGroupPtr != nullptr) {
-        delete this->imageGroupPtr;
-        this->imageGroupPtr = nullptr;
-    }
-    if(this->videoGcPtr != nullptr) {
-        delete this->videoGcPtr;
-        this->videoGcPtr = nullptr;
-    }
-    if(this->videoTsPtr != nullptr) {
-        delete this->videoTsPtr;
-        this->videoTsPtr = nullptr;
-    }
-    if(this->videoGroupPtr != nullptr) {
-        delete this->videoGroupPtr;
-        this->videoGroupPtr = nullptr;
-    }
-    if(this->poetryGcPtr != nullptr) {
-        delete this->poetryGcPtr;
-        this->poetryGcPtr = nullptr;
-    }
-    if(this->poetryTsPtr != nullptr) {
-        delete this->poetryTsPtr;
-        this->poetryTsPtr = nullptr;
-    }
-    if(this->poetryGroupPtr != nullptr) {
-        delete this->poetryGroupPtr;
-        this->poetryGroupPtr = nullptr;
-    }
-    if(this->aboutButtonPtr != nullptr) {
-        delete this->aboutButtonPtr;
-        this->aboutButtonPtr = nullptr;
-    }
-    if(this->aboutWindowPtr != nullptr) {
-        delete this->aboutWindowPtr;
-        this->aboutWindowPtr = nullptr;
-    }
+    DELETE_MEDIA_PTR(audio);
+    DELETE_MEDIA_PTR(image);
+    DELETE_MEDIA_PTR(video);
+    DELETE_MEDIA_PTR(poetry);
+    DELETE_PTR(aboutButtonPtr);
+    DELETE_PTR(aboutWindowPtr);
 }
 
 void lifuren::MainWindow::drawElement() {
@@ -87,10 +71,11 @@ void lifuren::MainWindow::drawElement() {
     this->poetryGroupPtr->end();
     // 关于
     this->aboutButtonPtr = new Fl_Button((this->w() - 70) / 4 * 3 + 50, this->h() - 40, (this->w() - 70) / 4, 30, "关于");
-    this->aboutButtonPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {
-        ((MainWindow*) voidPtr)->about();
-    }, this);
+    CALLBACK_BINDER(about);
     this->resizable(this);
+}
+
+void lifuren::MainWindow::imageGc() {
 }
 
 void lifuren::MainWindow::about() {

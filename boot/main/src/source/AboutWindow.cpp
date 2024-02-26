@@ -7,18 +7,9 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const char* titlePtr) :
 
 lifuren::AboutWindow::~AboutWindow() {
     SPDLOG_DEBUG("关闭AboutWindow");
-    if(this->homePagePtr != nullptr) {
-        delete this->homePagePtr;
-        this->homePagePtr = nullptr;
-    }
-    if(this->aboutDisplayPtr != nullptr) {
-        delete this->aboutDisplayPtr;
-        this->aboutDisplayPtr = nullptr;
-    }
-    if(this->aboutBufferPtr != nullptr) {
-        delete this->aboutBufferPtr;
-        this->aboutBufferPtr = nullptr;
-    }
+    DELETE_PTR(homePagePtr);
+    DELETE_PTR(aboutBufferPtr);
+    DELETE_PTR(aboutDisplayPtr);
 }
 
 void lifuren::AboutWindow::drawElement() {

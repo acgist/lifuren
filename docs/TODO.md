@@ -44,3 +44,11 @@
 ## 测试
 
 /test/CNN/VGG
+
+## 变量
+
+```
+*Ptr = 指针
+*SPtr = shared_ptr指针
+*UPtr = unique_ptr指针
+```

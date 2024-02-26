@@ -20,6 +20,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
+    ${HEADER_DIR}/Ptr.hpp
     ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/Label.hpp
     ${HEADER_DIR}/Model.hpp
