@@ -2,32 +2,32 @@
 
 // 回调绑定
 #ifndef CALLBACK_BINDER
-#define CALLBACK_BINDER(name)                                                           \
+#define CALLBACK_BINDER(name)                                                         \
     this->name##ButtonPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
-        ((MainWindow*) voidPtr)->name##();                                            \
+        ((MainWindow*) voidPtr)->name();                                              \
     }, this);
 #endif
 
 // 删除资源指针
 #ifndef DELETE_MEDIA_PTR
-#define DELETE_MEDIA_PTR(mediaType)                 \
-    SPDLOG_DEBUG("释放" #mediaType "资源");          \
+#define DELETE_MEDIA_PTR(mediaType)               \
+    SPDLOG_DEBUG("释放" #mediaType "资源");        \
     if(this->mediaType##GcPtr != nullptr) {       \
         delete this->mediaType##GcPtr;            \
         this->mediaType##GcPtr = nullptr;         \
-    }                                               \
+    }                                             \
     if(this->mediaType##TsPtr != nullptr) {       \
         delete this->mediaType##TsPtr;            \
         this->mediaType##TsPtr = nullptr;         \
-    }                                               \
+    }                                             \
     if(this->mediaType##GcWindowPtr != nullptr) { \
         delete this->mediaType##GcWindowPtr;      \
         this->mediaType##GcWindowPtr = nullptr;   \
-    }                                               \
+    }                                             \
     if(this->mediaType##TsWindowPtr != nullptr) { \
         delete this->mediaType##TsWindowPtr;      \
         this->mediaType##TsWindowPtr = nullptr;   \
-    }                                               \
+    }                                             \
     if(this->mediaType##GroupPtr != nullptr) {    \
         delete this->mediaType##GroupPtr;         \
         this->mediaType##GroupPtr = nullptr;      \
