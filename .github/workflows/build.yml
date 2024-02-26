@@ -42,6 +42,11 @@ jobs:
           unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip
       - name: Deploy lifuren
         run: |
+          # 输出版本
+          gcc   -v
+          g++   -v
+          cmake -v
+          # 开始编译
           mkdir build
           cd build
           cmake ..

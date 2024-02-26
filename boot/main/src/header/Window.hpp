@@ -71,11 +71,11 @@ class AboutWindow;
 
 #ifndef MEDIA_MODULE
 #define MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)                     \
-    Fl_Button* ##mediaTypeLower##GcPtr = nullptr;                        \
-    Fl_Button* ##mediaTypeLower##TsPtr = nullptr;                        \
-    ##mediaTypeUpper##GCWindow* ##mediaTypeLower##GcWindowPtr = nullptr; \
-    ##mediaTypeUpper##GCWindow* ##mediaTypeLower##TsWindowPtr = nullptr; \
-    Fl_Group* ##mediaTypeLower##GroupPtr = nullptr;
+    Fl_Button* mediaTypeLower##GcPtr = nullptr;                        \
+    Fl_Button* mediaTypeLower##TsPtr = nullptr;                        \
+    mediaTypeUpper##GCWindow* mediaTypeLower##GcWindowPtr = nullptr; \
+    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr; \
+    Fl_Group* mediaTypeLower##GroupPtr = nullptr;
 #endif
 
 /**
