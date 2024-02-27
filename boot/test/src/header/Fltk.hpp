@@ -33,11 +33,11 @@ public:
 
 public:
     /**
-     * @param width    窗口宽度
-     * @param height   窗口高度
-     * @param titlePtr 窗口名称
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
      */
-    LifurenWindow(int width, int height, const char* titlePtr);
+    LifurenWindow(int width, int height, const char* title);
     virtual ~LifurenWindow();
 
 public:

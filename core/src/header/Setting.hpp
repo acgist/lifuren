@@ -44,8 +44,10 @@ enum Regularization {
 class Setting {
 
 public:
+    // 训练模型路径
+    std::string modelPath;
     // 训练文件路径
-    std::string path;
+    std::string datasetPath;
     // 激活函数
     lifuren::Activation activation = lifuren::Activation::RELU;
     // 学习速率
@@ -55,7 +57,7 @@ public:
     // 正则速率
     double regularizationRate = 0.0;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, path, activation, learningRate, regularization, regularizationRate);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, modelPath, datasetPath, activation, learningRate, regularization, regularizationRate);
 
 public:
     Setting();
@@ -125,5 +127,13 @@ class PredictSetting {
  */
 class TrainingSetting {
 };
+
+// 配置路径
+static const char* SETTINGS_PATH = "../config/settings.json";
+
+/**
+ * 全局配置
+ */
+extern lifuren::Settings SETTINGS;
 
 }

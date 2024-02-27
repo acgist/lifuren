@@ -1,7 +1,5 @@
 #include "../../header/LibTorch.hpp"
 
-#include "Format.hpp"
-
 template <> struct fmt::formatter<torch::nn::ReLU> : ostream_formatter {};
 template <> struct fmt::formatter<torch::nn::Tanh> : ostream_formatter {};
 

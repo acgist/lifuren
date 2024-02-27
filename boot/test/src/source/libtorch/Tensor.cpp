@@ -1,7 +1,5 @@
 #include "../../header/LibTorch.hpp"
 
-#include "Format.hpp"
-
 void lifuren::testLibTorchTensor() {
     // const torch::Tensor a = torch::randn({ 3, 2 });
     // const torch::Tensor b = torch::randn({ 3, 2 });

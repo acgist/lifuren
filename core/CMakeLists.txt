@@ -25,7 +25,6 @@ set(
     ${HEADER_DIR}/Label.hpp
     ${HEADER_DIR}/Model.hpp
     ${HEADER_DIR}/Logger.hpp
-    ${HEADER_DIR}/Format.hpp
     ${HEADER_DIR}/Setting.hpp
     ${HEADER_DIR}/Audio.hpp
     ${HEADER_DIR}/AudioGC.hpp

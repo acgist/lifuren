@@ -2,15 +2,15 @@
 
 #include "FL/filename.H"
 
-lifuren::AboutWindow::AboutWindow(int width, int height, const char* titlePtr) : LFRWindow(width, height, titlePtr) {
+lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
 }
 
 lifuren::AboutWindow::~AboutWindow() {
     SPDLOG_DEBUG("关闭AboutWindow");
-    DELETE_PTR(homePagePtr);
+    LFR_DELETE_PTR(homePagePtr);
     // 注意顺序：display->buffer
-    DELETE_PTR(aboutDisplayPtr);
-    DELETE_PTR(aboutBufferPtr);
+    LFR_DELETE_PTR(aboutDisplayPtr);
+    LFR_DELETE_PTR(aboutBufferPtr);
 }
 
 void lifuren::AboutWindow::drawElement() {

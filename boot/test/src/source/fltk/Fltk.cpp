@@ -14,7 +14,7 @@ void buttonCallbackProxy(Fl_Widget* widgetPtr, void* voidPtr) {
     ((lifuren::LifurenWindow*) voidPtr)->buttonCallback(widgetPtr, voidPtr);
 }
 
-lifuren::LifurenWindow::LifurenWindow(int width, int height, const char* titlePtr) : Fl_Window(width, height, titlePtr) {
+lifuren::LifurenWindow::LifurenWindow(int width, int height, const char* title) : Fl_Window(width, height, title) {
 }
 
 lifuren::LifurenWindow::~LifurenWindow() {

@@ -64,3 +64,5 @@ std::string lifuren::Settings::toJSON() {
     const nlohmann::json json = *this;
     return json.dump();
 }
+
+lifuren::Settings lifuren::SETTINGS;

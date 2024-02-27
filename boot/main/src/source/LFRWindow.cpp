@@ -8,7 +8,7 @@
  */
 int abs(int source, int target);
 
-lifuren::LFRWindow::LFRWindow(int width, int height, const char* titlePtr) : Fl_Window(width, height, titlePtr) {
+lifuren::LFRWindow::LFRWindow(int width, int height, const char* title) : Fl_Window(width, height, title) {
 }
 
 lifuren::LFRWindow::~LFRWindow() {

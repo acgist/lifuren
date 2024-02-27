@@ -7,13 +7,16 @@
 
 #include "Ptr.hpp"
 #include "Logger.hpp"
+#include "Setting.hpp"
 
 #include "FL/Fl.H"
+#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
+#include "Fl/Fl_Native_File_Chooser.H"
 
 namespace lifuren {
 
@@ -30,11 +33,11 @@ protected:
 
 public:
     /**
-     * @param width    窗口宽度
-     * @param height   窗口高度
-     * @param titlePtr 窗口名称
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
      */
-    LFRWindow(int width, int height, const char* titlePtr);
+    LFRWindow(int width, int height, const char* title);
     virtual ~LFRWindow();
 
 public:
@@ -69,13 +72,12 @@ class PoetryGCWindow;
 class PoetryTSWindow;
 class AboutWindow;
 
-#ifndef MEDIA_MODULE
-#define MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)                     \
-    Fl_Button* mediaTypeLower##GcPtr = nullptr;                        \
-    Fl_Button* mediaTypeLower##TsPtr = nullptr;                        \
+#ifndef LFR_MEDIA_MODULE
+#define LFR_MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)             \
+    Fl_Button* mediaTypeLower##GcPtr = nullptr;                      \
+    Fl_Button* mediaTypeLower##TsPtr = nullptr;                      \
     mediaTypeUpper##GCWindow* mediaTypeLower##GcWindowPtr = nullptr; \
-    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr; \
-    Fl_Group* mediaTypeLower##GroupPtr = nullptr;
+    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr;
 #endif
 
 /**
@@ -84,10 +86,10 @@ class AboutWindow;
 class MainWindow : public LFRWindow {
 
 private:
-    MEDIA_MODULE(audio, Audio);
-    MEDIA_MODULE(image, Image);
-    MEDIA_MODULE(video, Video);
-    MEDIA_MODULE(poetry, Poetry);
+    LFR_MEDIA_MODULE(audio, Audio);
+    LFR_MEDIA_MODULE(image, Image);
+    LFR_MEDIA_MODULE(video, Video);
+    LFR_MEDIA_MODULE(poetry, Poetry);
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
     // 关于窗口
@@ -95,11 +97,11 @@ private:
 
 public:
     /**
-     * @param width    窗口宽度
-     * @param height   窗口高度
-     * @param titlePtr 窗口名称
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
      */
-    MainWindow(int width, int height, const char* titlePtr);
+    MainWindow(int width, int height, const char* title);
     virtual ~MainWindow();
 
 public:
@@ -131,11 +133,11 @@ private:
 
 public:
     /**
-     * @param width    窗口宽度
-     * @param height   窗口高度
-     * @param titlePtr 窗口名称
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
      */
-    AboutWindow(int width, int height, const char* titlePtr);
+    AboutWindow(int width, int height, const char* title = "关于");
     virtual ~AboutWindow();
 
 protected:
@@ -167,11 +169,11 @@ class ImageGCWindow : public LFRWindow {
 
 public:
     /**
-     * @param width    窗口宽度
-     * @param height   窗口高度
-     * @param titlePtr 窗口名称
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
      */
-    ImageGCWindow(int width, int height, const char* titlePtr);
+    ImageGCWindow(int width, int height, const char* title = "图片生成");
     virtual ~ImageGCWindow();
 
 protected:
@@ -179,6 +181,12 @@ protected:
      * 加载组件
      */
     virtual void drawElement() override;
+
+private:
+    // 模型路径
+    Fl_Input* modelPathPtr = nullptr;
+    // 数据路径
+    Fl_Input* datasetPathPtr = nullptr;
 
 };
 
@@ -216,5 +224,49 @@ class VideoGCWindow : public LFRWindow {
 class VideoTSWindow : public LFRWindow {
 
 };
+
+/**
+ * 路径选择Input
+ */
+class Fl_Input_Directory_Chooser : public Fl_Input {
+
+private:
+    // 标题
+    const char* title;
+    // 目录
+    const char* directory = ".";
+
+public:
+    Fl_Input_Directory_Chooser(
+        int x,
+        int y,
+        int width,
+        int height,
+        const char* title,
+        const char* directory = "."
+    );
+    ~Fl_Input_Directory_Chooser();
+
+public:
+    int handle(int event) override;
+
+};
+
+/**
+ * @param title     标题
+ * @param directory 选择目录
+ * @param filter    文件过滤（*.{cxx,cpp}）
+ * 
+ * @return 选择文件路径
+ */
+extern const char* fileChooser(const char* title, const char* directory = ".", const char* filter = "*.*");
+
+/**
+ * @param title     标题
+ * @param directory 选择目录
+ * 
+ * @return 选择目录路径
+ */
+extern const char* directoryChooser(const char* title, const char* directory = ".");
 
 }
