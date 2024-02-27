@@ -85,13 +85,13 @@ void lifuren::testLabel() {
 
 void lifuren::testSetting() {
     lifuren::Setting setting;
-    setting.path = "路径";
+    setting.modelPath = "路径";
     setting.activation = lifuren::Activation::RELU;
     SPDLOG_DEBUG("setting = {}", setting.toJSON());
     lifuren::Setting settingJson(R"(
-        {"activation":0,"learningRate":0.01,"path":"路径","regularization":0,"regularizationRate":0.01}
+        {"activation":0,"learningRate":0.01,"modelPath":"路径","regularization":0,"regularizationRate":0.01}
     )");
-    SPDLOG_DEBUG("setting path = {}", settingJson.path);
+    SPDLOG_DEBUG("setting modelPath = {}", settingJson.modelPath);
     SPDLOG_DEBUG("setting activation = {}", settingJson.activation);
     SPDLOG_DEBUG("setting learning rate = {}", settingJson.learningRate);
     SPDLOG_DEBUG("setting regularization = {}", settingJson.regularization);
@@ -100,14 +100,14 @@ void lifuren::testSetting() {
     settings.load(R"(
         {
             "ImageGC": {
-                "path": "",
+                "modelPath": "",
                 "activation": 0,
                 "learningRate": 0.01,
                 "regularization": 1,
                 "regularizationRate": 0.01
             },
             "ImageTS": {
-                "path": "",
+                "modelPath": "",
                 "activation": 0,
                 "learningRate": 0.01
             }
