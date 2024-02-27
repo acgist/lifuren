@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <string>
+
 #include "Ptr.hpp"
 #include "Logger.hpp"
 #include "Setting.hpp"
@@ -17,6 +19,21 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 #include "Fl/Fl_Native_File_Chooser.H"
+
+#ifndef LFR_MEDIA_MODULE
+#define LFR_MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)             \
+    Fl_Button* mediaTypeLower##GcPtr = nullptr;                      \
+    Fl_Button* mediaTypeLower##TsPtr = nullptr;                      \
+    mediaTypeUpper##GCWindow* mediaTypeLower##GcWindowPtr = nullptr; \
+    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr;
+#endif
+
+#ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, settingName, windowName)                        \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                                 \
+        ((windowName*) voidPtr)->settingPtr->settingName = ((windowName*) voidPtr)->inputPtr->value(); \
+    }, this);
+#endif
 
 namespace lifuren {
 
@@ -71,14 +88,6 @@ class VideoTSWindow;
 class PoetryGCWindow;
 class PoetryTSWindow;
 class AboutWindow;
-
-#ifndef LFR_MEDIA_MODULE
-#define LFR_MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)             \
-    Fl_Button* mediaTypeLower##GcPtr = nullptr;                      \
-    Fl_Button* mediaTypeLower##TsPtr = nullptr;                      \
-    mediaTypeUpper##GCWindow* mediaTypeLower##GcWindowPtr = nullptr; \
-    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr;
-#endif
 
 /**
  * 主窗口
@@ -183,6 +192,8 @@ protected:
     virtual void drawElement() override;
 
 private:
+    // 配置
+    Setting* settingPtr = nullptr;
     // 模型路径
     Fl_Input* modelPathPtr = nullptr;
     // 数据路径
@@ -259,7 +270,7 @@ public:
  * 
  * @return 选择文件路径
  */
-extern const char* fileChooser(const char* title, const char* directory = ".", const char* filter = "*.*");
+extern std::string fileChooser(const char* title, const char* directory = ".", const char* filter = "*.*");
 
 /**
  * @param title     标题
@@ -267,6 +278,6 @@ extern const char* fileChooser(const char* title, const char* directory = ".", c
  * 
  * @return 选择目录路径
  */
-extern const char* directoryChooser(const char* title, const char* directory = ".");
+extern std::string directoryChooser(const char* title, const char* directory = ".");
 
 }

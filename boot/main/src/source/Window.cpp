@@ -1,6 +1,6 @@
 #include "../header/Window.hpp"
 
-const char* lifuren::fileChooser(const char* title, const char* directory, const char* filter) {
+std::string lifuren::fileChooser(const char* title, const char* directory, const char* filter) {
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_FILE);
     chooser.title(title);
     chooser.filter(filter);
@@ -18,7 +18,7 @@ const char* lifuren::fileChooser(const char* title, const char* directory, const
     }
 }
 
-const char* lifuren::directoryChooser(const char* title, const char* directory) {
+std::string lifuren::directoryChooser(const char* title, const char* directory) {
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
     chooser.title(title);
     chooser.directory(directory);
@@ -55,8 +55,9 @@ lifuren::Fl_Input_Directory_Chooser::~Fl_Input_Directory_Chooser() {
 
 int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
     if(event == FL_LEFT_MOUSE) {
-        const char* filename = directoryChooser(this->title);
-        this->value(filename);
+        const std::string filename = directoryChooser(this->title);
+        this->value(filename.c_str());
+        this->do_callback();
         return 0;
     }
     return Fl_Input::handle(event);
