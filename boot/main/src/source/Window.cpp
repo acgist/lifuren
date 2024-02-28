@@ -62,3 +62,32 @@ int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
     }
     return Fl_Input::handle(event);
 }
+
+lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
+}
+
+lifuren::ModelWindow::~ModelWindow() {
+    LFR_DELETE_PTR(modelPathPtr);
+    LFR_DELETE_PTR(datasetPathPtr);
+}
+
+lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
+}
+
+lifuren::ModelGCWindow::~ModelGCWindow() {
+    LFR_DELETE_PTR(prevPtr);
+    LFR_DELETE_PTR(nextPtr);
+    LFR_DELETE_PTR(trainStartPtr);
+    LFR_DELETE_PTR(trainStopPtr);
+    LFR_DELETE_PTR(generatePtr);
+}
+
+lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
+}
+
+lifuren::ModelTSWindow::~ModelTSWindow() {
+    LFR_DELETE_PTR(trainStartPtr);
+    LFR_DELETE_PTR(trainStopPtr);
+    LFR_DELETE_PTR(sourceFilePtr);
+    LFR_DELETE_PTR(transferPtr);
+}

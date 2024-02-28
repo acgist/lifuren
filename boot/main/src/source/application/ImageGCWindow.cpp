@@ -1,8 +1,6 @@
 #include "../../header/Window.hpp"
 
-#include "Fl/Fl_Input_Choice.H"
-
-lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
+lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
     auto iterator = SETTINGS.settings.find("ImageGC");
     if(iterator == SETTINGS.settings.end()) {
         this->settingPtr = new Setting();
@@ -17,6 +15,11 @@ lifuren::ImageGCWindow::~ImageGCWindow() {
     SPDLOG_DEBUG("关闭ImageGCWindow");
     LFR_DELETE_PTR(modelPathPtr);
     LFR_DELETE_PTR(datasetPathPtr);
+    LFR_DELETE_PTR(prevPtr);
+    LFR_DELETE_PTR(nextPtr);
+    LFR_DELETE_PTR(trainStartPtr);
+    LFR_DELETE_PTR(trainStopPtr);
+    LFR_DELETE_PTR(generatePtr);
 }
 
 void lifuren::ImageGCWindow::drawElement() {
@@ -26,4 +29,9 @@ void lifuren::ImageGCWindow::drawElement() {
     this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, ImageGCWindow);
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageGCWindow);
+    this->prevPtr = new Fl_Button(10,  90, 100, 30, "上一张图");
+    this->nextPtr = new Fl_Button(120, 90, 100, 30, "下一张图");
+    this->trainStartPtr = new Fl_Button(230, 90, 100, 30, "开始训练");
+    this->trainStopPtr  = new Fl_Button(340, 90, 100, 30, "结束训练");
+    this->generatePtr   = new Fl_Button(450, 90, 100, 30, "生成图片");
 }

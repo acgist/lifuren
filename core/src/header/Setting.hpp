@@ -44,20 +44,20 @@ enum Regularization {
 class Setting {
 
 public:
-    // 训练模型路径
+    // 训练模型目录
     std::string modelPath;
-    // 训练文件路径
+    // 训练文件目录
     std::string datasetPath;
-    // 激活函数
-    lifuren::Activation activation = lifuren::Activation::RELU;
     // 学习速率
     double learningRate = 0.0;
-    // 正则函数
-    lifuren::Regularization regularization = lifuren::Regularization::NONE;
     // 正则速率
     double regularizationRate = 0.0;
+    // 激活函数
+    lifuren::Activation activation = lifuren::Activation::RELU;
+    // 正则函数
+    lifuren::Regularization regularization = lifuren::Regularization::NONE;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, modelPath, datasetPath, activation, learningRate, regularization, regularizationRate);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Setting, modelPath, datasetPath, learningRate, regularizationRate, activation, regularization);
 
 public:
     Setting();

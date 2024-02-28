@@ -12,20 +12,22 @@
 #include "Setting.hpp"
 
 #include "FL/Fl.H"
+#include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
+#include "Fl/Fl_Shared_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
-#ifndef LFR_MEDIA_MODULE
-#define LFR_MEDIA_MODULE(mediaTypeLower, mediaTypeUpper)             \
-    Fl_Button* mediaTypeLower##GcPtr = nullptr;                      \
-    Fl_Button* mediaTypeLower##TsPtr = nullptr;                      \
-    mediaTypeUpper##GCWindow* mediaTypeLower##GcWindowPtr = nullptr; \
-    mediaTypeUpper##GCWindow* mediaTypeLower##TsWindowPtr = nullptr;
+#ifndef LFR_MODEL_MODULE
+#define LFR_MODEL_MODULE(modelTypeLower, modelTypeUpper)             \
+    Fl_Button* modelTypeLower##GcPtr = nullptr;                      \
+    Fl_Button* modelTypeLower##TsPtr = nullptr;                      \
+    modelTypeUpper##GCWindow* modelTypeLower##GcWindowPtr = nullptr; \
+    modelTypeUpper##GCWindow* modelTypeLower##TsWindowPtr = nullptr;
 #endif
 
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
@@ -95,10 +97,10 @@ class AboutWindow;
 class MainWindow : public LFRWindow {
 
 private:
-    LFR_MEDIA_MODULE(audio, Audio);
-    LFR_MEDIA_MODULE(image, Image);
-    LFR_MEDIA_MODULE(video, Video);
-    LFR_MEDIA_MODULE(poetry, Poetry);
+    LFR_MODEL_MODULE(audio, Audio);
+    LFR_MODEL_MODULE(image, Image);
+    LFR_MODEL_MODULE(video, Video);
+    LFR_MODEL_MODULE(poetry, Poetry);
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
     // 关于窗口
@@ -158,23 +160,101 @@ protected:
 };
 
 /**
- * @see AudioGC
+ * 模型窗口
  */
-class AudioGCWindow : public LFRWindow {
+class ModelWindow : public LFRWindow {
 
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ModelWindow(int width, int height, const char* title);
+    virtual ~ModelWindow();
+
+protected:
+    // 配置：不用释放
+    Setting* settingPtr = nullptr;
+    // 模型路径
+    Fl_Input* modelPathPtr = nullptr;
+    // 数据路径
+    Fl_Input* datasetPathPtr = nullptr;
+
+};
+
+/**
+ * ModelGCWindow
+ */
+class ModelGCWindow : public ModelWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ModelGCWindow(int width, int height, const char* title);
+    virtual ~ModelGCWindow();
+
+protected:
+    // 上个内容
+    Fl_Button* prevPtr = nullptr;
+    // 下个内容
+    Fl_Button* nextPtr = nullptr;
+    // 开始训练
+    Fl_Button* trainStartPtr = nullptr;
+    // 结束训练
+    Fl_Button* trainStopPtr  = nullptr;
+    // 内容生成
+    Fl_Button* generatePtr = nullptr;
+
+};
+
+/**
+ * ModelTSWindow
+ */
+class ModelTSWindow : public ModelWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ModelTSWindow(int width, int height, const char* title);
+    virtual ~ModelTSWindow();
+
+protected:
+    // 开始训练
+    Fl_Button* trainStartPtr = nullptr;
+    // 结束训练
+    Fl_Button* trainStopPtr  = nullptr;
+    // 输入文件
+    Fl_Input* sourceFilePtr = nullptr;
+    // 风格迁移
+    Fl_Button* transferPtr  = nullptr;
+
+};
+
+/**
+ * @see AudioGC
+ * 
+* @deprecated 不会实现
+ */
+class AudioGCWindow : public ModelGCWindow {
 };
 
 /**
  * @see AudioTS
  */
-class AudioTSWindow : public LFRWindow {
-
+class AudioTSWindow : public ModelTSWindow {
 };
 
 /**
  * @see ImageGC
  */
-class ImageGCWindow : public LFRWindow {
+class ImageGCWindow : public ModelGCWindow {
 
 public:
     /**
@@ -191,49 +271,43 @@ protected:
      */
     virtual void drawElement() override;
 
-private:
-    // 配置
-    Setting* settingPtr = nullptr;
-    // 模型路径
-    Fl_Input* modelPathPtr = nullptr;
-    // 数据路径
-    Fl_Input* datasetPathPtr = nullptr;
-
 };
 
 /**
  * @see ImageTS
  */
-class ImageTSWindow : public LFRWindow {
-
+class ImageTSWindow : public ModelTSWindow {
 };
 
 /**
  * @see PoetryGC
  */
-class PoetryGCWindow : public LFRWindow {
+class PoetryGCWindow : public ModelGCWindow {
+
+private:
+    // 自动标记：通过已有标记自动标记
+    Fl_Button* autoMarkPtr = nullptr;
 
 };
 
 /**
  * @see PoetryTS
+ * 
+ * @deprecated 不会实现
  */
-class PoetryTSWindow : public LFRWindow {
-
+class PoetryTSWindow : public ModelTSWindow {
 };
 
 /**
  * @see VideoGC
  */
-class VideoGCWindow : public LFRWindow {
-
+class VideoGCWindow : public ModelGCWindow {
 };
 
 /**
  * @see VideoTS
  */
-class VideoTSWindow : public LFRWindow {
-
+class VideoTSWindow : public ModelTSWindow {
 };
 
 /**
