@@ -1,8 +1,8 @@
 /**
  * 诗词风格迁移
- * 融合多首诗词特征生成新的诗词数据
- * 
- * 1. 诗词仿写
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

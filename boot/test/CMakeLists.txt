@@ -65,6 +65,20 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testDates src/TestDates.cpp)
+add_test(NAME testDates COMMAND testDates)
+target_link_libraries(
+    testDates PUBLIC
+    lifurencore
+)
+
+add_executable(testFiles src/TestFiles.cpp)
+add_test(NAME testFiles COMMAND testFiles)
+target_link_libraries(
+    testFiles PUBLIC
+    lifurencore
+)
+
 add_executable(testFltk src/TestFltk.cpp src/source/fltk/Fltk.cpp)
 add_test(NAME testFltk COMMAND testFltk)
 target_link_libraries(

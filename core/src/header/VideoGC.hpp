@@ -1,8 +1,8 @@
 /**
  * 视频内容生成
- * 根据关键字生成视频数据
- * 
- * 1. 小说生成视频
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

@@ -51,9 +51,7 @@
 #endif
 
 // 禁用按钮提示
-void disableButton(Fl_Widget* widgetPtr, void* voidPtr) {
-    fl_message("功能没有实现");
-}
+static void disableButton(Fl_Widget*, void*);
 
 lifuren::MainWindow::MainWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
     // TODO：生成目录（config）
@@ -78,8 +76,6 @@ void lifuren::MainWindow::drawElement() {
     // 图片
     this->imageGcPtr = new Fl_Button(20,                        50, (this->w() - 60) / 2, 30, "图片内容生成");
     this->imageTsPtr = new Fl_Button((this->w() - 60) / 2 + 40, 50, (this->w() - 60) / 2, 30, "图片风格转换");
-    LFR_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
-    LFR_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
     // 视频
     this->videoGcPtr = new Fl_Button(20,                        90, (this->w() - 60) / 2, 30, "视频内容生成");
     this->videoTsPtr = new Fl_Button((this->w() - 60) / 2 + 40, 90, (this->w() - 60) / 2, 30, "视频风格转换");
@@ -89,10 +85,17 @@ void lifuren::MainWindow::drawElement() {
     this->poetryTsPtr->callback(disableButton);
     // 关于
     this->aboutButtonPtr = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
-    LFR_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
     this->resizable(this);
+    // 绑定事件
+    LFR_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
+    LFR_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
+    LFR_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
 }
 
 LFR_CALLBACK_FUNCTION(imageGc, ImageGCWindow, imageGcWindowPtr, 1200, 800);
 LFR_CALLBACK_FUNCTION(imageTs, ImageTSWindow, imageTsWindowPtr, 1200, 800);
 LFR_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);
+
+static void disableButton(Fl_Widget* widgetPtr, void* voidPtr) {
+    fl_message("功能没有实现");
+}

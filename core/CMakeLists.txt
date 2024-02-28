@@ -20,12 +20,19 @@ target_include_directories(
 
 set(
     HEADER_FILES
+    # 工具
     ${HEADER_DIR}/Ptr.hpp
+    ${HEADER_DIR}/Dates.hpp
+    ${HEADER_DIR}/Files.hpp
+    ${HEADER_DIR}/Utils.hpp
+    ${HEADER_DIR}/Logger.hpp
+    ${HEADER_DIR}/Strings.hpp
+    # 配置
     ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/Label.hpp
-    ${HEADER_DIR}/Model.hpp
-    ${HEADER_DIR}/Logger.hpp
     ${HEADER_DIR}/Setting.hpp
+    # 模型
+    ${HEADER_DIR}/Model.hpp
     ${HEADER_DIR}/Audio.hpp
     ${HEADER_DIR}/AudioGC.hpp
     ${HEADER_DIR}/AudioTS.hpp

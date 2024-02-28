@@ -13,6 +13,7 @@
 
 #include "FL/Fl.H"
 #include "FL/fl_ask.H"
+#include "FL/Fl_Box.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
@@ -175,6 +176,12 @@ public:
     ModelWindow(int width, int height, const char* title);
     virtual ~ModelWindow();
 
+public:
+    /**
+     * @return 训练数据目录
+     */
+    std::string datasetPath();
+
 protected:
     // 配置：不用释放
     Setting* settingPtr = nullptr;
@@ -269,6 +276,12 @@ public:
 
 protected:
     virtual void drawElement() override;
+
+private:
+    // 图片预览位置
+    Fl_Box* previewBoxPtr = nullptr;
+    // 图片预览
+    Fl_Shared_Image* previewPtr = nullptr;
 
 };
 

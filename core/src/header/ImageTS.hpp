@@ -1,8 +1,8 @@
 /**
  * 图片风格迁移
- * 融合多张图片特征生成新的图片数据
- * 
- * 1. 图片风格迁移
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

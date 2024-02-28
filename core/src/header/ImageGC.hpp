@@ -1,8 +1,8 @@
 /**
  * 图片内容生成
- * 根据关键字生成图片数据
- * 
- * 1. 文本生成图片
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

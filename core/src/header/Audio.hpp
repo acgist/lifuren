@@ -5,5 +5,5 @@
  */
 #pragma once
 
-#include "./AudioGC.hpp"
-#include "./AudioTS.hpp"
+#include "AudioGC.hpp"
+#include "AudioTS.hpp"

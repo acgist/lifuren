@@ -6,12 +6,12 @@ int main(const int argc, const char * const argv[]) {
     lifuren::LifurenWindow* windowPtr = new lifuren::LifurenWindow(200, 100, "李夫人");
     windowPtr->init();
     windowPtr->show();
-    SPDLOG_DEBUG("完成");
     const int code = Fl::run();
-    lifuren::logger::shutdown();
     if(windowPtr != nullptr) {
         delete windowPtr;
         windowPtr = nullptr;
     }
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
     return code;
 }

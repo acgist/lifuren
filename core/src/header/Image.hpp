@@ -6,5 +6,5 @@
  */
 #pragma once
 
-#include "./ImageGC.hpp"
-#include "./ImageTS.hpp"
+#include "ImageGC.hpp"
+#include "ImageTS.hpp"

@@ -1,8 +1,8 @@
 /**
  * 音频风格迁移
- * 融合多段音频特征生成新的音频数据
- * 
- * 1. VTB唱歌
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

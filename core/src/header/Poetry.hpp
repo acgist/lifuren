@@ -5,5 +5,5 @@
  */
 #pragma once
 
-#include "./PoetryGC.hpp"
-#include "./PoetryTS.hpp"
+#include "PoetryGC.hpp"
+#include "PoetryTS.hpp"

@@ -1,8 +1,8 @@
 /**
  * 诗词内容生成
- * 根据关键字生成诗词数据
- * 
- * 1. 文本生成诗词
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"

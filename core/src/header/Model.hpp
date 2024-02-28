@@ -1,11 +1,13 @@
 /**
- * 通用模型
+ * 模型
  * 
  * @author acgist
  */
 #pragma once
 
 #include "Setting.hpp"
+
+#include "torch/torch.h"
 
 namespace lifuren {
 

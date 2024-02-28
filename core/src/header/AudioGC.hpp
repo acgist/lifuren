@@ -1,12 +1,11 @@
 /**
  * 音频内容生成
- * 根据关键字生成音频数据
  * 
  * @author acgist
  */
 #pragma once
 
-#include "./Model.hpp"
+#include "Model.hpp"
 
 namespace lifuren {
 

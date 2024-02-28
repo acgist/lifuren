@@ -1,9 +1,8 @@
 /**
  * 视频风格迁移
- * 融合多段视频特征生成新的视频数据
- * 
- * 1. AI试装
- * 2. AI换装
  * 
  * @author acgist
  */
+#pragma once
+
+#include "Model.hpp"
