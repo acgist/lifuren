@@ -79,6 +79,7 @@ void lifuren::MainWindow::drawElement() {
     this->imageGcPtr = new Fl_Button(20,                        50, (this->w() - 60) / 2, 30, "图片内容生成");
     this->imageTsPtr = new Fl_Button((this->w() - 60) / 2 + 40, 50, (this->w() - 60) / 2, 30, "图片风格转换");
     LFR_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
+    LFR_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
     // 视频
     this->videoGcPtr = new Fl_Button(20,                        90, (this->w() - 60) / 2, 30, "视频内容生成");
     this->videoTsPtr = new Fl_Button((this->w() - 60) / 2 + 40, 90, (this->w() - 60) / 2, 30, "视频风格转换");
@@ -93,4 +94,5 @@ void lifuren::MainWindow::drawElement() {
 }
 
 LFR_CALLBACK_FUNCTION(imageGc, ImageGCWindow, imageGcWindowPtr, 1200, 800);
+LFR_CALLBACK_FUNCTION(imageTs, ImageTSWindow, imageTsWindowPtr, 1200, 800);
 LFR_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);

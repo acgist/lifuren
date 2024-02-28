@@ -27,7 +27,7 @@
     Fl_Button* modelTypeLower##GcPtr = nullptr;                      \
     Fl_Button* modelTypeLower##TsPtr = nullptr;                      \
     modelTypeUpper##GCWindow* modelTypeLower##GcWindowPtr = nullptr; \
-    modelTypeUpper##GCWindow* modelTypeLower##TsWindowPtr = nullptr;
+    modelTypeUpper##TSWindow* modelTypeLower##TsWindowPtr = nullptr;
 #endif
 
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
@@ -118,6 +118,8 @@ public:
 public:
     // ImageGC
     void imageGc();
+    // ImageTS
+    void imageTs();
     // 关于
     void about();
 
@@ -262,13 +264,10 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    ImageGCWindow(int width, int height, const char* title = "图片生成");
+    ImageGCWindow(int width, int height, const char* title = "图片内容生成");
     virtual ~ImageGCWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
     virtual void drawElement() override;
 
 };
@@ -277,6 +276,19 @@ protected:
  * @see ImageTS
  */
 class ImageTSWindow : public ModelTSWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ImageTSWindow(int width, int height, const char* title = "图片风格迁移");
+    ~ImageTSWindow();
+
+protected:
+    virtual void drawElement() override;
+
 };
 
 /**
