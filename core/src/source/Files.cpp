@@ -9,7 +9,7 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
         if(exts.empty()) {
             return true;
         } else {
-            const int index = filename.find_last_of('.');
+            const size_t index = filename.find_last_of('.');
             if(index == std::string::npos) {
                 return false;
             }

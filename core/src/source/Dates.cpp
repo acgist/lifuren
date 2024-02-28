@@ -8,7 +8,8 @@ std::string lifuren::dates::format(const std::tm& datetime, const std::string& f
 
 std::string lifuren::dates::format(const std::chrono::system_clock::time_point& datetime, const std::string& format) {
     const std::time_t timestamp = std::chrono::system_clock::to_time_t(datetime);
-    const std::tm tm = *std::localtime(&timestamp);
+    const std::tm tm = *std::gmtime(&timestamp);
+    // const std::tm tm = *std::localtime(&timestamp);
     return lifuren::dates::format(tm, format);
 }
 
@@ -38,7 +39,8 @@ std::tm lifuren::dates::toDatetimeTm(const uint64_t& millis) {
     const auto duration = std::chrono::milliseconds(millis);
     const auto timePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(duration);
     const auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
-    return *std::localtime(&timestamp);
+    return *std::gmtime(&timestamp);
+    // return *std::localtime(&timestamp);
 }
 
 std::chrono::system_clock::time_point lifuren::dates::toDatetimeTp(const uint64_t& millis) {
