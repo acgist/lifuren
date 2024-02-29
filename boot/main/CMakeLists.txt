@@ -44,28 +44,19 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 
-set(
-    IMAGES_FILES
-    src/images/logo.png
-)
+install(DIRECTORY src/images/ DESTINATION ${CMAKE_INSTALL_PREFIX}/images/)
 
-install(FILES ${IMAGES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/images/)
-
-if(CMAKE_HOST_WIN32)
-    install(FILES ${FLTK_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${TORCH_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-endif()
+file(COPY src/images/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/images/ FILES_MATCHING PATTERN "*.*")
 
 if(CMAKE_HOST_WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+
+    install(FILES ${FLTK_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TORCH_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
-    
-    foreach(image_file ${IMAGES_FILES})
-        file(COPY ${image_file} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/images)
-    endforeach(image_file)
 endif()
