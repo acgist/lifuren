@@ -7,10 +7,10 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : LF
 
 lifuren::AboutWindow::~AboutWindow() {
     SPDLOG_DEBUG("关闭AboutWindow");
-    LFR_DELETE_PTR(homePagePtr);
+    LFR_DELETE_THIS_PTR(homePagePtr);
     // 注意顺序：display->buffer
-    LFR_DELETE_PTR(aboutDisplayPtr);
-    LFR_DELETE_PTR(aboutBufferPtr);
+    LFR_DELETE_THIS_PTR(aboutDisplayPtr);
+    LFR_DELETE_THIS_PTR(aboutBufferPtr);
 }
 
 void lifuren::AboutWindow::drawElement() {

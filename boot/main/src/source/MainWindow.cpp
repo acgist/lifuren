@@ -56,6 +56,8 @@ static void disableButton(Fl_Widget*, void*);
 lifuren::MainWindow::MainWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
     // TODO：生成目录（config）
     SETTINGS.loadFile(SETTINGS_PATH);
+    // 注册图片
+    fl_register_images();
 }
 
 lifuren::MainWindow::~MainWindow() {
@@ -64,8 +66,8 @@ lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_MODEL_PTR(image);
     LFR_DELETE_MODEL_PTR(video);
     LFR_DELETE_MODEL_PTR(poetry);
-    LFR_DELETE_PTR(aboutButtonPtr);
-    LFR_DELETE_PTR(aboutWindowPtr);
+    LFR_DELETE_THIS_PTR(aboutButtonPtr);
+    LFR_DELETE_THIS_PTR(aboutWindowPtr);
 }
 
 void lifuren::MainWindow::drawElement() {

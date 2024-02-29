@@ -18,6 +18,7 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
+#include "FL/Fl_JPEG_Image.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 #include "Fl/Fl_Shared_Image.H"
@@ -32,9 +33,13 @@
 #endif
 
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
-#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, settingName, windowName)                        \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                                 \
-        ((windowName*) voidPtr)->settingPtr->settingName = ((windowName*) voidPtr)->inputPtr->value(); \
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, settingName, windowName) \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {          \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();         \
+        if(value == nullptr || strlen(value) == 0) {                            \
+            return;                                                             \
+        }                                                                       \
+        ((windowName*) voidPtr)->settingPtr->settingName = value;               \
     }, this);
 #endif
 
@@ -276,12 +281,6 @@ public:
 
 protected:
     virtual void drawElement() override;
-
-private:
-    // 图片预览位置
-    Fl_Box* previewBoxPtr = nullptr;
-    // 图片预览
-    Fl_Shared_Image* previewPtr = nullptr;
 
 };
 

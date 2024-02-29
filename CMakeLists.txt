@@ -100,6 +100,7 @@ if(CMAKE_HOST_WIN32)
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
     find_package(libpng REQUIRED)
+    find_package(libjpeg-turbo REQUIRED)
 endif()
 
 find_package(FLTK   REQUIRED)

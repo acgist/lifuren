@@ -56,6 +56,9 @@ lifuren::Fl_Input_Directory_Chooser::~Fl_Input_Directory_Chooser() {
 int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
     if(event == FL_LEFT_MOUSE) {
         const std::string filename = directoryChooser(this->title);
+        if(filename.empty()) {
+            return 0;
+        }
         this->value(filename.c_str());
         this->do_callback();
         return 0;
@@ -67,8 +70,8 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : LF
 }
 
 lifuren::ModelWindow::~ModelWindow() {
-    LFR_DELETE_PTR(modelPathPtr);
-    LFR_DELETE_PTR(datasetPathPtr);
+    LFR_DELETE_THIS_PTR(modelPathPtr);
+    LFR_DELETE_THIS_PTR(datasetPathPtr);
 }
 
 std::string lifuren::ModelWindow::datasetPath() {
@@ -83,19 +86,19 @@ lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) 
 }
 
 lifuren::ModelGCWindow::~ModelGCWindow() {
-    LFR_DELETE_PTR(prevPtr);
-    LFR_DELETE_PTR(nextPtr);
-    LFR_DELETE_PTR(trainStartPtr);
-    LFR_DELETE_PTR(trainStopPtr);
-    LFR_DELETE_PTR(generatePtr);
+    LFR_DELETE_THIS_PTR(prevPtr);
+    LFR_DELETE_THIS_PTR(nextPtr);
+    LFR_DELETE_THIS_PTR(trainStartPtr);
+    LFR_DELETE_THIS_PTR(trainStopPtr);
+    LFR_DELETE_THIS_PTR(generatePtr);
 }
 
 lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }
 
 lifuren::ModelTSWindow::~ModelTSWindow() {
-    LFR_DELETE_PTR(trainStartPtr);
-    LFR_DELETE_PTR(trainStopPtr);
-    LFR_DELETE_PTR(sourceFilePtr);
-    LFR_DELETE_PTR(transferPtr);
+    LFR_DELETE_THIS_PTR(trainStartPtr);
+    LFR_DELETE_THIS_PTR(trainStopPtr);
+    LFR_DELETE_THIS_PTR(sourceFilePtr);
+    LFR_DELETE_THIS_PTR(transferPtr);
 }

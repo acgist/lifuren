@@ -6,13 +6,23 @@ file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
 
 add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
+if(CMAKE_HOST_WIN32)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png
-    # jpeg
+    libjpeg-turbo::jpeg
     lifurencore
     ${FLTK_LIBRARIES}
 )
+else()
+target_link_libraries(
+    ${PROJECT_NAME} PUBLIC
+    png
+    jpeg
+    lifurencore
+    ${FLTK_LIBRARIES}
+)
+endif()
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
