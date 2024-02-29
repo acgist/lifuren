@@ -8,6 +8,7 @@
 #include <string>
 
 #include "Ptr.hpp"
+#include "Files.hpp"
 #include "Logger.hpp"
 #include "Setting.hpp"
 
@@ -16,6 +17,7 @@
 #include "FL/Fl_Box.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
+#include "FL/Fl_Choice.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
 #include "FL/Fl_JPEG_Image.H"
@@ -41,6 +43,10 @@
         }                                                                       \
         ((windowName*) voidPtr)->settingPtr->settingName = value;               \
     }, this);
+#endif
+
+#ifndef LFR_IMAGE_PREVIEW_SCALE
+#define LFR_IMAGE_PREVIEW_SCALE 1.2
 #endif
 
 namespace lifuren {
@@ -109,6 +115,8 @@ private:
     LFR_MODEL_MODULE(poetry, Poetry);
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
+    // 重新加载配置按钮
+    Fl_Button* reloadButtonPtr = nullptr;
     // 关于窗口
     AboutWindow* aboutWindowPtr = nullptr;
 
@@ -164,6 +172,53 @@ protected:
      * 加载组件
      */
     virtual void drawElement() override;
+
+};
+
+/**
+ * 图片标记
+ * 
+ * image.json
+ */
+class ImageLabel {
+
+protected:
+    // 头部
+    Fl_Choice* fasePtr     = nullptr;
+    Fl_Choice* faxingPtr   = nullptr;
+    Fl_Choice* meimaoPtr   = nullptr;
+    Fl_Choice* yanjingPtr  = nullptr;
+    Fl_Choice* biziPtr     = nullptr;
+    Fl_Choice* zuibaPtr    = nullptr;
+    Fl_Choice* kouhongPtr  = nullptr;
+    Fl_Choice* lianxingPtr = nullptr;
+    // 上身
+    Fl_Choice* rufangPtr   = nullptr;
+    Fl_Choice* shouxingPtr = nullptr;
+    // 下身
+    Fl_Choice* tuixingPtr = nullptr;
+    // 衣着
+    Fl_Choice* sediaoPtr = nullptr;
+    Fl_Choice* yifuPtr   = nullptr;
+    Fl_Choice* kuziPtr   = nullptr;
+    Fl_Choice* xieziPtr  = nullptr;
+    // 饰品
+    Fl_Choice* toushiPtr  = nullptr;
+    Fl_Choice* ershiPtr   = nullptr;
+    Fl_Choice* yanshiPtr  = nullptr;
+    Fl_Choice* lianshiPtr = nullptr;
+    Fl_Choice* shoushiPtr = nullptr;
+    Fl_Choice* baobaoPtr  = nullptr;
+    // 整体
+    Fl_Choice* fusePtr   = nullptr;
+    Fl_Choice* xinggePtr = nullptr;
+    Fl_Choice* tixingPtr = nullptr;
+    Fl_Choice* titaiPtr  = nullptr;
+    Fl_Choice* zhiyePtr  = nullptr;
+    // 环境
+    Fl_Choice* tianqiPtr   = nullptr;
+    Fl_Choice* qianjingPtr = nullptr;
+    Fl_Choice* beijingPtr  = nullptr;
 
 };
 
@@ -268,7 +323,7 @@ class AudioTSWindow : public ModelTSWindow {
 /**
  * @see ImageGC
  */
-class ImageGCWindow : public ModelGCWindow {
+class ImageGCWindow : public ModelGCWindow, public ImageLabel {
 
 public:
     /**
@@ -296,7 +351,7 @@ public:
      * @param title  窗口名称
      */
     ImageTSWindow(int width, int height, const char* title = "图片风格迁移");
-    ~ImageTSWindow();
+    virtual ~ImageTSWindow();
 
 protected:
     virtual void drawElement() override;

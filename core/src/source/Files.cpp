@@ -43,3 +43,30 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
         }
     }
 }
+
+std::string lifuren::files::loadFile(const std::string& path) {
+    std::ifstream input;
+    input.open(path, std::ios_base::in);
+    if(!input.is_open()) {
+        SPDLOG_WARN("打开文件失败：{} - {}", __func__, path);
+        return "";
+    }
+    std::string line;
+    std::string settings;
+    while(std::getline(input, line)) {
+        settings += line;
+    }
+    input.close();
+    return settings;
+}
+
+void lifuren::files::saveFile(const std::string& path, const std::string& value) {
+    std::ofstream output;
+    output.open(path, std::ios_base::out | std::ios_base::trunc);
+    if(!output.is_open()) {
+        SPDLOG_WARN("打开文件失败：{}", path);
+        return;
+    }
+    output << value;
+    output.close();
+}

@@ -42,7 +42,6 @@ void lifuren::testJson() {
 
 void lifuren::testMark() {
     lifuren::Mark mark;
-    mark.file = "lifuren.json";
     mark.labels.push_back("acgist");
     mark.labels.push_back("lifuren");
     SPDLOG_DEBUG("mark = ", mark.toJSON());
@@ -54,7 +53,6 @@ void lifuren::testMark() {
     lifuren::MarkText* markTextPtr = new lifuren::MarkText();
     markTextPtr->name = "水调歌头";
     markTextPtr->text = "明月几时有 把酒问青天";
-    markTextPtr->file = "lifuren.json";
     markTextPtr->labels.push_back("acgist");
     markTextPtr->labels.push_back("lifuren");
     SPDLOG_DEBUG("mark text = {}", markTextPtr->toJSON());
@@ -66,20 +64,20 @@ void lifuren::testLabel() {
     lifuren::Label label;
     label.name = "acgist";
     SPDLOG_DEBUG("label = {}", label.toJSON());
-    lifuren::LabelConfig labelConfig;
-    labelConfig.name = "lifuren";
-    labelConfig.labels.push_back("acgist");
-    labelConfig.labels.push_back("lifuren");
-    SPDLOG_DEBUG("label config = {}", labelConfig.toJSON());
-    lifuren::LabelSegment labelSegment;
-    labelSegment.name = "segment";
-    SPDLOG_DEBUG("label segment = {}", labelSegment.toJSON());
-    lifuren::LabelSegment labelJson(R"(
-        {"fontSize":0,"name":"segment","segmentRule":[],"segmentSize":0}
+    lifuren::LabelFile labelFile;
+    labelFile.name = "lifuren";
+    labelFile.labels.push_back("acgist");
+    labelFile.labels.push_back("lifuren");
+    SPDLOG_DEBUG("label file = {}", labelFile.toJSON());
+    lifuren::LabelText labelText;
+    labelText.name = "text";
+    SPDLOG_DEBUG("label text = {}", labelText.toJSON());
+    lifuren::LabelText labelJson(R"(
+        {"fontSize":0,"name":"text","segmentRule":[],"segmentSize":0}
     )");
-    SPDLOG_DEBUG("label segment name = {}", labelJson.name);
-    SPDLOG_DEBUG("label segment font size = {}", labelJson.fontSize);
-    SPDLOG_DEBUG("label segment segment rule = {}", labelJson.segmentRule.size());
+    SPDLOG_DEBUG("label text name = {}", labelJson.name);
+    SPDLOG_DEBUG("label text font size = {}", labelJson.fontSize);
+    SPDLOG_DEBUG("label text segment rule = {}", labelJson.segmentRule.size());
     SPDLOG_DEBUG("");
 }
 

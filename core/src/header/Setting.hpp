@@ -6,9 +6,8 @@
 #pragma once
 
 #include <map>
-#include <string>
-#include <fstream>
 
+#include "Files.hpp"
 #include "Logger.hpp"
 
 #include "nlohmann/json.hpp"
@@ -129,7 +128,7 @@ class TrainingSetting {
 };
 
 // 配置路径
-static const char* SETTINGS_PATH = "../config/settings.json";
+const char* const SETTINGS_PATH = "../config/settings.json";
 
 /**
  * 全局配置

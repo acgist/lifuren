@@ -1,7 +1,5 @@
 #include "../../header/Window.hpp"
 
-#include "Files.hpp"
-
 // 旧的路径
 static std::string oldPath;
 // 图片列表
@@ -19,7 +17,7 @@ static Fl_Image* previewImagePtr = nullptr;
  * 
  * @param path 图片路径
  */
-static void loadImageVector(std::string path);
+static void loadImageVector(const std::string& path);
 
 static void prevImage(Fl_Widget*, void*);
 static void nextImage(Fl_Widget*, void*);
@@ -115,7 +113,7 @@ static void generate(Fl_Widget* widgetPtr, void* voidPtr) {
     const lifuren::ImageGCWindow* windowPtr = (lifuren::ImageGCWindow*) voidPtr;
 }
 
-static void loadImageVector(std::string path) {
+static void loadImageVector(const std::string& path) {
     if(path.empty()) {
         SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
         return;
@@ -142,9 +140,9 @@ static void previewImage(Fl_Widget* widgetPtr, void* voidPtr) {
     const int imageHeight = previewSharedPtr->h();
     double scale;
     if(imageWidth * boxHeight > imageHeight * boxWidth) {
-        scale = 1.2 * imageWidth / boxWidth;
+        scale = LFR_IMAGE_PREVIEW_SCALE * imageWidth / boxWidth;
     } else {
-        scale = 1.2 * imageHeight / boxHeight;
+        scale = LFR_IMAGE_PREVIEW_SCALE * imageHeight / boxHeight;
     }
     previewImagePtr = previewSharedPtr->copy((int) (imageWidth / scale), (int) (imageHeight / scale));
     previewSharedPtr->release();

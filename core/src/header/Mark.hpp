@@ -19,14 +19,10 @@ namespace lifuren {
 class Mark {
 
 public:
-    // 本地文件
-    std::string file;
-    // 文件散列
-    std::string hash;
     // 标签数组
     std::vector<std::string> labels;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Mark, file, hash, labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Mark, labels);
 
 public:
     Mark();
@@ -50,6 +46,12 @@ public:
 class MarkFile : public Mark {
 
 public:
+    // 本地文件
+    std::string file;
+        // JSON序列化
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkFile, file, labels);
+
+public:
     MarkFile();
     virtual ~MarkFile();
     /**
@@ -69,8 +71,10 @@ public:
     std::string name;
     // 文本内容
     std::string text;
+    // 标记名称
+    std::string label;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkText, name, text, file, hash, labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkText, name, text, label, labels);
     
 public:
     MarkText();

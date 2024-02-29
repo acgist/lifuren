@@ -1,0 +1,8 @@
+{
+  "诗词标题": {
+    "fontSize": 28,
+    "segmentSize": 4,
+    "segmentRule": [ 7, 7, 7, 7 ],
+    "participleRule": [ 7, 7, 7, 7 ]
+  }
+}

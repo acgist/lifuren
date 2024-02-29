@@ -1,5 +1,7 @@
 #include "../header/Setting.hpp"
 
+lifuren::Settings lifuren::SETTINGS;
+
 lifuren::Settings::Settings() {
 }
 
@@ -29,40 +31,23 @@ void lifuren::Settings::load(const std::string& settings) {
 }
 
 void lifuren::Settings::loadFile(const std::string& path) {
-    std::ifstream input;
-    input.open(path, std::ios_base::in);
-    if(!input.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
+    std::string settings = lifuren::files::loadFile(path);
+    if(settings.empty()) {
         return;
     }
-    std::string line;
-    std::string settings;
-    while(std::getline(input, line)) {
-        settings += line;
-    }
-    input.close();
     SPDLOG_DEBUG("加载配置文件：{}", path);
     SPDLOG_DEBUG("加载配置内容：{}", settings);
     *this = nlohmann::json::parse(settings);
 }
 
 void lifuren::Settings::saveFile(const std::string& path) {
-    std::ofstream output;
-    output.open(path, std::ios_base::out | std::ios_base::trunc);
-    if(!output.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
-        return;
-    }
     const std::string settings = this->toJSON();
     SPDLOG_DEBUG("保存配置路径：{}", path);
     SPDLOG_DEBUG("保存配置内容：{}", settings);
-    output << settings;
-    output.close();
+    lifuren::files::saveFile(path, settings);
 }
 
 std::string lifuren::Settings::toJSON() {
     const nlohmann::json json = *this;
     return json.dump();
 }
-
-lifuren::Settings lifuren::SETTINGS;

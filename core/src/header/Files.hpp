@@ -5,7 +5,9 @@
  */
 #pragma once
 
+#include <string>
 #include <vector>
+#include <fstream>
 #include <algorithm>
 #include <filesystem>
 
@@ -41,6 +43,19 @@ extern void listFiles(std::vector<std::string>& vector, const std::string& path,
  */
 template <typename Predicate>
 extern void listFiles(std::vector<std::string>& vector, const std::string& path, const Predicate& predicate);
+
+/**
+ * @param path 文件路径
+ * 
+ * @return 文本内容
+ */
+extern std::string loadFile(const std::string& path);
+
+/**
+ * @param path  文件路径
+ * @param value 文件内容
+ */
+extern void saveFile(const std::string& path, const std::string& value);
 
 }
 }
