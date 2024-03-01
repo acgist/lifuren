@@ -24,6 +24,7 @@ set(
     ${HEADER_DIR}/Ptr.hpp
     ${HEADER_DIR}/Dates.hpp
     ${HEADER_DIR}/Files.hpp
+    ${HEADER_DIR}/Jsons.hpp
     ${HEADER_DIR}/Utils.hpp
     ${HEADER_DIR}/Logger.hpp
     ${HEADER_DIR}/Strings.hpp

@@ -1,5 +1,7 @@
 #include "../../header/Window.hpp"
 
+#include "Jsons.hpp"
+
 // 旧的路径
 static std::string oldPath;
 // 图片列表
@@ -27,18 +29,18 @@ static void generate(Fl_Widget*, void*);
 static void previewImage(Fl_Widget*, void*);
 
 lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
-    auto iterator = SETTINGS.settings.find("ImageGC");
-    if(iterator == SETTINGS.settings.end()) {
+    auto iterator = SETTINGS.find("ImageGC");
+    if(iterator == SETTINGS.end()) {
         this->settingPtr = new Setting();
-        SETTINGS.settings.insert(std::make_pair("ImageGC", *this->settingPtr));
+        SETTINGS.insert(std::make_pair("ImageGC", *this->settingPtr));
     } else {
         this->settingPtr = &iterator->second;
     }
 }
 
 lifuren::ImageGCWindow::~ImageGCWindow() {
-    SETTINGS.saveFile(SETTINGS_PATH);
     SPDLOG_DEBUG("关闭ImageGCWindow");
+    lifuren::jsons::saveFile(SETTINGS_PATH, lifuren::SETTINGS);
     LFR_DELETE_THIS_PTR(modelPathPtr);
     LFR_DELETE_THIS_PTR(datasetPathPtr);
     LFR_DELETE_THIS_PTR(prevPtr);
@@ -73,6 +75,13 @@ void lifuren::ImageGCWindow::drawElement() {
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
+    // 设置
+    this->fasePtr = new Fl_Choice(100, 130, 80, 30, "发色");
+    this->fasePtr->add("默认");
+    this->fasePtr->add("1234");
+    this->fasePtr->add("2234");
+    auto itemPtr = this->fasePtr->find_item("默认");
+    this->fasePtr->value(itemPtr);
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {

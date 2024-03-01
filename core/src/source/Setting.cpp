@@ -1,5 +1,9 @@
 #include "../header/Setting.hpp"
 
+#include "Jsons.hpp"
+
+std::map<std::string, lifuren::Setting> lifuren::SETTINGS = lifuren::jsons::loadFile<std::map<std::string, lifuren::Setting>>(lifuren::SETTINGS_PATH);
+
 lifuren::Setting::Setting() {
 }
 

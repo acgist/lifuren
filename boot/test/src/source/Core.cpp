@@ -1,5 +1,7 @@
 #include "../header/Core.hpp"
 
+#include "Jsons.hpp"
+
 void lifuren::testJson() {
     const nlohmann::json json{
         { "pi"   , 3.141 },
@@ -71,10 +73,11 @@ void lifuren::testLabel() {
     SPDLOG_DEBUG("label file = {}", labelFile.toJSON());
     lifuren::LabelText labelText;
     labelText.name = "text";
+    labelText.fontSize = 14;
     SPDLOG_DEBUG("label text = {}", labelText.toJSON());
-    lifuren::LabelText labelJson(R"(
+    lifuren::LabelText labelJson = R"(
         {"fontSize":0,"name":"text","segmentRule":[],"segmentSize":0}
-    )");
+    )"_json;
     SPDLOG_DEBUG("label text name = {}", labelJson.name);
     SPDLOG_DEBUG("label text font size = {}", labelJson.fontSize);
     SPDLOG_DEBUG("label text segment rule = {}", labelJson.segmentRule.size());
@@ -83,43 +86,29 @@ void lifuren::testLabel() {
 
 void lifuren::testSetting() {
     lifuren::Setting setting;
-    setting.modelPath = "路径";
+    setting.modelPath = "模型路径";
     setting.activation = lifuren::Activation::RELU;
     SPDLOG_DEBUG("setting = {}", setting.toJSON());
     lifuren::Setting settingJson(R"(
-        {"activation":0,"learningRate":0.01,"modelPath":"路径","regularization":0,"regularizationRate":0.01}
+        {"modelPath":"模型目录","datasetPath":"数据目录","activation":0,"learningRate":0.01,"regularization":0,"regularizationRate":0.01}
     )");
     SPDLOG_DEBUG("setting modelPath = {}", settingJson.modelPath);
     SPDLOG_DEBUG("setting activation = {}", settingJson.activation);
+    SPDLOG_DEBUG("setting datasetPath = {}", settingJson.datasetPath);
     SPDLOG_DEBUG("setting learning rate = {}", settingJson.learningRate);
     SPDLOG_DEBUG("setting regularization = {}", settingJson.regularization);
     SPDLOG_DEBUG("setting regularization rate = {}", settingJson.regularizationRate);
-    lifuren::Settings settings;
-    settings.load(R"(
+    std::map<std::string, lifuren::Setting> map = {
         {
-            "ImageGC": {
-                "modelPath": "",
-                "activation": 0,
-                "learningRate": 0.01,
-                "regularization": 1,
-                "regularizationRate": 0.01
-            },
-            "ImageTS": {
-                "modelPath": "",
-                "activation": 0,
-                "learningRate": 0.01
-            }
+            "ImageGC",
+            setting
+        }, {
+            "ImageTS",
+            settingJson
         }
-    )");
-    std::map<std::string, lifuren::Setting>::iterator iterator = settings.settings.begin();
-    std::map<std::string, lifuren::Setting>::iterator end      = settings.settings.end();
-    for(; iterator != end; iterator++) {
-        SPDLOG_DEBUG("key = {} value = {}", iterator->first, iterator->second.toJSON());
-    }
-    settings.settings["acgist"] = setting;
-    SPDLOG_DEBUG("settings = {}", settings.toJSON());
-    settings.saveFile("D:/tmp/settings.json");
-    lifuren::Settings reload;
-    reload.loadFile("D:/tmp/settings.json");
-    assert(reload.toJSON() == settings.toJSON());
+    };
+    lifuren::jsons::saveFile("D:/tmp/settings.json", map);
+    std::map<std::string, lifuren::Setting> reload = lifuren::jsons::loadFile<std::map<std::string, lifuren::Setting>>("D:/tmp/settings.json");
+    assert(map.at("ImageGC").regularizationRate == reload.at("ImageGC").regularizationRate);
+    assert(map.at("ImageTS").regularizationRate == reload.at("ImageTS").regularizationRate);
 }

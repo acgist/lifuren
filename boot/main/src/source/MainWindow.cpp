@@ -1,6 +1,7 @@
 #include "../header/Window.hpp"
 
 #include "Label.hpp"
+#include "Jsons.hpp"
 
 // 删除资源指针
 #ifndef LFR_DELETE_MODEL_PTR
@@ -25,30 +26,30 @@
 #endif
 
 // 回调按钮绑定
-#ifndef LFR_CALLBACK_FUNCTION_BINDER
-#define LFR_CALLBACK_FUNCTION_BINDER(button, function)                       \
+#ifndef LFR_BUTTON_CALLBACK_FUNCTION_BINDER
+#define LFR_BUTTON_CALLBACK_FUNCTION_BINDER(button, function)                \
     this->button->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
         ((MainWindow*) voidPtr)->function();                                 \
     }, this);
 #endif
 
 // 回调函数声明
-#ifndef LFR_CALLBACK_FUNCTION
-#define LFR_CALLBACK_FUNCTION(methodName, WindowName, windowPtr, width, height)     \
-    void lifuren::MainWindow::methodName() {                                        \
-        if(this->windowPtr != nullptr) {                                            \
-            this->windowPtr->show();                                                \
-            return;                                                                 \
-        }                                                                           \
-        this->windowPtr = new WindowName(width, height);                            \
-        this->windowPtr->init();                                                    \
-        this->windowPtr->show();                                                    \
-        this->windowPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
-            widgetPtr->hide();                                                      \
-            MainWindow* mainPtr = (MainWindow*) voidPtr;                            \
-            delete mainPtr->windowPtr;                                              \
-            mainPtr->windowPtr = nullptr;                                           \
-        }, this);                                                                   \
+#ifndef LFR_BUTTON_CALLBACK_FUNCTION
+#define LFR_BUTTON_CALLBACK_FUNCTION(methodName, WindowName, windowPtr, width, height) \
+    void lifuren::MainWindow::methodName() {                                           \
+        if(this->windowPtr != nullptr) {                                               \
+            this->windowPtr->show();                                                   \
+            return;                                                                    \
+        }                                                                              \
+        this->windowPtr = new WindowName(width, height);                               \
+        this->windowPtr->init();                                                       \
+        this->windowPtr->show();                                                       \
+        this->windowPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {    \
+            widgetPtr->hide();                                                         \
+            MainWindow* mainPtr = (MainWindow*) voidPtr;                               \
+            delete mainPtr->windowPtr;                                                 \
+            mainPtr->windowPtr = nullptr;                                              \
+        }, this);                                                                      \
     }
 #endif
 
@@ -96,24 +97,35 @@ void lifuren::MainWindow::drawElement() {
     this->aboutButtonPtr = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
     this->resizable(this);
     // 绑定事件
-    LFR_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
-    LFR_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
-    LFR_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
     this->reloadButtonPtr->callback(reload, this);
 }
 
-LFR_CALLBACK_FUNCTION(imageGc, ImageGCWindow, imageGcWindowPtr, 1200, 800);
-LFR_CALLBACK_FUNCTION(imageTs, ImageTSWindow, imageTsWindowPtr, 1200, 800);
-LFR_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);
+LFR_BUTTON_CALLBACK_FUNCTION(imageGc, ImageGCWindow, imageGcWindowPtr, 1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(imageTs, ImageTSWindow, imageTsWindowPtr, 1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);
 
 static void disable(Fl_Widget* widgetPtr, void* voidPtr) {
     fl_message("功能没有实现");
 }
 
 static void reload(Fl_Widget* widgetPtr, void* voidPtr) {
-    lifuren::SETTINGS.loadFile(lifuren::SETTINGS_PATH);
-    lifuren::LABEL_AUDIO.loadFile(lifuren::LABEL_AUDIO_PATH);
-    lifuren::LABEL_IMAGE.loadFile(lifuren::LABEL_IMAGE_PATH);
-    lifuren::LABEL_VIDEO.loadFile(lifuren::LABEL_VIDEO_PATH);
-    lifuren::LABEL_POETRY.loadFile(lifuren::LABEL_POETRY_PATH);
+    SPDLOG_DEBUG("重新加载配置");
+    lifuren::SETTINGS.clear();
+    lifuren::LABEL_AUDIO.clear();
+    lifuren::LABEL_IMAGE.clear();
+    lifuren::LABEL_VIDEO.clear();
+    lifuren::LABEL_POETRY.clear();
+    auto settings = lifuren::jsons::loadFile<std::map<std::string, lifuren::Setting>>(lifuren::SETTINGS_PATH);
+    lifuren::SETTINGS.insert(settings.begin(), settings.end());
+    auto audio = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
+    lifuren::LABEL_AUDIO.insert(audio.begin(), audio.end());
+    auto image = lifuren::LabelFile::loadFile(lifuren::LABEL_IMAGE_PATH);
+    lifuren::LABEL_IMAGE.insert(image.begin(), image.end());
+    auto video = lifuren::LabelFile::loadFile(lifuren::LABEL_VIDEO_PATH);
+    lifuren::LABEL_VIDEO.insert(video.begin(), video.end());
+    auto poetry = lifuren::LabelText::loadFile(lifuren::LABEL_POETRY_PATH);
+    lifuren::LABEL_POETRY.insert(poetry.begin(), poetry.end());
 }

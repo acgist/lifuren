@@ -9,6 +9,7 @@
 
 #include "Ptr.hpp"
 #include "Files.hpp"
+#include "Label.hpp"
 #include "Logger.hpp"
 #include "Setting.hpp"
 

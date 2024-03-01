@@ -1,31 +1,13 @@
 #include "../header/Label.hpp"
 
-lifuren::LabelFile lifuren::LABEL_AUDIO;
-lifuren::LabelFile lifuren::LABEL_IMAGE;
-lifuren::LabelFile lifuren::LABEL_VIDEO;
-lifuren::LabelText lifuren::LABEL_POETRY;
+#include <list>
 
-lifuren::Label::Label() {
-}
-
-lifuren::Label::~Label() {
-}
-
-lifuren::Label::Label(const std::string& json) {
-    *this = nlohmann::json::parse(json);
-}
+std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LABEL_AUDIO  = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
+std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LABEL_IMAGE  = lifuren::LabelFile::loadFile(lifuren::LABEL_IMAGE_PATH);
+std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LABEL_VIDEO  = lifuren::LabelFile::loadFile(lifuren::LABEL_VIDEO_PATH);
+std::map<std::string, lifuren::LabelText> lifuren::LABEL_POETRY = lifuren::LabelText::loadFile(lifuren::LABEL_POETRY_PATH);
 
 std::string lifuren::Label::toJSON() {
     const nlohmann::json json = *this;
     return json.dump();
-}
-
-void lifuren::Label::loadFile(const std::string& path) {
-    std::string label = lifuren::files::loadFile(path);
-    if(label.empty()) {
-        return;
-    }
-    SPDLOG_DEBUG("加载标签文件：{}", path);
-    SPDLOG_DEBUG("加载标签内容：{}", label);
-    *this = nlohmann::json::parse(label);
 }

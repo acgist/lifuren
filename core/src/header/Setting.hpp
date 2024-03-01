@@ -6,6 +6,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 
 #include "Files.hpp"
 #include "Logger.hpp"
@@ -13,6 +14,16 @@
 #include "nlohmann/json.hpp"
 
 namespace lifuren {
+
+// 配置路径
+const char* const SETTINGS_PATH = "../config/settings.json";
+
+class Setting;
+
+/**
+ * 全局配置
+ */
+extern std::map<std::string, lifuren::Setting> SETTINGS;
 
 /**
  * 激活函数
@@ -64,54 +75,13 @@ public:
     /**
      * @param json JSON
      */
-    Setting(const std::string& json);
+    explicit Setting(const std::string& json);
 
 public:
     /**
      * @return JSON
      */
     virtual std::string toJSON();
-
-};
-
-/**
- * 设置集合
- */
-class Settings {
-
-public:
-    // 设置
-    std::map<std::string, Setting> settings;
-    // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Settings, settings);
-
-public:
-    Settings();
-    ~Settings();
-
-public:
-    /**
-     * 加载设置
-     * 
-     * @param settings JSON
-     */
-    void load(const std::string& settings);
-    /**
-     * 加载文件设置
-     * 
-     * @param path 文件路径
-     */
-    void loadFile(const std::string& path);
-    /**
-     * 保存文件
-     * 
-     * @param path 文件路径
-     */
-    void saveFile(const std::string& path);
-    /**
-     * @return JSON
-     */
-    std::string toJSON();
 
 };
 
@@ -126,13 +96,5 @@ class PredictSetting {
  */
 class TrainingSetting {
 };
-
-// 配置路径
-const char* const SETTINGS_PATH = "../config/settings.json";
-
-/**
- * 全局配置
- */
-extern lifuren::Settings SETTINGS;
 
 }
