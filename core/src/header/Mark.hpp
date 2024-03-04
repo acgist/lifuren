@@ -59,6 +59,12 @@ public:
      */
     MarkFile(const std::string& json);
 
+public:
+    /**
+     * @return JSON
+     */
+    virtual std::string toJSON() override;
+
 };
 
 /**

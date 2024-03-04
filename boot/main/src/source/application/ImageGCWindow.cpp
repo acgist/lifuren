@@ -75,13 +75,9 @@ void lifuren::ImageGCWindow::drawElement() {
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
-    // 设置
-    this->fasePtr = new Fl_Choice(100, 130, 80, 30, "发色");
-    this->fasePtr->add("默认");
-    this->fasePtr->add("1234");
-    this->fasePtr->add("2234");
-    auto itemPtr = this->fasePtr->find_item("默认");
-    this->fasePtr->value(itemPtr);
+    // 设置：(10 + 110) * n + 40
+    LFR_CHOICE_BUTTON(40,  130, fasePtr,   "头部", "发色", "默认");
+    LFR_CHOICE_BUTTON(160, 130, faxingPtr, "头部", "发型", "默认");
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {

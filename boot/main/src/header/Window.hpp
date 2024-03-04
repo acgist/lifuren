@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 
 #include "Ptr.hpp"
 #include "Files.hpp"
@@ -44,6 +45,27 @@
         }                                                                       \
         ((windowName*) voidPtr)->settingPtr->settingName = value;               \
     }, this);
+#endif
+
+#ifndef LFR_CHOICE_BUTTON
+#define LFR_CHOICE_BUTTON(x, y, buttonPtr, groupName, labelName, defaultValue)                \
+{                                                                                             \
+    this->buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                 \
+    this->buttonPtr->add(defaultValue);                                                       \
+    auto iter = lifuren::LABEL_IMAGE.find(groupName);                                         \
+    if(iter != lifuren::LABEL_IMAGE.end()) {                                                  \
+        std::vector<LabelFile> vector = iter->second;                                         \
+        std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
+            if(label.name == labelName) {                                                     \
+                std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
+                    this->buttonPtr->add(value.c_str());                                      \
+                });                                                                           \
+            }                                                                                 \
+        });                                                                                   \
+    }                                                                                         \
+    auto defaultPtr = this->buttonPtr->find_item(defaultValue);                               \
+    this->buttonPtr->value(defaultPtr);                                                       \
+}
 #endif
 
 #ifndef LFR_IMAGE_PREVIEW_SCALE
@@ -190,13 +212,17 @@ protected:
     Fl_Choice* meimaoPtr   = nullptr;
     Fl_Choice* yanjingPtr  = nullptr;
     Fl_Choice* biziPtr     = nullptr;
+    Fl_Choice* yachiPtr    = nullptr;
     Fl_Choice* zuibaPtr    = nullptr;
     Fl_Choice* kouhongPtr  = nullptr;
+    Fl_Choice* biaoqingPtr = nullptr;
     Fl_Choice* lianxingPtr = nullptr;
     // 上身
     Fl_Choice* rufangPtr   = nullptr;
     Fl_Choice* shouxingPtr = nullptr;
+    Fl_Choice* yaobuPtr    = nullptr;
     // 下身
+    Fl_Choice* tunbuPtr   = nullptr;
     Fl_Choice* tuixingPtr = nullptr;
     // 衣着
     Fl_Choice* sediaoPtr = nullptr;
@@ -211,11 +237,14 @@ protected:
     Fl_Choice* shoushiPtr = nullptr;
     Fl_Choice* baobaoPtr  = nullptr;
     // 整体
-    Fl_Choice* fusePtr   = nullptr;
-    Fl_Choice* xinggePtr = nullptr;
-    Fl_Choice* tixingPtr = nullptr;
-    Fl_Choice* titaiPtr  = nullptr;
-    Fl_Choice* zhiyePtr  = nullptr;
+    Fl_Choice* fusePtr     = nullptr;
+    Fl_Choice* pifuPtr     = nullptr;
+    Fl_Choice* xinggePtr   = nullptr;
+    Fl_Choice* nianlingPtr = nullptr;
+    Fl_Choice* shengaoPtr  = nullptr;
+    Fl_Choice* tixingPtr   = nullptr;
+    Fl_Choice* titaiPtr    = nullptr;
+    Fl_Choice* zhiyePtr    = nullptr;
     // 环境
     Fl_Choice* tianqiPtr   = nullptr;
     Fl_Choice* qianjingPtr = nullptr;
