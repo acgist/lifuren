@@ -9,8 +9,15 @@
 #pragma once
 
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+
+#ifndef LFR_LOG_FORMAT
+#define LFR_LOG_FORMAT(type)                                 \
+template<> struct fmt::formatter<type> : ostream_formatter { \
+};
+#endif
 
 namespace lifuren {
 

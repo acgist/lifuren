@@ -1,7 +1,7 @@
 #include "../../header/LibTorch.hpp"
 
-template <> struct fmt::formatter<torch::nn::ReLU> : ostream_formatter {};
-template <> struct fmt::formatter<torch::nn::Tanh> : ostream_formatter {};
+LFR_LOG_FORMAT(torch::nn::ReLU);
+LFR_LOG_FORMAT(torch::nn::Tanh);
 
 void lifuren::testLibTorchReLU() {
     torch::nn::ReLU relu;
