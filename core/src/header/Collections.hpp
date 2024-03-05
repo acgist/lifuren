@@ -25,9 +25,9 @@ std::string join(T& collection, const std::string& delim) {
     if(collection.empty()) {
         return ret;
     }
-    T::iterator iter = collection.begin();
-    const T::const_iterator end  = collection.end();
-    const T::const_iterator last = collection.end() - 1;
+    typename ::iterator iter = collection.begin();
+    const typename T::const_iterator end  = collection.end();
+    const typename T::const_iterator last = collection.end() - 1;
     for (; iter != end; ++iter) {
         ret += std::to_string(*iter);
         if (iter != last) {
