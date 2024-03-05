@@ -9,6 +9,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <sstream>
 
 namespace lifuren {
 namespace collections {
