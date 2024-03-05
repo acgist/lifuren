@@ -97,14 +97,22 @@ void lifuren::MainWindow::drawElement() {
     this->aboutButtonPtr = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
     this->resizable(this);
     // 绑定事件
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(audioTsPtr, audioTs);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageGcPtr, imageGc);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageTsPtr, imageTs);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(videoGcPtr, videoGc);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(videoTsPtr, videoTs);
+    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryGcPtr, poetryGc);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
     this->reloadButtonPtr->callback(reload, this);
 }
 
+LFR_BUTTON_CALLBACK_FUNCTION(audioTs, AudioTSWindow, audioTsWindowPtr, 1200, 800);
 LFR_BUTTON_CALLBACK_FUNCTION(imageGc, ImageGCWindow, imageGcWindowPtr, 1200, 800);
 LFR_BUTTON_CALLBACK_FUNCTION(imageTs, ImageTSWindow, imageTsWindowPtr, 1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(videoGc, VideoGCWindow, videoGcWindowPtr, 1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(videoTs, VideoTSWindow, videoTsWindowPtr, 1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(poetryGc, PoetryGCWindow, poetryGcWindowPtr, 1200, 800);
 LFR_BUTTON_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);
 
 static void disable(Fl_Widget* widgetPtr, void* voidPtr) {

@@ -1,5 +1,1 @@
-/**
- * 图片内容生成
- * 
- * @author acgist
- */
+#include "../../header/Window.hpp"

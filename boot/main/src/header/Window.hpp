@@ -153,10 +153,18 @@ public:
     virtual ~MainWindow();
 
 public:
-    // ImageGC
+    // 音频风格迁移
+    void audioTs();
+    // 图片内容生成
     void imageGc();
-    // ImageTS
+    // 图片风格迁移
     void imageTs();
+    // 视频内容生成
+    void videoGc();
+    // 视频风格迁移
+    void videoTs();
+    // 诗词内容生成
+    void poetryGc();
     // 关于
     void about();
 
@@ -348,6 +356,19 @@ class AudioGCWindow : public ModelGCWindow {
  * @see AudioTS
  */
 class AudioTSWindow : public ModelTSWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    AudioTSWindow(int width, int height, const char* title = "音频风格迁移");
+    virtual ~AudioTSWindow();
+
+protected:
+    virtual void drawElement() override;
+
 };
 
 /**
@@ -397,6 +418,18 @@ private:
     // 自动标记：通过已有标记自动标记
     Fl_Button* autoMarkPtr = nullptr;
 
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    PoetryGCWindow(int width, int height, const char* title = "诗词内容生成");
+    virtual ~PoetryGCWindow();
+
+protected:
+    virtual void drawElement() override;
+
 };
 
 /**
@@ -411,12 +444,38 @@ class PoetryTSWindow : public ModelTSWindow {
  * @see VideoGC
  */
 class VideoGCWindow : public ModelGCWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    VideoGCWindow(int width, int height, const char* title = "视频内容生成");
+    virtual ~VideoGCWindow();
+
+protected:
+    virtual void drawElement() override;
+
 };
 
 /**
  * @see VideoTS
  */
 class VideoTSWindow : public ModelTSWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    VideoTSWindow(int width, int height, const char* title = "视频风格迁移");
+    virtual ~VideoTSWindow();
+
+protected:
+    virtual void drawElement() override;
+
 };
 
 /**

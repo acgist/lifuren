@@ -1,21 +1,21 @@
 #include "../header/Model.hpp"
 
-template<class P, class T>
-lifuren::LFRModel<P, T>::LFRModel() {
+template<typename M>
+lifuren::LFRModel<M>::LFRModel() {
 }
 
-template<class P, class T>
-lifuren::LFRModel<P, T>::~LFRModel() {
+template<typename M>
+lifuren::LFRModel<M>::~LFRModel() {
 }
 
-template<class P, class T>
-lifuren::LFRModel<P, T>::LFRModel(lifuren::Setting& setting) : setting(setting) {
+template<typename M>
+lifuren::LFRModel<M>::LFRModel(const lifuren::Setting& setting) : setting(setting) {
 }
 
-template<class P, class T>
-void lifuren::LFRModel<P, T>::save() {
+template<typename M>
+void lifuren::LFRModel<M>::save() {
 }
 
-template<class P, class T>
-void lifuren::LFRModel<P, T>::load() {
+template<typename M>
+void lifuren::LFRModel<M>::load() {
 }

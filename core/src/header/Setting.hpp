@@ -86,15 +86,9 @@ public:
 };
 
 /**
- * 预测设置
+ * 模型设置
  */
-class PredictSetting {
-};
-
-/**
- * 训练设置
- */
-class TrainingSetting {
+class ModelSetting {
 };
 
 }
