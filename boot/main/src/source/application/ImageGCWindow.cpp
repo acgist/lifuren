@@ -76,8 +76,12 @@ void lifuren::ImageGCWindow::drawElement() {
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
     // 设置：(10 + 110) * n + 40
-    LFR_CHOICE_BUTTON(40,  130, fasePtr,   "头部", "发色", "默认");
-    LFR_CHOICE_BUTTON(160, 130, faxingPtr, "头部", "发型", "默认");
+    LFR_CHOICE_BUTTON(40,  130, fasePtr,    "头部", "发色", "默认");
+    LFR_CHOICE_BUTTON(160, 130, faxingPtr,  "头部", "发型", "默认");
+    LFR_CHOICE_BUTTON(280, 130, meimaoPtr,  "头部", "眉毛", "默认");
+    LFR_CHOICE_BUTTON(400, 130, yanjingPtr, "头部", "眼睛", "默认");
+    LFR_CHOICE_BUTTON(520, 130, biziPtr,    "头部", "鼻子", "默认");
+    LFR_CHOICE_BUTTON(640, 130, yachiPtr,   "头部", "牙齿", "默认");
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {

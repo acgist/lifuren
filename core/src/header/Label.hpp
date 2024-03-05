@@ -89,6 +89,8 @@ public:
 class LabelText : public Label {
 
 public:
+    // 示例
+    std::string example;
     // 字数
     int fontSize = 0;
     // 段数
@@ -98,7 +100,7 @@ public:
     // 分词规则
     std::vector<int> participleRule;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, fontSize, segmentSize, segmentRule, participleRule);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, example, fontSize, segmentSize, segmentRule, participleRule);
 
 public:
     /**

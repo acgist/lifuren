@@ -77,6 +77,20 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testPoetry src/TestPoetry.cpp)
+add_test(NAME testPoetry COMMAND testPoetry)
+target_link_libraries(
+    testPoetry PUBLIC
+    lifurencore
+)
+
+add_executable(testCollections src/TestCollections.cpp)
+add_test(NAME testCollections COMMAND testCollections)
+target_link_libraries(
+    testCollections PUBLIC
+    lifurencore
+)
+
 add_executable(testFltk src/TestFltk.cpp src/source/fltk/Fltk.cpp)
 add_test(NAME testFltk COMMAND testFltk)
 target_link_libraries(

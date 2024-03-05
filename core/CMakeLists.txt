@@ -28,6 +28,7 @@ set(
     ${HEADER_DIR}/Utils.hpp
     ${HEADER_DIR}/Logger.hpp
     ${HEADER_DIR}/Strings.hpp
+    ${HEADER_DIR}/Collections.hpp
     # 配置
     ${HEADER_DIR}/Mark.hpp
     ${HEADER_DIR}/Label.hpp
