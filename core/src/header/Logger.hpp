@@ -14,8 +14,9 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 #ifndef LFR_LOG_FORMAT
-#define LFR_LOG_FORMAT(type)                                 \
-template<> struct fmt::formatter<type> : ostream_formatter { \
+#define LFR_LOG_FORMAT(type)                      \
+template<>                                        \
+struct fmt::formatter<type> : ostream_formatter { \
 };
 #endif
 
