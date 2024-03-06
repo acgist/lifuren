@@ -37,7 +37,7 @@ public:
     // 段落
     std::string segment;
     // 分词
-    std:::vector<std::string> participle;
+    std::vector<std::string> participle;
     // 规则
     LabelText* rule = nullptr;
 
