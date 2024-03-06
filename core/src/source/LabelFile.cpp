@@ -13,9 +13,9 @@ std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std
     }
     SPDLOG_DEBUG("加载标签文件：{}", path);
     const nlohmann::json json = nlohmann::json::parse(text);
-    for(const auto& iter : json.items()) {
-        std::string key = iter.key();
-        LabelText label = iter.value();
+    for(const auto& iterator : json.items()) {
+        std::string key = iterator.key();
+        LabelText label = iterator.value();
         if(label.name.empty()) {
             label.name = key;
         }

@@ -42,3 +42,8 @@
 |docs|文档|
 
 > 白衣卿相 红袖添香
+
+## 数据集
+
+* [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)
+* [chinese-poetry-zhCN](https://github.com/chinese-poetry/chinese-poetry-zhCN)

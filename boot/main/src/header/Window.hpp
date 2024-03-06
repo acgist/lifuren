@@ -52,9 +52,9 @@
 {                                                                                             \
     this->buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                 \
     this->buttonPtr->add(defaultValue);                                                       \
-    auto iter = lifuren::LABEL_IMAGE.find(groupName);                                         \
-    if(iter != lifuren::LABEL_IMAGE.end()) {                                                  \
-        std::vector<LabelFile> vector = iter->second;                                         \
+    auto iterator = lifuren::LABEL_IMAGE.find(groupName);                                     \
+    if(iterator != lifuren::LABEL_IMAGE.end()) {                                              \
+        std::vector<LabelFile> vector = iterator->second;                                     \
         std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
             if(label.name == labelName) {                                                     \
                 std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
@@ -414,9 +414,21 @@ protected:
  */
 class PoetryGCWindow : public ModelGCWindow {
 
-private:
+public:
     // 自动标记：通过已有标记自动标记
     Fl_Button* autoMarkPtr = nullptr;
+    // 规则内容
+    Fl_Text_Buffer* ruleBufferPtr = nullptr;
+    // 规则
+    Fl_Text_Display* ruleDisplayPtr = nullptr;
+    // 原始诗词内容
+    Fl_Text_Buffer* sourceBufferPtr = nullptr;
+    // 原始诗词
+    Fl_Text_Display* sourceDisplayPtr = nullptr;
+    // 目标诗词内容
+    Fl_Text_Buffer* targetBufferPtr = nullptr;
+    // 目标诗词
+    Fl_Text_Display* targetDisplayPtr = nullptr;
 
 public:
     /**

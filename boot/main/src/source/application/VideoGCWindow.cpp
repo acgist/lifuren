@@ -4,6 +4,7 @@ lifuren::VideoGCWindow::VideoGCWindow(int width, int height, const char* title) 
 }
 
 lifuren::VideoGCWindow::~VideoGCWindow() {
+    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
 }
 
 void lifuren::VideoGCWindow::drawElement() {

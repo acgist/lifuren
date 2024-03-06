@@ -13,9 +13,9 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
     }
     SPDLOG_DEBUG("加载标签文件：{}", path);
     const nlohmann::json json = nlohmann::json::parse(text);
-    for(const auto& iter : json.items()) {
-        std::string key      = iter.key();
-        nlohmann::json value = iter.value();
+    for(const auto& iterator : json.items()) {
+        std::string key      = iterator.key();
+        nlohmann::json value = iterator.value();
         std::vector<LabelFile> vector;
         for(const auto& child : value.items()) {
             LabelFile label;

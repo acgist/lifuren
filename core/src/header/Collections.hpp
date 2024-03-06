@@ -27,12 +27,12 @@ std::string join(T& collection, const std::string& delim) {
         return ret.str();
     }
     std::string x;
-    typename T::iterator iter = collection.begin();
+    typename T::iterator iterator = collection.begin();
     const typename T::const_iterator end  = collection.end();
     const typename T::const_iterator last = collection.end() - 1;
-    for (; iter != end; ++iter) {
+    for (; iterator != end; ++iterator) {
         ret << *iter;
-        if (iter != last) {
+        if (iterator != last) {
             ret << delim;
         }
     }

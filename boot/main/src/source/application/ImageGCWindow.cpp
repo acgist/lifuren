@@ -7,7 +7,7 @@ static std::string oldPath;
 // 图片列表
 static std::vector<std::string> imageVector;
 // 当前图片索引
-static std::vector<std::string>::iterator iterator;
+static std::vector<std::string>::iterator imageIterator;
 
 // 图片预览
 static Fl_Box* previewBoxPtr = nullptr;
@@ -21,11 +21,17 @@ static Fl_Image* previewImagePtr = nullptr;
  */
 static void loadImageVector(const std::string& path);
 
+// 上张图片
 static void prevImage(Fl_Widget*, void*);
+// 下张图片
 static void nextImage(Fl_Widget*, void*);
+// 开始训练
 static void trainStart(Fl_Widget*, void*);
+// 结束训练
 static void trainStop(Fl_Widget*, void*);
+// 生成图片
 static void generate(Fl_Widget*, void*);
+// 预览图片
 static void previewImage(Fl_Widget*, void*);
 
 lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
@@ -39,7 +45,7 @@ lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) 
 }
 
 lifuren::ImageGCWindow::~ImageGCWindow() {
-    SPDLOG_DEBUG("关闭ImageGCWindow");
+    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     lifuren::jsons::saveFile(SETTINGS_PATH, lifuren::SETTINGS);
     LFR_DELETE_THIS_PTR(modelPathPtr);
     LFR_DELETE_THIS_PTR(datasetPathPtr);
@@ -62,8 +68,8 @@ void lifuren::ImageGCWindow::drawElement() {
     this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, ImageGCWindow);
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageGCWindow);
-    this->prevPtr = new Fl_Button(10,  90, 100, 30, "上一张图");
-    this->nextPtr = new Fl_Button(120, 90, 100, 30, "下一张图");
+    this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上张图片");
+    this->nextPtr       = new Fl_Button(120, 90, 100, 30, "下张图片");
     this->trainStartPtr = new Fl_Button(230, 90, 100, 30, "开始训练");
     this->trainStopPtr  = new Fl_Button(340, 90, 100, 30, "结束训练");
     this->generatePtr   = new Fl_Button(450, 90, 100, 30, "生成图片");
@@ -88,12 +94,13 @@ static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {
     lifuren::ImageGCWindow* windowPtr = (lifuren::ImageGCWindow*) voidPtr;
     loadImageVector(windowPtr->datasetPath());
     if(imageVector.empty()) {
+        SPDLOG_DEBUG("没有图片文件：{}", windowPtr->datasetPath());
         return;
     }
-    if(iterator == imageVector.begin()) {
-        iterator = imageVector.end();
+    if(imageIterator == imageVector.begin()) {
+        imageIterator = imageVector.end();
     }
-    --iterator;
+    --imageIterator;
     previewImage(widgetPtr, voidPtr);
 }
 
@@ -101,11 +108,12 @@ static void nextImage(Fl_Widget* widgetPtr, void* voidPtr) {
     lifuren::ImageGCWindow* windowPtr = (lifuren::ImageGCWindow*) voidPtr;
     loadImageVector(windowPtr->datasetPath());
     if(imageVector.empty()) {
+        SPDLOG_DEBUG("没有图片文件：{}", windowPtr->datasetPath());
         return;
     }
-    ++iterator;
-    if(iterator == imageVector.end()) {
-        iterator = imageVector.begin();
+    ++imageIterator;
+    if(imageIterator == imageVector.end()) {
+        imageIterator = imageVector.begin();
     }
     previewImage(widgetPtr, voidPtr);
 }
@@ -123,26 +131,22 @@ static void generate(Fl_Widget* widgetPtr, void* voidPtr) {
 }
 
 static void loadImageVector(const std::string& path) {
-    if(path.empty()) {
-        SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
-        return;
-    }
-    if(path == oldPath) {
-        SPDLOG_DEBUG("目录没有改变：{} - {}", __func__, path);
+    if(path.empty() || path == oldPath) {
+        SPDLOG_DEBUG("忽略图片目录加载：{} - {}", __func__, path);
         return;
     }
     oldPath = path;
     imageVector.clear();
     lifuren::files::listFiles(imageVector, oldPath, { ".jpg", ".jpeg", ".png" });
-    iterator = imageVector.begin();
+    imageIterator = imageVector.begin();
 }
 
 static void previewImage(Fl_Widget* widgetPtr, void* voidPtr) {
-    SPDLOG_DEBUG("预览图片：{} - {}", __func__, *iterator);
+    SPDLOG_DEBUG("预览图片：{} - {}", __func__, *imageIterator);
     // 释放资源
     LFR_DELETE_PTR(previewImagePtr);
     // 加载图片：异常处理
-    Fl_Shared_Image* previewSharedPtr = Fl_Shared_Image::get((*iterator).c_str());
+    Fl_Shared_Image* previewSharedPtr = Fl_Shared_Image::get((*imageIterator).c_str());
     const int boxWidth  = previewBoxPtr->w();
     const int boxHeight = previewBoxPtr->h();
     const int imageWidth  = previewSharedPtr->w();

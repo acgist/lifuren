@@ -4,6 +4,7 @@ lifuren::AudioTSWindow::AudioTSWindow(int width, int height, const char* title) 
 }
 
 lifuren::AudioTSWindow::~AudioTSWindow() {
+    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
 }
 
 void lifuren::AudioTSWindow::drawElement() {

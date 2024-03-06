@@ -6,7 +6,7 @@
 // 删除资源指针
 #ifndef LFR_DELETE_MODEL_PTR
 #define LFR_DELETE_MODEL_PTR(modelType)           \
-    SPDLOG_DEBUG("释放" #modelType "资源");        \
+    SPDLOG_DEBUG("delete " #modelType " ptr");    \
     if(this->modelType##GcPtr != nullptr) {       \
         delete this->modelType##GcPtr;            \
         this->modelType##GcPtr = nullptr;         \
@@ -66,7 +66,7 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* title) : LFRW
 }
 
 lifuren::MainWindow::~MainWindow() {
-    SPDLOG_DEBUG("关闭MainWindow");
+    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     LFR_DELETE_MODEL_PTR(audio);
     LFR_DELETE_MODEL_PTR(image);
     LFR_DELETE_MODEL_PTR(video);
