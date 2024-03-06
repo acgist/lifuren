@@ -1,6 +1,10 @@
 #include "Collections.hpp"
 
 std::vector<std::string> lifuren::collections::split(const std::string& content, const std::string& delim) {
+    return lifuren::collections::split(content, delim, false);
+}
+
+std::vector<std::string> lifuren::collections::split(const std::string& content, const std::string& delim, bool retain) {
     std::vector<std::string> vector;
     size_t pos   = 0;
     size_t index = 0;
@@ -9,7 +13,7 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
         if(pos == std::string::npos) {
             break;
         }
-        vector.push_back(content.substr(index, pos - index));
+        vector.push_back(content.substr(index, retain ? pos - index + delim.length() : pos - index));
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {
@@ -19,6 +23,10 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
 }
 
 std::vector<std::string> lifuren::collections::split(const std::string& content, const std::vector<std::string>& multi) {
+    return lifuren::collections::split(content, multi, false);
+}
+
+std::vector<std::string> lifuren::collections::split(const std::string& content, const std::vector<std::string>& multi, bool retain) {
     std::vector<std::string> vector;
     size_t pos   = 0;
     size_t index = 0;
@@ -36,7 +44,7 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
         if(pos == std::string::npos) {
             break;
         }
-        vector.push_back(content.substr(index, pos - index));
+        vector.push_back(content.substr(index, retain ? pos - index + delim.length() : pos - index));
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {

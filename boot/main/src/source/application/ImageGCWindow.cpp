@@ -32,7 +32,7 @@ static void trainStop(Fl_Widget*, void*);
 // 生成图片
 static void generate(Fl_Widget*, void*);
 // 预览图片
-static void previewImage(Fl_Widget*, void*);
+static void previewImage();
 
 lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
     auto iterator = SETTINGS.find("ImageGC");
@@ -67,7 +67,7 @@ void lifuren::ImageGCWindow::drawElement() {
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
     this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, ImageGCWindow);
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageGCWindow);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, ImageGCWindow, loadImageVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上张图片");
     this->nextPtr       = new Fl_Button(120, 90, 100, 30, "下张图片");
     this->trainStartPtr = new Fl_Button(230, 90, 100, 30, "开始训练");
@@ -88,34 +88,32 @@ void lifuren::ImageGCWindow::drawElement() {
     LFR_CHOICE_BUTTON(400, 130, yanjingPtr, "头部", "眼睛", "默认");
     LFR_CHOICE_BUTTON(520, 130, biziPtr,    "头部", "鼻子", "默认");
     LFR_CHOICE_BUTTON(640, 130, yachiPtr,   "头部", "牙齿", "默认");
+    // 加载资源
+    loadImageVector(this->settingPtr->datasetPath);
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {
-    lifuren::ImageGCWindow* windowPtr = (lifuren::ImageGCWindow*) voidPtr;
-    loadImageVector(windowPtr->datasetPath());
     if(imageVector.empty()) {
-        SPDLOG_DEBUG("没有图片文件：{}", windowPtr->datasetPath());
+        SPDLOG_DEBUG("没有图片文件：{}", oldPath);
         return;
     }
     if(imageIterator == imageVector.begin()) {
         imageIterator = imageVector.end();
     }
     --imageIterator;
-    previewImage(widgetPtr, voidPtr);
+    previewImage();
 }
 
 static void nextImage(Fl_Widget* widgetPtr, void* voidPtr) {
-    lifuren::ImageGCWindow* windowPtr = (lifuren::ImageGCWindow*) voidPtr;
-    loadImageVector(windowPtr->datasetPath());
     if(imageVector.empty()) {
-        SPDLOG_DEBUG("没有图片文件：{}", windowPtr->datasetPath());
+        SPDLOG_DEBUG("没有图片文件：{}", oldPath);
         return;
     }
     ++imageIterator;
     if(imageIterator == imageVector.end()) {
         imageIterator = imageVector.begin();
     }
-    previewImage(widgetPtr, voidPtr);
+    previewImage();
 }
 
 static void trainStart(Fl_Widget* widgetPtr, void* voidPtr) {
@@ -139,9 +137,14 @@ static void loadImageVector(const std::string& path) {
     imageVector.clear();
     lifuren::files::listFiles(imageVector, oldPath, { ".jpg", ".jpeg", ".png" });
     imageIterator = imageVector.begin();
+    previewImage();
 }
 
-static void previewImage(Fl_Widget* widgetPtr, void* voidPtr) {
+static void previewImage() {
+    if(imageIterator == imageVector.end()) {
+        SPDLOG_WARN("没有可用图片");
+        return;
+    }
     SPDLOG_DEBUG("预览图片：{} - {}", __func__, *imageIterator);
     // 释放资源
     LFR_DELETE_PTR(previewImagePtr);

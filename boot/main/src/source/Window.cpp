@@ -74,14 +74,6 @@ lifuren::ModelWindow::~ModelWindow() {
     LFR_DELETE_THIS_PTR(datasetPathPtr);
 }
 
-std::string lifuren::ModelWindow::datasetPath() {
-    if(this->settingPtr == nullptr) {
-        return "";
-    } else {
-        return this->settingPtr->datasetPath;
-    }
-}
-
 lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }
 

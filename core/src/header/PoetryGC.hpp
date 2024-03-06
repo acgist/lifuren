@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Model.hpp"
+#include "Poetry.hpp"
 
 namespace lifuren {
 

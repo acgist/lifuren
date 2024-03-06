@@ -1,6 +1,7 @@
 #include "../../header/Window.hpp"
 
 #include "Jsons.hpp"
+#include "Poetry.hpp"
 
 // 旧的路径
 static std::string oldPath;
@@ -13,6 +14,19 @@ static std::vector<std::string> fileVector;
 // 当前诗词文件索引
 static std::vector<std::string>::iterator fileIterator;
 
+// 规则内容
+static Fl_Text_Buffer* ruleBufferPtr = nullptr;
+// 规则
+static Fl_Text_Display* ruleDisplayPtr = nullptr;
+// 原始诗词内容
+static Fl_Text_Buffer* sourceBufferPtr = nullptr;
+// 原始诗词
+static Fl_Text_Display* sourceDisplayPtr = nullptr;
+// 目标诗词内容
+static Fl_Text_Buffer* targetBufferPtr = nullptr;
+// 目标诗词
+static Fl_Text_Display* targetDisplayPtr = nullptr;
+
 /**
  * 加载诗词
  * 
@@ -21,6 +35,8 @@ static std::vector<std::string>::iterator fileIterator;
 static void loadFileVector(const std::string& path);
 // 加载诗词列表
 static void loadPoetryJson();
+// 匹配诗词规则
+static void matchPoetryRule();
 
 // 上首诗词
 static void prevPoetry(Fl_Widget*, void*);
@@ -50,12 +66,16 @@ lifuren::PoetryGCWindow::~PoetryGCWindow() {
     LFR_DELETE_THIS_PTR(trainStopPtr);
     LFR_DELETE_THIS_PTR(generatePtr);
     LFR_DELETE_THIS_PTR(autoMarkPtr);
-    LFR_DELETE_THIS_PTR(ruleDisplayPtr);
-    LFR_DELETE_THIS_PTR(ruleBufferPtr);
-    LFR_DELETE_THIS_PTR(sourceDisplayPtr);
-    LFR_DELETE_THIS_PTR(sourceBufferPtr);
-    LFR_DELETE_THIS_PTR(targetDisplayPtr);
-    LFR_DELETE_THIS_PTR(targetBufferPtr);
+    LFR_DELETE_PTR(ruleDisplayPtr);
+    LFR_DELETE_PTR(ruleBufferPtr);
+    LFR_DELETE_PTR(sourceDisplayPtr);
+    LFR_DELETE_PTR(sourceBufferPtr);
+    LFR_DELETE_PTR(targetDisplayPtr);
+    LFR_DELETE_PTR(targetBufferPtr);
+    // 清理数据
+    oldPath = "";
+    fileVector.clear();
+    poetryJson.clear();
 }
 
 void lifuren::PoetryGCWindow::drawElement() {
@@ -64,7 +84,7 @@ void lifuren::PoetryGCWindow::drawElement() {
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
     this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, PoetryGCWindow);
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, PoetryGCWindow);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, PoetryGCWindow, loadFileVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上首诗词");
     this->nextPtr       = new Fl_Button(120, 90, 100, 30, "下首诗词");
     this->autoMarkPtr   = new Fl_Button(230, 90, 100, 30, "自动匹配");
@@ -72,51 +92,50 @@ void lifuren::PoetryGCWindow::drawElement() {
     this->trainStopPtr  = new Fl_Button(450, 90, 100, 30, "结束训练");
     this->generatePtr   = new Fl_Button(560, 90, 100, 30, "生成诗词");
     // 原始
-    this->sourceDisplayPtr = new Fl_Text_Display(10, 150, (this->w() - 40) / 3, this->h() - 160, "原始");
-    this->sourceDisplayPtr->wrap_mode(this->sourceDisplayPtr->WRAP_AT_COLUMN, this->sourceDisplayPtr->textfont());
-    this->sourceDisplayPtr->color(FL_BACKGROUND_COLOR);
-    this->sourceBufferPtr = new Fl_Text_Buffer();
-    this->sourceDisplayPtr->buffer(this->sourceBufferPtr);
+    sourceDisplayPtr = new Fl_Text_Display(10, 150, (this->w() - 40) / 3, this->h() - 160, "原始");
+    sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
+    sourceDisplayPtr->color(FL_BACKGROUND_COLOR);
+    sourceBufferPtr = new Fl_Text_Buffer();
+    sourceDisplayPtr->buffer(sourceBufferPtr);
     // 规则
-    this->ruleDisplayPtr = new Fl_Text_Display(20 + (this->w() - 40) / 3, 150, (this->w() - 40) / 3, this->h() - 160, "规则");
-    this->ruleDisplayPtr->wrap_mode(this->ruleDisplayPtr->WRAP_AT_COLUMN, this->ruleDisplayPtr->textfont());
-    this->ruleDisplayPtr->color(FL_BACKGROUND_COLOR);
-    this->ruleBufferPtr = new Fl_Text_Buffer();
-    this->ruleDisplayPtr->buffer(this->ruleBufferPtr);
+    ruleDisplayPtr = new Fl_Text_Display(20 + (this->w() - 40) / 3, 150, (this->w() - 40) / 3, this->h() - 160, "规则");
+    ruleDisplayPtr->wrap_mode(ruleDisplayPtr->WRAP_AT_COLUMN, ruleDisplayPtr->textfont());
+    ruleDisplayPtr->color(FL_BACKGROUND_COLOR);
+    ruleBufferPtr = new Fl_Text_Buffer();
+    ruleDisplayPtr->buffer(ruleBufferPtr);
     // 目标
-    this->targetDisplayPtr = new Fl_Text_Display(30 + (this->w() - 40) / 3 * 2, 150, (this->w() - 40) / 3, this->h() - 160, "目标");
-    this->targetDisplayPtr->wrap_mode(this->targetDisplayPtr->WRAP_AT_COLUMN, this->targetDisplayPtr->textfont());
-    this->targetDisplayPtr->color(FL_BACKGROUND_COLOR);
-    this->targetBufferPtr = new Fl_Text_Buffer();
-    this->targetDisplayPtr->buffer(this->targetBufferPtr);
+    targetDisplayPtr = new Fl_Text_Display(30 + (this->w() - 40) / 3 * 2, 150, (this->w() - 40) / 3, this->h() - 160, "目标");
+    targetDisplayPtr->wrap_mode(targetDisplayPtr->WRAP_AT_COLUMN, targetDisplayPtr->textfont());
+    targetDisplayPtr->color(FL_BACKGROUND_COLOR);
+    targetBufferPtr = new Fl_Text_Buffer();
+    targetDisplayPtr->buffer(targetBufferPtr);
     // 事件
     this->prevPtr->callback(prevPoetry, this);
     this->nextPtr->callback(nextPoetry, this);
+    // 加载资源
+    loadFileVector(this->settingPtr->datasetPath);
 }
 
 static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
-    lifuren::PoetryGCWindow* windowPtr = (lifuren::PoetryGCWindow*) voidPtr;
-    loadFileVector(windowPtr->datasetPath());
     if(fileVector.empty()) {
-        SPDLOG_DEBUG("没有诗词文件：{}", windowPtr->datasetPath());
+        SPDLOG_DEBUG("没有诗词文件：{}", oldPath);
         return;
     }
-    if(poetryIterator == poetryJson.begin()) {
+    if (poetryIterator == poetryJson.begin()) {
         if(fileIterator == fileVector.begin()) {
             fileIterator = fileVector.end();
         }
         --fileIterator;
         loadPoetryJson();
+        poetryIterator = poetryJson.end();
     }
     --poetryIterator;
-    windowPtr->sourceBufferPtr->text("1");
+    matchPoetryRule();
 }
 
 static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
-    lifuren::PoetryGCWindow* windowPtr = (lifuren::PoetryGCWindow*) voidPtr;
-    loadFileVector(windowPtr->datasetPath());
     if(fileVector.empty()) {
-        SPDLOG_DEBUG("没有诗词文件：{}", windowPtr->datasetPath());
+        SPDLOG_DEBUG("没有诗词文件：{}", oldPath);
         return;
     }
     ++poetryIterator;
@@ -127,7 +146,7 @@ static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
         }
         loadPoetryJson();
     }
-    windowPtr->sourceBufferPtr->text("2");
+    matchPoetryRule();
 }
 
 static void loadFileVector(const std::string& path) {
@@ -139,10 +158,47 @@ static void loadFileVector(const std::string& path) {
     fileVector.clear();
     lifuren::files::listFiles(fileVector, oldPath, { ".json" });
     fileIterator = fileVector.begin();
+    loadPoetryJson();
+    matchPoetryRule();
 }
 
 static void loadPoetryJson() {
     std::string json = lifuren::files::loadFile(*fileIterator);
     poetryJson = nlohmann::json::parse(json);
     poetryIterator = poetryJson.begin();
+}
+
+static void matchPoetryRule() {
+    if(poetryIterator == poetryJson.end()) {
+        SPDLOG_WARN("没有可用诗词");
+        return;
+    }
+    nlohmann::json::iterator titleIterator    = poetryIterator->find("title");
+    nlohmann::json::iterator rhythmicIterator = poetryIterator->find("rhythmic");
+    lifuren::Poetry poetry;
+    if(titleIterator == poetryIterator->end()) {
+        // 诗
+        poetry = *poetryIterator;
+    } else if(rhythmicIterator == poetryIterator->end()) {
+        // 词
+        poetry = *poetryIterator;
+    } else {
+        SPDLOG_DEBUG("匹配不到诗词规则：{}", poetryIterator->dump());
+        return;
+    }
+    const bool hasRule = poetry.preproccess().matchRule();
+    SPDLOG_DEBUG("解析诗词：{} - {} - {}", __func__, *fileIterator, poetry.title);
+    // 原始内容
+    sourceBufferPtr->text(poetry.title.c_str());
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append(poetry.author.c_str());
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append(lifuren::poetry::beautify(poetry.segment).c_str());
+    // 规则内容
+    if(hasRule) {
+    }
+    // 分词内容
+    if(hasRule) {
+    }
 }

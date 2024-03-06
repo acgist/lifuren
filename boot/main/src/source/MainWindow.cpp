@@ -94,7 +94,7 @@ void lifuren::MainWindow::drawElement() {
     // 重新加载配置
     this->reloadButtonPtr = new Fl_Button((this->w() - 80) / 4 * 2 + 40, this->h() - 40, (this->w() - 80) / 4, 30, "重新加载配置");
     // 关于
-    this->aboutButtonPtr = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
+    this->aboutButtonPtr  = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
     this->resizable(this);
     // 绑定事件
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(audioTsPtr, audioTs);

@@ -47,6 +47,18 @@
     }, this);
 #endif
 
+#ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(inputPtr, settingName, windowName, callbackName) \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                             \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();                            \
+        if(value == nullptr || strlen(value) == 0) {                                               \
+            return;                                                                                \
+        }                                                                                          \
+        ((windowName*) voidPtr)->settingPtr->settingName = value;                                  \
+        callbackName(value);                                                                            \
+    }, this);
+#endif
+
 #ifndef LFR_CHOICE_BUTTON
 #define LFR_CHOICE_BUTTON(x, y, buttonPtr, groupName, labelName, defaultValue)                \
 {                                                                                             \
@@ -274,12 +286,6 @@ public:
     ModelWindow(int width, int height, const char* title);
     virtual ~ModelWindow();
 
-public:
-    /**
-     * @return 训练数据目录
-     */
-    std::string datasetPath();
-
 protected:
     // 配置：不用释放
     Setting* settingPtr = nullptr;
@@ -417,18 +423,6 @@ class PoetryGCWindow : public ModelGCWindow {
 public:
     // 自动标记：通过已有标记自动标记
     Fl_Button* autoMarkPtr = nullptr;
-    // 规则内容
-    Fl_Text_Buffer* ruleBufferPtr = nullptr;
-    // 规则
-    Fl_Text_Display* ruleDisplayPtr = nullptr;
-    // 原始诗词内容
-    Fl_Text_Buffer* sourceBufferPtr = nullptr;
-    // 原始诗词
-    Fl_Text_Display* sourceDisplayPtr = nullptr;
-    // 目标诗词内容
-    Fl_Text_Buffer* targetBufferPtr = nullptr;
-    // 目标诗词
-    Fl_Text_Display* targetDisplayPtr = nullptr;
 
 public:
     /**

@@ -49,11 +49,29 @@ extern std::vector<std::string> split(const std::string& content, const std::str
 
 /**
  * @param content 文本内容
+ * @param delim   分隔符号
+ * @param retain  保留分割符号
+ * 
+ * @return 分割列表
+ */
+extern std::vector<std::string> split(const std::string& content, const std::string& delim, bool retain);
+
+/**
+ * @param content 文本内容
  * @param multi   分隔符号
  * 
  * @return 分割列表
  */
 extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi);
+
+/**
+ * @param content 文本内容
+ * @param multi   分隔符号
+ * @param retain  保留分割符号
+ * 
+ * @return 分割列表
+ */
+extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi, bool retain);
 
 }
 }
