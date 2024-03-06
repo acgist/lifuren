@@ -45,10 +45,10 @@ public:
     // 标签别名
     std::string alias;
     // JSON序列化
-    // NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name);
-    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Label, name);
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Label, name);
-    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Label, name);
+    // NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name, alias);
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Label, name, alias);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Label, name, alias);
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Label, name, alias);
 
 public:
     /**
@@ -67,7 +67,7 @@ public:
     // 标签数组
     std::vector<std::string> labels;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelFile, name, labels);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelFile, name, alias, labels);
 
 public:
     /**
@@ -89,6 +89,8 @@ public:
 class LabelText : public Label {
 
 public:
+    // 韵律：题材、词牌
+    std::string rhythmic;
     // 示例
     std::string example;
     // 字数
@@ -100,7 +102,7 @@ public:
     // 分词规则
     std::vector<int> participleRule;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, example, fontSize, segmentSize, segmentRule, participleRule);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, alias, example, fontSize, segmentSize, segmentRule, participleRule);
 
 public:
     /**

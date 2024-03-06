@@ -121,19 +121,24 @@ static void disable(Fl_Widget* widgetPtr, void* voidPtr) {
 
 static void reload(Fl_Widget* widgetPtr, void* voidPtr) {
     SPDLOG_DEBUG("重新加载配置");
-    lifuren::SETTINGS.clear();
-    lifuren::LABEL_AUDIO.clear();
-    lifuren::LABEL_IMAGE.clear();
-    lifuren::LABEL_VIDEO.clear();
-    lifuren::LABEL_POETRY.clear();
+    // 配置
     auto settings = lifuren::jsons::loadFile<std::map<std::string, lifuren::Setting>>(lifuren::SETTINGS_PATH);
+    lifuren::SETTINGS.clear();
     lifuren::SETTINGS.insert(settings.begin(), settings.end());
+    // 音频
     auto audio = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
+    lifuren::LABEL_AUDIO.clear();
     lifuren::LABEL_AUDIO.insert(audio.begin(), audio.end());
+    // 图片
     auto image = lifuren::LabelFile::loadFile(lifuren::LABEL_IMAGE_PATH);
+    lifuren::LABEL_IMAGE.clear();
     lifuren::LABEL_IMAGE.insert(image.begin(), image.end());
+    // 视频
     auto video = lifuren::LabelFile::loadFile(lifuren::LABEL_VIDEO_PATH);
+    lifuren::LABEL_VIDEO.clear();
     lifuren::LABEL_VIDEO.insert(video.begin(), video.end());
+    // 诗词
     auto poetry = lifuren::LabelText::loadFile(lifuren::LABEL_POETRY_PATH);
+    lifuren::LABEL_POETRY.clear();
     lifuren::LABEL_POETRY.insert(poetry.begin(), poetry.end());
 }

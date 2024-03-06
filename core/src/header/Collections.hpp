@@ -31,7 +31,7 @@ std::string join(T& collection, const std::string& delim) {
     const typename T::const_iterator end  = collection.end();
     const typename T::const_iterator last = collection.end() - 1;
     for (; iterator != end; ++iterator) {
-        ret << *iter;
+        ret << *iterator;
         if (iterator != last) {
             ret << delim;
         }

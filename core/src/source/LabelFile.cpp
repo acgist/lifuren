@@ -17,7 +17,8 @@ std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std
         std::string key = iterator.key();
         LabelText label = iterator.value();
         if(label.name.empty()) {
-            label.name = key;
+            label.name  = key;
+            label.alias = key;
         }
         map.insert(std::pair(key, label));
     }
