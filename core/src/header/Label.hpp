@@ -98,9 +98,9 @@ public:
     // 段数
     int segmentSize = 0;
     // 分段规则
-    std::vector<int> segmentRule;
+    std::vector<uint32_t> segmentRule;
     // 分词规则
-    std::vector<int> participleRule;
+    std::vector<uint32_t> participleRule;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, alias, example, fontSize, segmentSize, segmentRule, participleRule);
 

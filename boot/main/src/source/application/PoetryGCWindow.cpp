@@ -14,14 +14,14 @@ static std::vector<std::string> fileVector;
 // 当前诗词文件索引
 static std::vector<std::string>::iterator fileIterator;
 
-// 规则内容
-static Fl_Text_Buffer* ruleBufferPtr = nullptr;
-// 规则
-static Fl_Text_Display* ruleDisplayPtr = nullptr;
 // 原始诗词内容
 static Fl_Text_Buffer* sourceBufferPtr = nullptr;
 // 原始诗词
 static Fl_Text_Display* sourceDisplayPtr = nullptr;
+// 格律内容
+static Fl_Text_Buffer* rhythmicBufferPtr = nullptr;
+// 格律
+static Fl_Text_Display* rhythmicDisplayPtr = nullptr;
 // 目标诗词内容
 static Fl_Text_Buffer* targetBufferPtr = nullptr;
 // 目标诗词
@@ -36,14 +36,12 @@ static void loadFileVector(const std::string& path);
 // 加载诗词列表
 static void loadPoetryJson();
 // 匹配诗词规则
-static void matchPoetryRule();
+static void matchPoetryRhythmic();
 
 // 上首诗词
 static void prevPoetry(Fl_Widget*, void*);
 // 下首诗词
 static void nextPoetry(Fl_Widget*, void*);
-// 匹配规则
-static void matchRule(Fl_Widget*, void*);
 
 lifuren::PoetryGCWindow::PoetryGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
     auto iterator = SETTINGS.find("PoetryGC");
@@ -66,10 +64,11 @@ lifuren::PoetryGCWindow::~PoetryGCWindow() {
     LFR_DELETE_THIS_PTR(trainStopPtr);
     LFR_DELETE_THIS_PTR(generatePtr);
     LFR_DELETE_THIS_PTR(autoMarkPtr);
-    LFR_DELETE_PTR(ruleDisplayPtr);
-    LFR_DELETE_PTR(ruleBufferPtr);
+    // 静态资源
     LFR_DELETE_PTR(sourceDisplayPtr);
     LFR_DELETE_PTR(sourceBufferPtr);
+    LFR_DELETE_PTR(rhythmicDisplayPtr);
+    LFR_DELETE_PTR(rhythmicBufferPtr);
     LFR_DELETE_PTR(targetDisplayPtr);
     LFR_DELETE_PTR(targetBufferPtr);
     // 清理数据
@@ -91,20 +90,20 @@ void lifuren::PoetryGCWindow::drawElement() {
     this->trainStartPtr = new Fl_Button(340, 90, 100, 30, "开始训练");
     this->trainStopPtr  = new Fl_Button(450, 90, 100, 30, "结束训练");
     this->generatePtr   = new Fl_Button(560, 90, 100, 30, "生成诗词");
-    // 原始
-    sourceDisplayPtr = new Fl_Text_Display(10, 150, (this->w() - 40) / 3, this->h() - 160, "原始");
+    // 诗词
+    sourceDisplayPtr = new Fl_Text_Display(10, 150, (this->w() - 40) / 3, this->h() - 160, "诗词");
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
     sourceDisplayPtr->color(FL_BACKGROUND_COLOR);
     sourceBufferPtr = new Fl_Text_Buffer();
     sourceDisplayPtr->buffer(sourceBufferPtr);
-    // 规则
-    ruleDisplayPtr = new Fl_Text_Display(20 + (this->w() - 40) / 3, 150, (this->w() - 40) / 3, this->h() - 160, "规则");
-    ruleDisplayPtr->wrap_mode(ruleDisplayPtr->WRAP_AT_COLUMN, ruleDisplayPtr->textfont());
-    ruleDisplayPtr->color(FL_BACKGROUND_COLOR);
-    ruleBufferPtr = new Fl_Text_Buffer();
-    ruleDisplayPtr->buffer(ruleBufferPtr);
-    // 目标
-    targetDisplayPtr = new Fl_Text_Display(30 + (this->w() - 40) / 3 * 2, 150, (this->w() - 40) / 3, this->h() - 160, "目标");
+    // 格律
+    rhythmicDisplayPtr = new Fl_Text_Display(20 + (this->w() - 40) / 3, 150, (this->w() - 40) / 3, this->h() - 160, "格律");
+    rhythmicDisplayPtr->wrap_mode(rhythmicDisplayPtr->WRAP_AT_COLUMN, rhythmicDisplayPtr->textfont());
+    rhythmicDisplayPtr->color(FL_BACKGROUND_COLOR);
+    rhythmicBufferPtr = new Fl_Text_Buffer();
+    rhythmicDisplayPtr->buffer(rhythmicBufferPtr);
+    // 分词
+    targetDisplayPtr = new Fl_Text_Display(30 + (this->w() - 40) / 3 * 2, 150, (this->w() - 40) / 3, this->h() - 160, "分词");
     targetDisplayPtr->wrap_mode(targetDisplayPtr->WRAP_AT_COLUMN, targetDisplayPtr->textfont());
     targetDisplayPtr->color(FL_BACKGROUND_COLOR);
     targetBufferPtr = new Fl_Text_Buffer();
@@ -130,7 +129,7 @@ static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
         poetryIterator = poetryJson.end();
     }
     --poetryIterator;
-    matchPoetryRule();
+    matchPoetryRhythmic();
 }
 
 static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
@@ -146,7 +145,7 @@ static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
         }
         loadPoetryJson();
     }
-    matchPoetryRule();
+    matchPoetryRhythmic();
 }
 
 static void loadFileVector(const std::string& path) {
@@ -159,7 +158,7 @@ static void loadFileVector(const std::string& path) {
     lifuren::files::listFiles(fileVector, oldPath, { ".json" });
     fileIterator = fileVector.begin();
     loadPoetryJson();
-    matchPoetryRule();
+    matchPoetryRhythmic();
 }
 
 static void loadPoetryJson() {
@@ -168,7 +167,7 @@ static void loadPoetryJson() {
     poetryIterator = poetryJson.begin();
 }
 
-static void matchPoetryRule() {
+static void matchPoetryRhythmic() {
     if(poetryIterator == poetryJson.end()) {
         SPDLOG_WARN("没有可用诗词");
         return;
@@ -186,7 +185,7 @@ static void matchPoetryRule() {
         SPDLOG_DEBUG("匹配不到诗词规则：{}", poetryIterator->dump());
         return;
     }
-    const bool hasRule = poetry.preproccess().matchRule();
+    const bool hasLabel = poetry.preproccess().matchLabel();
     SPDLOG_DEBUG("解析诗词：{} - {} - {}", __func__, *fileIterator, poetry.title);
     // 原始内容
     sourceBufferPtr->text(poetry.title.c_str());
@@ -195,10 +194,27 @@ static void matchPoetryRule() {
     sourceBufferPtr->append("\n");
     sourceBufferPtr->append("\n");
     sourceBufferPtr->append(lifuren::poetry::beautify(poetry.segment).c_str());
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append(poetry.segment.c_str());
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append("\n");
+    sourceBufferPtr->append(poetry.simpleSegment.c_str());
+    sourceDisplayPtr->redraw();
     // 规则内容
-    if(hasRule) {
+    if(hasLabel) {
+        const lifuren::LabelText* label = poetry.label;
+        rhythmicBufferPtr->text(label->name.c_str());
+        rhythmicBufferPtr->append("\n");
+        rhythmicBufferPtr->append(label->example.c_str());
+    } else {
+        rhythmicBufferPtr->text("没有匹配规则");
     }
+    rhythmicDisplayPtr->redraw();
     // 分词内容
-    if(hasRule) {
+    if(hasLabel) {
+    } else {
+        targetBufferPtr->text("没有匹配规则");
     }
+    targetDisplayPtr->redraw();
 }

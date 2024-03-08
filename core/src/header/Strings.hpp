@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <algorithm>
 
 namespace lifuren {
@@ -58,6 +59,29 @@ inline size_t length(const char* value) {
     }
     return jndex;
 }
+
+/**
+ * @param value 字符串
+ * 
+ * @return 字符串长度
+ */
+inline size_t length(const std::string& value) {
+    return lifuren::strings::length(value.c_str());
+}
+
+/**
+ * @param value    字符串
+ * @param oldValue 旧的字符串
+ * @param newValue 新的字符串
+ */
+extern void replace(std::string& value, const std::string& oldValue, const std::string& newValue = "");
+
+/**
+ * @param value    字符串
+ * @param oldValue 旧的字符串列表
+ * @param newValue 新的字符串
+ */
+extern void replace(std::string& value, const std::vector<std::string>& oldValue, const std::string& newValue = "");
 
 }
 }

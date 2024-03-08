@@ -38,40 +38,25 @@ std::string join(T& collection, const std::string& delim) {
     }
     return ret.str();
 }
-
-/**
- * @param content 文本内容
- * @param delim   分隔符号
- * 
- * @return 分割列表
- */
-extern std::vector<std::string> split(const std::string& content, const std::string& delim);
-
 /**
  * @param content 文本内容
  * @param delim   分隔符号
  * @param retain  保留分割符号
+ * @param filter  是否过滤空白字符
  * 
  * @return 分割列表
  */
-extern std::vector<std::string> split(const std::string& content, const std::string& delim, bool retain);
-
-/**
- * @param content 文本内容
- * @param multi   分隔符号
- * 
- * @return 分割列表
- */
-extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi);
+extern std::vector<std::string> split(const std::string& content, const std::string& delim, bool retain = false, bool filter = true);
 
 /**
  * @param content 文本内容
  * @param multi   分隔符号
  * @param retain  保留分割符号
+ * @param filter  是否过滤空白字符
  * 
  * @return 分割列表
  */
-extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi, bool retain);
+extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi, bool retain = false, bool filter = true);
 
 }
 }

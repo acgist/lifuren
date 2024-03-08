@@ -46,12 +46,14 @@ public:
     std::string author;
     // 段落
     std::string segment;
+    // 朴素段落：没有符号
+    std::string simpleSegment;
     // 段落
     std::vector<std::string> paragraphs;
     // 分词
     std::vector<std::string> participle;
     // 规则：不要释放资源
-    LabelText* rule = nullptr;
+    LabelText* label = nullptr;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, rhythmic, author, paragraphs);
 
@@ -67,7 +69,7 @@ public:
      * 
      * @return 是否匹配成功
      */
-    bool matchRule();
+    bool matchLabel();
     /**
      * 段落分词
      * 
