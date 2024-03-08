@@ -17,7 +17,7 @@
 #endif
 
 namespace lifuren {
-namespace dates {
+namespace dates   {
 
 /**
  * @param datetime 日期时间

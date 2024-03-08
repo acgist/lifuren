@@ -15,7 +15,7 @@
 #include "Strings.hpp"
 
 namespace lifuren {
-namespace files {
+namespace files   {
 
 /**
  * 遍历文件列表
