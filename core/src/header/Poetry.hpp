@@ -44,14 +44,18 @@ public:
     std::string rhythmic;
     // 作者
     std::string author;
-    // 段落
+    // 原始段落
     std::string segment;
-    // 朴素段落：没有符号
+    // 朴素段落
     std::string simpleSegment;
-    // 段落
+    // 分词段落
+    std::string participleSegment;
+    // 原始段落
     std::vector<std::string> paragraphs;
-    // 分词
-    std::vector<std::string> participle;
+    // 朴素段落
+    std::vector<std::string> simpleParagraphs;
+    // 分词段落
+    std::vector<std::string> participleParagraphs;
     // 规则：不要释放资源
     LabelText* label = nullptr;
     // JSON序列化
@@ -67,6 +71,8 @@ public:
     /**
      * 匹配规则
      * 
+     * @see #simpleParagraphs
+     * 
      * @return 是否匹配成功
      */
     bool matchLabel();
@@ -75,7 +81,7 @@ public:
      * 
      * @return 是否分词成功
      */
-    bool participleSegment();
+    bool participle();
 
 };
 

@@ -18,6 +18,45 @@ void lifuren::strings::toUpper(std::string& value) {
     });
 }
 
+std::string lifuren::strings::trim(const std::string& value) {
+    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
+    if(index == std::string::npos) {
+        return std::string();
+    }
+    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
+    return value.substr(index, jndex + 1 - index);
+}
+
+size_t lifuren::strings::length(const char* value) {
+    size_t index = 0;
+    size_t jndex = 0;
+    while (value[index]) {
+        if ((value[index] & 0xC0) != 0x80) {
+            ++jndex;
+        };
+        ++index;
+    }
+    return jndex;
+}
+
+std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uint32_t& length) {
+    std::string ret;
+    uint32_t index = 0;
+    while(value[pos]) {
+        ret.push_back(value[pos]);
+        if((value[pos] & 0xC0) != 0x80) {
+            ++index;
+        };
+        ++pos;
+        if((value[pos] & 0xC0) != 0x80) {
+            if(index >= length) {
+                break;
+            }
+        };
+    }
+    return ret;
+}
+
 void lifuren::strings::replace(std::string& value, const std::string& oldValue, const std::string& newValue) {
     std::string::size_type index = 0;
     std::string::size_type oldValueLength = oldValue.length();

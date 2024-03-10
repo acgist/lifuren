@@ -31,33 +31,24 @@ lifuren::Poetry& lifuren::Poetry::preproccess() {
     } else if(!this->title.empty() && this->rhythmic.empty()) {
         this->rhythmic = this->title;
     }
-    if(
-        this->segment.empty() &&
-        this->simpleSegment.empty() &&
-        !this->paragraphs.empty()
-    ) {
-        std::string segment;
-        for(
-            auto iterator = this->paragraphs.begin();
-            iterator != this->paragraphs.end();
-            ++iterator
-        ) {
-            if(iterator->empty()) {
-                continue;
-            }
-            segment = lifuren::strings::trim(*iterator);
-            this->segment += segment;
-            lifuren::strings::replace(segment, lifuren::poetry::POETRY_SEGMENT_DELIM);
-            this->simpleSegment += segment;
-        }
-    }
+    std::string content = lifuren::collections::join(this->paragraphs, "");
+    this->paragraphs = lifuren::collections::split(
+        content,
+        lifuren::poetry::POETRY_BEAUTIFY_DELIM,
+        true
+    );
+    this->simpleParagraphs = lifuren::collections::split(
+        content,
+        lifuren::poetry::POETRY_SEGMENT_DELIM
+    );
+    this->segment = lifuren::collections::join(this->paragraphs, "\n");
+    this->simpleSegment = lifuren::collections::join(this->simpleParagraphs, "\n");
     return *this;
 }
 
 bool lifuren::Poetry::matchLabel() {
-    std::vector<std::string> vector = lifuren::collections::split(segment, lifuren::poetry::POETRY_SEGMENT_DELIM);
-    std::vector<uint32_t> segmentRule(vector.size());
-    std::transform(vector.begin(), vector.end(), segmentRule.begin(), [](auto& v) -> uint32_t {
+    std::vector<uint32_t> segmentRule(this->simpleParagraphs.size());
+    std::transform(this->simpleParagraphs.begin(), this->simpleParagraphs.end(), segmentRule.begin(), [](auto& v) -> uint32_t {
         return (uint32_t) lifuren::strings::length(v);
     });
     for(
@@ -65,19 +56,48 @@ bool lifuren::Poetry::matchLabel() {
         iterator != lifuren::LABEL_POETRY.end();
         ++iterator
     ) {
-        LabelText& label = iterator->second;
+        LabelText& labelRef = iterator->second;
         // TODO：验证词能否正确匹配或者添加词牌
         if(
-            label.segmentSize == vector.size() &&
-            label.segmentRule == segmentRule
+            labelRef.segmentSize == this->simpleParagraphs.size() &&
+            labelRef.segmentRule == segmentRule
         ) {
-            this->label = &label;
+            this->label = &labelRef;
             break;
         }
     }
     return this->label != nullptr;
 }
 
-bool lifuren::Poetry::participleSegment() {
+bool lifuren::Poetry::participle() {
+    if(this->label == nullptr) {
+        return false;
+    }
+    std::vector<uint32_t>& participleRuleRef = this->label->participleRule;
+    std::string word;
+    uint32_t pos = 0;
+    bool appendSpace = true;
+    auto paragraphsIterator = this->simpleParagraphs.begin();
+    for(
+        auto iterator = participleRuleRef.begin();
+        iterator != participleRuleRef.end() && paragraphsIterator != this->simpleParagraphs.end();
+        ++iterator
+    ) {
+        word = lifuren::strings::substr(paragraphsIterator->c_str(), pos, *iterator);
+        this->participleParagraphs.push_back(word);
+        if(this->participleSegment.empty()) {
+            this->participleSegment = word;
+        } else {
+            this->participleSegment = this->participleSegment + (appendSpace ? " " : "") + word;
+        }
+        if(pos >= paragraphsIterator->length()) {
+            pos = 0;
+            ++paragraphsIterator;
+            this->participleSegment += "\n";
+            appendSpace = false;
+        } else {
+            appendSpace = true;
+        }
+    }
     return true;
 }

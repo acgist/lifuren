@@ -34,40 +34,37 @@ extern void toUpper(std::string& value);
  * 
  * @return 去掉空格后的字符串
  */
-inline std::string trim(const std::string& value) {
-    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
-    if(index == std::string::npos) {
-        return std::string();
-    }
-    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
-    return value.substr(index, jndex + 1 - index);
-}
+extern std::string trim(const std::string& value);
 
 /**
- * @param value 字符串
+ * @param value UTF8字符串
  * 
  * @return 字符串长度
  */
-inline size_t length(const char* value) {
-    size_t index = 0;
-    size_t jndex = 0;
-    while (value[index]) {
-        if ((value[index] & 0xC0) != 0x80) {
-            ++jndex;
-        };
-        ++index;
-    }
-    return jndex;
-}
+extern size_t length(const char* value);
 
 /**
- * @param value 字符串
+ * @param value UTF8字符串
  * 
  * @return 字符串长度
  */
 inline size_t length(const std::string& value) {
     return lifuren::strings::length(value.c_str());
 }
+
+/**
+ * 1字节 0xxxxxxx
+ * 2字节 110xxxxx 10xxxxxx
+ * 3字节 1110xxxx 10xxxxxx 10xxxxxx
+ * 4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+ * 
+ * @param value  UTF8字符串
+ * @param pos    开始位置
+ * @param length 截取长度
+ * 
+ * @return 截取内容
+ */
+extern std::string substr(const char* value, uint32_t& pos, const uint32_t& length);
 
 /**
  * @param value    字符串

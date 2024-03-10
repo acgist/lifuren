@@ -185,7 +185,7 @@ static void matchPoetryRhythmic() {
         SPDLOG_DEBUG("匹配不到诗词规则：{}", poetryIterator->dump());
         return;
     }
-    const bool hasLabel = poetry.preproccess().matchLabel();
+    poetry.preproccess();
     SPDLOG_DEBUG("解析诗词：{} - {} - {}", __func__, *fileIterator, poetry.title);
     // 原始内容
     sourceBufferPtr->text(poetry.title.c_str());
@@ -193,26 +193,31 @@ static void matchPoetryRhythmic() {
     sourceBufferPtr->append(poetry.author.c_str());
     sourceBufferPtr->append("\n");
     sourceBufferPtr->append("\n");
-    sourceBufferPtr->append(lifuren::poetry::beautify(poetry.segment).c_str());
-    sourceBufferPtr->append("\n");
-    sourceBufferPtr->append("\n");
     sourceBufferPtr->append(poetry.segment.c_str());
     sourceBufferPtr->append("\n");
     sourceBufferPtr->append("\n");
     sourceBufferPtr->append(poetry.simpleSegment.c_str());
     sourceDisplayPtr->redraw();
+    // 匹配规则
+    const bool hasLabel = poetry.matchLabel();
     // 规则内容
     if(hasLabel) {
-        const lifuren::LabelText* label = poetry.label;
-        rhythmicBufferPtr->text(label->name.c_str());
+        const lifuren::LabelText* labelPtr = poetry.label;
+        rhythmicBufferPtr->text(labelPtr->name.c_str());
         rhythmicBufferPtr->append("\n");
-        rhythmicBufferPtr->append(label->example.c_str());
+        rhythmicBufferPtr->append("\n");
+        rhythmicBufferPtr->append(lifuren::poetry::beautify(labelPtr->example).c_str());
     } else {
         rhythmicBufferPtr->text("没有匹配规则");
     }
     rhythmicDisplayPtr->redraw();
     // 分词内容
     if(hasLabel) {
+        poetry.participle();
+        targetBufferPtr->text(poetry.title.c_str());
+        targetBufferPtr->append("\n");
+        targetBufferPtr->append("\n");
+        targetBufferPtr->append(poetry.participleSegment.c_str());
     } else {
         targetBufferPtr->text("没有匹配规则");
     }
