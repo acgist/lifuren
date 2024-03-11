@@ -47,6 +47,7 @@ lifuren::PoetryGCWindow::PoetryGCWindow(int width, int height, const char* title
     auto iterator = SETTINGS.find("PoetryGC");
     if(iterator == SETTINGS.end()) {
         this->settingPtr = new Setting();
+        // TODO：BUG拷贝
         SETTINGS.insert(std::make_pair("PoetryGC", *this->settingPtr));
     } else {
         this->settingPtr = &iterator->second;
@@ -172,19 +173,7 @@ static void matchPoetryRhythmic() {
         SPDLOG_WARN("没有可用诗词");
         return;
     }
-    nlohmann::json::iterator titleIterator    = poetryIterator->find("title");
-    nlohmann::json::iterator rhythmicIterator = poetryIterator->find("rhythmic");
-    lifuren::Poetry poetry;
-    if(titleIterator == poetryIterator->end()) {
-        // 诗
-        poetry = *poetryIterator;
-    } else if(rhythmicIterator == poetryIterator->end()) {
-        // 词
-        poetry = *poetryIterator;
-    } else {
-        SPDLOG_DEBUG("匹配不到诗词规则：{}", poetryIterator->dump());
-        return;
-    }
+    lifuren::Poetry poetry = *poetryIterator;
     poetry.preproccess();
     SPDLOG_DEBUG("解析诗词：{} - {} - {}", __func__, *fileIterator, poetry.title);
     // 原始内容

@@ -46,9 +46,9 @@ public:
     std::string author;
     // 原始段落
     std::string segment;
-    // 朴素段落
+    // 朴素段落：没有符号
     std::string simpleSegment;
-    // 分词段落
+    // 分词段落：分词分割
     std::string participleSegment;
     // 原始段落
     std::vector<std::string> paragraphs;
@@ -56,7 +56,7 @@ public:
     std::vector<std::string> simpleParagraphs;
     // 分词段落
     std::vector<std::string> participleParagraphs;
-    // 规则：不要释放资源
+    // 规则：不要释放资源（全局资源）
     LabelText* label = nullptr;
     // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, rhythmic, author, paragraphs);
@@ -70,8 +70,6 @@ public:
     Poetry& preproccess();
     /**
      * 匹配规则
-     * 
-     * @see #simpleParagraphs
      * 
      * @return 是否匹配成功
      */

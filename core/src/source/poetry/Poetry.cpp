@@ -76,11 +76,10 @@ bool lifuren::Poetry::participle() {
     std::vector<uint32_t>& participleRuleRef = this->label->participleRule;
     std::string word;
     uint32_t pos = 0;
-    bool appendSpace = true;
     auto paragraphsIterator = this->simpleParagraphs.begin();
     for(
         auto iterator = participleRuleRef.begin();
-        iterator != participleRuleRef.end() && paragraphsIterator != this->simpleParagraphs.end();
+        iterator != participleRuleRef.end();
         ++iterator
     ) {
         word = lifuren::strings::substr(paragraphsIterator->c_str(), pos, *iterator);
@@ -88,15 +87,17 @@ bool lifuren::Poetry::participle() {
         if(this->participleSegment.empty()) {
             this->participleSegment = word;
         } else {
-            this->participleSegment = this->participleSegment + (appendSpace ? " " : "") + word;
+            this->participleSegment = this->participleSegment + word;
         }
         if(pos >= paragraphsIterator->length()) {
             pos = 0;
             ++paragraphsIterator;
+            if(paragraphsIterator == this->simpleParagraphs.end()) {
+                break;
+            }
             this->participleSegment += "\n";
-            appendSpace = false;
         } else {
-            appendSpace = true;
+            this->participleSegment += " ";
         }
     }
     return true;

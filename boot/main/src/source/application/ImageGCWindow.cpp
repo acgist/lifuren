@@ -38,6 +38,7 @@ lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) 
     auto iterator = SETTINGS.find("ImageGC");
     if(iterator == SETTINGS.end()) {
         this->settingPtr = new Setting();
+        // TODO：BUG拷贝
         SETTINGS.insert(std::make_pair("ImageGC", *this->settingPtr));
     } else {
         this->settingPtr = &iterator->second;
