@@ -9,7 +9,7 @@ lifuren::LFRModel<M>::~LFRModel() {
 }
 
 template<typename M>
-lifuren::LFRModel<M>::LFRModel(const lifuren::Setting& setting) : setting(setting) {
+lifuren::LFRModel<M>::LFRModel(const lifuren::Setting& setting, const M& modelSetting) : setting(setting), modelSetting(modelSetting) {
 }
 
 template<typename M>

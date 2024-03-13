@@ -1,4 +1,4 @@
-#include "../../header/CUDA.hpp"
+#include "../../header/LibTorch.hpp"
 
 void lifuren::testCUDA() {
     SPDLOG_DEBUG("CUDA = {}", torch::cuda::is_available());

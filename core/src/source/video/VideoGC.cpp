@@ -1,1 +1,1 @@
-#include "../../header/VideoGC.hpp"
+#include "../../header/video/VideoGC.hpp"

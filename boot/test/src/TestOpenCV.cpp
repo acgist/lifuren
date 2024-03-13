@@ -1,4 +1,4 @@
-#include "../src/header/OpenCV.hpp"
+#include "./header/OpenCV.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();

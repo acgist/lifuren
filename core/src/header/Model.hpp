@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include "Setting.hpp"
-
 #include "torch/torch.h"
+
+#include "./config/Setting.hpp"
 
 namespace lifuren {
 
@@ -26,14 +26,17 @@ static_assert(std::is_base_of_v<lifuren::ModelSetting, M>, "必须继承模型�
 public:
     // 基本配置
     lifuren::Setting setting;
+    // 模型配置
+    M modelSetting;
 
 public:
     LFRModel();
     virtual ~LFRModel();
     /**
-     * @param setting 基本配置
+     * @param setting      基本配置
+     * @param modelSetting 模型配置
      */
-    LFRModel(const lifuren::Setting& setting);
+    LFRModel(const lifuren::Setting& setting, const M& modelSetting);
 
 public:
     /**
@@ -46,16 +49,12 @@ public:
     virtual void load();
     /**
      * 训练模型
-     * 
-     * @param setting 模型设置
      */
-    virtual void train(const M& setting) = 0;
+    virtual void train() = 0;
     /**
      * 模型预测
-     * 
-     * @param 模型设置
      */
-    virtual void predict(const M& setting) = 0;
+    virtual void predict() = 0;
 
 };
 

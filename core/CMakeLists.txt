@@ -20,33 +20,35 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    # 工具
+    # 通用
     ${HEADER_DIR}/Ptr.hpp
-    ${HEADER_DIR}/Dates.hpp
-    ${HEADER_DIR}/Files.hpp
-    ${HEADER_DIR}/Jsons.hpp
-    ${HEADER_DIR}/Utils.hpp
-    ${HEADER_DIR}/Logger.hpp
-    ${HEADER_DIR}/Strings.hpp
-    ${HEADER_DIR}/Collections.hpp
-    # 配置
-    ${HEADER_DIR}/Mark.hpp
-    ${HEADER_DIR}/Label.hpp
-    ${HEADER_DIR}/Setting.hpp
-    # 模型
+    ${HEADER_DIR}/Ref.hpp
     ${HEADER_DIR}/Model.hpp
-    ${HEADER_DIR}/Audio.hpp
-    ${HEADER_DIR}/AudioGC.hpp
-    ${HEADER_DIR}/AudioTS.hpp
-    ${HEADER_DIR}/Image.hpp
-    ${HEADER_DIR}/ImageGC.hpp
-    ${HEADER_DIR}/ImageTS.hpp
-    ${HEADER_DIR}/Video.hpp
-    ${HEADER_DIR}/VideoGC.hpp
-    ${HEADER_DIR}/VideoTS.hpp
-    ${HEADER_DIR}/Poetry.hpp
-    ${HEADER_DIR}/PoetryGC.hpp
-    ${HEADER_DIR}/PoetryTS.hpp
+    ${HEADER_DIR}/Logger.hpp
+    # 工具
+    ${HEADER_DIR}/utils/Dates.hpp
+    ${HEADER_DIR}/utils/Files.hpp
+    ${HEADER_DIR}/utils/Jsons.hpp
+    ${HEADER_DIR}/utils/Utils.hpp
+    ${HEADER_DIR}/utils/Strings.hpp
+    ${HEADER_DIR}/utils/Collections.hpp
+    # 配置
+    ${HEADER_DIR}/config/Mark.hpp
+    ${HEADER_DIR}/config/Label.hpp
+    ${HEADER_DIR}/config/Setting.hpp
+    # 模型
+    ${HEADER_DIR}/audio/Audio.hpp
+    ${HEADER_DIR}/audio/AudioGC.hpp
+    ${HEADER_DIR}/audio/AudioTS.hpp
+    ${HEADER_DIR}/image/Image.hpp
+    ${HEADER_DIR}/image/ImageGC.hpp
+    ${HEADER_DIR}/image/ImageTS.hpp
+    ${HEADER_DIR}/video/Video.hpp
+    ${HEADER_DIR}/video/VideoGC.hpp
+    ${HEADER_DIR}/video/VideoTS.hpp
+    ${HEADER_DIR}/poetry/Poetry.hpp
+    ${HEADER_DIR}/poetry/PoetryGC.hpp
+    ${HEADER_DIR}/poetry/PoetryTS.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})

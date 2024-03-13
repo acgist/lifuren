@@ -1,7 +1,7 @@
 #include "../../header/Window.hpp"
 
-#include "Jsons.hpp"
-#include "Poetry.hpp"
+#include "utils/Jsons.hpp"
+#include "poetry/Poetry.hpp"
 
 // TODO：问题双击选中中文崩溃
 

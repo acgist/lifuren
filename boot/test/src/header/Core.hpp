@@ -5,10 +5,10 @@
  */
 #pragma once
 
-#include "Mark.hpp"
-#include "Label.hpp"
 #include "Logger.hpp"
-#include "Setting.hpp"
+#include "config/Mark.hpp"
+#include "config/Label.hpp"
+#include "config/Setting.hpp"
 
 namespace lifuren {
 

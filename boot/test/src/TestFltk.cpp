@@ -1,4 +1,4 @@
-#include "../src/header/Fltk.hpp"
+#include "./header/Fltk.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();

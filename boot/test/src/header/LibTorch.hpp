@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include "Logger.hpp"
-
 #include "torch/torch.h"
+
+#include "Logger.hpp"
 
 LFR_LOG_FORMAT(at::Tensor);
 

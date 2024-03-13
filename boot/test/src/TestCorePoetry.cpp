@@ -3,11 +3,11 @@
 #include <vector>
 #include <algorithm>
 
-#include "Logger.hpp"
-#include "Strings.hpp"
-#include "Collections.hpp"
-
 #include "nlohmann/json.hpp"
+
+#include "Logger.hpp"
+#include "utils/Strings.hpp"
+#include "utils/Collections.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();

@@ -1,13 +1,13 @@
-#include "../../header/PoetryGC.hpp"
+#include "../../header/poetry/PoetryGC.hpp"
 
-lifuren::AudioGCModel::~AudioGCModel() {
+lifuren::PoetryGCModel::~PoetryGCModel() {
 }
 
-lifuren::AudioGCModel::AudioGCModel(const lifuren::Setting& setting) : LFRModel(setting) {
+lifuren::PoetryGCModel::PoetryGCModel(const lifuren::Setting& setting, const lifuren::PoetryGCModelSetting& modelSetting) : LFRModel(setting, modelSetting) {
 }
 
-void lifuren::AudioGCModel::train(const lifuren::AudioGCModelSetting& setting) {
+void lifuren::PoetryGCModel::train() {
 }
 
-void lifuren::AudioGCModel::predict(const lifuren::AudioGCModelSetting& setting) {
+void lifuren::PoetryGCModel::predict() {
 }

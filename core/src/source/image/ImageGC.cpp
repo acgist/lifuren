@@ -1,1 +1,1 @@
-#include "../../header/ImageGC.hpp"
+#include "../../header/image/ImageGC.hpp"

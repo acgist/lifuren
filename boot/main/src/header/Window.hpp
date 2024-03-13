@@ -8,12 +8,6 @@
 #include <string>
 #include <algorithm>
 
-#include "Ptr.hpp"
-#include "Files.hpp"
-#include "Label.hpp"
-#include "Logger.hpp"
-#include "Setting.hpp"
-
 #include "FL/Fl.H"
 #include "FL/fl_ask.H"
 #include "FL/Fl_Box.H"
@@ -27,6 +21,12 @@
 #include "FL/Fl_Text_Display.H"
 #include "Fl/Fl_Shared_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
+
+#include "Ptr.hpp"
+#include "Logger.hpp"
+#include "utils/Files.hpp"
+#include "config/Label.hpp"
+#include "config/Setting.hpp"
 
 #ifndef LFR_MODEL_MODULE
 #define LFR_MODEL_MODULE(modelTypeLower, modelTypeUpper)             \

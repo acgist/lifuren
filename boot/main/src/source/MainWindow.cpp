@@ -1,7 +1,7 @@
 #include "../header/Window.hpp"
 
-#include "Label.hpp"
-#include "Jsons.hpp"
+#include "utils/Jsons.hpp"
+#include "config/Label.hpp"
 
 // 删除资源指针
 #ifndef LFR_DELETE_MODEL_PTR

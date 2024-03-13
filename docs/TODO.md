@@ -32,6 +32,9 @@
 *SPtr = shared_ptr指针
 *UPtr = unique_ptr指针
 
+# 引用名称
+*Ref = 引用
+
 # 宏
 所有宏定义使用`LFR_`开头
 

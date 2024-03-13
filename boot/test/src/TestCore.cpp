@@ -1,4 +1,4 @@
-#include "../src/header/Core.hpp"
+#include "./header/Core.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
