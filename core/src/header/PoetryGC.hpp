@@ -1,6 +1,8 @@
 /**
  * 诗词内容生成
  * 
+ * GAN + RNN
+ * 
  * @author acgist
  */
 #pragma once
