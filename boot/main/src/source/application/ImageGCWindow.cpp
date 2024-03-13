@@ -48,13 +48,6 @@ lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) 
 lifuren::ImageGCWindow::~ImageGCWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     lifuren::jsons::saveFile(SETTINGS_PATH, lifuren::SETTINGS);
-    LFR_DELETE_THIS_PTR(modelPathPtr);
-    LFR_DELETE_THIS_PTR(datasetPathPtr);
-    LFR_DELETE_THIS_PTR(prevPtr);
-    LFR_DELETE_THIS_PTR(nextPtr);
-    LFR_DELETE_THIS_PTR(trainStartPtr);
-    LFR_DELETE_THIS_PTR(trainStopPtr);
-    LFR_DELETE_THIS_PTR(generatePtr);
     // 清理数据
     oldPath = "";
     imageVector.clear();

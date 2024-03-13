@@ -20,10 +20,7 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/CNN.hpp
-    ${HEADER_DIR}/RNN.hpp
-    ${HEADER_DIR}/GAN.hpp
-    ${HEADER_DIR}/Boot.hpp
+    ${HEADER_DIR}/Core.hpp
     ${HEADER_DIR}/Fltk.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/LibTorch.hpp
@@ -63,31 +60,31 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testDates src/TestDates.cpp)
-add_test(NAME testDates COMMAND testDates)
+add_executable(testCoreDates src/TestCoreDates.cpp)
+add_test(NAME testCoreDates COMMAND testCoreDates)
 target_link_libraries(
-    testDates PUBLIC
+    testCoreDates PUBLIC
     lifurencore
 )
 
-add_executable(testFiles src/TestFiles.cpp)
-add_test(NAME testFiles COMMAND testFiles)
+add_executable(testCoreFiles src/TestCoreFiles.cpp)
+add_test(NAME testCoreFiles COMMAND testCoreFiles)
 target_link_libraries(
-    testFiles PUBLIC
+    testCoreFiles PUBLIC
     lifurencore
 )
 
-add_executable(testPoetry src/TestPoetry.cpp)
-add_test(NAME testPoetry COMMAND testPoetry)
+add_executable(testCorePoetry src/TestCorePoetry.cpp)
+add_test(NAME testCorePoetry COMMAND testCorePoetry)
 target_link_libraries(
-    testPoetry PUBLIC
+    testCorePoetry PUBLIC
     lifurencore
 )
 
-add_executable(testCollections src/TestCollections.cpp)
-add_test(NAME testCollections COMMAND testCollections)
+add_executable(testCoreCollections src/TestCoreCollections.cpp)
+add_test(NAME testCoreCollections COMMAND testCoreCollections)
 target_link_libraries(
-    testCollections PUBLIC
+    testCoreCollections PUBLIC
     lifurencore
 )
 
@@ -99,13 +96,6 @@ target_link_libraries(
     ${FLTK_LIBRARIES}
 )
 
-add_executable(testLibTorchVGG src/TestLibTorchVGG.cpp src/source/libtorch/VGG.cpp)
-add_test(NAME testLibTorchVGG COMMAND testLibTorchVGG)
-target_link_libraries(
-    testLibTorchVGG PUBLIC
-    lifurencore
-)
-
 add_executable(testLibTorchCUDA src/TestLibTorchCUDA.cpp src/source/libtorch/CUDA.cpp)
 add_test(NAME testLibTorchCUDA COMMAND testLibTorchCUDA)
 target_link_libraries(
@@ -113,24 +103,10 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testLibTorchMnist src/TestLibTorchMnist.cpp src/source/libtorch/Mnist.cpp)
-add_test(NAME testLibTorchMnist COMMAND testLibTorchMnist)
-target_link_libraries(
-    testLibTorchMnist PUBLIC
-    lifurencore
-)
-
 add_executable(testLibTorchTensor src/TestLibTorchTensor.cpp src/source/libtorch/Tensor.cpp)
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
     testLibTorchTensor PUBLIC
-    lifurencore
-)
-
-add_executable(testLibTorchActivationFunction src/TestLibTorchActivationFunction.cpp src/source/libtorch/ActivationFunction.cpp)
-add_test(NAME testLibTorchActivationFunction COMMAND testLibTorchActivationFunction)
-target_link_libraries(
-    testLibTorchActivationFunction PUBLIC
     lifurencore
 )
 
@@ -142,7 +118,7 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
-add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVFace.cpp)
+add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Face.cpp)
 add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
 target_link_libraries(
     testOpenCVFace PUBLIC
@@ -150,7 +126,7 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
-add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVColor.cpp)
+add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Color.cpp)
 add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
 target_link_libraries(
     testOpenCVColor PUBLIC
@@ -158,7 +134,7 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
-add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/OpenCVResize.cpp)
+add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Resize.cpp)
 add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
 target_link_libraries(
     testOpenCVResize PUBLIC

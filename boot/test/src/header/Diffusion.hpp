@@ -1,5 +1,0 @@
-/**
- * Diffusion
- * 
- * @author acgist
- */

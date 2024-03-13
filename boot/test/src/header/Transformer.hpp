@@ -1,5 +1,0 @@
-/**
- * Transformer
- * 
- * @author acgist
- */
