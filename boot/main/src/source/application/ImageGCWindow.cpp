@@ -35,14 +35,7 @@ static void generate(Fl_Widget*, void*);
 static void previewImage();
 
 lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
-    auto iterator = SETTINGS.find("ImageGC");
-    if(iterator == SETTINGS.end()) {
-        this->settingPtr = new Setting();
-        // TODO：BUG拷贝
-        SETTINGS.insert(std::make_pair("ImageGC", *this->settingPtr));
-    } else {
-        this->settingPtr = &iterator->second;
-    }
+    this->loadSetting("ImageGC");
 }
 
 lifuren::ImageGCWindow::~ImageGCWindow() {

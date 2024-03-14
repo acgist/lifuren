@@ -46,14 +46,7 @@ static void prevPoetry(Fl_Widget*, void*);
 static void nextPoetry(Fl_Widget*, void*);
 
 lifuren::PoetryGCWindow::PoetryGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
-    auto iterator = SETTINGS.find("PoetryGC");
-    if(iterator == SETTINGS.end()) {
-        this->settingPtr = new Setting();
-        // TODO：BUG拷贝
-        SETTINGS.insert(std::make_pair("PoetryGC", *this->settingPtr));
-    } else {
-        this->settingPtr = &iterator->second;
-    }
+    this->loadSetting("PoetryGC");
 }
 
 lifuren::PoetryGCWindow::~PoetryGCWindow() {

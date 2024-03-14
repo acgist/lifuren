@@ -75,6 +75,17 @@ lifuren::ModelWindow::~ModelWindow() {
     LFR_DELETE_THIS_PTR(datasetPathPtr);
 }
 
+void lifuren::ModelWindow::loadSetting(const std::string& modelType) {
+    auto iterator = SETTINGS.find(modelType);
+    if(iterator == SETTINGS.end()) {
+        this->settingPtr = new Setting();
+        // TODO：BUG拷贝
+        SETTINGS.insert(std::make_pair(modelType, *this->settingPtr));
+    } else {
+        this->settingPtr = &iterator->second;
+    }
+}
+
 lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }
 
@@ -94,6 +105,5 @@ lifuren::ModelTSWindow::~ModelTSWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __func__);
     LFR_DELETE_THIS_PTR(trainStartPtr);
     LFR_DELETE_THIS_PTR(trainStopPtr);
-    LFR_DELETE_THIS_PTR(sourceFilePtr);
     LFR_DELETE_THIS_PTR(transferPtr);
 }

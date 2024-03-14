@@ -294,6 +294,12 @@ protected:
     // 数据路径
     Fl_Input* datasetPathPtr = nullptr;
 
+protected:
+    /**
+     * @param modelType 模型类型
+     */
+    void loadSetting(const std::string& modelType);
+
 };
 
 /**
@@ -343,8 +349,6 @@ protected:
     Fl_Button* trainStartPtr = nullptr;
     // 结束训练
     Fl_Button* trainStopPtr  = nullptr;
-    // 输入文件
-    Fl_Input* sourceFilePtr = nullptr;
     // 风格迁移
     Fl_Button* transferPtr  = nullptr;
 
