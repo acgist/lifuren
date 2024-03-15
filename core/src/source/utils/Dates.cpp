@@ -1,5 +1,9 @@
 #include "../../header/utils/Dates.hpp"
 
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
 std::string lifuren::dates::format(const std::tm& datetime, const std::string& format) {
     // 性能较差
     // std::ostringstream output;
@@ -24,7 +28,7 @@ std::tm lifuren::dates::parseTm(const std::string& datetime, const std::string& 
     std::istringstream input(datetime);
 	input >> std::get_time(&tm, format.c_str());
     #else
-    std::strptime(datetime.c_str(), format.c_str(), &tm);
+    strptime(datetime.c_str(), format.c_str(), &tm);
     #endif
     return tm;
 }
