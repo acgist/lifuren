@@ -52,9 +52,13 @@ public:
      */
     virtual void train() = 0;
     /**
+     * 测试模型
+     */
+    virtual void test() = 0;
+    /**
      * 模型预测
      */
-    virtual void predict() = 0;
+    virtual void pred() = 0;
 
 };
 

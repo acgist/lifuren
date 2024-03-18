@@ -20,37 +20,6 @@
 
 语音识别、机器翻译、自动摘要、观点提取、文本分类、问题回答等等
 
-## 激活函数
-
-* tanh
-* ReLU
-* sigmoid
-* softmax
-* Leaky ReLU
-
-## 损失函数
-
-* L1 Loss：L1正则化
-* L2 Loss：L2正则化
-* MSE Loss：回归问题
-* NLL Loss：分类问题
-* NLL Loss2d：像素分类（图像分割）
-* Cross-entropy Loss：分类问题
-
-## 优化算法
-
-* SGD
-* ASGD
-* SGDM
-* Adam
-* Rprop
-* LBFGS
-* Adamax
-* Adagrad
-* RMSProp
-* ADADELTA
-* SparseAdam
-
 ## 回归算法
 
 #### 线性回归算法（Linear Regression）
@@ -114,8 +83,6 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://github.com/ggerganov/llama.cpp
 * https://github.com/ggerganov/whisper.cpp
 * https://github.com/huggingface/transformers
-* https://github.com/PlexPt/awesome-chatgpt-prompts-zh
-* https://github.com/chatchat-space/Langchain-Chatchat
 
 ###### gemma
 ###### llama
@@ -125,6 +92,8 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://github.com/THUDM/ChatGLM3
 * https://github.com/THUDM/ChatGLM-6B
 * https://github.com/THUDM/ChatGLM2-6B
+* https://github.com/ymcui/Chinese-LLaMA-Alpaca
+* https://github.com/ymcui/Chinese-LLaMA-Alpaca-2
 
 #### 扩散模型（Diffusion）
 
@@ -143,11 +112,46 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 
 * https://github.com/geekan/MetaGPT
 * https://github.com/reworkd/AgentGPT
+* https://github.com/langchain-ai/langchain
+* https://github.com/Significant-Gravitas/AutoGPT
+* https://github.com/PlexPt/awesome-chatgpt-prompts-zh
+* https://github.com/chatchat-space/Langchain-Chatchat
 
 ## 学习资料
 
 * https://zh-v2.d2l.ai/
+* https://github.com/hankcs/HanLP
+* https://github.com/d2l-ai/d2l-zh
+* https://github.com/Ewenwan/MVision
+* https://github.com/NLP-LOVE/ML-NLP
+* https://github.com/tangyudi/Ai-Learn
 * https://github.com/apachecn/ailearning
+* https://github.com/MorvanZhou/tutorials
+* https://github.com/graykode/nlp-tutorial
+* https://github.com/fighting41love/funNLP
+* https://dataxujing.github.io/ASR-paper/#/
+* https://dataxujing.github.io/NLP-paper/#/
+* https://dataxujing.github.io/TTS-paper/#/
+* https://dataxujing.github.io/VOT_paper/#/
+* https://dataxujing.github.io/CNN-paper2/#/
+* https://dataxujing.github.io/AIGC-paper/#/
 * https://github.com/Mikoto10032/DeepLearning
 * https://github.com/microsoft/AI-For-Beginners
+* https://github.com/microsoft/ML-For-Beginners
+* https://github.com/DA-southampton/NLP_ability
+* https://github.com/chenzomi12/DeepLearningSystem
+* https://github.com/brightmart/nlp_chinese_corpus
+* https://github.com/datawhalechina/leedl-tutorial
 * https://scikit-learn.org/stable/modules/classes.html
+* https://github.com/scutan90/DeepLearning-500-questions
+* https://github.com/microsoft/generative-ai-for-beginners
+* https://github.com/labmlai/annotated_deep_learning_paper_implementations
+
+## 学习计划
+
+* https://dataxujing.github.io/NLP-paper/#/
+* https://dataxujing.github.io/CNN-paper2/#/
+* https://dataxujing.github.io/AIGC-paper/#/
+* https://github.com/tangyudi/Ai-Learn
+* https://github.com/chenzomi12/DeepLearningSystem
+* https://github.com/scutan90/DeepLearning-500-questions

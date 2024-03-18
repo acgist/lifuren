@@ -9,5 +9,8 @@ lifuren::PoetryGCModel::PoetryGCModel(const lifuren::Setting& setting, const lif
 void lifuren::PoetryGCModel::train() {
 }
 
-void lifuren::PoetryGCModel::predict() {
+void lifuren::PoetryGCModel::test() {
+}
+
+void lifuren::PoetryGCModel::pred() {
 }

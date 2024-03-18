@@ -109,6 +109,19 @@ CPU/GPU/CUDA/cuDNN
 
 > 不用单独安装`CUDA`已经包含
 
+## 模型
+
+* https://hf-mirror.com/models
+* https://huggingface.co/models
+
+## 数据集
+
+* https://hf-mirror.com/datasets
+* https://huggingface.co/datasets
+* https://github.com/chinese-poetry/chinese-poetry
+* https://github.com/chinese-poetry/chinese-poetry-zhCN
+
+
 ## 相关下载
 
 ```

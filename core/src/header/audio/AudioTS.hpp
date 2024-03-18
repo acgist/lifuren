@@ -1,6 +1,8 @@
 /**
  * 音频风格迁移
  * 
+ * CycleGAN
+ * 
  * @author acgist
  */
 #pragma once

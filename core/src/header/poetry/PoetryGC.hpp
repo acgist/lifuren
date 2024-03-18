@@ -1,7 +1,8 @@
 /**
  * 诗词内容生成
  * 
- * GAN + RNN
+ * CycleGAN
+ * Transformer
  * 
  * @author acgist
  */
@@ -33,7 +34,8 @@ public:
 
 public:
     void train() override;
-    void predict() override;
+    void test() override;
+    void pred() override;
 
 };
 

@@ -22,4 +22,16 @@ extern void testCUDA();
  */
 extern void testLibTorchTensor();
 
+/**
+ * 性别识别
+ */
+class GenderRecognition {
+
+public:
+    void trian();
+    void test();
+    void pred();
+
+};
+
 }
