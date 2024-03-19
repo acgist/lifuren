@@ -117,6 +117,12 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://github.com/PlexPt/awesome-chatgpt-prompts-zh
 * https://github.com/chatchat-space/Langchain-Chatchat
 
+## 模型量化
+
+## 模型微调
+
+## 模型精调
+
 ## 学习资料
 
 * https://zh-v2.d2l.ai/
@@ -132,7 +138,6 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://dataxujing.github.io/ASR-paper/#/
 * https://dataxujing.github.io/NLP-paper/#/
 * https://dataxujing.github.io/TTS-paper/#/
-* https://dataxujing.github.io/VOT_paper/#/
 * https://dataxujing.github.io/CNN-paper2/#/
 * https://dataxujing.github.io/AIGC-paper/#/
 * https://github.com/Mikoto10032/DeepLearning

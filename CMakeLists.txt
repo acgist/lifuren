@@ -8,6 +8,9 @@ if(NOT CMAKE_BUILD_TYPE)
     # SET(CMAKE_BUILD_TYPE Release)
 endif()
 
+add_definitions(-D__FLTK__=true)
+add_definitions(-D__REST__=true)
+
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-D__DEBUG__=DEBUG)
 endif()
@@ -75,17 +78,23 @@ if(CMAKE_HOST_WIN32)
         ${CMAKE_PREFIX_PATH}
         deps/fltk
         deps/opencv
+        deps/yaml-cpp
+        deps/cpp-httplib
     )
 
     include_directories(
         deps/fltk/include
         deps/opencv/include
+        deps/yaml-cpp/include
+        deps/cpp-httplib/include
     )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
 
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
+        file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
+        file(GLOB HTTP_DLLS   "deps/cpp-httplib/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
@@ -93,7 +102,9 @@ if(CMAKE_HOST_WIN32)
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
-        file(GLOB FLTK_DLLS   "deps/fltk/release/bin/*.dll")
+        file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
+        file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
+        file(GLOB HTTP_DLLS   "deps/cpp-httplib/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
@@ -102,13 +113,15 @@ if(CMAKE_HOST_WIN32)
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
-    find_package(libpng REQUIRED)
+    find_package(libpng        REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
-find_package(FLTK   REQUIRED)
-find_package(Torch  REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(FLTK     REQUIRED)
+find_package(Torch    REQUIRED)
+find_package(OpenCV   REQUIRED)
+find_package(httplib  REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(core)

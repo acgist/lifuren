@@ -40,12 +40,16 @@ if(CMAKE_HOST_WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
 
     install(FILES ${FLTK_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${YAML_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${HTTP_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     install(FILES ${TORCH_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     install(FILES ${OPENCV_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HTTP_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
@@ -108,6 +112,14 @@ add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
     testLibTorchTensor PUBLIC
     lifurencore
+)
+
+add_executable(testLibTorchGenderHandler src/TestLibTorchGenderHandler.cpp src/source/libtorch/GenderHandler.cpp)
+add_test(NAME testLibTorchGenderHandler COMMAND testLibTorchGenderHandler)
+target_link_libraries(
+    testLibTorchGenderHandler PUBLIC
+    lifurencore
+    ${OpenCV_LIBS}
 )
 
 add_executable(testOpenCV src/TestOpenCV.cpp src/source/opencv/OpenCV.cpp)

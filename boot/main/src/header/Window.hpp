@@ -86,6 +86,8 @@
 
 namespace lifuren {
 
+extern void initWindow();
+
 /**
  * 抽象窗口
  */

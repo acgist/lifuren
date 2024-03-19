@@ -9,6 +9,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     spdlog::spdlog
+    yaml-cpp::yaml-cpp
     nlohmann_json::nlohmann_json
     ${TORCH_LIBRARIES}
 )
@@ -31,24 +32,25 @@ set(
     ${HEADER_DIR}/utils/Jsons.hpp
     ${HEADER_DIR}/utils/Utils.hpp
     ${HEADER_DIR}/utils/Strings.hpp
+    ${HEADER_DIR}/utils/Datasets.hpp
     ${HEADER_DIR}/utils/Collections.hpp
     # 配置
     ${HEADER_DIR}/config/Mark.hpp
     ${HEADER_DIR}/config/Label.hpp
     ${HEADER_DIR}/config/Setting.hpp
     # 模型
-    ${HEADER_DIR}/audio/Audio.hpp
-    ${HEADER_DIR}/audio/AudioGC.hpp
-    ${HEADER_DIR}/audio/AudioTS.hpp
-    ${HEADER_DIR}/image/Image.hpp
-    ${HEADER_DIR}/image/ImageGC.hpp
-    ${HEADER_DIR}/image/ImageTS.hpp
-    ${HEADER_DIR}/video/Video.hpp
-    ${HEADER_DIR}/video/VideoGC.hpp
-    ${HEADER_DIR}/video/VideoTS.hpp
-    ${HEADER_DIR}/poetry/Poetry.hpp
-    ${HEADER_DIR}/poetry/PoetryGC.hpp
-    ${HEADER_DIR}/poetry/PoetryTS.hpp
+    ${HEADER_DIR}/model/Audio.hpp
+    ${HEADER_DIR}/model/AudioGC.hpp
+    ${HEADER_DIR}/model/AudioTS.hpp
+    ${HEADER_DIR}/model/Image.hpp
+    ${HEADER_DIR}/model/ImageGC.hpp
+    ${HEADER_DIR}/model/ImageTS.hpp
+    ${HEADER_DIR}/model/Video.hpp
+    ${HEADER_DIR}/model/VideoGC.hpp
+    ${HEADER_DIR}/model/VideoTS.hpp
+    ${HEADER_DIR}/model/Poetry.hpp
+    ${HEADER_DIR}/model/PoetryGC.hpp
+    ${HEADER_DIR}/model/PoetryTS.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})

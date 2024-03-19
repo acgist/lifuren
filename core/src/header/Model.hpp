@@ -11,6 +11,14 @@
 
 namespace lifuren {
 
+namespace model   {
+
+extern void loadChatGLM();
+
+extern void loadStableDiffusion();
+
+}
+
 /**
  * 李夫人模型
  * 
@@ -39,26 +47,20 @@ public:
     LFRModel(const lifuren::Setting& setting, const M& modelSetting);
 
 public:
-    /**
-     * 保存模型
-     */
+    // 保存模型
     virtual void save();
-    /**
-     * 加载模型
-     */
+    // 加载模型
     virtual void load();
-    /**
-     * 训练模型
-     */
+    // 训练模型
     virtual void train() = 0;
-    /**
-     * 测试模型
-     */
-    virtual void test() = 0;
-    /**
-     * 模型预测
-     */
-    virtual void pred() = 0;
+    // 验证模型
+    virtual void val()   = 0;
+    // 测试模型
+    virtual void test()  = 0;
+    // 模型预测
+    virtual void pred()  = 0;
+    // 训练验证
+    virtual void trainAndVal();
 
 };
 

@@ -26,8 +26,11 @@ cmake --build . --config Debug
 ## Linux依赖下载
 
 ```
+sudo apt install libtorch-dev
 sudo apt install libopencv-dev
 sudo apt install libfltk1.3-dev
+sudo apt install libyaml-cpp-dev
+sudo apt install libcpp-httplib-dev
 ```
 
 ## Windows依赖下载
@@ -41,12 +44,16 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 vcpkg install fltk
 vcpkg install opencv
 vcpkg install libtorch
+vcpkg install yaml-cpp
+vcpkg install cpp-httplib
 
 # 导出依赖
 
-vcpkg export fltk     --zip
-vcpkg export opencv   --zip
-vcpkg export libtorch --zip
+vcpkg export fltk        --zip
+vcpkg export opencv      --zip
+vcpkg export libtorch    --zip
+vcpkg export yaml-cpp    --zip
+vcpkg export cpp-httplib --zip
 ```
 
 > `Windows`开发时`OpenCV`和`LibTorch`直接官网下载

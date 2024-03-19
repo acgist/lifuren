@@ -36,6 +36,14 @@ jobs:
           ################################
           sudo apt install libopencv-dev
           ################################
+          # yaml-cpp
+          ################################
+          sudo apt install libyaml-cpp-dev
+          ################################
+          # cpp-httplib
+          ################################
+          sudo apt install libcpp-httplib-dev
+          ################################
           # libtorch
           ################################
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip
