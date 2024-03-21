@@ -1,21 +1,21 @@
 #include "../header/Model.hpp"
 
 template<typename M>
-lifuren::LFRModel<M>::LFRModel() {
+lifuren::Model<M>::Model() {
 }
 
 template<typename M>
-lifuren::LFRModel<M>::~LFRModel() {
+lifuren::Model<M>::~Model() {
 }
 
 template<typename M>
-lifuren::LFRModel<M>::LFRModel(const lifuren::Setting& setting, const M& modelSetting) : setting(setting), modelSetting(modelSetting) {
+lifuren::Model<M>::Model(const lifuren::Config& config, const M& modelConfig) : config(config), modelConfig(modelConfig) {
 }
 
 template<typename M>
-void lifuren::LFRModel<M>::save() {
+void lifuren::Model<M>::save() {
 }
 
 template<typename M>
-void lifuren::LFRModel<M>::load() {
+void lifuren::Model<M>::load() {
 }

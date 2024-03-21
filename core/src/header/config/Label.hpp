@@ -10,21 +10,19 @@
 #include <string>
 #include <vector>
 
-#include "nlohmann/json.hpp"
-
 #include "../Logger.hpp"
-#include "../utils/Files.hpp"
+#include "../utils/Yamls.hpp"
 
 namespace lifuren {
 
 // 音频标签路径
-const char* const LABEL_AUDIO_PATH  = "../config/audio.json";
+const char* const LABEL_AUDIO_PATH  = "../config/audio.yml";
 // 图片标签路径
-const char* const LABEL_IMAGE_PATH  = "../config/image.json";
+const char* const LABEL_IMAGE_PATH  = "../config/image.yml";
 // 视频标签路径
-const char* const LABEL_VIDEO_PATH  = "../config/video.json";
+const char* const LABEL_VIDEO_PATH  = "../config/video.yml";
 // 诗词标签路径
-const char* const LABEL_POETRY_PATH = "../config/poetry.json";
+const char* const LABEL_POETRY_PATH = "../config/poetry.yml";
 
 class LabelFile;
 class LabelText;
@@ -44,17 +42,12 @@ public:
     std::string name;
     // 标签别名
     std::string alias;
-    // JSON序列化
-    // NLOHMANN_DEFINE_TYPE_INTRUSIVE(Label, name, alias);
-    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Label, name, alias);
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Label, name, alias);
-    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Label, name, alias);
 
 public:
     /**
-     * @return JSON
+     * @return YAML
      */
-    virtual std::string toJSON();
+    virtual YAML::Node toYaml() = 0;
 
 };
 
@@ -66,18 +59,21 @@ class LabelFile : public Label {
 public:
     // 标签数组
     std::vector<std::string> labels;
-    // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelFile, name, alias, labels);
 
 public:
+    LabelFile();
     /**
-     * @return JSON
+     * @param name 名称
+     * @param yaml YAML
      */
-    virtual std::string toJSON() override;
+    LabelFile(const std::string& name, const YAML::Node& yaml);
+
+public:
+    virtual YAML::Node toYaml() override;
     /**
      * @param path 文件路径
      * 
-     * @return 文件内容
+     * @return 映射
      */
     static std::map<std::string, std::vector<LabelFile>> loadFile(const std::string& path);
 
@@ -101,18 +97,21 @@ public:
     std::vector<uint32_t> segmentRule;
     // 分词规则
     std::vector<uint32_t> participleRule;
-    // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(LabelText, name, alias, example, fontSize, segmentSize, segmentRule, participleRule);
 
 public:
+    LabelText();
     /**
-     * @return JSON
+     * @param name 名称
+     * @param yaml YAML
      */
-    virtual std::string toJSON() override;
+    LabelText(const std::string& name, const YAML::Node& yaml);
+
+public:
+    virtual YAML::Node toYaml() override;
     /**
      * @param path 文件路径
      * 
-     * @return 文件内容
+     * @return 映射
      */
     static std::map<std::string, LabelText> loadFile(const std::string& path);
 

@@ -14,6 +14,7 @@
 #include "spdlog/fmt/ranges.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "opencv2/core/utils/logger.hpp"
 
 #ifndef LFR_LOG_FORMAT
 #define LFR_LOG_FORMAT(type)                      \

@@ -8,9 +8,6 @@ if(NOT CMAKE_BUILD_TYPE)
     # SET(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_definitions(-D__FLTK__=true)
-add_definitions(-D__REST__=true)
-
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-D__DEBUG__=DEBUG)
 endif()

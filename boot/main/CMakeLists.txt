@@ -6,6 +6,9 @@ file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
 
 add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
+add_definitions(-D__FLTK__=true)
+add_definitions(-D__REST__=true)
+
 if(CMAKE_HOST_WIN32)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
@@ -34,7 +37,7 @@ target_include_directories(
 set(
     HEADER_FILES
     ${HEADER_DIR}/REST.hpp
-    ${HEADER_DIR}/Window.hpp
+    ${HEADER_DIR}/FLTK.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})

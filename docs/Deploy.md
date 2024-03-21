@@ -61,6 +61,10 @@ vcpkg export cpp-httplib --zip
 * https://opencv.org/releases/
 * https://pytorch.org/get-started/locally/
 
+### 注意事项
+
+* `windows`需要删除`fltk/unofficial-brotli`模块
+
 ## 开发环境
 
 * https://code.visualstudio.com/

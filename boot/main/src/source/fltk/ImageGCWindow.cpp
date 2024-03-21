@@ -1,4 +1,4 @@
-#include "../../header/Window.hpp"
+#include "../../header/FLTK.hpp"
 
 #include "utils/Jsons.hpp"
 
@@ -35,12 +35,12 @@ static void generate(Fl_Widget*, void*);
 static void previewImage();
 
 lifuren::ImageGCWindow::ImageGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
-    this->loadSetting("ImageGC");
+    this->loadConfig("ImageGC");
 }
 
 lifuren::ImageGCWindow::~ImageGCWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::jsons::saveFile(SETTINGS_PATH, lifuren::SETTINGS);
+    lifuren::config::saveFile(CONFIGS_PATH);
     // 清理数据
     oldPath = "";
     imageVector.clear();
@@ -50,9 +50,9 @@ lifuren::ImageGCWindow::~ImageGCWindow() {
 
 void lifuren::ImageGCWindow::drawElement() {
     this->modelPathPtr = new Fl_Input_Directory_Chooser(100, 10, this->w() - 200, 30, "模型目录");
-    this->modelPathPtr->value(this->settingPtr->modelPath.c_str());
+    this->modelPathPtr->value(this->configPtr->modelPath.c_str());
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
-    this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
+    this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, ImageGCWindow);
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, ImageGCWindow, loadImageVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上张图片");
@@ -76,7 +76,7 @@ void lifuren::ImageGCWindow::drawElement() {
     LFR_CHOICE_BUTTON(520, 130, biziPtr,    "头部", "鼻子", "默认");
     LFR_CHOICE_BUTTON(640, 130, yachiPtr,   "头部", "牙齿", "默认");
     // 加载资源
-    loadImageVector(this->settingPtr->datasetPath);
+    loadImageVector(this->configPtr->datasetPath);
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {

@@ -1,8 +1,8 @@
-#include "../../header/Window.hpp"
+#include "../../header/FLTK.hpp"
 
 #include "FL/filename.H"
 
-lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
+lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::AboutWindow::~AboutWindow() {

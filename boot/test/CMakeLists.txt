@@ -9,7 +9,7 @@ add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
+    httplib::httplib
     ${FLTK_LIBRARIES}
 )
 
@@ -56,13 +56,6 @@ if(CMAKE_HOST_WIN32)
 endif()
 
 # 测试
-
-add_executable(testCore src/TestCore.cpp src/source/Core.cpp)
-add_test(NAME testCore COMMAND testCore)
-target_link_libraries(
-    testCore PUBLIC
-    lifurencore
-)
 
 add_executable(testCoreDates src/TestCoreDates.cpp)
 add_test(NAME testCoreDates COMMAND testCoreDates)
@@ -119,7 +112,6 @@ add_test(NAME testLibTorchGenderHandler COMMAND testLibTorchGenderHandler)
 target_link_libraries(
     testLibTorchGenderHandler PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
 )
 
 add_executable(testOpenCV src/TestOpenCV.cpp src/source/opencv/OpenCV.cpp)
@@ -127,7 +119,6 @@ add_test(NAME testOpenCV COMMAND testOpenCV)
 target_link_libraries(
     testOpenCV PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
 )
 
 add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Face.cpp)
@@ -135,7 +126,6 @@ add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
 target_link_libraries(
     testOpenCVFace PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
 )
 
 add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Color.cpp)
@@ -143,7 +133,6 @@ add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
 target_link_libraries(
     testOpenCVColor PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
 )
 
 add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Resize.cpp)
@@ -151,5 +140,4 @@ add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
 target_link_libraries(
     testOpenCVResize PUBLIC
     lifurencore
-    ${OpenCV_LIBS}
 )

@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 
+#include "../utils/Jsons.hpp"
 #include "../config/Label.hpp"
 
 namespace lifuren {
@@ -58,7 +59,7 @@ public:
     // 规则：不要释放资源（全局资源）
     LabelText* label = nullptr;
     // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, rhythmic, author, paragraphs);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, rhythmic, author, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
 
 public:
     /**

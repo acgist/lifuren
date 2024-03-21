@@ -1,36 +1,60 @@
 #include "../../header/config/Label.hpp"
 
-std::string lifuren::LabelText::toJSON() {
-    const nlohmann::json json = *this;
-    return json.dump();
+lifuren::LabelText::LabelText() {
 }
 
-std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadFile(const std::string& path) {
-    std::map<std::string, std::vector<LabelFile>> map;
-    const std::string text = lifuren::files::loadFile(path);
-    if(text.empty()) {
+lifuren::LabelText::LabelText(const std::string& name, const YAML::Node& yaml) {
+    this->name  = name;
+    this->alias = name;
+    if(yaml["rhythmic"]) {
+        this->rhythmic = yaml["rhythmic"].as<std::string>();
+    }
+    if(yaml["example"]) {
+        this->example = yaml["example"].as<std::string>();
+    }
+    if(yaml["fontSize"]) {
+        this->fontSize = yaml["fontSize"].as<int>();
+    }
+    if(yaml["segmentSize"]) {
+        this->segmentSize = yaml["segmentSize"].as<int>();
+    }
+    if(yaml["segmentRule"]) {
+        this->segmentRule = yaml["segmentRule"].as<std::vector<uint32_t>>();
+    }
+    if(yaml["participleRule"]) {
+        this->participleRule = yaml["participleRule"].as<std::vector<uint32_t>>();
+    }
+}
+
+YAML::Node lifuren::LabelText::toYaml() {
+    YAML::Node yaml;
+    yaml["rhythmic"]       = this->rhythmic;
+    yaml["example"]        = this->example;
+    yaml["fontSize"]       = this->fontSize;
+    yaml["segmentSize"]    = this->segmentSize;
+    yaml["segmentRule"]    = this->segmentRule;
+    yaml["participleRule"] = this->participleRule;
+    return yaml;
+}
+
+std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std::string& path) {
+    SPDLOG_DEBUG("加载标签文件：{}", path);
+    std::map<std::string, LabelText> map;
+    YAML::Node yaml = lifuren::yamls::loadFile(path);
+    if(yaml.size() == 0L) {
         return map;
     }
-    SPDLOG_DEBUG("加载标签文件：{}", path);
-    const nlohmann::json json = nlohmann::json::parse(text);
-    for(const auto& iterator : json.items()) {
-        std::string key      = iterator.key();
-        nlohmann::json value = iterator.value();
-        std::vector<LabelFile> vector;
-        for(const auto& child : value.items()) {
-            LabelFile label;
-            label.name  = child.key();
-            label.alias = child.key();
-            auto value  = child.value();
-            if(value.type() != nlohmann::json::value_t::array) {
-                SPDLOG_WARN("不支持的标签类型：{} - {}", child.key(), value.type_name());
-            } else {
-                label.labels = child.value();
-            }
-            vector.push_back(label);
-        }
-        map.insert(std::pair(key, vector));
+    for(
+        auto iterator = yaml.begin();
+        iterator != yaml.end();
+        ++iterator
+    ) {
+        std::string key = iterator->first.as<std::string>();
+        LabelText label(
+            key,
+            iterator->second
+        );
+        map.insert(std::pair(key, label));
     }
     return map;
 }
-

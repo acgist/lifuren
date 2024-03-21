@@ -23,12 +23,11 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
 
 template <typename Predicate>
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const Predicate& predicate) {
-    namespace fs = std::filesystem;
-    if(!fs::exists(path) || !fs::is_directory(path)) {
+    if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
         return;
     }
-    auto iterator = fs::directory_iterator(fs::u8path(path));
+    auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
     for(const auto& entry : iterator) {
         std::string filepath = entry.path().u8string();
         if(entry.is_regular_file()) {
@@ -52,12 +51,12 @@ std::string lifuren::files::loadFile(const std::string& path) {
         return "";
     }
     std::string line;
-    std::string settings;
+    std::string lines;
     while(std::getline(input, line)) {
-        settings += line;
+        lines += line;
     }
     input.close();
-    return settings;
+    return lines;
 }
 
 void lifuren::files::saveFile(const std::string& path, const std::string& value) {

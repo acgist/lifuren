@@ -3,7 +3,7 @@
 lifuren::PoetryGCModel::~PoetryGCModel() {
 }
 
-lifuren::PoetryGCModel::PoetryGCModel(const lifuren::Setting& setting, const lifuren::PoetryGCModelSetting& modelSetting) : LFRModel(setting, modelSetting) {
+lifuren::PoetryGCModel::PoetryGCModel(const lifuren::Config& config, const lifuren::PoetryGCModelConfig& modelConfig) : Model(config, modelConfig) {
 }
 
 void lifuren::PoetryGCModel::train() {

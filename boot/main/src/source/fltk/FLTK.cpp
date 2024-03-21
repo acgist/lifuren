@@ -1,19 +1,32 @@
+#include "Ptr.hpp"
+#if __REST__
 #include "../../header/REST.hpp"
-#include "../../header/Window.hpp"
+#endif
+#include "../../header/FLTK.hpp"
 
-void lifuren::initWindow() {
+static bool closex = false;
+
+void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
     lifuren::MainWindow* mainPtr = new lifuren::MainWindow(1200, 800, "李夫人");
     mainPtr->init();
     mainPtr->show();
     const int code = Fl::run();
-    // 释放窗口
-    if(mainPtr != nullptr) {
-        delete mainPtr;
-        mainPtr = nullptr;
-    }
+    LFR_DELETE_PTR(mainPtr);
     SPDLOG_INFO("结束FLTK服务：{}", code);
+    #if __REST__
     lifuren::shutdownHttpServer();
+    #endif
+}
+
+void lifuren::shutdownFltkWindow() {
+    if(closex) {
+        return;
+    }
+    closex = true;
+    while (Fl::first_window()) {
+        Fl::first_window()->hide();
+    }
 }
 
 std::string lifuren::fileChooser(const char* title, const char* directory, const char* filter) {
@@ -82,7 +95,57 @@ int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
     return Fl_Input::handle(event);
 }
 
-lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
+/**
+ * @param source 原始值
+ * @param target 比较值
+ * 
+ * @return 绝对值
+ */
+static int abs(int source, int target);
+
+lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {
+}
+
+lifuren::Window::~Window() {
+    if(this->iconImagePtr != nullptr) {
+        delete this->iconImagePtr;
+        this->iconImagePtr = nullptr;
+    }
+}
+
+void lifuren::Window::init() {
+    this->begin();
+    this->icon();
+    this->center();
+    this->drawElement();
+    this->end();
+}
+
+void lifuren::Window::icon() {
+    const char* iconPath = "../images/logo.png";
+    SPDLOG_DEBUG("加载图标：{}", iconPath);
+    Fl_PNG_Image iconImage(iconPath);
+    this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
+    Fl_Window::default_icon(this->iconImagePtr);
+}
+
+void lifuren::Window::center() {
+    const int fullWidth  = Fl::w();
+    const int fullHeight = Fl::h();
+    const int width  = this->w();
+    const int height = this->h();
+    this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
+}
+
+static int abs(int source, int target) {
+    if(source > target) {
+        return source - target;
+    } else {
+        return target - source;
+    }
+}
+
+lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::ModelWindow::~ModelWindow() {
@@ -91,14 +154,14 @@ lifuren::ModelWindow::~ModelWindow() {
     LFR_DELETE_THIS_PTR(datasetPathPtr);
 }
 
-void lifuren::ModelWindow::loadSetting(const std::string& modelType) {
-    auto iterator = SETTINGS.find(modelType);
-    if(iterator == SETTINGS.end()) {
-        this->settingPtr = new Setting();
+void lifuren::ModelWindow::loadConfig(const std::string& modelType) {
+    auto iterator = CONFIGS.find(modelType);
+    if(iterator == CONFIGS.end()) {
+        this->configPtr = new Config();
         // TODO：BUG拷贝
-        SETTINGS.insert(std::make_pair(modelType, *this->settingPtr));
+        CONFIGS.insert(std::make_pair(modelType, *this->configPtr));
     } else {
-        this->settingPtr = &iterator->second;
+        this->configPtr = &iterator->second;
     }
 }
 

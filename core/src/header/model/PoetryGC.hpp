@@ -16,20 +16,20 @@ namespace lifuren {
 /**
  * 诗词生成模型设置
  */
-class PoetryGCModelSetting : public lifuren::ModelSetting {
+class PoetryGCModelConfig : public lifuren::ModelConfig {
 };
 
 /**
  * 诗词生成模型
  */
-class PoetryGCModel : public LFRModel<PoetryGCModelSetting> {
+class PoetryGCModel : public Model<PoetryGCModelConfig> {
 
 public:
     /**
-     * @param setting        基本配置
-     * @param modelSetting 模型配置
+     * @param config      基本配置
+     * @param modelConfig 模型配置
      */
-    PoetryGCModel(const lifuren::Setting& setting, const lifuren::PoetryGCModelSetting& modelSetting);
+    PoetryGCModel(const lifuren::Config& config, const lifuren::PoetryGCModelConfig& modelConfig);
     virtual ~PoetryGCModel();
 
 public:

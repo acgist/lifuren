@@ -1,7 +1,6 @@
-#include "../../header/Window.hpp"
+#include "../../header/FLTK.hpp"
 
-#include "utils/Jsons.hpp"
-#include "config/Label.hpp"
+#include "Lifuren.hpp"
 
 // 删除资源指针
 #ifndef LFR_DELETE_MODEL_PTR
@@ -53,16 +52,12 @@
     }
 #endif
 
-// 重新加载配置
-static void reload(Fl_Widget*, void*);
 // 禁用按钮提示
 static void disable(Fl_Widget*, void*);
 
-lifuren::MainWindow::MainWindow(int width, int height, const char* title) : LFRWindow(width, height, title) {
+lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Window(width, height, title) {
     // 注册图片
     fl_register_images();
-    // 加载配置
-    reload(nullptr, nullptr);
 }
 
 lifuren::MainWindow::~MainWindow() {
@@ -104,7 +99,9 @@ void lifuren::MainWindow::drawElement() {
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(videoTsPtr, videoTs);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryGcPtr, poetryGc);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr, about);
-    this->reloadButtonPtr->callback(reload, this);
+    this->reloadButtonPtr->callback([](Fl_Widget*, void*) {
+        lifuren::loadConfig();
+    }, this);
 }
 
 LFR_BUTTON_CALLBACK_FUNCTION(audioTs, AudioTSWindow, audioTsWindowPtr, 1200, 800);
@@ -117,28 +114,4 @@ LFR_BUTTON_CALLBACK_FUNCTION(about, AboutWindow, aboutWindowPtr, 512, 256);
 
 static void disable(Fl_Widget* widgetPtr, void* voidPtr) {
     fl_message("功能没有实现");
-}
-
-static void reload(Fl_Widget* widgetPtr, void* voidPtr) {
-    SPDLOG_DEBUG("重新加载配置");
-    // 配置
-    auto settings = lifuren::jsons::loadFile<std::map<std::string, lifuren::Setting>>(lifuren::SETTINGS_PATH);
-    lifuren::SETTINGS.clear();
-    lifuren::SETTINGS.insert(settings.begin(), settings.end());
-    // 音频
-    auto audio = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
-    lifuren::LABEL_AUDIO.clear();
-    lifuren::LABEL_AUDIO.insert(audio.begin(), audio.end());
-    // 图片
-    auto image = lifuren::LabelFile::loadFile(lifuren::LABEL_IMAGE_PATH);
-    lifuren::LABEL_IMAGE.clear();
-    lifuren::LABEL_IMAGE.insert(image.begin(), image.end());
-    // 视频
-    auto video = lifuren::LabelFile::loadFile(lifuren::LABEL_VIDEO_PATH);
-    lifuren::LABEL_VIDEO.clear();
-    lifuren::LABEL_VIDEO.insert(video.begin(), video.end());
-    // 诗词
-    auto poetry = lifuren::LabelText::loadFile(lifuren::LABEL_POETRY_PATH);
-    lifuren::LABEL_POETRY.clear();
-    lifuren::LABEL_POETRY.insert(poetry.begin(), poetry.end());
 }

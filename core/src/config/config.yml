@@ -1,0 +1,22 @@
+httpServerHost: 0.0.0.0
+httpServerPort: 8080
+ImageGC:
+  # 训练模型路径
+  modelPath  : ""
+  # 训练文件路径
+  datasetPath: ""
+  # 激活函数
+  activation  : 0
+  # 学习速率
+  learningRate: 0.0
+  # 正则函数
+  regularization    : 0
+  # 正则速率
+  regularizationRate: 0.0
+PoetryGC:
+  modelPath  : ""
+  datasetPath: ""
+  activation  : 0
+  learningRate: 0.0
+  regularization    : 0
+  regularizationRate: 0.0

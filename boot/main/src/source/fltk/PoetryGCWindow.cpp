@@ -1,4 +1,4 @@
-#include "../../header/Window.hpp"
+#include "../../header/FLTK.hpp"
 
 #include "utils/Jsons.hpp"
 #include "model/Poetry.hpp"
@@ -46,12 +46,12 @@ static void prevPoetry(Fl_Widget*, void*);
 static void nextPoetry(Fl_Widget*, void*);
 
 lifuren::PoetryGCWindow::PoetryGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
-    this->loadSetting("PoetryGC");
+    this->loadConfig("PoetryGC");
 }
 
 lifuren::PoetryGCWindow::~PoetryGCWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::jsons::saveFile(SETTINGS_PATH, lifuren::SETTINGS);
+    lifuren::config::saveFile(CONFIGS_PATH);
     LFR_DELETE_THIS_PTR(autoMarkPtr);
     // 静态资源
     LFR_DELETE_PTR(sourceDisplayPtr);
@@ -68,9 +68,9 @@ lifuren::PoetryGCWindow::~PoetryGCWindow() {
 
 void lifuren::PoetryGCWindow::drawElement() {
     this->modelPathPtr = new Fl_Input_Directory_Chooser(100, 10, this->w() - 200, 30, "模型目录");
-    this->modelPathPtr->value(this->settingPtr->modelPath.c_str());
+    this->modelPathPtr->value(this->configPtr->modelPath.c_str());
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
-    this->datasetPathPtr->value(this->settingPtr->datasetPath.c_str());
+    this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, PoetryGCWindow);
     LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, PoetryGCWindow, loadFileVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上首诗词");
@@ -101,7 +101,7 @@ void lifuren::PoetryGCWindow::drawElement() {
     this->prevPtr->callback(prevPoetry, this);
     this->nextPtr->callback(nextPoetry, this);
     // 加载资源
-    loadFileVector(this->settingPtr->datasetPath);
+    loadFileVector(this->configPtr->datasetPath);
 }
 
 static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
@@ -151,12 +151,20 @@ static void loadFileVector(const std::string& path) {
 }
 
 static void loadPoetryJson() {
+    if(fileIterator == fileVector.end()) {
+        SPDLOG_WARN("没有可用诗词目录");
+        return;
+    }
     std::string json = lifuren::files::loadFile(*fileIterator);
     poetryJson = nlohmann::json::parse(json);
     poetryIterator = poetryJson.begin();
 }
 
 static void matchPoetryRhythmic() {
+    if(fileIterator == fileVector.end()) {
+        SPDLOG_WARN("没有可用诗词目录");
+        return;
+    }
     if(poetryIterator == poetryJson.end()) {
         SPDLOG_WARN("没有可用诗词");
         return;

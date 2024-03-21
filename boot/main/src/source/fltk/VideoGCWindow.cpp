@@ -1,4 +1,4 @@
-#include "../../header/Window.hpp"
+#include "../../header/FLTK.hpp"
 
 lifuren::VideoGCWindow::VideoGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
 }

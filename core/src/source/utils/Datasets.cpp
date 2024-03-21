@@ -3,14 +3,13 @@
 lifuren::datasets::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,
-    const lifuren::datasets::FileTransform& fileTransform
+    const std::function<torch::Tensor(const std::string&)> fileTransform
 ) : fileTransform(fileTransform) {
-    namespace fs = std::filesystem;
-    if(!fs::exists(path) || !fs::is_regular_file(path)) {
+    if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
         SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
         return;
     }
-    auto iterator = fs::directory_iterator(fs::u8path(path));
+    auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
     for(const auto& entry : iterator) {
         std::string filepath = entry.path().u8string();
         if(entry.is_directory()) {
@@ -36,7 +35,7 @@ torch::optional<size_t> lifuren::datasets::FileDataset::size() const {
 
 torch::data::Example<> lifuren::datasets::FileDataset::get(size_t index) {
     const std::string& pathRef = this->paths.at(index);
-    torch::Tensor data_tensor  = this->fileTransform.transform(pathRef);
+    torch::Tensor data_tensor  = this->fileTransform(pathRef);
     const int label = this->labels.at(index);
     torch::Tensor label_tensor = torch::full({1}, label);
     return { 

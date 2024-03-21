@@ -1,26 +1,48 @@
 #include "../../header/config/Label.hpp"
 
-std::string lifuren::LabelFile::toJSON() {
-    const nlohmann::json json = *this;
-    return json.dump();
+lifuren::LabelFile::LabelFile() {
 }
 
-std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std::string& path) {
-    std::map<std::string, LabelText> map;
-    const std::string text = lifuren::files::loadFile(path);
-    if(text.empty()) {
+lifuren::LabelFile::LabelFile(const std::string& name, const YAML::Node& yaml) {
+    this->name  = name;
+    this->alias = name;
+    this->labels = yaml.as<std::vector<std::string>>();
+}
+
+YAML::Node lifuren::LabelFile::toYaml() {
+    YAML::Node yaml;
+    yaml.push_back(this->labels);
+    return yaml;
+}
+
+std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadFile(const std::string& path) {
+    SPDLOG_DEBUG("加载标签文件：{}", path);
+    std::map<std::string, std::vector<LabelFile>> map;
+    YAML::Node yaml = lifuren::yamls::loadFile(path);
+    if(yaml.size() == 0L) {
         return map;
     }
-    SPDLOG_DEBUG("加载标签文件：{}", path);
-    const nlohmann::json json = nlohmann::json::parse(text);
-    for(const auto& iterator : json.items()) {
-        std::string key = iterator.key();
-        LabelText label = iterator.value();
-        if(label.name.empty()) {
-            label.name  = key;
-            label.alias = key;
+    for(
+        auto iterator = yaml.begin();
+        iterator != yaml.end();
+        ++iterator
+    ) {
+        std::string key = iterator->first.as<std::string>();
+        auto value      = iterator->second;
+        std::vector<LabelFile> vector;
+        for(
+            auto labelIterator = value.begin();
+            labelIterator != value.end();
+            ++labelIterator
+        ) {
+            LabelFile label(
+                labelIterator->first.as<std::string>(),
+                labelIterator->second
+            );
+            vector.push_back(label);
         }
-        map.insert(std::pair(key, label));
+        // TODO：move
+        map.insert(std::pair(key, vector));
     }
     return map;
 }

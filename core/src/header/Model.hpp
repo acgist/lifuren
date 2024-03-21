@@ -7,7 +7,7 @@
 
 #include "torch/torch.h"
 
-#include "./config/Setting.hpp"
+#include "./config/Config.hpp"
 
 namespace lifuren {
 
@@ -27,24 +27,24 @@ extern void loadStableDiffusion();
  * @author acgist
  */
 template <typename M>
-class LFRModel {
+class Model {
 
-static_assert(std::is_base_of_v<lifuren::ModelSetting, M>, "必须继承模型配置");
+static_assert(std::is_base_of_v<lifuren::ModelConfig, M>, "必须继承模型配置");
 
 public:
     // 基本配置
-    lifuren::Setting setting;
+    lifuren::Config config;
     // 模型配置
-    M modelSetting;
+    M modelConfig;
 
 public:
-    LFRModel();
-    virtual ~LFRModel();
+    Model();
+    virtual ~Model();
     /**
-     * @param setting      基本配置
-     * @param modelSetting 模型配置
+     * @param config      基本配置
+     * @param modelConfig 模型配置
      */
-    LFRModel(const lifuren::Setting& setting, const M& modelSetting);
+    Model(const lifuren::Config& config, const M& modelConfig);
 
 public:
     // 保存模型

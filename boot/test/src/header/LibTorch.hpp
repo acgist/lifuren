@@ -8,8 +8,11 @@
 #include <string>
 
 #include "torch/torch.h"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 
 #include "Logger.hpp"
+#include "utils/Datasets.hpp"
 
 LFR_LOG_FORMAT(at::Tensor);
 
@@ -117,19 +120,27 @@ public:
 public:
     // 加载模型
     void load(int num_classes, const std::string& modelPath);
-    // 训练模型
+
+    // // 训练模型
     void trian(
+        int epoch,
+        int batch_size,
         torch::optim::Optimizer& optimizer,
-        std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset
+        lifuren::datasets::ImageDatasetType& dataset
     );
-    // 验证模型
+    // // 验证模型
     void val(
-        std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset
+        int epoch,
+        int batch_size,
+        lifuren::datasets::ImageDatasetType& dataset
     );
-    // 测试模型
-    void test(std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset);
+    // // 测试模型
+    // void test(
+    //     const std::string& data_dir,
+    //     const std::string& image_type
+    // );
     // 模型预测
-    void pred(cv::Mat& image);
+    int pred(cv::Mat& image);
     // 训练验证
     virtual void trainAndVal(
         int   num_epochs,

@@ -22,7 +22,10 @@ public:
     // 标签数组
     std::vector<std::string> labels;
     // JSON序列化
+    // NLOHMANN_DEFINE_TYPE_INTRUSIVE
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Mark, labels);
+    // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT
 
 public:
     Mark();

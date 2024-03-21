@@ -26,7 +26,7 @@
 #include "Logger.hpp"
 #include "utils/Files.hpp"
 #include "config/Label.hpp"
-#include "config/Setting.hpp"
+#include "config/Config.hpp"
 
 #ifndef LFR_MODEL_MODULE
 #define LFR_MODEL_MODULE(modelTypeLower, modelTypeUpper)             \
@@ -37,25 +37,25 @@
 #endif
 
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
-#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, settingName, windowName) \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {          \
-        const char* value = ((windowName*) voidPtr)->inputPtr->value();         \
-        if(value == nullptr || strlen(value) == 0) {                            \
-            return;                                                             \
-        }                                                                       \
-        ((windowName*) voidPtr)->settingPtr->settingName = value;               \
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configName, windowName) \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {         \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();        \
+        if(value == nullptr || strlen(value) == 0) {                           \
+            return;                                                            \
+        }                                                                      \
+        ((windowName*) voidPtr)->configPtr->configName = value;                \
     }, this);
 #endif
 
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL
-#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(inputPtr, settingName, windowName, callbackName) \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                             \
-        const char* value = ((windowName*) voidPtr)->inputPtr->value();                            \
-        if(value == nullptr || strlen(value) == 0) {                                               \
-            return;                                                                                \
-        }                                                                                          \
-        ((windowName*) voidPtr)->settingPtr->settingName = value;                                  \
-        callbackName(value);                                                                            \
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(inputPtr, configName, windowName, callbackName) \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                            \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();                           \
+        if(value == nullptr || strlen(value) == 0) {                                              \
+            return;                                                                               \
+        }                                                                                         \
+        ((windowName*) voidPtr)->configPtr->configName = value;                                   \
+        callbackName(value);                                                                      \
     }, this);
 #endif
 
@@ -86,12 +86,14 @@
 
 namespace lifuren {
 
-extern void initWindow();
+extern void initFltkWindow();
+
+extern void shutdownFltkWindow();
 
 /**
  * 抽象窗口
  */
-class LFRWindow : public Fl_Window {
+class Window : public Fl_Window {
 
 protected:
     /**
@@ -105,8 +107,8 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    LFRWindow(int width, int height, const char* title);
-    virtual ~LFRWindow();
+    Window(int width, int height, const char* title);
+    virtual ~Window();
 
 public:
     /**
@@ -143,7 +145,7 @@ class AboutWindow;
 /**
  * 主窗口
  */
-class MainWindow : public LFRWindow {
+class MainWindow : public Window {
 
 private:
     LFR_MODEL_MODULE(audio, Audio);
@@ -193,7 +195,7 @@ protected:
 /**
  * 关于窗口
  */
-class AboutWindow : public LFRWindow {
+class AboutWindow : public Window {
 
 private:
     // 官网
@@ -277,7 +279,7 @@ protected:
 /**
  * 模型窗口
  */
-class ModelWindow : public LFRWindow {
+class ModelWindow : public Window {
 
 public:
     /**
@@ -290,7 +292,7 @@ public:
 
 protected:
     // 配置：不用释放
-    Setting* settingPtr = nullptr;
+    Config* configPtr = nullptr;
     // 模型路径
     Fl_Input* modelPathPtr = nullptr;
     // 数据路径
@@ -300,7 +302,7 @@ protected:
     /**
      * @param modelType 模型类型
      */
-    void loadSetting(const std::string& modelType);
+    void loadConfig(const std::string& modelType);
 
 };
 

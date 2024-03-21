@@ -1,9 +1,7 @@
 #include "../../header/LibTorch.hpp"
 
-#include "FileDataset.hpp"
-
-static auto mapping = [](const std::string& pathRef) {
-    cv::Mat image = cv::imread(pathRef);
+static auto mapping = [](const std::string& path) -> torch::Tensor {
+    cv::Mat image = cv::imread(path);
     cv::resize(image, image, cv::Size(224, 224));
     torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
     return data_tensor;
@@ -42,31 +40,31 @@ void lifuren::GenderHandler::trainAndVal(
     std::filesystem::path data_path = data_dir;
     std::string path_train = (data_path / "train").u8string();
     std::string path_val   = (data_path / "val").u8string();
-    auto custom_dataset_val   = lifuren::FileDataset(path_train, { image_type }, mapping).map(torch::data::transforms::Stack<>());
-    auto custom_dataset_train = lifuren::FileDataset(path_train, { image_type }, mapping).map(torch::data::transforms::Stack<>());
-    auto data_loader_val   = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(custom_dataset_val), batch_size);
-    auto data_loader_train = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(custom_dataset_train), batch_size);
+    auto data_loader_val   = lifuren::datasets::loadImageDataset(batch_size, path_train, image_type);
+    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_val, image_type);
     // size_t valSize   = data_loader_val.size().value();
     // size_t trainSize = data_loader_train.size().value();
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
         if (epoch == int(num_epochs / 2)) {
             learning_rate /= 10;
         }
-        torch::optim::Adam optimizer(this-model->parameters(), learning_rate);
-        this->train(optimizer, data_loader_train);
-        this->val(data_loader_val);
+        torch::optim::Adam optimizer(this->model->parameters(), learning_rate);
+        this->trian(epoch, batch_size, optimizer, data_loader_train);
+        this->val(epoch, batch_size, data_loader_val);
     }
     torch::save(this->model, save_path);
 }
 
-void lifuren::GenderHandler::train(
+void lifuren::GenderHandler::trian(
+    int epoch,
+    int batch_size,
     torch::optim::Optimizer& optimizer,
-    std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset
+    lifuren::datasets::ImageDatasetType& dataset
 ) {
     float acc_train  = 0.0;
     float loss_train = 0.0;
     size_t batch_index_train = 0;
-    this->model.train();
+    this->model->train();
     for (auto& batch : *dataset) {
         auto data   = batch.data.to(torch::kF32).to(this->device).div(255.0);
         auto target = batch.target.squeeze().to(torch::kInt64).to(this->device);
@@ -85,7 +83,9 @@ void lifuren::GenderHandler::train(
 }
 
 void lifuren::GenderHandler::val(
-    std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset
+    int epoch,
+    int batch_size,
+    lifuren::datasets::ImageDatasetType& dataset
 ) {
     float acc_val  = 0.0;
     float loss_val = 0.0;
@@ -105,9 +105,13 @@ void lifuren::GenderHandler::val(
     std::cout << std::endl;
 }
 
-void lifuren::GenderHandler::test(std::unique_ptr<torch::data::StatefulDataLoader<Dataset>> dataset) {
-    // 没有测试
-}
+// template<typename T>
+// void lifuren::GenderHandler::test(
+//     const std::string& data_dir,
+//     const std::string& image_type
+// ) {
+//     // 没有测试
+// }
 
 int lifuren::GenderHandler::pred(cv::Mat& image) {
     cv::resize(image, image, cv::Size(448, 448));
