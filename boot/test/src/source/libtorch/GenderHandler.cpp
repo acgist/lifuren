@@ -24,7 +24,7 @@ lifuren::GenderImpl::GenderImpl(std::vector<int>& cfg, int num_classes, bool bat
 torch::Tensor lifuren::GenderImpl::forward(torch::Tensor x) {
     x = this->features->forward(x);
     x = this->avgPool(x);
-    x = torch::flatten(x,1);
+    x = torch::flatten(x, 1);
     x = this->classifier->forward(x);
     return torch::log_softmax(x, 1);
 }
@@ -41,7 +41,7 @@ void lifuren::GenderHandler::trainAndVal(
     std::string path_train = (data_path / "train").u8string();
     std::string path_val   = (data_path / "val").u8string();
     auto data_loader_val   = lifuren::datasets::loadImageDataset(batch_size, path_train, image_type);
-    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_val, image_type);
+    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_val,   image_type);
     // size_t valSize   = data_loader_val.size().value();
     // size_t trainSize = data_loader_train.size().value();
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {

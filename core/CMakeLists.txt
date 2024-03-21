@@ -6,6 +6,7 @@ file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 
+if(CMAKE_HOST_WIN32)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     spdlog::spdlog
@@ -14,6 +15,16 @@ target_link_libraries(
     ${OpenCV_LIBS}
     ${TORCH_LIBRARIES}
 )
+else()
+target_link_libraries(
+    ${PROJECT_NAME} PUBLIC
+    spdlog::spdlog
+    yaml-cpp
+    nlohmann_json::nlohmann_json
+    ${OpenCV_LIBS}
+    ${TORCH_LIBRARIES}
+)
+endif()
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC

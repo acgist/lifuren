@@ -1,16 +1,10 @@
 project(lifurentest VERSION 1.0.0 LANGUAGES C CXX)
 
-aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
-
-file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
-
-add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
+add_executable(${PROJECT_NAME} src/Main.cpp)
 
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurencore
-    httplib::httplib
-    ${FLTK_LIBRARIES}
 )
 
 target_include_directories(
@@ -20,7 +14,6 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/Core.hpp
     ${HEADER_DIR}/Fltk.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/LibTorch.hpp

@@ -42,14 +42,28 @@ jobs:
           ################################
           # cpp-httplib
           ################################
-          sudo apt install libcpp-httplib-dev
+          git clone https://github.com/yhirose/cpp-httplib.git
+          cd cpp-httplib
+          git checkout v0.15.3
+          mkdir build
+          cd build
+          cmake ..
+          make -j 8
+          make install
+          cd ../../
           ################################
           # libtorch
           ################################
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip
+          ################################
+          # 输出目录
+          ################################
+          ls -lh
       - name: Deploy lifuren
         run: |
+          # 输出目录
+          pwd
           # 输出版本
           gcc   -v
           g++   -v
