@@ -10,6 +10,16 @@ int main(const int argc, const char * const argv[]) {
         std::cout << dictPtr->key() << std::endl;
         SPDLOG_DEBUG("dict = {}", dictPtr->key());
     }
+    lifuren::GenderHandler handler;
+    handler.model = gener;
+    handler.trainAndVal(
+        10,
+        32,
+        0.01,
+        "D:\\tmp\\gender",
+        ".jpg",
+        "D:\\tmp\\gender"
+    );
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();
     return 0;

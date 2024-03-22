@@ -5,7 +5,7 @@ lifuren::datasets::FileDataset::FileDataset(
     const std::vector<std::string>& exts,
     const std::function<torch::Tensor(const std::string&)> fileTransform
 ) : fileTransform(fileTransform) {
-    if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
+    if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
         return;
     }

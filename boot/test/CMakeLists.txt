@@ -78,21 +78,6 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testFltk src/TestFltk.cpp src/source/fltk/Fltk.cpp)
-add_test(NAME testFltk COMMAND testFltk)
-target_link_libraries(
-    testFltk PUBLIC
-    lifurencore
-    ${FLTK_LIBRARIES}
-)
-
-add_executable(testLibTorchCUDA src/TestLibTorchCUDA.cpp src/source/libtorch/CUDA.cpp)
-add_test(NAME testLibTorchCUDA COMMAND testLibTorchCUDA)
-target_link_libraries(
-    testLibTorchCUDA PUBLIC
-    lifurencore
-)
-
 add_executable(testLibTorchTensor src/TestLibTorchTensor.cpp src/source/libtorch/Tensor.cpp)
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
@@ -104,13 +89,6 @@ add_executable(testLibTorchGenderHandler src/TestLibTorchGenderHandler.cpp src/s
 add_test(NAME testLibTorchGenderHandler COMMAND testLibTorchGenderHandler)
 target_link_libraries(
     testLibTorchGenderHandler PUBLIC
-    lifurencore
-)
-
-add_executable(testOpenCV src/TestOpenCV.cpp src/source/opencv/OpenCV.cpp)
-add_test(NAME testOpenCV COMMAND testOpenCV)
-target_link_libraries(
-    testOpenCV PUBLIC
     lifurencore
 )
 

@@ -19,10 +19,6 @@ LFR_LOG_FORMAT(at::Tensor);
 namespace lifuren {
 
 /**
- * 是否支持CUDA
- */
-extern void testCUDA();
-/**
  * LibTorch Tensor测试
  */
 extern void testLibTorchTensor();
@@ -119,8 +115,7 @@ public:
 
 public:
     // 加载模型
-    void load(int num_classes, const std::string& modelPath);
-
+    // void load(int num_classes, const std::string& modelPath);
     // // 训练模型
     void trian(
         int epoch,
@@ -135,12 +130,10 @@ public:
         lifuren::datasets::ImageDatasetType& dataset
     );
     // // 测试模型
-    // void test(
-    //     const std::string& data_dir,
-    //     const std::string& image_type
-    // );
-    // 模型预测
-    int pred(cv::Mat& image);
+    void test(
+        const std::string& data_dir,
+        const std::string& image_type
+    );
     // 训练验证
     virtual void trainAndVal(
         int   num_epochs,
@@ -150,6 +143,8 @@ public:
         const std::string& image_type,
         const std::string& save_path
     );
+    // 模型预测
+    int pred(cv::Mat& image);
 
 };
 

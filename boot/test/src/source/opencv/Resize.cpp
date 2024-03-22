@@ -2,8 +2,8 @@
 
 void lifuren::resize(const std::string& path) {
     cv::Mat image = cv::imread(path);
-    cv::Mat imageResize,
-            imageCrop;
+    cv::Mat imageCrop;
+    cv::Mat imageResize;
     cv::resize(image, imageResize, cv::Size(), 0.5, 0.5);
     cv::Rect crop(200, 200, 100, 100);
     imageCrop = image(crop);

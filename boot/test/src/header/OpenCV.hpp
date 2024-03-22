@@ -17,16 +17,6 @@
 namespace lifuren {
 
 /**
- * 关闭日志
- */
-extern void shutdownOpenCVLogger();
-/**
- * 图片读取和显示
- * 
- * @param path 图片路径
- */
-extern void readAndShow(const std::string& path);
-/**
  * 人脸识别
  * 
  * @param model 模型路径

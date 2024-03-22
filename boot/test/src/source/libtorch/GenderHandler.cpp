@@ -105,13 +105,12 @@ void lifuren::GenderHandler::val(
     std::cout << std::endl;
 }
 
-// template<typename T>
-// void lifuren::GenderHandler::test(
-//     const std::string& data_dir,
-//     const std::string& image_type
-// ) {
-//     // 没有测试
-// }
+void lifuren::GenderHandler::test(
+    const std::string& data_dir,
+    const std::string& image_type
+) {
+    // 没有测试
+}
 
 int lifuren::GenderHandler::pred(cv::Mat& image) {
     cv::resize(image, image, cv::Size(448, 448));

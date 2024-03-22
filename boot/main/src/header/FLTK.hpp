@@ -1,5 +1,5 @@
 /**
- * 窗口定义
+ * FLTK GUI
  * 
  * @author acgist
  */
@@ -28,6 +28,7 @@
 #include "config/Label.hpp"
 #include "config/Config.hpp"
 
+// 模型模块
 #ifndef LFR_MODEL_MODULE
 #define LFR_MODEL_MODULE(modelTypeLower, modelTypeUpper)             \
     Fl_Button* modelTypeLower##GcPtr = nullptr;                      \
@@ -36,6 +37,7 @@
     modelTypeUpper##TSWindow* modelTypeLower##TsWindowPtr = nullptr;
 #endif
 
+// 文件选择
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
 #define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configName, windowName) \
     this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {         \
@@ -47,6 +49,7 @@
     }, this);
 #endif
 
+// 文件选择回调
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL
 #define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(inputPtr, configName, windowName, callbackName) \
     this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                            \
@@ -59,6 +62,7 @@
     }, this);
 #endif
 
+// 下拉选择
 #ifndef LFR_CHOICE_BUTTON
 #define LFR_CHOICE_BUTTON(x, y, buttonPtr, groupName, labelName, defaultValue)                \
 {                                                                                             \
@@ -80,6 +84,7 @@
 }
 #endif
 
+// 图片缩放
 #ifndef LFR_IMAGE_PREVIEW_SCALE
 #define LFR_IMAGE_PREVIEW_SCALE 1.2
 #endif

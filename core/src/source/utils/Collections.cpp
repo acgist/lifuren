@@ -11,14 +11,14 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
             break;
         }
         substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
-        if(!substr.empty()) {
+        if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {
         substr = content.substr(index, content.length() - index);
-        if(!substr.empty()) {
+        if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
     }
@@ -45,14 +45,14 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
             break;
         }
         substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
-        if(!substr.empty()) {
+        if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {
         substr = content.substr(index, content.length() - index);
-        if(!substr.empty()) {
+        if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
     }
