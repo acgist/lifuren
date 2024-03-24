@@ -35,9 +35,9 @@ private:
     std::vector<std::string> paths;
 
 public:
-    std::function<torch::Tensor(const std::string&)> fileTransform;
     std::map<std::string, int> nameLabel;
     std::map<int, std::string> labelName;
+    std::function<torch::Tensor(const std::string&)> fileTransform;
 
     FileDataset(
         const std::string& path,
@@ -56,9 +56,13 @@ inline auto loadImageDataset(int batch_size, const std::string& path, const std:
         cv::Mat image = cv::imread(path);
         cv::resize(image, image, cv::Size(224, 224));
         torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
+        // TODO：验证
+        // image.release();
+        // 不做正则
+        // auto data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32) / 225.0;
         return data_tensor;
     }).map(torch::data::transforms::Stack<>());
-    auto loader  = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+    auto loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
     return std::move(loader);
 }
 

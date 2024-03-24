@@ -30,8 +30,8 @@
 |json|v3.11.2|https://github.com/nlohmann/json|
 |spdlog|v1.12.0|https://github.com/gabime/spdlog|
 |OpenCV|4.8.0|https://github.com/opencv/opencv|
-|yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |LibTorch|v2.2.1|https://github.com/pytorch/pytorch|
+|yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |cpp-httplib|v0.15.3|https://github.com/yhirose/cpp-httplib|
 
 ## 模块

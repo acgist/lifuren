@@ -6,12 +6,14 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "torch/torch.h"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 
 #include "Logger.hpp"
+#include "config/Config.hpp"
 #include "utils/Datasets.hpp"
 
 LFR_LOG_FORMAT(at::Tensor);
@@ -19,7 +21,7 @@ LFR_LOG_FORMAT(at::Tensor);
 namespace lifuren {
 
 /**
- * LibTorch Tensor测试
+ * 张量测试
  */
 extern void testLibTorchTensor();
 
@@ -35,7 +37,7 @@ private:
     // 池化层
     torch::nn::AdaptiveAvgPool2d avgPool{ nullptr };
     // 全连接层
-    torch::nn::Sequential        classifier;
+    torch::nn::Sequential        classifier{ nullptr };
 
 public:
     GenderImpl(std::vector<int>& cfg, int num_classes = 1000, bool batch_norm = false);

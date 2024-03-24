@@ -20,9 +20,9 @@ void lifuren::logger::init() {
     logger->set_pattern("[%D %T] [%L] [%t] [%s:%#] %v");
     spdlog::set_default_logger(logger);
     // 关闭OpenCV日志
-    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
     cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_FATAL);
     cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
+    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
     SPDLOG_DEBUG(R"(
         
         北方有佳人，绝世而独立。

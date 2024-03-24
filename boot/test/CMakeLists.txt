@@ -92,21 +92,21 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Face.cpp)
+add_executable(testOpenCVFace src/TestOpenCVFace.cpp src/source/opencv/Face.cpp)
 add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
 target_link_libraries(
     testOpenCVFace PUBLIC
     lifurencore
 )
 
-add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Color.cpp)
+add_executable(testOpenCVColor src/TestOpenCVColor.cpp src/source/opencv/Color.cpp)
 add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
 target_link_libraries(
     testOpenCVColor PUBLIC
     lifurencore
 )
 
-add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/OpenCV.cpp src/source/opencv/Resize.cpp)
+add_executable(testOpenCVResize src/TestOpenCVResize.cpp src/source/opencv/Resize.cpp)
 add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
 target_link_libraries(
     testOpenCVResize PUBLIC

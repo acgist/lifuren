@@ -123,40 +123,10 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 
 ## 模型精调
 
+## 激活函数
+
+## 优化算法
+
 ## 学习资料
 
 * https://zh-v2.d2l.ai/
-* https://github.com/hankcs/HanLP
-* https://github.com/d2l-ai/d2l-zh
-* https://github.com/Ewenwan/MVision
-* https://github.com/NLP-LOVE/ML-NLP
-* https://github.com/tangyudi/Ai-Learn
-* https://github.com/apachecn/ailearning
-* https://github.com/MorvanZhou/tutorials
-* https://github.com/graykode/nlp-tutorial
-* https://github.com/fighting41love/funNLP
-* https://dataxujing.github.io/ASR-paper/#/
-* https://dataxujing.github.io/NLP-paper/#/
-* https://dataxujing.github.io/TTS-paper/#/
-* https://dataxujing.github.io/CNN-paper2/#/
-* https://dataxujing.github.io/AIGC-paper/#/
-* https://github.com/Mikoto10032/DeepLearning
-* https://github.com/microsoft/AI-For-Beginners
-* https://github.com/microsoft/ML-For-Beginners
-* https://github.com/DA-southampton/NLP_ability
-* https://github.com/chenzomi12/DeepLearningSystem
-* https://github.com/brightmart/nlp_chinese_corpus
-* https://github.com/datawhalechina/leedl-tutorial
-* https://scikit-learn.org/stable/modules/classes.html
-* https://github.com/scutan90/DeepLearning-500-questions
-* https://github.com/microsoft/generative-ai-for-beginners
-* https://github.com/labmlai/annotated_deep_learning_paper_implementations
-
-## 学习计划
-
-* https://dataxujing.github.io/NLP-paper/#/
-* https://dataxujing.github.io/CNN-paper2/#/
-* https://dataxujing.github.io/AIGC-paper/#/
-* https://github.com/tangyudi/Ai-Learn
-* https://github.com/chenzomi12/DeepLearningSystem
-* https://github.com/scutan90/DeepLearning-500-questions
