@@ -14,7 +14,6 @@ target_include_directories(
 
 set(
     HEADER_FILES
-    ${HEADER_DIR}/Fltk.hpp
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/LibTorch.hpp
 )

@@ -67,6 +67,7 @@ inline auto loadImageDataset(int batch_size, const std::string& path, const std:
 }
 
 typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(int, const std::string&, const std::string&)>::type ImageDatasetType;
+// using ImageDatasetType = std::result_of<decltype(&lifuren::datasets::loadImageDataset)(int, const std::string&, const std::string&)>::type;
 
 }
 }
