@@ -13,6 +13,7 @@
 #include "opencv2/imgcodecs.hpp"
 
 #include "Logger.hpp"
+#include "utils/Layers.hpp"
 #include "config/Config.hpp"
 #include "utils/Datasets.hpp"
 
@@ -47,29 +48,6 @@ public:
 TORCH_MODULE(Gender);
 
 /**
- * Conv2dOptions
- * 二维卷积参数配置
- * 
- * @param in_planes
- * @param out_planes
- * @param kerner_size
- */
-inline torch::nn::Conv2dOptions conv2dOptions(
-    int64_t in_planes,
-    int64_t out_planes,
-    int64_t kerner_size,
-    int64_t stride = 1,
-    int64_t padding = 0,
-    bool with_bias = false
-) {
-    torch::nn::Conv2dOptions options = torch::nn::Conv2dOptions(in_planes, out_planes, kerner_size);
-    options.stride(stride);
-    options.padding(padding);
-    options.bias(with_bias);
-    return options;
-}
-
-/**
  * MaxPool2dOptions
  * 最大池化参数配置
  * 
@@ -95,7 +73,7 @@ inline torch::nn::Sequential makeFeatures(std::vector<int>& cfg, bool batch_norm
         if (v == -1) {
             features->push_back(torch::nn::MaxPool2d(lifuren::maxPool2dOptions(2, 2)));
         } else {
-            features->push_back(torch::nn::Conv2d(lifuren::conv2dOptions(in_channels, v, 3, 1, 1)));
+            features->push_back(torch::nn::Conv2d(lifuren::layers::conv2d(in_channels, v, 3, 1, 1)));
             if (batch_norm) {
                 features->push_back(torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(v)));
             }

@@ -6,8 +6,8 @@
 #pragma once
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 #include <functional>
 
 #include "torch/torch.h"
@@ -19,6 +19,8 @@
 
 namespace lifuren  {
 namespace datasets {
+
+// TODO：支持文件列表
 
 /**
  * 文件数据集
@@ -50,6 +52,7 @@ public:
 
 };
 
+// TODO：变形、截取
 // TODO：高宽参数
 inline auto loadImageDataset(int batch_size, const std::string& path, const std::string& image_type) -> decltype(auto) {
     auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [](const std::string& path) -> torch::Tensor {
