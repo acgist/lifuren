@@ -158,7 +158,7 @@ void lifuren::ModelWindow::loadConfig(const std::string& modelType) {
     auto iterator = CONFIGS.find(modelType);
     if(iterator == CONFIGS.end()) {
         this->configPtr = new Config();
-        // TODO：BUG拷贝
+        // TODO: BUG拷贝
         CONFIGS.insert(std::make_pair(modelType, *this->configPtr));
     } else {
         this->configPtr = &iterator->second;

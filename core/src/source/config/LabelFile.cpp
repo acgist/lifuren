@@ -41,7 +41,7 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
             );
             vector.push_back(label);
         }
-        // TODO：move
+        // TODO: move
         map.insert(std::pair(key, vector));
     }
     return map;

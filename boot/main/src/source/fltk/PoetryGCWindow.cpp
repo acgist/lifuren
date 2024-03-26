@@ -3,7 +3,7 @@
 #include "utils/Jsons.hpp"
 #include "model/Poetry.hpp"
 
-// TODO：问题双击选中中文崩溃
+// TODO: 问题双击选中中文崩溃
 
 // 旧的路径
 static std::string oldPath;

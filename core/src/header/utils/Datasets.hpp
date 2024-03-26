@@ -20,7 +20,7 @@
 namespace lifuren  {
 namespace datasets {
 
-// TODO：支持文件列表
+// TODO: 支持文件列表
 
 /**
  * 文件数据集
@@ -52,14 +52,14 @@ public:
 
 };
 
-// TODO：变形、截取
-// TODO：高宽参数
+// TODO: 变形、截取
+// TODO: 高宽参数
 inline auto loadImageDataset(int batch_size, const std::string& path, const std::string& image_type) -> decltype(auto) {
     auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [](const std::string& path) -> torch::Tensor {
         cv::Mat image = cv::imread(path);
         cv::resize(image, image, cv::Size(224, 224));
         torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
-        // TODO：验证
+        // TODO: 验证
         // image.release();
         // 不做正则
         // auto data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32) / 225.0;

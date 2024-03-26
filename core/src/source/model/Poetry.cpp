@@ -57,7 +57,7 @@ bool lifuren::Poetry::matchLabel() {
         ++iterator
     ) {
         LabelText& labelRef = iterator->second;
-        // TODO：验证词能否正确匹配或者添加词牌
+        // TODO: 验证词能否正确匹配或者添加词牌
         if(
             labelRef.segmentSize == this->simpleParagraphs.size() &&
             labelRef.segmentRule == segmentRule

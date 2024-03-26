@@ -69,7 +69,7 @@ void testClone() {
 }
 
 void testResize() {
-    // TODO：flatten、view、reshape、permute、transpose、squeeze、unsqueeze
+    // TODO: flatten、view、reshape、permute、transpose、squeeze、unsqueeze
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
     SPDLOG_DEBUG("a =\r\n{}", a);
@@ -83,7 +83,7 @@ void testResize() {
 }
 
 void testSlice() {
-    // TODO：narrow、select、index、index_put_、index_select、slice
+    // TODO: narrow、select、index、index_put_、index_select、slice
 }
 
 void testOperator() {
@@ -103,5 +103,5 @@ void testOperator() {
     SPDLOG_DEBUG("a == b =\r\n{}", (a == b));
     SPDLOG_DEBUG("lineA dot lineB   =\r\n{}", lineA.dot(lineB));
     SPDLOG_DEBUG("lineA dot lineB.t =\r\n{}", lineA.dot(lineB.t()));
-    // TODO：cat、stack
+    // TODO: cat、stack
 }
