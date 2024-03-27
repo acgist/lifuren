@@ -3,22 +3,32 @@
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
     SPDLOG_DEBUG("测试");
-    std::vector<int> cfg = {64, 64, -1, 128, 128, -1, 256, 256, 256, -1, 512, 512, 512, -1, 512, 512, 512, -1};
-    lifuren::Gender gener(cfg, 2);
-    auto dict = gener->named_parameters();
-    for (auto dictPtr = dict.begin(); dictPtr != dict.end(); dictPtr++) {
-        std::cout << dictPtr->key() << std::endl;
-        SPDLOG_DEBUG("dict = {}", dictPtr->key());
-    }
+    lifuren::Gender gener;
+    // auto buffers = gener->named_buffers();
+    // for (auto iterator = buffers.begin(); iterator != buffers.end(); ++iterator) {
+    //     SPDLOG_DEBUG("buffers = {}", iterator->key());
+    // }
+    // auto parameters = gener->named_parameters();
+    // for (auto iterator = parameters.begin(); iterator != parameters.end(); ++iterator) {
+    //     SPDLOG_DEBUG("parameters = {}", iterator->key());
+    // }
     lifuren::GenderHandler handler;
     handler.model = gener;
     handler.trainAndVal(
-        10,
+        1,
         32,
         0.01,
+        #ifdef _WIN32
         "D:\\tmp\\gender",
+        #else
+        "/tmp/gender"
+        #endif
         ".jpg",
-        "D:\\tmp\\gender"
+        #ifdef _WIN32
+        "D:\\tmp\\gender\\model.pt"
+        #else
+        "/tmp/gender/model.pt"
+        #endif
     );
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();

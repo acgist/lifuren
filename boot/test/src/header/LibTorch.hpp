@@ -41,48 +41,11 @@ private:
     torch::nn::Sequential        classifier{ nullptr };
 
 public:
-    GenderImpl(std::vector<int>& cfg, int num_classes = 1000, bool batch_norm = false);
+    GenderImpl(int num_classes = 2);
     torch::Tensor forward(torch::Tensor x);
 
 };
 TORCH_MODULE(Gender);
-
-/**
- * MaxPool2dOptions
- * 最大池化参数配置
- * 
- * @param kernel_size
- * @param stride
- */
-inline torch::nn::MaxPool2dOptions maxPool2dOptions(int kernel_size, int stride){
-    torch::nn::MaxPool2dOptions options(kernel_size);
-    options.stride(stride);
-    return options;
-}
-
-/**
- * 特征提取层
- * 
- * @param cfg
- * @param batch_norm 归一化
- */
-inline torch::nn::Sequential makeFeatures(std::vector<int>& cfg, bool batch_norm) {
-    int in_channels = 3;
-    torch::nn::Sequential features;
-    for (auto v : cfg) {
-        if (v == -1) {
-            features->push_back(torch::nn::MaxPool2d(lifuren::maxPool2dOptions(2, 2)));
-        } else {
-            features->push_back(torch::nn::Conv2d(lifuren::layers::conv2d(in_channels, v, 3, 1, 1)));
-            if (batch_norm) {
-                features->push_back(torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(v)));
-            }
-            features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-            in_channels = v;
-        }
-    }
-    return features;
-}
 
 /**
  * 性别识别

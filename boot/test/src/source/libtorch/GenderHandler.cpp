@@ -1,15 +1,27 @@
 #include "../../header/LibTorch.hpp"
 
-static auto mapping = [](const std::string& path) -> torch::Tensor {
-    cv::Mat image = cv::imread(path);
-    cv::resize(image, image, cv::Size(224, 224));
-    torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
-    return data_tensor;
-};
-
-lifuren::GenderImpl::GenderImpl(std::vector<int>& cfg, int num_classes, bool batch_norm){
-    this->features = register_module("features", lifuren::makeFeatures(cfg, batch_norm));
+lifuren::GenderImpl::GenderImpl(int num_classes){
+    // 卷积
+    torch::nn::Sequential features;
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 3, 64, 3, 1, 1);
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 64, 64, 3, 1, 1);
+    features->push_back(lifuren::layers::maxPool2d(2, 2));
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 64, 128, 3, 1, 1);
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 128, 128, 3, 1, 1);
+    features->push_back(lifuren::layers::maxPool2d(2, 2));
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 128, 256, 3, 1, 1);
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 256, 256, 3, 1, 1);
+    features->push_back(lifuren::layers::maxPool2d(2, 2));
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 256, 512, 3, 1, 1);
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    features->push_back(lifuren::layers::maxPool2d(2, 2));
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    features->push_back(lifuren::layers::maxPool2d(2, 2));
+    this->features = register_module("features", features);
+    // 池化
     this->avgPool  = torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(7));
+    // 分类
     torch::nn::Sequential classifier;
     classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(512 * 7 * 7, 4096)));
     classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
@@ -38,12 +50,10 @@ void lifuren::GenderHandler::trainAndVal(
     const std::string& save_path
 ) {
     std::filesystem::path data_path = data_dir;
-    std::string path_train = (data_path / "train").u8string();
     std::string path_val   = (data_path / "val").u8string();
-    auto data_loader_val   = lifuren::datasets::loadImageDataset(batch_size, path_train, image_type);
-    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_val,   image_type);
-    // size_t valSize   = data_loader_val.size().value();
-    // size_t trainSize = data_loader_train.size().value();
+    std::string path_train = (data_path / "train").u8string();
+    auto data_loader_val   = lifuren::datasets::loadImageDataset(batch_size, path_val,  image_type);
+    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_train,image_type);
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
         if (epoch == int(num_epochs / 2)) {
             learning_rate /= 10;
@@ -63,7 +73,7 @@ void lifuren::GenderHandler::trian(
 ) {
     float acc_train  = 0.0;
     float loss_train = 0.0;
-    size_t batch_index_train = 0;
+    size_t batch_index = 0;
     this->model->train();
     for (auto& batch : *dataset) {
         auto data   = batch.data.to(torch::kF32).to(this->device).div(255.0);
@@ -76,8 +86,8 @@ void lifuren::GenderHandler::trian(
         auto acc = prediction.argmax(1).eq(target).sum();
         acc_train  += acc.item<float>() / batch_size;
         loss_train += loss.item<float>();
-        batch_index_train++;
-        std::cout << "Epoch: " << epoch << " |Train Loss: " << loss_train / batch_index_train << " |Train Acc:" << acc_train / batch_index_train << "\r";
+        batch_index++;
+        std::cout << "Epoch: " << epoch << " - " << batch_index << " | Train Loss: " << loss.item<float>() << " - " << loss_train / batch_index << " | Train Acc: " << acc_train / batch_index << "\r";
     }
     std::cout << std::endl;
 }
@@ -89,7 +99,7 @@ void lifuren::GenderHandler::val(
 ) {
     float acc_val  = 0.0;
     float loss_val = 0.0;
-    size_t batch_index_val = 0;
+    size_t batch_index = 0;
     this->model->eval();
     for (auto& batch : *dataset) {
         auto data   = batch.data.to(torch::kF32).to(device).div(255.0);
@@ -99,8 +109,8 @@ void lifuren::GenderHandler::val(
         auto acc = prediction.argmax(1).eq(target).sum();
         acc_val  += acc.template item<float>() / batch_size;
         loss_val += loss.template item<float>();
-        batch_index_val++;
-        std::cout << "Epoch: " << epoch << " |Val Loss: " << loss_val / batch_index_val << " |Valid Acc:" << acc_val / batch_index_val << "\r";
+        batch_index++;
+        std::cout << "Epoch: " << epoch << " - " << batch_index << " | Val Loss: " << loss.item<float>() << " - " << loss_val / batch_index << " | Val Acc: " << acc_val / batch_index << "\r";
     }
     std::cout << std::endl;
 }
@@ -113,7 +123,7 @@ void lifuren::GenderHandler::test(
 }
 
 int lifuren::GenderHandler::pred(cv::Mat& image) {
-    cv::resize(image, image, cv::Size(448, 448));
+    cv::resize(image, image, cv::Size(224, 224));
     torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
     image_tensor = image_tensor.to(device).unsqueeze(0).to(torch::kF32).div(255.0);
     auto prediction = this->model->forward(image_tensor);

@@ -66,7 +66,8 @@ inline auto loadImageDataset(int batch_size, const std::string& path, const std:
         return data_tensor;
     }).map(torch::data::transforms::Stack<>());
     auto loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-    return std::move(loader);
+    // return std::move(loader);
+    return loader;
 }
 
 typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(int, const std::string&, const std::string&)>::type ImageDatasetType;
