@@ -11,10 +11,10 @@ namespace lifuren {
 namespace layers  {
 
 /**
- * 线性变换
- * 
  * @param in_features  输入特征大小
  * @param out_features 输出特征大小
+ * 
+ * @return Linear
  */
 inline torch::nn::Linear linear(int64_t in_features, int64_t out_features) {
     return torch::nn::Linear(torch::nn::LinearOptions(in_features, out_features));
@@ -22,6 +22,8 @@ inline torch::nn::Linear linear(int64_t in_features, int64_t out_features) {
 
 /**
  * @param num_features 特征大小
+ * 
+ * @return BatchNorm1d
  */
 inline torch::nn::BatchNorm1d batchNorm1d(int64_t num_features) {
     return torch::nn::BatchNorm1d(torch::nn::BatchNorm1dOptions(num_features));
@@ -29,21 +31,23 @@ inline torch::nn::BatchNorm1d batchNorm1d(int64_t num_features) {
 
 /**
  * @param num_features 特征大小
+ * 
+ * @return BatchNorm2d
  */
 inline torch::nn::BatchNorm2d batchNorm2d(int64_t num_features) {
     return torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(num_features));
 }
 
 /**
- * 卷积
- * 
  * @param in_channels  输入通道大小
  * @param out_channels 输出通道大小
  * @param kernel_size  卷积核大小
  * @param stride       步长
  * @param padding      填充
- * @param dilation     元素间隔
+ * @param dilation     间隔
  * @param bias         偏置
+ * 
+ * @return Conv2d
  */
 inline torch::nn::Conv2d conv2d(
     int64_t in_channels,
@@ -52,7 +56,7 @@ inline torch::nn::Conv2d conv2d(
     int64_t stride   = 1,
     int64_t padding  = 0,
     int64_t dilation = 1,
-    bool    bias     = false
+    bool    bias     = true
 ) {
     torch::nn::Conv2dOptions options(in_channels, out_channels, kernel_size);
     options.stride(stride);
@@ -63,43 +67,172 @@ inline torch::nn::Conv2d conv2d(
 }
 
 /**
- * 最大池化
- * 
- * TODO: stride默认值的大小
- * 
  * @param kernel_size 卷积核大小
  * @param stride      步长
  * @param padding     填充
- * @param dilation    元素间隔
+ * @param dilation    间隔
+ * 
+ * @return MaxPool2d
  */
 inline torch::nn::MaxPool2d maxPool2d(
     int64_t kernel_size,
-    int64_t stride   = 1,
-    // int64_t stride   = kernel_size,
+    int64_t stride   = -1,
     int64_t padding  = 0,
     int64_t dilation = 1
 ) {
     torch::nn::MaxPool2dOptions options(kernel_size);
-    options.stride(stride);
+    options.stride(stride < 0 ? kernel_size : stride);
     options.padding(padding);
     options.dilation(dilation);
     return torch::nn::MaxPool2d(options);
 }
 
-inline torch::nn::AvgPool2d avgPool2d() {
-
+/**
+ * @param kernel_size 卷积核大小
+ * @param stride      步长
+ * @param padding     填充
+ * 
+ * @return MaxPool2d
+ */
+inline torch::nn::AvgPool2d avgPool2d(
+    int64_t kernel_size,
+    int64_t stride  = -1,
+    int64_t padding = 0
+) {
+    torch::nn::AvgPool2dOptions options(kernel_size);
+    options.stride(stride < 0 ? kernel_size : stride);
+    options.padding(padding);
+    return torch::nn::AvgPool2d(options);
 }
 
-inline torch::nn::AdaptiveAvgPool2d adaptiveAvgPool2d() {
+/**
+ * @param output_size 输出尺寸
+ * 
+ * @return AdaptiveAvgPool2d
+ */
+inline torch::nn::AdaptiveAvgPool2d adaptiveAvgPool2d(int64_t output_size) {
+    return torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(output_size));
 }
 
-inline void mlp() {
+/**
+ * @param dropout 丢弃概率
+ * 
+ * @return Dropout
+ */
+inline torch::nn::Dropout dropout(double dropout = 0.5) {
+    return torch::nn::Dropout(torch::nn::DropoutOptions(dropout));
 }
 
-inline torch::nn::LSTM lstm() {
+/**
+ * @param inplace 是否使用旧的内存
+ * 
+ * @return ReLU
+ */
+inline torch::nn::ReLU relu(bool inplace = false) {
+    return torch::nn::ReLU(torch::nn::ReLUOptions(inplace));
 }
 
-inline void conv2dLayer() {
+/**
+ * @param input_size  ?
+ * @param hidden_size ?
+ * @param num_layers  ?
+ * @param bias        ?
+ * @param dropout     ?
+ * 
+ * @return torch::nn::LSTM
+ */
+inline torch::nn::GRU gru(
+    int64_t input_size,
+    int64_t hidden_size,
+    int64_t num_layers = 1,
+    bool    bias       = true,
+    double  dropout    = 0.0
+) {
+    torch::nn::GRUOptions options(input_size, hidden_size);
+    options.num_layers(num_layers);
+    options.bias(bias);
+    options.dropout(dropout);
+    return torch::nn::GRU(options);
+}
+
+/**
+ * @param input_size  ?
+ * @param hidden_size ?
+ * @param num_layers  ?
+ * @param bias        ?
+ * @param dropout     ?
+ * 
+ * @return torch::nn::LSTM
+ */
+inline torch::nn::LSTM lstm(
+    int64_t input_size,
+    int64_t hidden_size,
+    int64_t num_layers = 1,
+    bool    bias       = true,
+    double  dropout    = 0.0
+) {
+    torch::nn::LSTMOptions options(input_size, hidden_size);
+    options.num_layers(num_layers);
+    options.bias(bias);
+    options.dropout(dropout);
+    return torch::nn::LSTM(options);
+}
+
+/**
+ * @see #linear
+ * @see #relu
+ * @see #droput
+ */
+inline void linearReLUDropout(
+    torch::nn::Sequential sequential,
+    int64_t in_features,
+    int64_t out_features,
+    bool    inplace = false,
+    double  dropout = 0.5
+) {
+    sequential->push_back(linear(in_features, out_features));
+    sequential->push_back(relu(inplace));
+    sequential->push_back(lifuren::layers::dropout(dropout));
+}
+
+/**
+ * @see #conv2d
+ * @see #relu
+ */
+inline void conv2dRelu(
+    torch::nn::Sequential sequential,
+    int64_t in_channels,
+    int64_t out_channels,
+    int64_t kernel_size,
+    int64_t stride   = 1,
+    int64_t padding  = 0,
+    int64_t dilation = 1,
+    bool    bias     = true,
+    bool    inplace  = false
+) {
+    sequential->push_back(conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, bias));
+    sequential->push_back(relu(inplace));
+}
+
+/**
+ * @see #conv2d
+ * @see #batchNorm2d
+ * @see #relu
+ */
+inline void conv2dBatchNorm2dRelu(
+    torch::nn::Sequential sequential,
+    int64_t in_channels,
+    int64_t out_channels,
+    int64_t kernel_size,
+    int64_t stride   = 1,
+    int64_t padding  = 0,
+    int64_t dilation = 1,
+    bool    bias     = true,
+    bool    inplace  = false
+) {
+    sequential->push_back(conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, bias));
+    sequential->push_back(batchNorm2d(out_channels));
+    sequential->push_back(relu(inplace));
 }
 
 }

@@ -45,6 +45,7 @@ set(
     ${HEADER_DIR}/utils/Jsons.hpp
     ${HEADER_DIR}/utils/Yamls.hpp
     ${HEADER_DIR}/utils/Layers.hpp
+    ${HEADER_DIR}/utils/Models.hpp
     ${HEADER_DIR}/utils/Strings.hpp
     ${HEADER_DIR}/utils/Datasets.hpp
     ${HEADER_DIR}/utils/Collections.hpp

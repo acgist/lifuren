@@ -125,7 +125,19 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 
 ## 激活函数
 
+激活函数的作用是在神经网络中引入非线性性质，使其能够学习复杂的非线性关系。
+常用的激活函数包括Sigmoid、ReLU、Tanh等等。
+
 ## 优化算法
+
+BGD、SGD、ADAM
+
+## 其他术语
+
+#### Dropout
+#### BatchNorm
+#### 梯度消失
+#### 梯度爆炸
 
 ## 学习资料
 

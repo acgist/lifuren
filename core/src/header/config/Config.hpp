@@ -31,6 +31,7 @@ enum Activation {
     RELU,
     TANH,
     SIGMOID,
+    SOFTMAX,
 
 };
 
