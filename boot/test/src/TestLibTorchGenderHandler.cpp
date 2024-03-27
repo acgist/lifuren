@@ -14,22 +14,25 @@ int main(const int argc, const char * const argv[]) {
     // }
     lifuren::GenderHandler handler;
     handler.model = gener;
+    #ifdef _WIN32
     handler.trainAndVal(
         1,
         32,
         0.01,
-        #ifdef _WIN32
         "D:\\tmp\\gender",
-        #else
-        "/tmp/gender"
-        #endif
         ".jpg",
-        #ifdef _WIN32
         "D:\\tmp\\gender\\model.pt"
-        #else
-        "/tmp/gender/model.pt"
-        #endif
     );
+    #else
+    handler.trainAndVal(
+        1,
+        32,
+        0.01,
+        "/tmp/gender",
+        ".jpg",
+        "/tmp/gender/model.pt"
+    );
+    #endif
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();
     return 0;

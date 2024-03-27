@@ -61,15 +61,15 @@ public:
     // void load(int num_classes, const std::string& modelPath);
     // // 训练模型
     void trian(
-        int epoch,
-        int batch_size,
+        size_t epoch,
+        size_t batch_size,
         torch::optim::Optimizer& optimizer,
         lifuren::datasets::ImageDatasetType& dataset
     );
     // // 验证模型
     void val(
-        int epoch,
-        int batch_size,
+        size_t epoch,
+        size_t batch_size,
         lifuren::datasets::ImageDatasetType& dataset
     );
     // // 测试模型
@@ -79,12 +79,12 @@ public:
     );
     // 训练验证
     virtual void trainAndVal(
-        int   num_epochs,
-        int   batch_size,
-        float learning_rate,
-        const std::string& data_dir,
-        const std::string& image_type,
-        const std::string& save_path
+        size_t num_epochs,
+        size_t batch_size,
+        float  learning_rate,
+        const  std::string& data_dir,
+        const  std::string& image_type,
+        const  std::string& save_path
     );
     // 模型预测
     int pred(cv::Mat& image);
