@@ -75,7 +75,7 @@ lifuren::GenderImpl::GenderImpl(int num_classes){
 
 torch::Tensor lifuren::GenderImpl::forward(torch::Tensor x) {
     x = this->features->forward(x);
-    x = this->avgPool(x);
+    x = this->avgPool->forward(x);
     x = torch::flatten(x, 1);
     x = this->classifier->forward(x);
     return torch::log_softmax(x, 1);
@@ -131,7 +131,7 @@ void lifuren::GenderHandler::trian(
         acc_train  += acc.item<float>();
         loss_train += loss.item<float>();
         batch_index++;
-        std::printf("Epoch: %ld - %ld | Train Loss: %.8f - %.8f | Train Acc: %.8f\r", epoch, batch_index, loss.item<float>(), loss_train / batch_index, acc_train / batch_size / batch_index);
+        std::printf("Epoch: %zd - %zd | Train Loss: %.8f - %.8f | Train Acc: %.8f \r", epoch, batch_index, loss.item<float>(), loss_train / batch_index, acc_train / batch_size / batch_index);
         std::flush(std::cout);
     }
     std::cout << std::endl;
@@ -155,7 +155,7 @@ void lifuren::GenderHandler::val(
         acc_val  += acc.template item<float>();
         loss_val += loss.template item<float>();
         batch_index++;
-        std::printf("Epoch: %ld - %ld | Val Loss: %.8f - %.8f | Val Acc: %.8f\r", epoch, batch_index, loss.item<float>(), loss_val / batch_index, acc_val / batch_size / batch_index);
+        std::printf("Epoch: %zd - %zd | Val Loss: %.8f - %.8f | Val Acc: %.8f \r", epoch, batch_index, loss.item<float>(), loss_val / batch_index, acc_val / batch_size / batch_index);
         std::flush(std::cout);
     }
     std::cout << std::endl;
@@ -168,14 +168,19 @@ void lifuren::GenderHandler::test(
     // 没有测试
 }
 
+void lifuren::GenderHandler::load(const std::string& modelPath) {
+    torch::load(this->model, modelPath);
+}
+
 int lifuren::GenderHandler::pred(cv::Mat& image) {
     cv::resize(image, image, cv::Size(200, 200));
     torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
     image_tensor = image_tensor.to(this->device).unsqueeze(0).to(torch::kF32).div(255.0);
     auto prediction = this->model->forward(image_tensor);
     prediction = torch::softmax(prediction, 1);
+    SPDLOG_DEBUG("预测结果：{}", prediction);
     auto class_id = prediction.argmax(1);
-    int ans = int(class_id.item().toInt());
-    float prob = prediction[0][ans].item().toFloat();
-    return ans;
+    int class_val = class_id.item<int>();
+    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
+    return class_val;
 }

@@ -58,7 +58,7 @@ public:
 
 public:
     // 加载模型
-    // void load(int num_classes, const std::string& modelPath);
+    void load(const std::string& modelPath);
     // // 训练模型
     void trian(
         size_t epoch,
