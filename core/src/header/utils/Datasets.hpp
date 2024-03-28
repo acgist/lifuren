@@ -69,8 +69,6 @@ inline auto loadImageDataset(
         torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
         // TODO: 验证
         image.release();
-        // 不做正则
-        // auto data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32) / 225.0;
         return data_tensor;
     }).map(torch::data::transforms::Stack<>());
     auto loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);

@@ -16,6 +16,8 @@ void testSize();
 void testArgmax();
 // 测试squeeze
 void testSqueeze();
+// 测试permute
+void testPermute();
 
 void lifuren::testLibTorchTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
@@ -25,7 +27,8 @@ void lifuren::testLibTorchTensor() {
     // testResize();
     // testSize();
     // testArgmax();
-    testSqueeze();
+    // testSqueeze();
+    testPermute();
 }
 
 void testInit() {
@@ -78,7 +81,7 @@ void testClone() {
 }
 
 void testResize() {
-    // TODO: flatten、view、reshape、permute、transpose、squeeze、unsqueeze
+    // TODO: flatten、view、reshape、transpose
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
     SPDLOG_DEBUG("a =\r\n{}", a);
@@ -133,7 +136,29 @@ void testArgmax() {
 
 void testSqueeze() {
     int array[6] = { 4, 5, 6, 1, 2, 3 };
-    auto a = torch::from_blob(array, { 1, 3, 2, 1 }, torch::kInt);
+    auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
+    SPDLOG_DEBUG("a =\r\n{}", a);
+    // a = a.unsqueeze(0);
+    a = a.unsqueeze(1);
+    a = a.unsqueeze(2);
     SPDLOG_DEBUG("a =\r\n{}", a);
     SPDLOG_DEBUG("a =\r\n{}", a.squeeze());
+}
+
+void testPermute() {
+    torch::Tensor a = torch::linspace(1, 30, 30).view({ 3, 2, 5 });
+    SPDLOG_DEBUG("a =\r\n{}", a.sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 0, 1, 2 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 0, 2, 1 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 1, 0, 2 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 1, 2, 0 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 0, 1 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 1, 0 }).sizes());
+    SPDLOG_DEBUG("a =\r\n{}", a);
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 0, 1, 2 }));
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 0, 2, 1 }));
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 1, 0, 2 }));
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 1, 2, 0 }));
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 0, 1 }));
+    SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 1, 0 }));
 }
