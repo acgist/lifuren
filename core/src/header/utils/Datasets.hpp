@@ -60,9 +60,10 @@ inline auto loadImageDataset(
     const std::string& path,
     const std::string& image_type
 ) -> decltype(auto) {
+    // 注意这里width、height不能传递引用
     auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [
-        &width,
-        &height
+        width,
+        height
     ](const std::string& path) -> torch::Tensor {
         cv::Mat image = cv::imread(path);
         cv::resize(image, image, cv::Size(width, height));
