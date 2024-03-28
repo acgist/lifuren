@@ -132,6 +132,14 @@ inline torch::nn::ReLU relu(bool inplace = false) {
     return torch::nn::ReLU(torch::nn::ReLUOptions(inplace));
 }
 
+// /**
+//  * @return torch::nn::Upsample
+//  */
+// inline torch::nn::Upsample upsample() {
+//     torch::nn::UpsampleOptions options();
+//     return torch::nn::Upsample(options);
+// }
+
 /**
  * @param input_size  ?
  * @param hidden_size ?
@@ -178,62 +186,5 @@ inline torch::nn::LSTM lstm(
     return torch::nn::LSTM(options);
 }
 
-/**
- * @see #linear
- * @see #relu
- * @see #droput
- */
-inline void linearReLUDropout(
-    torch::nn::Sequential sequential,
-    int64_t in_features,
-    int64_t out_features,
-    bool    inplace = false,
-    double  dropout = 0.5
-) {
-    sequential->push_back(linear(in_features, out_features));
-    sequential->push_back(relu(inplace));
-    sequential->push_back(lifuren::layers::dropout(dropout));
-}
-
-/**
- * @see #conv2d
- * @see #relu
- */
-inline void conv2dRelu(
-    torch::nn::Sequential sequential,
-    int64_t in_channels,
-    int64_t out_channels,
-    int64_t kernel_size,
-    int64_t stride   = 1,
-    int64_t padding  = 0,
-    int64_t dilation = 1,
-    bool    bias     = true,
-    bool    inplace  = false
-) {
-    sequential->push_back(conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, bias));
-    sequential->push_back(relu(inplace));
-}
-
-/**
- * @see #conv2d
- * @see #batchNorm2d
- * @see #relu
- */
-inline void conv2dBatchNorm2dRelu(
-    torch::nn::Sequential sequential,
-    int64_t in_channels,
-    int64_t out_channels,
-    int64_t kernel_size,
-    int64_t stride   = 1,
-    int64_t padding  = 0,
-    int64_t dilation = 1,
-    bool    bias     = true,
-    bool    inplace  = false
-) {
-    sequential->push_back(conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, bias));
-    sequential->push_back(batchNorm2d(out_channels));
-    sequential->push_back(relu(inplace));
-}
-
-}
-}
+} // END layers
+} // END lifuren

@@ -1,22 +1,43 @@
 #include "../../header/LibTorch.hpp"
 
+/**
+ * @see #conv2d
+ * @see #batchNorm2d
+ * @see #relu
+ */
+inline void conv2dBatchNorm2dRelu(
+    torch::nn::Sequential sequential,
+    int64_t in_channels,
+    int64_t out_channels,
+    int64_t kernel_size,
+    int64_t stride   = 1,
+    int64_t padding  = 0,
+    int64_t dilation = 1,
+    bool    bias     = true,
+    bool    inplace  = false
+) {
+    sequential->push_back(lifuren::layers::conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, bias));
+    sequential->push_back(lifuren::layers::batchNorm2d(out_channels));
+    sequential->push_back(lifuren::layers::relu(inplace));
+}
+
 lifuren::GenderImpl::GenderImpl(int num_classes){
     // 卷积
     torch::nn::Sequential features;
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 3, 64, 3, 1, 1);
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 64, 64, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 3, 64, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 64, 64, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 64, 128, 3, 1, 1);
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 128, 128, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 64, 128, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 128, 128, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 128, 256, 3, 1, 1);
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 256, 256, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 128, 256, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 256, 256, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 256, 512, 3, 1, 1);
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 256, 512, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
-    lifuren::layers::conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
+    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
     this->features = register_module("features", features);
     // 池化
@@ -52,8 +73,8 @@ void lifuren::GenderHandler::trainAndVal(
     std::filesystem::path data_path = data_dir;
     std::string path_val   = (data_path / "val").u8string();
     std::string path_train = (data_path / "train").u8string();
-    auto data_loader_val   = lifuren::datasets::loadImageDataset(batch_size, path_val,  image_type);
-    auto data_loader_train = lifuren::datasets::loadImageDataset(batch_size, path_train,image_type);
+    auto data_loader_val   = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_val,  image_type);
+    auto data_loader_train = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_train,image_type);
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
         if (epoch == num_epochs / 2) {
             learning_rate /= 10;
@@ -88,6 +109,7 @@ void lifuren::GenderHandler::trian(
         loss_train += loss.item<float>();
         batch_index++;
         std::cout << "Epoch: " << epoch << " - " << batch_index << " | Train Loss: " << loss.item<float>() << " - " << loss_train / batch_index << " | Train Acc: " << acc_train / batch_index << "\r";
+        std::flush(std::cout);
     }
     std::cout << std::endl;
 }
@@ -111,6 +133,7 @@ void lifuren::GenderHandler::val(
         loss_val += loss.template item<float>();
         batch_index++;
         std::cout << "Epoch: " << epoch << " - " << batch_index << " | Val Loss: " << loss.item<float>() << " - " << loss_val / batch_index << " | Val Acc: " << acc_val / batch_index << "\r";
+        std::flush(std::cout);
     }
     std::cout << std::endl;
 }

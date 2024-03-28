@@ -53,11 +53,19 @@ public:
 };
 
 // TODO: 变形、截取
-// TODO: 高宽参数
-inline auto loadImageDataset(int batch_size, const std::string& path, const std::string& image_type) -> decltype(auto) {
-    auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [](const std::string& path) -> torch::Tensor {
+inline auto loadImageDataset(
+    const int width,
+    const int height,
+    const size_t batch_size,
+    const std::string& path,
+    const std::string& image_type
+) -> decltype(auto) {
+    auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [
+        &width,
+        &height
+    ](const std::string& path) -> torch::Tensor {
         cv::Mat image = cv::imread(path);
-        cv::resize(image, image, cv::Size(224, 224));
+        cv::resize(image, image, cv::Size(width, height));
         torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
         // TODO: 验证
         // image.release();
@@ -70,8 +78,8 @@ inline auto loadImageDataset(int batch_size, const std::string& path, const std:
     return loader;
 }
 
-typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(int, const std::string&, const std::string&)>::type ImageDatasetType;
-// using ImageDatasetType = std::result_of<decltype(&lifuren::datasets::loadImageDataset)(int, const std::string&, const std::string&)>::type;
+typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&)>::type ImageDatasetType;
+// using ImageDatasetType = std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&)>::type;
 
 }
 }
