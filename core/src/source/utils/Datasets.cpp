@@ -3,6 +3,7 @@
 lifuren::datasets::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,
+    const std::map<std::string, int>& mapping,
     const std::function<torch::Tensor(const std::string&)> fileTransform
 ) : fileTransform(fileTransform) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
@@ -14,15 +15,12 @@ lifuren::datasets::FileDataset::FileDataset(
         std::string filepath = entry.path().u8string();
         if(entry.is_directory()) {
             std::string filename = entry.path().filename().u8string();
-            this->nameLabel[filename] = this->label;
-            this->labelName[this->label] = filename;
             const uint64_t oldSize = this->paths.size();
             lifuren::files::listFiles(this->paths, entry.path().u8string(), exts);
             const uint64_t newSize = this->paths.size();
             for(uint64_t index = oldSize; index < newSize; ++index) {
-                this->labels.push_back(this->label);
+                this->labels.push_back(mapping.at(filename));
             }
-            this->label++;
         } else {
             SPDLOG_DEBUG("忽略无效文件：{} - {}", __func__, filepath);
         }

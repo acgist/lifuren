@@ -16,18 +16,18 @@ int main(const int argc, const char * const argv[]) {
     handler.model = gener;
     #ifdef _WIN32
     handler.trainAndVal(
-        1,
         32,
-        0.01,
+        8,
+        0.001,
         "D:\\tmp\\gender",
         ".jpg",
         "D:\\tmp\\gender\\model.pt"
     );
     #else
     handler.trainAndVal(
-        1,
         32,
-        0.01,
+        8,
+        0.001,
         "/tmp/gender",
         ".jpg",
         "/tmp/gender/model.pt"

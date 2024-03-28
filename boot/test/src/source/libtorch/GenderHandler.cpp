@@ -33,24 +33,21 @@ lifuren::GenderImpl::GenderImpl(int num_classes){
     conv2dBatchNorm2dRelu(features, 128, 256, 3, 1, 1);
     conv2dBatchNorm2dRelu(features, 256, 256, 3, 1, 1);
     features->push_back(lifuren::layers::maxPool2d(2, 2));
-    conv2dBatchNorm2dRelu(features, 256, 512, 3, 1, 1);
-    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
-    features->push_back(lifuren::layers::maxPool2d(2, 2));
-    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
-    conv2dBatchNorm2dRelu(features, 512, 512, 3, 1, 1);
-    features->push_back(lifuren::layers::maxPool2d(2, 2));
     this->features = register_module("features", features);
     // 池化
-    this->avgPool  = torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(7));
+    this->avgPool  = torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(32));
     // 分类
     torch::nn::Sequential classifier;
-    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(512 * 7 * 7, 4096)));
+    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(256 * 32 * 32, 1024)));
     classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
     classifier->push_back(torch::nn::Dropout());
-    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(4096, 4096)));
+    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(1024, 512)));
     classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
     classifier->push_back(torch::nn::Dropout());
-    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(4096, num_classes)));
+    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(512, 256)));
+    classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+    classifier->push_back(torch::nn::Dropout());
+    classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(256, num_classes)));
     this->classifier = register_module("classifier", classifier);
 }
 
@@ -73,10 +70,14 @@ void lifuren::GenderHandler::trainAndVal(
     std::filesystem::path data_path = data_dir;
     std::string path_val   = (data_path / "val").u8string();
     std::string path_train = (data_path / "train").u8string();
-    auto data_loader_val   = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_val,  image_type);
-    auto data_loader_train = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_train,image_type);
+    std::map<std::string, int> mapping = {
+        { "man"  , 1 },
+        { "woman", 0 }
+    };
+    auto data_loader_val   = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_val,  image_type, mapping);
+    auto data_loader_train = lifuren::datasets::loadImageDataset(180, 200, batch_size, path_train,image_type, mapping);
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
-        if (epoch == num_epochs / 2) {
+        if (epoch == num_epochs / 4) {
             learning_rate /= 10;
         }
         torch::optim::Adam optimizer(this->model->parameters(), learning_rate);
@@ -105,10 +106,10 @@ void lifuren::GenderHandler::trian(
         loss.backward();
         optimizer.step();
         auto acc = prediction.argmax(1).eq(target).sum();
-        acc_train  += acc.item<float>() / batch_size;
+        acc_train  += acc.item<float>();
         loss_train += loss.item<float>();
         batch_index++;
-        std::cout << "Epoch: " << epoch << " - " << batch_index << " | Train Loss: " << loss.item<float>() << " - " << loss_train / batch_index << " | Train Acc: " << acc_train / batch_index << "\r";
+        std::printf("Epoch: %d - %d | Train Loss: %.8f - %.8f | Train Acc: %.8f\r", epoch, batch_index, loss.item<float>(), loss_train / batch_index, acc_train / batch_size / batch_index);
         std::flush(std::cout);
     }
     std::cout << std::endl;
@@ -129,10 +130,10 @@ void lifuren::GenderHandler::val(
         torch::Tensor prediction = this->model->forward(data);
         torch::Tensor loss = torch::nll_loss(prediction, target);
         auto acc = prediction.argmax(1).eq(target).sum();
-        acc_val  += acc.template item<float>() / batch_size;
+        acc_val  += acc.template item<float>();
         loss_val += loss.template item<float>();
         batch_index++;
-        std::cout << "Epoch: " << epoch << " - " << batch_index << " | Val Loss: " << loss.item<float>() << " - " << loss_val / batch_index << " | Val Acc: " << acc_val / batch_index << "\r";
+        std::printf("Epoch: %d - %d | Train Loss: %.8f - %.8f | Train Acc: %.8f\r", epoch, batch_index, loss.item<float>(), loss_val / batch_index, acc_val / batch_size / batch_index);
         std::flush(std::cout);
     }
     std::cout << std::endl;

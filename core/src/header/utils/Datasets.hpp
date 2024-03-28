@@ -32,18 +32,16 @@ namespace datasets {
 class FileDataset : public torch::data::Dataset<FileDataset> {
 
 private:
-    int label = 0;
     std::vector<int> labels;
     std::vector<std::string> paths;
 
 public:
-    std::map<std::string, int> nameLabel;
-    std::map<int, std::string> labelName;
     std::function<torch::Tensor(const std::string&)> fileTransform;
 
     FileDataset(
         const std::string& path,
         const std::vector<std::string>& exts,
+        const std::map<std::string, int>& mapping,
         const std::function<torch::Tensor(const std::string&)> fileTransform
     );
 
@@ -58,10 +56,11 @@ inline auto loadImageDataset(
     const int height,
     const size_t batch_size,
     const std::string& path,
-    const std::string& image_type
+    const std::string& image_type,
+    const std::map<std::string, int>& mapping
 ) -> decltype(auto) {
     // 注意这里width、height不能传递引用
-    auto dataset = lifuren::datasets::FileDataset(path, { image_type }, [
+    auto dataset = lifuren::datasets::FileDataset(path, { image_type }, mapping, [
         width,
         height
     ](const std::string& path) -> torch::Tensor {
@@ -79,8 +78,8 @@ inline auto loadImageDataset(
     return loader;
 }
 
-typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&)>::type ImageDatasetType;
-// using ImageDatasetType = std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&)>::type;
+typedef std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&, const std::map<std::string, int>&)>::type ImageDatasetType;
+// using ImageDatasetType = std::result_of<decltype(&lifuren::datasets::loadImageDataset)(const int, const int, const size_t, const std::string&, const std::string&, const std::map<std::string, int>&)>::type;
 
 }
 }

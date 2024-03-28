@@ -10,13 +10,22 @@ void testResize();
 void testSlice();
 // 测试运算
 void testOperator();
+// 测试size
+void testSize();
+// 测试argmax
+void testArgmax();
+// 测试squeeze
+void testSqueeze();
 
 void lifuren::testLibTorchTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
     SPDLOG_DEBUG("是否支持CUDNN：{}", torch::cuda::cudnn_is_available());
     // testInit();
     // testClone();
-    testResize();
+    // testResize();
+    // testSize();
+    // testArgmax();
+    testSqueeze();
 }
 
 void testInit() {
@@ -104,4 +113,27 @@ void testOperator() {
     SPDLOG_DEBUG("lineA dot lineB   =\r\n{}", lineA.dot(lineB));
     SPDLOG_DEBUG("lineA dot lineB.t =\r\n{}", lineA.dot(lineB.t()));
     // TODO: cat、stack
+}
+
+void testSize() {
+    int array[6] = { 4, 5, 6, 1, 2, 3 };
+    auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
+    SPDLOG_DEBUG("a =\r\n{}", a);
+    SPDLOG_DEBUG("a =\r\n{}", a.size(0));
+    SPDLOG_DEBUG("a =\r\n{}", a.sizes());
+}
+
+void testArgmax() {
+    int array[6] = { 4, 5, 6, 1, 2, 3 };
+    auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
+    SPDLOG_DEBUG("a =\r\n{}", a);
+    SPDLOG_DEBUG("a =\r\n{}", a.argmax(1));
+    SPDLOG_DEBUG("a =\r\n{}", a.argmax(1, true));
+}
+
+void testSqueeze() {
+    int array[6] = { 4, 5, 6, 1, 2, 3 };
+    auto a = torch::from_blob(array, { 1, 3, 2, 1 }, torch::kInt);
+    SPDLOG_DEBUG("a =\r\n{}", a);
+    SPDLOG_DEBUG("a =\r\n{}", a.squeeze());
 }
