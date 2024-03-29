@@ -18,6 +18,8 @@ void testArgmax();
 void testSqueeze();
 // 测试permute
 void testPermute();
+// 测试图片
+void testImage();
 
 void lifuren::testLibTorchTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
@@ -28,7 +30,8 @@ void lifuren::testLibTorchTensor() {
     // testSize();
     // testArgmax();
     // testSqueeze();
-    testPermute();
+    // testPermute();
+    testImage();
 }
 
 void testInit() {
@@ -161,4 +164,13 @@ void testPermute() {
     SPDLOG_DEBUG("a =\r\n{}", a.permute({ 1, 2, 0 }));
     SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 0, 1 }));
     SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 1, 0 }));
+}
+
+void testImage() {
+    cv::Mat image = cv::imread("D://tmp/logo.png");
+    cv::resize(image, image, cv::Size(200, 200));
+    torch::Tensor a = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte);
+    SPDLOG_DEBUG("a = \r\n{}", a.sizes());
+    SPDLOG_DEBUG("a = \r\n{}", a.permute({2, 0, 1}).sizes());
+    SPDLOG_DEBUG("a = \r\n{}", a.sizes());
 }
