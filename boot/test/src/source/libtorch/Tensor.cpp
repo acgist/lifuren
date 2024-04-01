@@ -173,4 +173,6 @@ void testImage() {
     SPDLOG_DEBUG("a = \r\n{}", a.sizes());
     SPDLOG_DEBUG("a = \r\n{}", a.permute({2, 0, 1}).sizes());
     SPDLOG_DEBUG("a = \r\n{}", a.sizes());
+    torch::Tensor b = torch::max_pool2d(a, 2);
+    // cv::imwrite("D://tmp/logo.max.png", b);
 }

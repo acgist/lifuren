@@ -174,7 +174,7 @@ void lifuren::GenderHandler::load(const std::string& modelPath) {
 
 int lifuren::GenderHandler::pred(cv::Mat& image) {
     cv::resize(image, image, cv::Size(200, 200));
-    torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
+    torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 });
     image_tensor = image_tensor.to(this->device).unsqueeze(0).to(torch::kF32).div(255.0);
     auto prediction = this->model->forward(image_tensor);
     prediction = torch::softmax(prediction, 1);

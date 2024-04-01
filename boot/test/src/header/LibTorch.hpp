@@ -92,4 +92,22 @@ public:
 
 };
 
+/**
+ * 人脸检测
+ */
+class FaceDetectionImpl {
+};
+
+/**
+ * 人脸识别
+ */
+class FaceRecognitionImpl {
+};
+
+/**
+ * 图片切割
+ */
+class SegmentationImpl {
+};
+
 }
