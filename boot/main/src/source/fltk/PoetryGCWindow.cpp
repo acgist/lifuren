@@ -71,8 +71,8 @@ void lifuren::PoetryGCWindow::drawElement() {
     this->modelPathPtr->value(this->configPtr->modelPath.c_str());
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
     this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, PoetryGCWindow);
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, PoetryGCWindow, loadFileVector);
+    LFR_INPUT_DIRECTORY_CHOOSER(modelPathPtr, modelPath, PoetryGCWindow);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, PoetryGCWindow, loadFileVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上首诗词");
     this->nextPtr       = new Fl_Button(120, 90, 100, 30, "下首诗词");
     this->autoMarkPtr   = new Fl_Button(230, 90, 100, 30, "自动匹配");

@@ -53,8 +53,8 @@ void lifuren::ImageGCWindow::drawElement() {
     this->modelPathPtr->value(this->configPtr->modelPath.c_str());
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
     this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(modelPathPtr, modelPath, ImageGCWindow);
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK_CALL(datasetPathPtr, datasetPath, ImageGCWindow, loadImageVector);
+    LFR_INPUT_DIRECTORY_CHOOSER(modelPathPtr, modelPath, ImageGCWindow);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageGCWindow, loadImageVector);
     this->prevPtr       = new Fl_Button(10,  90, 100, 30, "上张图片");
     this->nextPtr       = new Fl_Button(120, 90, 100, 30, "下张图片");
     this->trainStartPtr = new Fl_Button(230, 90, 100, 30, "开始训练");
@@ -69,12 +69,12 @@ void lifuren::ImageGCWindow::drawElement() {
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
     // 设置：(10 + 110) * n + 40
-    LFR_CHOICE_BUTTON(40,  130, fasePtr,    "头部", "发色", "默认");
-    LFR_CHOICE_BUTTON(160, 130, faxingPtr,  "头部", "发型", "默认");
-    LFR_CHOICE_BUTTON(280, 130, meimaoPtr,  "头部", "眉毛", "默认");
-    LFR_CHOICE_BUTTON(400, 130, yanjingPtr, "头部", "眼睛", "默认");
-    LFR_CHOICE_BUTTON(520, 130, biziPtr,    "头部", "鼻子", "默认");
-    LFR_CHOICE_BUTTON(640, 130, yachiPtr,   "头部", "牙齿", "默认");
+    LFR_CHOICE_BUTTON(40,  130, LABEL_IMAGE, fasePtr,    "头部", "发色", "默认");
+    LFR_CHOICE_BUTTON(160, 130, LABEL_IMAGE, faxingPtr,  "头部", "发型", "默认");
+    LFR_CHOICE_BUTTON(280, 130, LABEL_IMAGE, meimaoPtr,  "头部", "眉毛", "默认");
+    LFR_CHOICE_BUTTON(400, 130, LABEL_IMAGE, yanjingPtr, "头部", "眼睛", "默认");
+    LFR_CHOICE_BUTTON(520, 130, LABEL_IMAGE, biziPtr,    "头部", "鼻子", "默认");
+    LFR_CHOICE_BUTTON(640, 130, LABEL_IMAGE, yachiPtr,   "头部", "牙齿", "默认");
     // 加载资源
     loadImageVector(this->configPtr->datasetPath);
 }
