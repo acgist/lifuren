@@ -8,6 +8,9 @@
 #include <chrono>
 #include <string>
 
+#include <time.h>
+#include <stdlib.h>
+
 #include "../Logger.hpp"
 
 #ifndef LFR_DATE_TIME_FORMAT
@@ -76,6 +79,21 @@ extern std::tm toDatetimeTm(const uint64_t& millis);
  * @return 日期时间
  */
 extern std::chrono::system_clock::time_point toDatetimeTp(const uint64_t& millis);
+
+/**
+ * 设置时区
+ */
+inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
+    #ifdef _WIN32
+    _putenv_s("TZ", timezone);
+    _tzset();
+    #elif defined(__linux) || defined(__linux__)
+    setenv("TZ", timezone, true);
+    tzset();
+    #else
+    // 其他
+    #endif
+}
 
 }
 }

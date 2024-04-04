@@ -39,6 +39,34 @@ inline torch::nn::BatchNorm2d batchNorm2d(int64_t num_features) {
 }
 
 /**
+ * @param normalized_shape TODO: 学习
+ * 
+ * @return LayerNorm
+ */
+inline torch::nn::LayerNorm layerNorm(std::vector<int64_t> normalized_shape) {
+    return torch::nn::LayerNorm(torch::nn::LayerNormOptions(normalized_shape));
+}
+
+/**
+ * @param num_features TODO: 学习
+ * 
+ * @return InstanceNorm2d
+ */
+inline torch::nn::InstanceNorm2d instanceNorm2d(int64_t num_features) {
+    return torch::nn::InstanceNorm2d(torch::nn::InstanceNorm2dOptions(num_features));
+}
+
+/**
+ * @param num_groups   TODO: 学习
+ * @param num_channels TODO: 学习
+ * 
+ * @return GroupNorm
+ */
+inline torch::nn::GroupNorm groupNorm(int64_t num_groups, int64_t num_channels) {
+    return torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, num_channels));
+}
+
+/**
  * @param in_channels  输入通道大小
  * @param out_channels 输出通道大小
  * @param kernel_size  卷积核大小

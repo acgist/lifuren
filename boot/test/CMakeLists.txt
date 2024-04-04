@@ -16,6 +16,8 @@ set(
     HEADER_FILES
     ${HEADER_DIR}/OpenCV.hpp
     ${HEADER_DIR}/LibTorch.hpp
+    ${HEADER_DIR}/LibTorchCV.hpp
+    ${HEADER_DIR}/LibTorchNLP.hpp
 )
 
 install(FILES ${HEADER_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDE_DIR}/${PROJECT_NAME})
@@ -49,6 +51,13 @@ endif()
 
 # 测试
 
+# add_executable之前
+# link_directories("/usr/local/lib")
+# link_libraries(lib)
+# add_executable之后
+# target_link_directories("/usr/local/lib")
+# target_link_libraries(lib)
+
 add_executable(testCoreDates src/TestCoreDates.cpp)
 add_test(NAME testCoreDates COMMAND testCoreDates)
 target_link_libraries(
@@ -77,10 +86,24 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testLibTorchYOLO src/TestLibTorchYOLO.cpp src/source/libtorch/YOLO.cpp)
+add_test(NAME testLibTorchYOLO COMMAND testLibTorchYOLO)
+target_link_libraries(
+    testLibTorchYOLO PUBLIC
+    lifurencore
+)
+
 add_executable(testLibTorchTensor src/TestLibTorchTensor.cpp src/source/libtorch/Tensor.cpp)
 add_test(NAME testLibTorchTensor COMMAND testLibTorchTensor)
 target_link_libraries(
     testLibTorchTensor PUBLIC
+    lifurencore
+)
+
+add_executable(testLibTorchDeepLab src/TestLibTorchDeepLab.cpp src/source/libtorch/DeepLab.cpp)
+add_test(NAME testLibTorchDeepLab COMMAND testLibTorchDeepLab)
+target_link_libraries(
+    testLibTorchDeepLab PUBLIC
     lifurencore
 )
 
