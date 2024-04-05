@@ -3,26 +3,29 @@
 #include "../../header/FLTK.hpp"
 #endif
 
+#include "config/Config.hpp"
+
 httplib::Server lifuren::httpServer;
 
-static bool closex = false;
+// 是否关闭
+static bool restClose = false;
 
 void lifuren::initHttpServer() {
     restGetIndex();
     restGetShutdown();
-    SPDLOG_INFO("启动REST服务：{}", 8080);
-    bool success = httpServer.listen("0.0.0.0", 8080);
-    SPDLOG_INFO("结束REST服务：{} - {}", 8080, success);
+    SPDLOG_INFO("启动REST服务：{}", lifuren::config::httpServerPort);
+    bool success = httpServer.listen(lifuren::config::httpServerHost, lifuren::config::httpServerPort);
+    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerPort, success);
     #if __FLTK__
     lifuren::shutdownFltkWindow();
     #endif
 }
 
 void lifuren::shutdownHttpServer() {
-    if(closex) {
+    if(restClose) {
         return;
     }
-    closex = true;
+    restClose = true;
     httpServer.stop();
 }
 

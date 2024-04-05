@@ -17,4 +17,14 @@ namespace lifuren {
  */
 extern void testLibTorchTensor();
 
+/**
+ * 目标检测
+ */
+extern void testYOLO();
+
+/**
+ * 语义分割
+ */
+extern void testDeepLab();
+
 }
