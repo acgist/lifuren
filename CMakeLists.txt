@@ -75,6 +75,7 @@ if(CMAKE_HOST_WIN32)
         ${CMAKE_PREFIX_PATH}
         deps/fltk
         deps/opencv
+        deps/spdlog
         deps/yaml-cpp
         deps/cpp-httplib
     )
@@ -82,6 +83,7 @@ if(CMAKE_HOST_WIN32)
     include_directories(
         deps/fltk/include
         deps/opencv/include
+        deps/spdlog/include
         deps/yaml-cpp/include
         deps/cpp-httplib/include
     )
@@ -96,6 +98,7 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
         )
+        file(GLOB HTTP_DLLS   "deps/spdlog/debug/bin/*.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
@@ -106,6 +109,7 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
         )
+        file(GLOB HTTP_DLLS   "deps/spdlog/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
@@ -117,6 +121,7 @@ endif()
 find_package(FLTK     REQUIRED)
 find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
+find_package(spdlog   REQUIRED)
 find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
