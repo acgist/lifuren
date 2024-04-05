@@ -98,7 +98,7 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
         )
-        file(GLOB HTTP_DLLS   "deps/spdlog/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
@@ -109,7 +109,7 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
         )
-        file(GLOB HTTP_DLLS   "deps/spdlog/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
