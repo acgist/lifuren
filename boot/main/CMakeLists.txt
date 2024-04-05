@@ -10,6 +10,7 @@ add_definitions(-D__FLTK__=true)
 add_definitions(-D__REST__=true)
 
 if(CMAKE_HOST_WIN32)
+if(TARGET png)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png
@@ -18,6 +19,16 @@ target_link_libraries(
     lifurencore
     ${FLTK_LIBRARIES}
 )
+else()
+target_link_libraries(
+    ${PROJECT_NAME} PUBLIC
+    png_shared
+    libjpeg-turbo::jpeg
+    httplib::httplib
+    lifurencore
+    ${FLTK_LIBRARIES}
+)
+endif()
 else()
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC

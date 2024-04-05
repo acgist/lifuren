@@ -41,7 +41,6 @@ sudo apt install libcpp-httplib-dev
 VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # 安装依赖
-
 vcpkg install fltk
 vcpkg install opencv
 vcpkg install spdlog
@@ -50,7 +49,6 @@ vcpkg install yaml-cpp
 vcpkg install cpp-httplib
 
 # 导出依赖
-
 vcpkg export fltk        --zip
 vcpkg export opencv      --zip
 vcpkg export spdlog      --zip

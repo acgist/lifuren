@@ -33,6 +33,7 @@
 |LibTorch|v2.2.1|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |cpp-httplib|v0.15.3|https://github.com/yhirose/cpp-httplib|
+|cmake|3.26.4|https://github.com/Kitware/CMake|
 
 ## 模块
 
