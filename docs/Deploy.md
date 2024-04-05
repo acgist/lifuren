@@ -28,6 +28,7 @@ cmake --build . --config Debug
 ```
 sudo apt install libtorch-dev
 sudo apt install libopencv-dev
+sudo apt install libspdlog-dev
 sudo apt install libfltk1.3-dev
 sudo apt install libyaml-cpp-dev
 sudo apt install libcpp-httplib-dev
@@ -43,6 +44,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 vcpkg install fltk
 vcpkg install opencv
+vcpkg install spdlog
 vcpkg install libtorch
 vcpkg install yaml-cpp
 vcpkg install cpp-httplib
@@ -51,6 +53,7 @@ vcpkg install cpp-httplib
 
 vcpkg export fltk        --zip
 vcpkg export opencv      --zip
+vcpkg export spdlog      --zip
 vcpkg export libtorch    --zip
 vcpkg export yaml-cpp    --zip
 vcpkg export cpp-httplib --zip
