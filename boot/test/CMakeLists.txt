@@ -53,13 +53,6 @@ endif()
 
 # 测试
 
-# add_executable之前
-# link_directories("/usr/local/lib")
-# link_libraries(lib)
-# add_executable之后
-# target_link_directories("/usr/local/lib")
-# target_link_libraries(lib)
-
 add_executable(testCoreDates src/TestCoreDates.cpp)
 add_test(NAME testCoreDates COMMAND testCoreDates)
 target_link_libraries(

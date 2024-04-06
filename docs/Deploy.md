@@ -133,7 +133,6 @@ CPU/GPU/CUDA/cuDNN
 * https://github.com/chinese-poetry/chinese-poetry
 * https://github.com/chinese-poetry/chinese-poetry-zhCN
 
-
 ## 相关下载
 
 ```

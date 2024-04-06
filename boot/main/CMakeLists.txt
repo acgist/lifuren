@@ -34,7 +34,7 @@ target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png
     jpeg
-    httplib::httplib
+    httplib
     lifurencore
     ${FLTK_LIBRARIES}
 )

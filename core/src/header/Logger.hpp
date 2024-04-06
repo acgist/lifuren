@@ -10,8 +10,13 @@
 
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
+#ifdef _WIN32
 #include "spdlog/fmt/chrono.h"
 #include "spdlog/fmt/ranges.h"
+#else
+#include "fmt/chrono.h"
+#include "fmt/ranges.h"
+#endif
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "opencv2/core/utils/logger.hpp"
