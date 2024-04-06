@@ -24,26 +24,40 @@ const char* const CONFIGS_PATH = "../config/config.yml";
 extern std::map<std::string, lifuren::Config> CONFIGS;
 
 /**
+ * 损失函数
+ */
+enum class Loss {
+
+    NONE               = 0,
+    MSE                = 1,
+    NLL                = 2,
+    CROSS_ENTROPY_LOSS = 3,
+
+};
+
+/**
  * 激活函数
  */
-enum Activation {
+enum class Activation {
 
-    RELU,
-    TANH,
-    SIGMOID,
-    SOFTMAX,
+    NONE    = 0,
+    RELU    = 1,
+    TANH    = 2,
+    SIGMOID = 3,
+    SOFTMAX = 4,
 
 };
 
 /**
  * 正则函数
  */
-enum Regularization {
+enum class Regularization {
 
-    NONE,
-    L1,
-    L2,
-    MSE,
+    NONE       = 0,
+    L1         = 1,
+    L2         = 2,
+    DROPOUT    = 3,
+    BATCH_NORM = 4,
 
 };
 
@@ -111,5 +125,6 @@ extern bool saveFile(const std::string& path);
 }
 }
 
-LFR_YAML_ENUM(Activation, RELU, SIGMOID, RELU)
-LFR_YAML_ENUM(Regularization, NONE, MSE, NONE)
+LFR_YAML_ENUM(Loss, NONE, CROSS_ENTROPY_LOSS, NONE)
+LFR_YAML_ENUM(Activation, NONE, SOFTMAX, RELU)
+LFR_YAML_ENUM(Regularization, NONE, BATCH_NORM, NONE)

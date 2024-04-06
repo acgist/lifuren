@@ -1,5 +1,7 @@
 #include "../../header/LibTorch.hpp"
 
+#include <chrono>
+
 /**
  * @see #conv2d
  * @see #batchNorm2d
@@ -89,6 +91,7 @@ void lifuren::GenderHandler::trainAndVal(
     const  std::string& image_type,
     const  std::string& save_path
 ) {
+    SPDLOG_DEBUG("是否使用CUDA：{}", this->device.is_cuda());
     std::filesystem::path data_path = data_dir;
     std::string path_val   = (data_path / "val").u8string();
     std::string path_train = (data_path / "train").u8string();
@@ -96,15 +99,23 @@ void lifuren::GenderHandler::trainAndVal(
         { "man"  , 1 },
         { "woman", 0 }
     };
+    this->model->to(this->device);
     auto data_loader_val   = lifuren::datasets::loadImageDataset(200, 200, batch_size, path_val,  image_type, mapping);
     auto data_loader_train = lifuren::datasets::loadImageDataset(200, 200, batch_size, path_train,image_type, mapping);
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
         if (epoch == num_epochs / 4) {
             learning_rate /= 10;
         }
-        torch::optim::Adam optimizer(this->model->parameters(), learning_rate);
-        this->trian(epoch, batch_size, optimizer, data_loader_train);
-        this->val(epoch, batch_size, data_loader_val);
+        try {
+            torch::optim::Adam optimizer(this->model->parameters(), learning_rate);
+            auto a = std::chrono::system_clock::now();
+            this->trian(epoch, batch_size, optimizer, data_loader_train);
+            auto z = std::chrono::system_clock::now();
+            SPDLOG_DEBUG("训练耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
+            this->val(epoch, batch_size, data_loader_val);
+        } catch(const std::exception& e) {
+            SPDLOG_ERROR("训练异常：{}", e.what());
+        }
     }
     torch::save(this->model, save_path);
 }

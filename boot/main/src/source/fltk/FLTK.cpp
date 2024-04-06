@@ -4,7 +4,8 @@
 #endif
 #include "../../header/FLTK.hpp"
 
-static bool closex = false;
+// 是否关闭
+static bool fltkClose = false;
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
@@ -20,10 +21,10 @@ void lifuren::initFltkWindow() {
 }
 
 void lifuren::shutdownFltkWindow() {
-    if(closex) {
+    if(fltkClose) {
         return;
     }
-    closex = true;
+    fltkClose = true;
     while (Fl::first_window()) {
         Fl::first_window()->hide();
     }

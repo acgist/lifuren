@@ -40,15 +40,7 @@ jobs:
           ################################
           # cpp-httplib
           ################################
-          git clone https://github.com/yhirose/cpp-httplib.git
-          cd cpp-httplib
-          git checkout v0.15.3
-          mkdir build
-          cd build
-          cmake ..
-          make -j 8
-          sudo make install
-          cd ../../
+          sudo apt install libcpp-httplib-dev
           ################################
           # libtorch
           ################################

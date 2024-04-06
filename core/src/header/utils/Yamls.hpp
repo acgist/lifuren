@@ -21,8 +21,8 @@ struct YAML::convert<lifuren::enumName> {                                  \
     static bool decode(const YAML::Node& node, lifuren::enumName& value) { \
         int v = node.as<int>();                                            \
         for(                                                               \
-            int index = lifuren::enumName::aValue;                         \
-            index <= lifuren::enumName::zValue;                            \
+            int index  = static_cast<int>(lifuren::enumName::aValue);      \
+            index     <= static_cast<int>(lifuren::enumName::zValue);      \
             ++index                                                        \
         ) {                                                                \
             if (v == index) {                                              \

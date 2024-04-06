@@ -19,6 +19,5 @@ deps/spdlog
 deps/libtorch
 deps/libtorch-cpu
 deps/libtorch-gpu
-deps/libtorch-cuda
 deps/yaml-cpp
 deps/cpp-httplib

@@ -64,10 +64,19 @@ set(SOURCE_DIR src/source/)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} deps/libtorch)
 
+if(CMAKE_HOST_UNIX)
 include_directories(
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
+else()
+include_directories(
+    /usr/include
+    /usr/local/include
+    deps/libtorch/include
+    deps/libtorch/include/torch/csrc/api/include
+)
+endif()
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -98,7 +107,7 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
         )
-        file(GLOB SPDLOG_DLLS   "deps/spdlog/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
@@ -109,12 +118,13 @@ if(CMAKE_HOST_WIN32)
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
         )
-        file(GLOB SPDLOG_DLLS   "deps/spdlog/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
     find_package(libpng        REQUIRED)
+    find_package(httplib       REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
@@ -122,7 +132,6 @@ find_package(FLTK     REQUIRED)
 find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(spdlog   REQUIRED)
-find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(deps)
