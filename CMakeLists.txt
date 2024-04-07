@@ -62,17 +62,24 @@ set(CMAKE_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include/)
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} deps/libtorch)
+set(
+    CMAKE_PREFIX_PATH
+    ${CMAKE_PREFIX_PATH}
+    # deps/opencv
+    deps/libtorch
+)
 
 if(CMAKE_HOST_UNIX)
 include_directories(
+    /usr/include
+    /usr/local/include
+    # deps/opencv/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
 else()
 include_directories(
-    /usr/include
-    /usr/local/include
+    # deps/opencv/include
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )

@@ -18,7 +18,7 @@ target_link_libraries(
 else()
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    spdlog::spdlog
+    spdlog
     yaml-cpp
     nlohmann_json::nlohmann_json
     ${OpenCV_LIBS}

@@ -14,8 +14,8 @@ if(TARGET png)
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png
-    libjpeg-turbo::jpeg
     httplib::httplib
+    libjpeg-turbo::jpeg
     lifurencore
     ${FLTK_LIBRARIES}
 )
@@ -23,8 +23,8 @@ else()
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png_shared
-    libjpeg-turbo::jpeg
     httplib::httplib
+    libjpeg-turbo::jpeg
     lifurencore
     ${FLTK_LIBRARIES}
 )
@@ -34,7 +34,7 @@ target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     png
     jpeg
-    httplib
+    cpp-httplib
     lifurencore
     ${FLTK_LIBRARIES}
 )
