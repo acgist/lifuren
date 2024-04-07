@@ -128,3 +128,7 @@ extern bool saveFile(const std::string& path);
 LFR_YAML_ENUM(Loss, NONE, CROSS_ENTROPY_LOSS, NONE)
 LFR_YAML_ENUM(Activation, NONE, SOFTMAX, RELU)
 LFR_YAML_ENUM(Regularization, NONE, BATCH_NORM, NONE)
+
+LFR_LOG_FORMAT_ENUM(lifuren::Loss)
+LFR_LOG_FORMAT_ENUM(lifuren::Activation)
+LFR_LOG_FORMAT_ENUM(lifuren::Regularization)

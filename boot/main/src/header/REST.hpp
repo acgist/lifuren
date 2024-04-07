@@ -48,4 +48,4 @@ extern void restGetIndex();
  */
 extern void restGetShutdown();
 
-}
+} // END lifuren

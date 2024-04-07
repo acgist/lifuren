@@ -8,30 +8,27 @@
  */
 #pragma once
 
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
-#ifdef _WIN32
-#include "spdlog/fmt/chrono.h"
-#include "spdlog/fmt/ranges.h"
-#else
 #include "fmt/chrono.h"
 #include "fmt/ranges.h"
-#endif
+#include "fmt/ostream.h"
+#include "spdlog/spdlog.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "opencv2/core/utils/logger.hpp"
 
-#ifndef LFR_LOG_FORMAT
-#define LFR_LOG_FORMAT(type)                      \
+#ifndef LFR_LOG_FORMAT_ENUM
+#define LFR_LOG_FORMAT_ENUM(type)      \
+inline auto format_as(const type& t) { \
+    return fmt::underlying(t);         \
+}
+#endif
+
+#ifndef LFR_LOG_FORMAT_STREAM
+#define LFR_LOG_FORMAT_STREAM(type)               \
 template<>                                        \
 struct fmt::formatter<type> : ostream_formatter { \
 };
 #endif
-
-template<typename T>
-typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& operator<<(std::ostream& out, const T& v) {
-    return out << static_cast<int>(v);
-}
 
 namespace lifuren {
 namespace logger  {
