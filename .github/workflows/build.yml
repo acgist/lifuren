@@ -37,14 +37,25 @@ jobs:
           # sudo apt  install libspdlog-dev > /dev/null 2>&1
           # apt-cache madison libspdlog-dev
           # 升级最新版本
-          git clone https://github.com/gabime/spdlog.git > /dev/null 2>&1
-          cd spdlog
-          git checkout v1.12.0
+          # fmt
+          git clone https://github.com/fmtlib/fmt.git > /dev/null 2>&1
+          cd fmt
+          git switch -c 10.2.0
           mkdir build
           cd build
           cmake ..
-          make -j 8 > /dev/null 2>&1
-          sudo make install
+          make -j 8         > /dev/null 2>&1
+          sudo make install > /dev/null 2>&1
+          cd ../../
+          # spdlog
+          git clone https://github.com/gabime/spdlog.git > /dev/null 2>&1
+          cd spdlog
+          git switch -c v1.12.0
+          mkdir build
+          cd build
+          cmake ..
+          make -j 8         > /dev/null 2>&1
+          sudo make install > /dev/null 2>&1
           cd ../../
           ################################
           # yaml-cpp
