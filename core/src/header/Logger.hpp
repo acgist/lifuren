@@ -8,10 +8,10 @@
  */
 #pragma once
 
-#include "fmt/chrono.h"
-#include "fmt/ranges.h"
-#include "fmt/ostream.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/chrono.h"
+#include "spdlog/fmt/ranges.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "opencv2/core/utils/logger.hpp"

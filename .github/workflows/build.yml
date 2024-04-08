@@ -34,8 +34,17 @@ jobs:
           ################################
           # spdlog
           ################################
-          sudo apt  install libspdlog-dev > /dev/null 2>&1
-          apt-cache madison libspdlog-dev
+          # sudo apt  install libspdlog-dev > /dev/null 2>&1
+          # apt-cache madison libspdlog-dev
+          git clone https://github.com/gabime/spdlog.git
+          cd spdlog
+          git checkout v1.12.0
+          mkdir build
+          cd build
+          cmake ..
+          make -j 8
+          make install
+          cd ../../
           ################################
           # yaml-cpp
           ################################
@@ -51,18 +60,6 @@ jobs:
           ################################
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip > /dev/null 2>&1
           unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip > /dev/null 2>&1
-          ################################
-          # fmt
-          ################################
-          git clone https://github.com/fmtlib/fmt.git
-          cd fmt
-          git checkout 10.2.0
-          mkdir build
-          cd build
-          cmake ..
-          make -j 8
-          make install
-          cd ../../
           ################################
           # 输出目录
           ################################
