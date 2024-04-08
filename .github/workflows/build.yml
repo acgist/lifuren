@@ -36,6 +36,7 @@ jobs:
           ################################
           # sudo apt  install libspdlog-dev > /dev/null 2>&1
           # apt-cache madison libspdlog-dev
+          # 升级最新版本
           git clone https://github.com/gabime/spdlog.git
           cd spdlog
           git checkout v1.12.0
