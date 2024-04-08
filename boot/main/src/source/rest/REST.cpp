@@ -14,7 +14,7 @@ void lifuren::initHttpServer() {
     restGetIndex();
     restGetShutdown();
     SPDLOG_INFO("启动REST服务：{}", lifuren::config::httpServerPort);
-    bool success = httpServer.listen(lifuren::config::httpServerHost, lifuren::config::httpServerPort);
+    bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerPort, success);
     #if __FLTK__
     lifuren::shutdownFltkWindow();
