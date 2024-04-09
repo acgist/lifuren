@@ -89,12 +89,14 @@ public:
 /**
  * 人脸检测
  * yolov4-tiny
+ * Faster-RCNN
  */
 class FaceDetectionImpl {
 };
 
 /**
  * 人脸识别
+ * 人脸检测提取人脸，然后计算人脸和已有人脸的欧几里德距离或者余弦相似度来判断是否是同一个人。
  */
 class FaceRecognitionImpl {
 };

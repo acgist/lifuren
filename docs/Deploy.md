@@ -26,12 +26,21 @@ cmake --build . --config Debug
 ## Linux依赖下载
 
 ```
+# 安装依赖
 sudo apt install libtorch-dev
 sudo apt install libopencv-dev
 sudo apt install libspdlog-dev
 sudo apt install libfltk1.3-dev
 sudo apt install libyaml-cpp-dev
 sudo apt install libcpp-httplib-dev
+
+# 配置ld.so.conf
+vim /etc/ld.so.conf
+
+---
+/data/dev/lifuren/target/lib
+/data/dev/lifuren/deps/libtorch/lib
+---
 ```
 
 ## Windows依赖下载
