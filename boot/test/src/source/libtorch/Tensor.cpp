@@ -193,7 +193,7 @@ void testFind() {
     SPDLOG_DEBUG("a sizes  = \r\n{}", a.sizes());
     SPDLOG_DEBUG("a slice  = \r\n{}", a.slice(0, 0, 2));
     SPDLOG_DEBUG("a slice  = \r\n{}", a.slice(1, 0, 2));
-    auto& [ key, value ] = a.max(1);
+    auto [ key, value ] = a.max(1);
     SPDLOG_DEBUG("a max    = \r\n{}", key);
     SPDLOG_DEBUG("a max    = \r\n{}", value);
     SPDLOG_DEBUG("a argmax = \r\n{}", a.argmax(1));
