@@ -17,25 +17,23 @@ import getopt
 import onnx
 import torch
 
+import torchvision
 import torchvision.models   as models
 import torchvision.datasets as datasets
 
 # 默认参数
-device="cpu"
-modelName=""
-modelWeights="IMAGENET1K_V1"
-datasetName=""
-input=""
-inputFormat="none"
-output=""
-outputFormat="trace"
+type         = "model"
+device       = "cpu"
+inputFile    = ""
+inputFormat  = "none"
+outputFile   = ""
+outputFormat = "trace"
 
 # 解析参数
-opts, args = getopt.getopt(sys.argv[1:], "-m:-d:-i:-if:-o:-of:-h", [
+opts, args = getopt.getopt(sys.argv[1:], "mdi:o:h", [
   "cpu", "gpu", "cuda",
-  "model=",
-  "weights=",
-  "dataset=",
+  "model",
+  "dataset",
   "input=",
   "input-format=",
   "output=",
@@ -49,18 +47,16 @@ for key, value in opts:
   if key == "--gpu" or key == "--cuda":
     device = "cuda"
   if key == "-m" or key == "--model":
-    modelName = value
-  if key == "-w" or key == "--weights":
-    modelWeights = value
+    type = "model"
   if key == "-d" or key == "--dataset":
-    datasetName = value
+    type = "dataset"
   if key == "-i" or key == "--input":
-    input = value
-  if key == "-if" or key == "--input-format":
+    inputFile = value
+  if key == "--input-format":
     inputFormat = value
   if key == "-o" or key == "--output":
-    output = value
-  if key == "-of" or key == "--output-format":
+    outputFile = value
+  if key == "--output-format":
     outputFormat = value
   if key == "-h" or key == "--help":
     print(f"""
@@ -69,93 +65,149 @@ opts: {opts}
 args: {args}
 
 py2lib.py
---cpu|gpu|cuda
--m/--model=[vgg16_bn|resnet18|mobilenet_v2...]
--w/--weights=[IMAGENET1K_V1|IMAGENET1K_V1|IMAGENET1K_V1...]
--d/--dataset=[MNIST|CIFAR10...]
--i/--input=/data/source.th
+--cpu|--gpu|--cuda
+-m/--model
+-d/--dataset
+-i/--input=/data/input.th
 --input-format=none|copy|state_dict
--o/--output=/data/target.pt
---output-format=none|copy|onnx|trace|script|state_dict
+-o/--output=/data/output.pt
+---output-format=copy|onnx|trace|script|state_dict
 -h/--help
 
     """)
     sys.exit(0)
 
-# 校验参数
-if len(modelName) <= 0 and len(datasetName) <= 0:
-  print("请指定模型名称或者数据集名称")
-  sys.exit(0)
-
 ######## 处理模型
 
-if len(modelName) > 0:
-  if len(input) <= 0:
-    input = "input.pt"
-  if len(output) <= 0:
-    os.mkdir("./model/")
-    output = "./model/output.pt"
+if type == "model":
   print("设备类型: ", device)
-  print("模型名称: ", modelName)
-  print("模型权重: ", modelWeights)
-  print("输入文件: ", input)
+  print("输入文件: ", inputFile)
   print("输入文件格式: ", inputFormat)
-  print("输出文件: ", output)
+  print("输出文件: ", outputFile)
   print("输出文件格式: ", outputFormat)
+  model       = None
+  modelName   = None
+  weightsName = None
+  checkLoop   = True
+  if inputFormat != "copy":
+    while checkLoop:
+      print("支持模型：", end = "")
+      for v in models.list_models():
+        if modelName == None:
+          print(v, end = " ")
+        elif modelName in v:
+          print(v, end = " ")
+      print("")
+      modelName = input("选择模型：")
+      for v in models.list_models():
+        if v == modelName:
+          checkLoop = False
+          break
+      if modelName == "q":
+        sys.exit(0)
+  if inputFormat == "none":
+    checkLoop = True
+    while checkLoop:
+      print("支持权重：None DEFAULT ", end = "")
+      for v in models.get_model_weights(modelName):
+        if weightsName == None:
+          print(v.name, end = " ")
+        elif weightsName in v.name:
+          print(v.name, end = " ")
+      print("")
+      weightsName = input("选择权重：")
+      for v in models.get_model_weights(modelName):
+        if v.name == weightsName:
+          print("输入大小", v.meta["min_size"])
+          print("输出类型", v.meta["categories"])
+          checkLoop = False
+          break
+      if weightsName == "None":
+        checkLoop   = False
+        weightsName = None
+      if weightsName == "DEFAULT":
+        checkLoop = False
+      if weightsName == "q":
+        sys.exit(0)
+  
   # 加载模型
-  model = None
-  if inputFormat == "copy" and len(input) > 0:
-    model = torch.load(input)
-  else:
-    # 加载模型
-    if modelName == "vgg16_bn":
-      model = models.vgg16_bn(weights=modelWeights)
-    if modelName == "resnet18":
-      model = models.resnet18(weights=modelWeights)
-    if modelName == "mobilenet_v2":
-      model = models.mobilenet_v2(weights=modelWeights)
-    # 加载权重
-    if len(input) > 0:
-      if inputFormat == "copy":
-        model = torch.load(input)
-      if inputFormat == "state_dict":
-        model.load_state_dict(torch.load(input))
+  if inputFormat == "none":
+    model = models.get_model(modelName, weights = weightsName)
+  if inputFormat == "copy":
+    model = torch.load(inputFile)
+  if inputFormat == "state_dict":
+    model = models.get_model(modelName, weights = None)
+    model.load_state_dict(torch.load(inputFile))
+  if model == None:
+    print("模型加载失败：", modelName, weightsName)
+    sys.exit(0)
+
+  # 模型定义
+  for name, param in model.named_parameters():
+    print({
+        'tensor'      : name,
+        'shape'       : list(param.size()),
+        'trainable'   : param.requires_grad,
+        'params_count': param.numel(),
+    })
 
   # 评估模式
   model.eval()
 
+  # 输出文件
+  if len(outputFile) <= 0:
+    os.makedirs("./model/" + outputFormat + "/", exist_ok = True)
+    outputFile = "./model/" + outputFormat + "/" + modelName + "." + weightsName + ".pt"
+
+  print("导出模型: ", modelName, weightsName)
+
   # 转换模型
   if outputFormat == "copy":
     # 包含模型结构以及权重
-    torch.save(model, output)
-    # model = torch.load(input)
+    torch.save(model, outputFile)
+    # model = torch.load(inputFile)
   if outputFormat == "onnx":
     # onnx
-    torch.onnx.export(model, torch.ones(1, 3, 224, 224).to(device), output)
+    torch.onnx.export(model, torch.ones(1, 3, 224, 224).to(device), outputFile)
   if outputFormat == "trace":
     # TorchScript trace: 不能含有判断
     model = torch.jit.trace(model, torch.ones(1, 3, 224, 224).to(device))
-    model.save(output)
+    model.save(outputFile)
   if outputFormat == "script":
     # TorchScript script: 可以含有判断
     model = torch.jit.script(model)
-    model.save(output)
+    model.save(outputFile)
   if outputFormat == "state_dict":
     # 没有模型结构只有模型权重
-    torch.save(model.state_dict(), output)
-    # model.load_state_dict(torch.load(path))
+    torch.save(model.state_dict(), outputFile)
+    # model.load_state_dict(torch.load(inputFile))
 
 ######## 处理数据集
 
-if len(datasetName) > 0:
-  if len(output) <= 0:
-    os.mkdir("./dataset/")
-    output = "./dataset/"
-  print("数据集名称: ", datasetName)
-  print("输出文件: ", output)
-  if datasetName == "MNIST":
-    datasets.MNIST(root=output, train=True, download=True)
-  if datasetName == "CIFAR10":
-    datasets.CIFAR10(root=output, train=True, download=True)
+if type == "dataset":
+  if len(outputFile) <= 0:
+    os.makedirs("./dataset/", exist_ok = True)
+    outputFile = "./dataset/"
+  print("输出文件: ", outputFile)
+  checkLoop   = True
+  datasetName = None
+  while checkLoop:
+    print("支持的数据集：", end = "")
+    for v in vars(datasets)["__all__"]:
+      if datasetName == None:
+        print(v, end = " ")
+      elif datasetName in v:
+        print(v, end = " ")
+    print("")
+    datasetName = input("选择数据集：")
+    for v in vars(datasets)["__all__"]:
+      if v == datasetName:
+        checkLoop = False
+        break
+    if datasetName == "q":
+      sys.exit(0)
+  print("导出数据集: ", datasetName)
+  dataset = getattr(datasets, datasetName)
+  dataset(root = outputFile, train = True, download = True)
 
 print("执行完成")

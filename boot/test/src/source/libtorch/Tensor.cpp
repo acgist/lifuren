@@ -20,6 +20,8 @@ void testSqueeze();
 void testPermute();
 // 测试图片
 void testImage();
+// 测试查找
+void testFind();
 
 void lifuren::testLibTorchTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
@@ -31,7 +33,8 @@ void lifuren::testLibTorchTensor() {
     // testArgmax();
     // testSqueeze();
     // testPermute();
-    testImage();
+    // testImage();
+    testFind();
 }
 
 void testInit() {
@@ -173,6 +176,25 @@ void testImage() {
     SPDLOG_DEBUG("a = \r\n{}", a.sizes());
     SPDLOG_DEBUG("a = \r\n{}", a.permute({2, 0, 1}).sizes());
     SPDLOG_DEBUG("a = \r\n{}", a.sizes());
-    torch::Tensor b = torch::max_pool2d(a, 2);
+    SPDLOG_DEBUG("a = \r\n{}", a.dim());
+    // torch::Tensor b = torch::max_pool2d(a, 2);
     // cv::imwrite("D://tmp/logo.max.png", b);
+}
+
+void testFind() {
+    int array[12] = {
+        4,  5,  6,
+        14, 35, 16,
+        24, 25, 26,
+        1,  2,  3
+    };
+    auto a = torch::from_blob(array, { 4, 3 }, torch::kInt);
+    SPDLOG_DEBUG("a = \r\n{}", a);
+    SPDLOG_DEBUG("a sizes  = \r\n{}", a.sizes());
+    SPDLOG_DEBUG("a slice  = \r\n{}", a.slice(0, 0, 2));
+    SPDLOG_DEBUG("a slice  = \r\n{}", a.slice(1, 0, 2));
+    SPDLOG_DEBUG("a max    = \r\n{}", a.max(1));
+    SPDLOG_DEBUG("a argmax = \r\n{}", a.argmax(1));
+    SPDLOG_DEBUG("a unsqueeze = \r\n{}", a.unsqueeze(0));
+    SPDLOG_DEBUG("a unsqueeze = \r\n{}", a.unsqueeze(1));
 }

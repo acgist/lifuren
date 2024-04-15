@@ -5,10 +5,18 @@
  */
 #pragma once
 
+#include <vector>
+
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/core/utils/logger.hpp"
+
 #include "./LibTorchCV.hpp"
 #include "./LibTorchNLP.hpp"
 
 LFR_LOG_FORMAT_STREAM(at::Tensor);
+LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 
 namespace lifuren {
 
@@ -16,6 +24,11 @@ namespace lifuren {
  * 张量测试
  */
 extern void testLibTorchTensor();
+
+/**
+ * 模型测试
+ */
+extern void testModel();
 
 /**
  * 目标检测

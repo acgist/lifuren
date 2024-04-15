@@ -72,6 +72,13 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testLibTorchModel src/TestLibTorchModel.cpp src/source/libtorch/Model.cpp)
+add_test(NAME testLibTorchModel COMMAND testLibTorchModel)
+target_link_libraries(
+    testLibTorchModel PUBLIC
+    lifurencore
+)
+
 add_executable(testLibTorchYOLO src/TestLibTorchYOLO.cpp src/source/libtorch/YOLO.cpp)
 add_test(NAME testLibTorchYOLO COMMAND testLibTorchYOLO)
 target_link_libraries(
