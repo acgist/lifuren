@@ -16,6 +16,7 @@
 #include "./LibTorchNLP.hpp"
 
 LFR_LOG_FORMAT_STREAM(at::Tensor);
+LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 
 namespace lifuren {
 

@@ -25,8 +25,12 @@ void testDeeplabLocal() {
     auto model = torch::jit::load("D:\\download\\deeplabv3_resnet50.COCO_WITH_VOC_LABELS_V1.pt", torch::kCPU);
     model.to(torch::kCPU);
     model.eval();
+    auto bike = cv::imread("D://download/yang.png");
     // auto bike = cv::imread("D://download/bike.jpg");
-    auto bike = cv::imread("D://download/bike2.webp");
+    // auto bike = cv::imread("D://download/bike2.webp");
+    if(bike.empty()) {
+        return;
+    }
     cv::resize(bike, bike, cv::Size(512, 512), cv::INTER_LINEAR);
     cv::imshow("bike", bike);
     cv::waitKey(0);
@@ -50,5 +54,6 @@ void testDeeplabLocal() {
         SPDLOG_DEBUG("抠图：{}", iterator->key());
         cv::imshow("bike-result", image);
         cv::waitKey(0);
+        image.release();
     }
 }
