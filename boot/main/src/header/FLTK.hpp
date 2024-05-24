@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <cstring>
 #include <algorithm>
 
 #include "FL/Fl.H"
@@ -28,7 +29,7 @@
 #include "config/Label.hpp"
 #include "config/Config.hpp"
 
-// 模型变量模型
+// 模型变量
 #ifndef LFR_MODEL_DEFINE
 #define LFR_MODEL_DEFINE(modelTypeLower, modelTypeUpper)             \
     Fl_Button* modelTypeLower##GcPtr = nullptr;                      \
@@ -42,19 +43,19 @@
 #define LFR_INPUT_DIRECTORY_CHOOSER(inputPtr, configName, windowName)   \
     this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {  \
         const char* value = ((windowName*) voidPtr)->inputPtr->value(); \
-        if(value == nullptr || strlen(value) == 0) {                    \
+        if(value == nullptr || std::strlen(value) == 0) {               \
             return;                                                     \
         }                                                               \
         ((windowName*) voidPtr)->configPtr->configName = value;         \
     }, this);
 #endif
 
-// 目录选择回调
+// 目录选择并且回调
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
 #define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configName, windowName, callbackName) \
     this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                       \
         const char* value = ((windowName*) voidPtr)->inputPtr->value();                      \
-        if(value == nullptr || strlen(value) == 0) {                                         \
+        if(value == nullptr || std::strlen(value) == 0) {                                    \
             return;                                                                          \
         }                                                                                    \
         ((windowName*) voidPtr)->configPtr->configName = value;                              \
@@ -70,7 +71,7 @@
     this->buttonPtr->add(defaultValue);                                                       \
     auto iterator = lifuren::map.find(groupName);                                             \
     if(iterator != lifuren::map.end()) {                                                      \
-        std::vector<LabelFile> vector = iterator->second;                                     \
+        std::vector<LabelFile>& vector = iterator->second;                                    \
         std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
             if(label.name == labelName) {                                                     \
                 std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
@@ -103,9 +104,7 @@ extern void shutdownFltkWindow();
 class Window : public Fl_Window {
 
 protected:
-    /**
-     * 图标指针
-     */
+    // 图标指针
     Fl_PNG_Image* iconImagePtr = nullptr;
 
 public:
@@ -115,34 +114,24 @@ public:
      * @param title  窗口名称
      */
     Window(int width, int height, const char* title);
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~Window();
 
 public:
-    /**
-     * 加载窗口
-     */
+    // 加载窗口
     virtual void init();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() = 0;
-    /**
-     * 设置图标
-     */
+    // 设置图标
     void icon();
-    /**
-     * 窗口居中
-     */
+    // 窗口居中
     void center();
 
 };
 
-// 定义窗口
+// 定义所有窗口
 
 class AudioGCWindow;
 class AudioTSWindow;
@@ -182,9 +171,7 @@ public:
      * @param title  窗口名称
      */
     MainWindow(int width, int height, const char* title);
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~MainWindow();
 
 public:
@@ -204,9 +191,7 @@ public:
     void about();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -231,15 +216,11 @@ public:
      * @param title  窗口名称
      */
     AboutWindow(int width, int height, const char* title = "关于");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~AboutWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -310,9 +291,7 @@ public:
      * @param title  窗口名称
      */
     ModelWindow(int width, int height, const char* title);
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~ModelWindow();
 
 protected:
@@ -325,6 +304,8 @@ protected:
 
 protected:
     /**
+     * 加载配置
+     * 
      * @param modelType 模型类型
      */
     void loadConfig(const std::string& modelType);
@@ -333,8 +314,6 @@ protected:
 
 /**
  * 内容生成窗口
- * 
- * ModelGCWindow
  */
 class ModelGCWindow : public ModelWindow {
 
@@ -345,9 +324,7 @@ public:
      * @param title  窗口名称
      */
     ModelGCWindow(int width, int height, const char* title);
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~ModelGCWindow();
 
 protected:
@@ -366,8 +343,6 @@ protected:
 
 /**
  * 风格迁移窗口
- * 
- * ModelTSWindow
  */
 class ModelTSWindow : public ModelWindow {
 
@@ -378,9 +353,7 @@ public:
      * @param title  窗口名称
      */
     ModelTSWindow(int width, int height, const char* title);
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~ModelTSWindow();
 
 protected:
@@ -398,9 +371,14 @@ protected:
  * 
  * @see AudioGC
  * 
-* @deprecated 不会实现
+ * @deprecated
  */
 class AudioGCWindow : public ModelGCWindow {
+
+public:
+    // 不会实现
+    AudioGCWindow() = delete;
+
 };
 
 /**
@@ -417,15 +395,11 @@ public:
      * @param title  窗口名称
      */
     AudioTSWindow(int width, int height, const char* title = "音频风格迁移");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~AudioTSWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -444,15 +418,11 @@ public:
      * @param title  窗口名称
      */
     ImageGCWindow(int width, int height, const char* title = "图片内容生成");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~ImageGCWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -471,15 +441,11 @@ public:
      * @param title  窗口名称
      */
     ImageTSWindow(int width, int height, const char* title = "图片风格迁移");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~ImageTSWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -502,15 +468,11 @@ public:
      * @param title  窗口名称
      */
     PoetryGCWindow(int width, int height, const char* title = "诗词内容生成");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~PoetryGCWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -520,9 +482,14 @@ protected:
  * 
  * @see PoetryTS
  * 
- * @deprecated 不会实现
+ * @deprecated
  */
 class PoetryTSWindow : public ModelTSWindow {
+
+public:
+    // 不会实现
+    PoetryTSWindow() = delete;
+
 };
 
 /**
@@ -539,15 +506,11 @@ public:
      * @param title  窗口名称
      */
     VideoGCWindow(int width, int height, const char* title = "视频内容生成");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~VideoGCWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -566,15 +529,11 @@ public:
      * @param title  窗口名称
      */
     VideoTSWindow(int width, int height, const char* title = "视频风格迁移");
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~VideoTSWindow();
 
 protected:
-    /**
-     * 加载组件
-     */
+    // 加载组件
     virtual void drawElement() override;
 
 };
@@ -586,9 +545,9 @@ class Fl_Input_Directory_Chooser : public Fl_Input {
 
 private:
     // 标题
-    const char* title;
+    const char* title = nullptr;
     // 目录
-    const char* directory = ".";
+    const char* directory = nullptr;
 
 public:
     /**
@@ -607,9 +566,7 @@ public:
         const char* title,
         const char* directory = "."
     );
-    /**
-     * 析构函数
-     */
+    // 析构函数
     virtual ~Fl_Input_Directory_Chooser();
 
 public:
@@ -623,7 +580,7 @@ public:
 /**
  * @param title     标题
  * @param directory 当前目录
- * @param filter    文件过滤（*.{cxx,cpp}）
+ * @param filter    文件过滤：*.{cxx,cpp}
  * 
  * @return 选择文件路径
  */
