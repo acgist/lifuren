@@ -15,19 +15,13 @@
 
 namespace lifuren {
 
-/**
- * HTTP Server
- */
+// HTTP Server
 extern httplib::Server httpServer;
 
-/**
- * 加载HTTP服务
- */
+// 加载HTTP服务
 extern void initHttpServer();
 
-/**
- * 关闭HTTP服务
- */
+// 关闭HTTP服务
 extern void shutdownHttpServer();
 
 /**
@@ -38,14 +32,10 @@ extern void shutdownHttpServer();
  */
 extern nlohmann::json buildResponse(const char* code, const char* message);
 
-/**
- * 主页
- */
+// 主页
 extern void restGetIndex();
 
-/**
- * 关闭
- */
+// 关闭
 extern void restGetShutdown();
 
 } // END lifuren

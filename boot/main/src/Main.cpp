@@ -10,24 +10,40 @@
 #include "FLTK.hpp"
 #endif
 
+#include <mutex>
+#include <atomic>
 #include <thread>
+#include <condition_variable>
+
+static std::mutex mutex;
+static std::atomic<int> count(0);
+static std::condition_variable condition;
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
     SPDLOG_DEBUG("启动系统");
     #if __REST__
-    std::thread httpServerThread(lifuren::initHttpServer);
+    count++;
+    std::thread httpServerThread([]() {
+        lifuren::initHttpServer();
+        condition.notify_all();
+    });
+    httpServerThread.detach();
     #endif
     #if __FLTK__
-    std::thread fltkWindowThread(lifuren::initFltkWindow);
+    count++;
+    std::thread fltkWindowThread([]() {
+        lifuren::initFltkWindow();
+        condition.notify_all();
+    });
+    fltkWindowThread.detach();
     #endif
     SPDLOG_DEBUG("启动完成");
-    #if __REST__
-    httpServerThread.join();
-    #endif
-    #if __FLTK__
-    fltkWindowThread.join();
-    #endif
+    std::unique_lock lock(mutex);
+    while(count > 0) {
+        condition.wait(lock);
+        count--;
+    }
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();
     return 0;
