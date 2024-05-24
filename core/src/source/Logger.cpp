@@ -1,5 +1,10 @@
 #include "../header/Logger.hpp"
 
+#include "opencv2/core/utils/logger.hpp"
+
+#include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
 void lifuren::logger::init() {
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
@@ -17,6 +22,7 @@ void lifuren::logger::init() {
     #else
     logger->set_level(spdlog::level::info);
     #endif
+    logger->flush_on(spdlog::level::warn);
     logger->set_pattern("[%D %T] [%L] [%t] [%s:%#] %v");
     spdlog::set_default_logger(logger);
     // 关闭OpenCV日志

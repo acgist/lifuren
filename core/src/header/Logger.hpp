@@ -12,10 +12,8 @@
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/fmt/chrono.h"
 #include "spdlog/fmt/ranges.h"
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "opencv2/core/utils/logger.hpp"
 
+// 定义日志枚举翻译
 #ifndef LFR_LOG_FORMAT_ENUM
 #define LFR_LOG_FORMAT_ENUM(type)      \
 inline auto format_as(const type& t) { \
@@ -23,6 +21,7 @@ inline auto format_as(const type& t) { \
 }
 #endif
 
+// 定义日志流的翻译
 #ifndef LFR_LOG_FORMAT_STREAM
 #define LFR_LOG_FORMAT_STREAM(type)               \
 template<>                                        \
