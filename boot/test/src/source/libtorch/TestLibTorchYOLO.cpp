@@ -1,5 +1,5 @@
 
-#include "./header/LibTorch.hpp"
+#include "../../header/LibTorch.hpp"
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
