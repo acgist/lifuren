@@ -40,17 +40,17 @@ namespace lifuren {
 namespace yamls   {
 
 /**
- * @param yaml YAML
- * @param path 文件路径
- */
-extern bool saveFile(const YAML::Node& yaml, const std::string& path);
-
-/**
  * @param path 文件路径
  * 
  * @return YAML
  */
 extern YAML::Node loadFile(const std::string& path);
+
+/**
+ * @param yaml YAML
+ * @param path 文件路径
+ */
+extern bool saveFile(const YAML::Node& yaml, const std::string& path);
 
 }
 }

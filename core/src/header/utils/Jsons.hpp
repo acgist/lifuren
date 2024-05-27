@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include <map>
 #include <string>
 
 #include "nlohmann/json.hpp"
@@ -15,6 +14,13 @@
 namespace lifuren {
 namespace jsons   {
 
+/**
+ * 加载JSON文件
+ * 
+ * @param path JSON文件路径
+ * 
+ * @return JSON内容
+ */
 template <typename T>
 T loadFile(const std::string& path) {
     std::string json = lifuren::files::loadFile(path);
@@ -25,7 +31,14 @@ T loadFile(const std::string& path) {
     return nlohmann::json::parse(json);
 }
 
-extern void saveFile(const std::string& path, const nlohmann::json& json);
+/**
+ * 保存JSON文件
+ * 
+ * @param json JSON内容
+ * 
+ * @return 是否成功
+ */
+extern bool saveFile(const std::string& path, const nlohmann::json& json);
 
 }
 }

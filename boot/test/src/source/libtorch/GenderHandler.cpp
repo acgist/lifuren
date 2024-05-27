@@ -100,8 +100,8 @@ void lifuren::GenderHandler::trainAndVal(
         { "woman", 0 }
     };
     this->model->to(this->device);
-    auto data_loader_val   = lifuren::datasets::loadImageDataset(200, 200, batch_size, path_val,  image_type, mapping);
-    auto data_loader_train = lifuren::datasets::loadImageDataset(200, 200, batch_size, path_train,image_type, mapping);
+    auto data_loader_val   = lifuren::datasets::loadImageFileDataset(200, 200, batch_size, path_val,   image_type, mapping);
+    auto data_loader_train = lifuren::datasets::loadImageFileDataset(200, 200, batch_size, path_train, image_type, mapping);
     for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
         if (epoch == num_epochs / 4) {
             learning_rate /= 10;
@@ -124,7 +124,7 @@ void lifuren::GenderHandler::trian(
     size_t epoch,
     size_t batch_size,
     torch::optim::Optimizer& optimizer,
-    lifuren::datasets::ImageDatasetType& dataset
+    lifuren::datasets::ImageFileDataset& dataset
 ) {
     float acc_train  = 0.0;
     float loss_train = 0.0;
@@ -151,7 +151,7 @@ void lifuren::GenderHandler::trian(
 void lifuren::GenderHandler::val(
     size_t epoch,
     size_t batch_size,
-    lifuren::datasets::ImageDatasetType& dataset
+    lifuren::datasets::ImageFileDataset& dataset
 ) {
     float acc_val  = 0.0;
     float loss_val = 0.0;

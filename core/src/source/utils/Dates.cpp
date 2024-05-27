@@ -4,14 +4,16 @@
 #include <iomanip>
 #include <sstream>
 
+#include "../../header/Logger.hpp"
+
 std::string lifuren::dates::format(const std::tm& datetime, const std::string& format) {
     // 性能较差
     // std::ostringstream output;
-    // output << std::put_time(&datetime, format.c_str());
+    // output << std::put_time(&datetime, format.data());
     // return output.str();
     // 性能较高
     char output[20];
-    std::strftime(output, 20, format.c_str(), &datetime);
+    std::strftime(output, 20, format.data(), &datetime);
     return output;
 }
 
@@ -26,9 +28,9 @@ std::tm lifuren::dates::parseTm(const std::string& datetime, const std::string& 
     std::tm tm;
     #ifdef _WIN32
     std::istringstream input(datetime);
-	input >> std::get_time(&tm, format.c_str());
+	input >> std::get_time(&tm, format.data());
     #else
-    strptime(datetime.c_str(), format.c_str(), &tm);
+    strptime(datetime.data(), format.data(), &tm);
     #endif
     return tm;
 }

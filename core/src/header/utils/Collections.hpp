@@ -5,8 +5,6 @@
  */
 #pragma once
 
-#include <map>
-#include <list>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -15,7 +13,7 @@ namespace lifuren     {
 namespace collections {
 
 /**
- * @param collection 集合
+ * @param collection 拼接集合
  * @param delim      分隔符号
  * 
  * @return 拼接内容
@@ -26,7 +24,6 @@ std::string join(T& collection, const std::string& delim = "") {
     if(collection.empty()) {
         return ret.str();
     }
-    std::string x;
     typename T::iterator iterator = collection.begin();
     const typename T::const_iterator end  = collection.end();
     const typename T::const_iterator last = collection.end() - 1;
@@ -38,6 +35,7 @@ std::string join(T& collection, const std::string& delim = "") {
     }
     return ret.str();
 }
+
 /**
  * @param content 文本内容
  * @param delim   分隔符号
@@ -50,7 +48,7 @@ extern std::vector<std::string> split(const std::string& content, const std::str
 
 /**
  * @param content 文本内容
- * @param multi   分隔符号
+ * @param multi   分隔符号列表
  * @param retain  保留分割符号
  * @param filter  是否过滤空白字符
  * 

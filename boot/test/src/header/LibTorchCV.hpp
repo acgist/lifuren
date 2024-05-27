@@ -59,13 +59,13 @@ public:
         size_t epoch,
         size_t batch_size,
         torch::optim::Optimizer& optimizer,
-        lifuren::datasets::ImageDatasetType& dataset
+        lifuren::datasets::ImageFileDataset& dataset
     );
     // // 验证模型
     void val(
         size_t epoch,
         size_t batch_size,
-        lifuren::datasets::ImageDatasetType& dataset
+        lifuren::datasets::ImageFileDataset& dataset
     );
     // // 测试模型
     void test(

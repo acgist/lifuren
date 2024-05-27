@@ -3,6 +3,13 @@
 #include <fstream>
 #include <filesystem>
 
+YAML::Node lifuren::yamls::loadFile(const std::string& path) {
+    if(!std::filesystem::exists(path)) {
+        return YAML::Node();
+    }
+    return YAML::LoadFile(path);
+}
+
 bool lifuren::yamls::saveFile(const YAML::Node& yaml, const std::string& path) {
     // 保存文件
     std::ofstream output;
@@ -14,11 +21,4 @@ bool lifuren::yamls::saveFile(const YAML::Node& yaml, const std::string& path) {
     output << yaml;
     output.close();
     return true;
-}
-
-YAML::Node lifuren::yamls::loadFile(const std::string& path) {
-    if(!std::filesystem::exists(path)) {
-        return YAML::Node();
-    }
-    return YAML::LoadFile(path);
 }

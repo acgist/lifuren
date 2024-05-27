@@ -9,9 +9,6 @@
 #include <string>
 
 #include <time.h>
-#include <stdlib.h>
-
-#include "../Logger.hpp"
 
 #ifndef LFR_DATE_TIME_FORMAT
 #define LFR_DATE_TIME_FORMAT "%Y-%m-%d %H:%M:%S"
@@ -82,6 +79,8 @@ extern std::chrono::system_clock::time_point toDatetimeTp(const uint64_t& millis
 
 /**
  * 设置时区
+ * 
+ * @param timezone 时区
  */
 inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
     #ifdef _WIN32

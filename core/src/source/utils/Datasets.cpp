@@ -1,5 +1,8 @@
 #include "../../header/utils/Datasets.hpp"
 
+#include "../../header/Logger.hpp"
+#include "../../header/utils/Files.hpp"
+
 lifuren::datasets::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,
@@ -7,7 +10,7 @@ lifuren::datasets::FileDataset::FileDataset(
     const std::function<torch::Tensor(const std::string&)> fileTransform
 ) : fileTransform(fileTransform) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
-        SPDLOG_DEBUG("目录无效：{} - {}", __func__, path);
+        SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
     auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
@@ -22,7 +25,7 @@ lifuren::datasets::FileDataset::FileDataset(
                 this->labels.push_back(mapping.at(filename));
             }
         } else {
-            SPDLOG_DEBUG("忽略无效文件：{} - {}", __func__, filepath);
+            SPDLOG_DEBUG("忽略无效文件：{}", filepath);
         }
     }
 }
