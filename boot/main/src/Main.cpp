@@ -26,7 +26,11 @@ int main(const int argc, const char * const argv[]) {
     count++;
     std::thread httpServerThread([]() {
         lifuren::initHttpServer();
-        condition.notify_all();
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            count--;
+            condition.notify_all();
+        }
     });
     httpServerThread.detach();
     #endif
@@ -34,15 +38,20 @@ int main(const int argc, const char * const argv[]) {
     count++;
     std::thread fltkWindowThread([]() {
         lifuren::initFltkWindow();
-        condition.notify_all();
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            count--;
+            condition.notify_all();
+        }
     });
     fltkWindowThread.detach();
     #endif
     SPDLOG_DEBUG("启动完成");
-    std::unique_lock lock(mutex);
-    while(count > 0) {
-        condition.wait(lock);
-        count--;
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        while(count > 0) {
+            condition.wait(lock);
+        }
     }
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();

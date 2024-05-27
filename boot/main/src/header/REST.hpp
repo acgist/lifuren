@@ -11,8 +11,6 @@
 
 #include "nlohmann/json.hpp"
 
-#include "Logger.hpp"
-
 namespace lifuren {
 
 // HTTP Server

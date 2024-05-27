@@ -20,9 +20,9 @@ void lifuren::AboutWindow::drawElement() {
     // 内容
     this->aboutBufferPtr = new Fl_Text_Buffer();
     this->aboutBufferPtr->text("李夫人，这是一个研究生成网络、机器视觉、自然语言处理的程序。\n");
-    this->aboutBufferPtr->append("Gitee:https://gitee.com/acgist/lifuren\n");
+    this->aboutBufferPtr->append("Gitee：https://gitee.com/acgist/lifuren\n");
     this->aboutBufferPtr->append("Github：https://github.com/acgist/lifuren\n");
-    this->aboutBufferPtr->append("作者：acgist");
+    this->aboutBufferPtr->append("作者：碧螺萧萧（acgist）");
     this->aboutDisplayPtr->buffer(this->aboutBufferPtr);
     // 主页
     this->homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
