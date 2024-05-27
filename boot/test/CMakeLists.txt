@@ -51,10 +51,10 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testCoreFiles src/TestCoreFiles.cpp)
-add_test(NAME testCoreFiles COMMAND testCoreFiles)
+add_executable(testFiles src/source/core/TestFiles.cpp)
+add_test(NAME testFiles COMMAND testFiles)
 target_link_libraries(
-    testCoreFiles PUBLIC
+    testFiles PUBLIC
     lifurencore
 )
 
