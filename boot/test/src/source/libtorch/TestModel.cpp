@@ -1,27 +1,7 @@
+
 #include "../../header/LibTorch.hpp"
 
-void testMobilenetLocal();
-void testDeeplabLocal();
-
-void lifuren::testModel() {
-    testDeeplabLocal();
-}
-
-void testMobilenetLocal() {
-    auto model = torch::jit::load("D:\\download\\model\\trace\\mobilenet_v3_large.IMAGENET1K_V2.pt", torch::kCPU);
-    model.to(torch::kCPU);
-    model.eval();
-    std::vector<torch::jit::IValue> vector;
-    vector.push_back(torch::ones({1, 3, 224, 224}));
-    SPDLOG_DEBUG("执行结果：{}", vector);
-    auto result = model.forward(vector).toTensor();
-    SPDLOG_DEBUG("执行结果：{}", result);
-    SPDLOG_DEBUG("执行结果：{}", result.max());
-    SPDLOG_DEBUG("执行结果：{}", result.argmax());
-    SPDLOG_DEBUG("执行结果：{}", result.slice(1, 0, 5));
-}
-
-void testDeeplabLocal() {
+static void testDeeplabLocal() {
     auto model = torch::jit::load("D:\\download\\deeplabv3_resnet50.COCO_WITH_VOC_LABELS_V1.pt", torch::kCPU);
     model.to(torch::kCPU);
     model.eval();
@@ -56,4 +36,36 @@ void testDeeplabLocal() {
         cv::waitKey(0);
         image.release();
     }
+}
+
+static void testMobilenetLocal() {
+    auto model = torch::jit::load("D:\\download\\model\\trace\\mobilenet_v3_large.IMAGENET1K_V2.pt", torch::kCPU);
+    model.to(torch::kCPU);
+    model.eval();
+    std::vector<torch::jit::IValue> vector;
+    vector.push_back(torch::ones({1, 3, 224, 224}));
+    SPDLOG_DEBUG("执行结果：{}", vector);
+    auto result = model.forward(vector).toTensor();
+    SPDLOG_DEBUG("执行结果：{}", result);
+    SPDLOG_DEBUG("执行结果：{}", result.max());
+    SPDLOG_DEBUG("执行结果：{}", result.argmax());
+    SPDLOG_DEBUG("执行结果：{}", result.slice(1, 0, 5));
+}
+
+void lifuren::testModel() {
+    testDeeplabLocal();
+    testMobilenetLocal();
+}
+
+int main(const int argc, const char * const argv[]) {
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
+    try {
+        lifuren::testModel();
+    } catch(const std::exception& e) {
+        SPDLOG_ERROR("加载模型异常：{}", e.what());
+    }
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
+    return 0;
 }

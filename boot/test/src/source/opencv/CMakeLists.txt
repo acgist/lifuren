@@ -1,20 +1,20 @@
-add_executable(testOpenCVFace TestOpenCVFace.cpp)
-add_test(NAME testOpenCVFace COMMAND testOpenCVFace)
+add_executable(testFace TestFace.cpp)
+add_test(NAME testFace COMMAND testFace)
 target_link_libraries(
-    testOpenCVFace PUBLIC
+    testFace PUBLIC
     lifurencore
 )
 
-add_executable(testOpenCVColor TestOpenCVColor.cpp)
-add_test(NAME testOpenCVColor COMMAND testOpenCVColor)
+add_executable(testColor TestColor.cpp)
+add_test(NAME testColor COMMAND testColor)
 target_link_libraries(
-    testOpenCVColor PUBLIC
+    testColor PUBLIC
     lifurencore
 )
 
-add_executable(testOpenCVResize TestOpenCVResize.cpp)
-add_test(NAME testOpenCVResize COMMAND testOpenCVResize)
+add_executable(testResize TestResize.cpp)
+add_test(NAME testResize COMMAND testResize)
 target_link_libraries(
-    testOpenCVResize PUBLIC
+    testResize PUBLIC
     lifurencore
 )

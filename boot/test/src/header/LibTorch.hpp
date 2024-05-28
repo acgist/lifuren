@@ -21,9 +21,9 @@ LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 namespace lifuren {
 
 /**
- * 张量测试
+ * 目标检测
  */
-extern void testLibTorchTensor();
+extern void testYOLO();
 
 /**
  * 模型测试
@@ -31,9 +31,9 @@ extern void testLibTorchTensor();
 extern void testModel();
 
 /**
- * 目标检测
+ * 张量测试
  */
-extern void testYOLO();
+extern void testTensor();
 
 /**
  * 语义分割

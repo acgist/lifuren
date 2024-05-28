@@ -1,6 +1,9 @@
 
 #include "../../header/LibTorch.hpp"
 
+void lifuren::testDeepLab() {
+}
+
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
     SPDLOG_DEBUG("测试");

@@ -23,7 +23,7 @@ void testImage();
 // 测试查找
 void testFind();
 
-void lifuren::testLibTorchTensor() {
+void lifuren::testTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
     SPDLOG_DEBUG("是否支持CUDNN：{}", torch::cuda::cudnn_is_available());
     // testInit();
@@ -199,4 +199,14 @@ void testFind() {
     SPDLOG_DEBUG("a argmax = \r\n{}", a.argmax(1));
     SPDLOG_DEBUG("a unsqueeze = \r\n{}", a.unsqueeze(0));
     SPDLOG_DEBUG("a unsqueeze = \r\n{}", a.unsqueeze(1));
+}
+
+
+int main(const int argc, const char * const argv[]) {
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
+    lifuren::testTensor();
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
+    return 0;
 }
