@@ -23,6 +23,7 @@ void lifuren::face(const std::string& model, const std::string& path) {
     }
     cv::imshow("FaceImage", image);
     cv::waitKey(0);
+    cv::destroyWindow("FaceImage");
     image.release();
 }
 

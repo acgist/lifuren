@@ -17,6 +17,9 @@ void lifuren::resize(const std::string& path) {
     cv::imshow("ImageCrop", imageCrop);
     cv::imshow("ImageResize", imageResize);
     cv::waitKey(0);
+    cv::destroyWindow("Image");
+    cv::destroyWindow("ImageCrop");
+    cv::destroyWindow("ImageResize");
     image.release();
     imageCrop.release();
     imageResize.release();
