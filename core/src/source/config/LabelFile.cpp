@@ -44,5 +44,7 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
         }
         map.emplace(key, std::move(vector));
     }
-    return std::move(map);
+    return map;
+    // 没有必要使用move
+    // return std::move(map);
 }

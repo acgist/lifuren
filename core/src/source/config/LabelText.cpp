@@ -56,5 +56,7 @@ std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std
         );
         map.emplace(key, label);
     }
-    return std::move(map);
+    return map;
+    // 没有必要使用move
+    // return std::move(map);
 }
