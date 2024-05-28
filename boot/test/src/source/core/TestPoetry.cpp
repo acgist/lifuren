@@ -1,4 +1,3 @@
-#include <regex>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -9,14 +8,12 @@
 #include "utils/Strings.hpp"
 #include "utils/Collections.hpp"
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+static void testPoetry() {
     const std::string content = lifuren::strings::trim(R"(
 月落乌啼霜满天，江枫渔火对愁眠。
 姑苏城外寒山寺，夜半钟声到客船。
     )");
-    int fontSize = 0;
+    int fontSize    = 0;
     int segmentSize = 0;
     std::vector<int> segmentRule;
     nlohmann::json json;
@@ -35,12 +32,18 @@ int main(const int argc, const char * const argv[]) {
     SPDLOG_DEBUG("诗句字数：{}", fontSize);
     SPDLOG_DEBUG("诗句段数：{}", segmentSize);
     SPDLOG_DEBUG("逐句字数：{}", lifuren::collections::join(segmentRule, ","));
-    json["example"] = content;
+    json["example"]  = content;
     json["fontSize"] = fontSize;
     json["segmentSize"] = segmentSize;
     json["segmentRule"] = segmentRule;
-    json["participleRule"] = std::vector<int>{ };
+    json["participleRule"] = std::vector<int>{};
     SPDLOG_DEBUG("配置规则：{}", json.dump(2));
+}
+
+int main(const int argc, const char * const argv[]) {
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
+    testPoetry();
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();
     return 0;

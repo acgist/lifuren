@@ -33,7 +33,7 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
     std::string substr;
     while(true) {
         size_t min = std::string::npos;
-        for(auto& value : multi) {
+        for(const auto& value : multi) {
             pos = content.find(value, index);
             if(pos != std::string::npos && pos < min) {
                 min   = pos;

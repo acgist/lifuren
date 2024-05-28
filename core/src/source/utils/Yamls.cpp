@@ -3,8 +3,10 @@
 #include <fstream>
 #include <filesystem>
 
+#include "Logger.hpp"
+
 YAML::Node lifuren::yamls::loadFile(const std::string& path) {
-    if(!std::filesystem::exists(path)) {
+    if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
         return YAML::Node();
     }
     return YAML::LoadFile(path);
@@ -16,6 +18,7 @@ bool lifuren::yamls::saveFile(const YAML::Node& yaml, const std::string& path) {
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
         SPDLOG_WARN("配置打开文件失败：{}", path);
+        output.close();
         return false;
     }
     output << yaml;

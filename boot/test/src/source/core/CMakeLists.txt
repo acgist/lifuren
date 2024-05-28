@@ -26,6 +26,13 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testLayers TestLayers.cpp)
+add_test(NAME testLayers COMMAND testLayers)
+target_link_libraries(
+    testLayers PUBLIC
+    lifurencore
+)
+
 add_executable(testPoetry TestPoetry.cpp)
 add_test(NAME testPoetry COMMAND testPoetry)
 target_link_libraries(

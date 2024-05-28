@@ -68,14 +68,14 @@ extern uint64_t toMillis(const std::chrono::system_clock::time_point& datetime);
  * 
  * @return 日期时间
  */
-extern std::tm toDatetimeTm(const uint64_t& millis);
+extern std::tm parseTm(const uint64_t& millis);
 
 /**
  * @param millis 毫秒
  * 
  * @return 日期时间
  */
-extern std::chrono::system_clock::time_point toDatetimeTp(const uint64_t& millis);
+extern std::chrono::system_clock::time_point parseTp(const uint64_t& millis);
 
 /**
  * 设置时区

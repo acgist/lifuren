@@ -49,7 +49,7 @@ extern size_t length(const char* value);
  * @return 字符串长度
  */
 inline size_t length(const std::string& value) {
-    return lifuren::strings::length(value.c_str());
+    return lifuren::strings::length(value.data());
 }
 
 /**
@@ -64,7 +64,7 @@ inline size_t length(const std::string& value) {
  * 
  * @return 截取内容
  */
-extern std::string substr(const char* value, uint32_t& pos, const uint32_t& length);
+extern std::string substr(const char* value, const uint32_t& pos, const uint32_t& length);
 
 /**
  * @param value    字符串

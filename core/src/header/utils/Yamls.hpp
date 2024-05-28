@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "Files.hpp"
-
 #include "yaml-cpp/yaml.h"
 
 #ifndef LFR_YAML_ENUM

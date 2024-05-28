@@ -99,7 +99,6 @@ inline auto loadImageFileDataset(
         return data_tensor;
     }).map(torch::data::transforms::Stack<>());
     auto loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-    // return std::move(loader);
     return loader;
 }
 

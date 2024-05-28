@@ -3,19 +3,23 @@
 #include <cctype>
 
 void lifuren::strings::toLower(std::string& value) {
-    // std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    #else
     std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
-        // Linux宏定义
         return std::tolower(v);
     });
+    #endif
 }
 
 void lifuren::strings::toUpper(std::string& value) {
-    // std::transform(value.begin(), value.end(), value.begin(), ::toupper);
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::toupper);
+    #else
     std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
-        // Linux宏定义
         return std::toupper(v);
     });
+    #endif
 }
 
 std::string lifuren::strings::trim(const std::string& value) {
@@ -39,16 +43,17 @@ size_t lifuren::strings::length(const char* value) {
     return jndex;
 }
 
-std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uint32_t& length) {
+std::string lifuren::strings::substr(const char* value, const uint32_t& pos, const uint32_t& length) {
     std::string ret;
+    uint32_t jndex = pos;
     uint32_t index = 0;
-    while(value[pos]) {
-        ret.push_back(value[pos]);
-        if((value[pos] & 0xC0) != 0x80) {
+    while(value[jndex]) {
+        ret.push_back(value[jndex]);
+        if((value[jndex] & 0xC0) != 0x80) {
             ++index;
         };
-        ++pos;
-        if((value[pos] & 0xC0) != 0x80) {
+        ++jndex;
+        if((value[jndex] & 0xC0) != 0x80) {
             if(index >= length) {
                 break;
             }

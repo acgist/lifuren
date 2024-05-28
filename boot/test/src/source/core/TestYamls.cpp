@@ -1,3 +1,20 @@
+#include "utils/Yamls.hpp"
+
+#include "Logger.hpp"
+
+static void testYamls() {
+    YAML::Node yaml = lifuren::yamls::loadFile("D:\\tmp\\lifuren.yml");
+    YAML::Node node;
+    node["lifuren"] = "漂漂亮亮";
+    yaml.push_back(node);
+    lifuren::yamls::saveFile(yaml, "D:\\tmp\\lifuren.yml");
+}
+
 int main() {
+    lifuren::logger::init();
+    SPDLOG_DEBUG("测试");
+    testYamls();
+    SPDLOG_DEBUG("完成");
+    lifuren::logger::shutdown();
     return 0;
 }

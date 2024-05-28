@@ -21,10 +21,10 @@ static void testParse() {
 static void testMillis() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     const uint64_t millis = lifuren::dates::toMillis(now);
-    std::tm tm = lifuren::dates::toDatetimeTm(millis);
+    std::tm tm = lifuren::dates::parseTm(millis);
     SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::dates::toMillis(now));
     SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::dates::toMillis(tm));
-    SPDLOG_DEBUG("时间戳转日期时间：{}", lifuren::dates::toDatetimeTp(millis));
+    SPDLOG_DEBUG("时间戳转日期时间：{}", lifuren::dates::parseTp(millis));
     SPDLOG_DEBUG("时间戳转日期时间：{} - {} - {} - {} - {} - {}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
@@ -33,8 +33,8 @@ static void testCost() {
     const uint64_t millis = lifuren::dates::toMillis(a);
     for(int index = 0; index < 100000; ++index) {
         // lifuren::dates::toMillis(a);
-        // lifuren::dates::toDatetimeTm(millis);
-        // lifuren::dates::toDatetimeTp(millis);
+        // lifuren::dates::parseTm(millis);
+        // lifuren::dates::parseTp(millis);
         // 优化50毫秒以内
         lifuren::dates::format(a, LFR_DATE_TIME_FORMAT);
         // lifuren::dates::parseTm("2012-12-12 12:12:12", LFR_DATE_TIME_FORMAT);

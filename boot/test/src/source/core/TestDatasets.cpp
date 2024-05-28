@@ -1,5 +1,6 @@
-#include "Logger.hpp"
 #include "utils/Datasets.hpp"
+
+#include "Logger.hpp"
 
 LFR_LOG_FORMAT_STREAM(at::Tensor);
 

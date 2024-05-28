@@ -7,13 +7,6 @@
 
 #include <string>
 
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/core/utils/logger.hpp"
-
-#include "Logger.hpp"
-
 namespace lifuren {
 
 /**
