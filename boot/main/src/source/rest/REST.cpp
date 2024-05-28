@@ -36,7 +36,7 @@ nlohmann::json lifuren::buildResponse(const char* code, const char* message) {
     header["code"]     = code;
     header["message"]  = message;
     response["header"] = header;
-    return std::move(response);
+    return response;
 }
 
 void lifuren::restGetIndex() {

@@ -54,7 +54,7 @@ std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std
             key,
             iterator->second
         );
-        map.insert(std::pair(key, label));
+        map.emplace(key, label);
     }
-    return map;
+    return std::move(map);
 }

@@ -117,7 +117,7 @@ static void generate(Fl_Widget* widgetPtr, void* voidPtr) {
 
 static void loadImageVector(const std::string& path) {
     if(path.empty() || path == oldPath) {
-        SPDLOG_DEBUG("忽略图片目录加载：{} - {}", __func__, path);
+        SPDLOG_DEBUG("忽略图片目录加载：{}", path);
         return;
     }
     oldPath = path;
@@ -132,7 +132,7 @@ static void previewImage() {
         SPDLOG_WARN("没有可用图片");
         return;
     }
-    SPDLOG_DEBUG("预览图片：{} - {}", __func__, *imageIterator);
+    SPDLOG_DEBUG("预览图片：{}", *imageIterator);
     // 释放资源
     LFR_DELETE_PTR(previewImagePtr);
     // 加载图片：异常处理

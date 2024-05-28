@@ -64,7 +64,19 @@ inline size_t length(const std::string& value) {
  * 
  * @return 截取内容
  */
-extern std::string substr(const char* value, const uint32_t& pos, const uint32_t& length);
+extern std::string substr(const char* value, uint32_t& pos, const uint32_t& length);
+
+/**
+ * @param value  UTF8字符串
+ * @param pos    开始位置
+ * @param length 截取长度
+ * 
+ * @return 截取内容
+ */
+inline std::string substr(const char* value, const uint32_t& pos, const uint32_t& length) {
+    uint32_t copy = pos;
+    return substr(value, copy, length);
+}
 
 /**
  * @param value    字符串

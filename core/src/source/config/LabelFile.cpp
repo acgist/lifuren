@@ -28,8 +28,9 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
         ++iterator
     ) {
         std::string key = iterator->first.as<std::string>();
-        auto value      = iterator->second;
+        auto& value     = iterator->second;
         std::vector<LabelFile> vector;
+        vector.reserve(value.size());
         for(
             auto labelIterator = value.begin();
             labelIterator != value.end();
@@ -41,8 +42,7 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
             );
             vector.push_back(label);
         }
-        // TODO: move
-        map.insert(std::pair(key, vector));
+        map.emplace(key, std::move(vector));
     }
-    return map;
+    return std::move(map);
 }

@@ -150,7 +150,7 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Wi
 }
 
 lifuren::ModelWindow::~ModelWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __func__);
+    SPDLOG_DEBUG("关闭窗口");
     LFR_DELETE_THIS_PTR(modelPathPtr);
     LFR_DELETE_THIS_PTR(datasetPathPtr);
 }
@@ -158,9 +158,8 @@ lifuren::ModelWindow::~ModelWindow() {
 void lifuren::ModelWindow::loadConfig(const std::string& modelType) {
     auto iterator = CONFIGS.find(modelType);
     if(iterator == CONFIGS.end()) {
-        this->configPtr = new Config();
-        // TODO: BUG拷贝
-        CONFIGS.insert(std::make_pair(modelType, *this->configPtr));
+        auto pair = CONFIGS.emplace(modelType, Config{});
+        this->configPtr = &pair.first->second;
     } else {
         this->configPtr = &iterator->second;
     }
@@ -170,7 +169,7 @@ lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) 
 }
 
 lifuren::ModelGCWindow::~ModelGCWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __func__);
+    SPDLOG_DEBUG("关闭GC窗口");
     LFR_DELETE_THIS_PTR(prevPtr);
     LFR_DELETE_THIS_PTR(nextPtr);
     LFR_DELETE_THIS_PTR(trainStartPtr);
@@ -182,7 +181,7 @@ lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) 
 }
 
 lifuren::ModelTSWindow::~ModelTSWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __func__);
+    SPDLOG_DEBUG("关闭TS窗口");
     LFR_DELETE_THIS_PTR(trainStartPtr);
     LFR_DELETE_THIS_PTR(trainStopPtr);
     LFR_DELETE_THIS_PTR(transferPtr);

@@ -62,7 +62,7 @@ std::map<std::string, lifuren::Config> lifuren::config::loadFile(const std::stri
             lifuren::config::httpServerPort = iterator->second.as<int>();
         } else {
             Config config(iterator->second);
-            map.insert(std::pair(key, config));
+            map.emplace(key, config);
         }
     }
     return map;

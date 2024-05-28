@@ -36,7 +36,7 @@ std::tm lifuren::dates::parseTm(const std::string& datetime, const std::string& 
     std::istringstream input(datetime);
 	input >> std::get_time(&tm, format.data());
     #else
-    std::strptime(datetime.data(), format.data(), &tm);
+    strptime(datetime.data(), format.data(), &tm);
     #endif
     return tm;
 }

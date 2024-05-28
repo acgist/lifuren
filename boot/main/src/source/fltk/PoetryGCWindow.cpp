@@ -139,7 +139,7 @@ static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
 
 static void loadFileVector(const std::string& path) {
     if(path.empty() || path == oldPath) {
-        SPDLOG_DEBUG("忽略诗词目录加载：{} - {}", __func__, path);
+        SPDLOG_DEBUG("忽略诗词目录加载：{}", path);
         return;
     }
     oldPath = path;
@@ -171,7 +171,7 @@ static void matchPoetryRhythmic() {
     }
     lifuren::Poetry poetry = *poetryIterator;
     poetry.preproccess();
-    SPDLOG_DEBUG("解析诗词：{} - {} - {}", __func__, *fileIterator, poetry.title);
+    SPDLOG_DEBUG("解析诗词：{} - {}", *fileIterator, poetry.title);
     // 原始内容
     sourceBufferPtr->text(poetry.title.c_str());
     sourceBufferPtr->append("\n");

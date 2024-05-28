@@ -43,17 +43,16 @@ size_t lifuren::strings::length(const char* value) {
     return jndex;
 }
 
-std::string lifuren::strings::substr(const char* value, const uint32_t& pos, const uint32_t& length) {
+std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uint32_t& length) {
     std::string ret;
-    uint32_t jndex = pos;
     uint32_t index = 0;
-    while(value[jndex]) {
-        ret.push_back(value[jndex]);
-        if((value[jndex] & 0xC0) != 0x80) {
+    while(value[pos]) {
+        ret.push_back(value[pos]);
+        if((value[pos] & 0xC0) != 0x80) {
             ++index;
         };
-        ++jndex;
-        if((value[jndex] & 0xC0) != 0x80) {
+        ++pos;
+        if((value[pos] & 0xC0) != 0x80) {
             if(index >= length) {
                 break;
             }
