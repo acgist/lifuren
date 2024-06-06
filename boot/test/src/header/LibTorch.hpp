@@ -20,6 +20,10 @@
 #include "config/Config.hpp"
 #include "utils/Datasets.hpp"
 
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/chrono.h"
+#include "spdlog/fmt/ranges.h"
+
 LFR_LOG_FORMAT_STREAM(at::Tensor);
 LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 

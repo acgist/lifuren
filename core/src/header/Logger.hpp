@@ -8,9 +8,6 @@
  */
 #pragma once
 
-#include "fmt/format.h"
-#include "fmt/ostream.h"
-
 // 定义日志枚举翻译
 #ifndef LFR_LOG_FORMAT_ENUM
 #define LFR_LOG_FORMAT_ENUM(type)      \

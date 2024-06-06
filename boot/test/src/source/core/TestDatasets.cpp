@@ -4,6 +4,10 @@
 
 #include "spdlog/spdlog.h"
 
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/chrono.h"
+#include "spdlog/fmt/ranges.h"
+
 LFR_LOG_FORMAT_STREAM(at::Tensor);
 
 static void testLoadImageFileDataset() {

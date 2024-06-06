@@ -11,6 +11,10 @@
 #include "Logger.hpp"
 #include "../utils/Yamls.hpp"
 
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/chrono.h"
+#include "spdlog/fmt/ranges.h"
+
 namespace lifuren {
 
 class Config;
