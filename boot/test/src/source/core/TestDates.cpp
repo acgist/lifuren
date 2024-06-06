@@ -1,5 +1,8 @@
-#include "Logger.hpp"
 #include "utils/Dates.hpp"
+
+#include "Logger.hpp"
+
+#include "spdlog/spdlog.h"
 
 static void testFormat() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();

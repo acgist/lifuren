@@ -6,6 +6,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 void lifuren::resize(const std::string& path) {
     cv::Mat image = cv::imread(path);
     cv::Mat imageCrop;

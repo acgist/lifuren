@@ -8,6 +8,8 @@
 #include "utils/Strings.hpp"
 #include "utils/Collections.hpp"
 
+#include "spdlog/spdlog.h"
+
 static void testPoetry() {
     const std::string content = lifuren::strings::trim(R"(
 月落乌啼霜满天，江枫渔火对愁眠。

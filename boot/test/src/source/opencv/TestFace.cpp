@@ -9,6 +9,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 void lifuren::face(const std::string& model, const std::string& path) {
     cv::Mat image = cv::imread(path);
     cv::CascadeClassifier classifier;

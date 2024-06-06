@@ -24,7 +24,6 @@
 #include "Fl/Fl_Native_File_Chooser.H"
 
 #include "Ptr.hpp"
-#include "Logger.hpp"
 #include "utils/Files.hpp"
 #include "config/Label.hpp"
 #include "config/Config.hpp"

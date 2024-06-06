@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "Logger.hpp"
-
 namespace lifuren {
 
 /**

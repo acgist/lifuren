@@ -1,5 +1,7 @@
 #include "../header/Lifuren.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "../header/utils/Yamls.hpp"
 #include "../header/config/Label.hpp"
 #include "../header/config/Config.hpp"

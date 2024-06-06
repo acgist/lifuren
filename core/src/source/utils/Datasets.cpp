@@ -3,6 +3,8 @@
 #include "../../header/Logger.hpp"
 #include "../../header/utils/Files.hpp"
 
+#include "spdlog/spdlog.h"
+
 lifuren::datasets::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,

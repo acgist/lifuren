@@ -5,6 +5,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 YAML::Node lifuren::yamls::loadFile(const std::string& path) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
         return YAML::Node();

@@ -2,6 +2,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 static void testYamls() {
     YAML::Node yaml = lifuren::yamls::loadFile("D:\\tmp\\lifuren.yml");
     YAML::Node node;

@@ -1,5 +1,8 @@
-#include "Logger.hpp"
 #include "utils/Collections.hpp"
+
+#include "Logger.hpp"
+
+#include "spdlog/spdlog.h"
 
 static void testJoin() {
     std::vector<std::string> vector;

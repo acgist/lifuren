@@ -1,5 +1,9 @@
 #include "utils/Jsons.hpp"
 
+#include "Logger.hpp"
+
+#include "spdlog/spdlog.h"
+
 static void testLoadFile() {
     const nlohmann::json json = lifuren::jsons::loadFile<nlohmann::json>("D:\\tmp\\lifuren.json");
     SPDLOG_DEBUG("文件内容读取：{}", json.dump());

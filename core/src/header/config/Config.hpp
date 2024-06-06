@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "../Logger.hpp"
+#include "Logger.hpp"
 #include "../utils/Yamls.hpp"
 
 namespace lifuren {

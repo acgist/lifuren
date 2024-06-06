@@ -9,7 +9,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "../Logger.hpp"
+#include "spdlog/spdlog.h"
 
 namespace lifuren {
 namespace files   {

@@ -6,6 +6,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 void lifuren::color(const std::string& path) {
     cv::Mat image = cv::imread(path);
     cv::imshow("Image", image);

@@ -1,5 +1,7 @@
 #include "../../header/config/Config.hpp"
 
+#include "spdlog/spdlog.h"
+
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 

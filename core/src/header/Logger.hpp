@@ -8,10 +8,8 @@
  */
 #pragma once
 
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
-#include "spdlog/fmt/chrono.h"
-#include "spdlog/fmt/ranges.h"
+#include "fmt/format.h"
+#include "fmt/ostream.h"
 
 // 定义日志枚举翻译
 #ifndef LFR_LOG_FORMAT_ENUM

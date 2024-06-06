@@ -2,6 +2,10 @@
 
 #include <algorithm>
 
+#include "Logger.hpp"
+
+#include "spdlog/spdlog.h"
+
 static void testListFiles() {
     std::vector<std::string> vector;
     // lifuren::files::listFiles(vector, "D:\\tmp");

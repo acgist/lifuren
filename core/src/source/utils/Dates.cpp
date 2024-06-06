@@ -4,8 +4,6 @@
 #include <iomanip>
 #include <sstream>
 
-#include "../../header/Logger.hpp"
-
 #ifndef LFR_DATE_FORMAT_STREAM
 #define LFR_DATE_FORMAT_STREAM false
 #endif

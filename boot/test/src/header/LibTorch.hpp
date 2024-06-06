@@ -16,7 +16,6 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/core/utils/logger.hpp"
 
-#include "Logger.hpp"
 #include "utils/Layers.hpp"
 #include "config/Config.hpp"
 #include "utils/Datasets.hpp"

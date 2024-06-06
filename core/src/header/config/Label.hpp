@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "../Logger.hpp"
 #include "../utils/Yamls.hpp"
 
 namespace lifuren {

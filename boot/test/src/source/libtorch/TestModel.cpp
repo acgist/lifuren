@@ -1,6 +1,8 @@
 
 #include "../../header/LibTorch.hpp"
 
+#include "spdlog/spdlog.h"
+
 static void testDeeplabLocal() {
     auto model = torch::jit::load("D:\\download\\deeplabv3_resnet50.COCO_WITH_VOC_LABELS_V1.pt", torch::kCPU);
     model.to(torch::kCPU);

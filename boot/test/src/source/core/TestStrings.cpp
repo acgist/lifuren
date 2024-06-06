@@ -2,6 +2,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 static void testLowerUpper() {
     std::string value = "LIfuREN";
     lifuren::strings::toLower(value);

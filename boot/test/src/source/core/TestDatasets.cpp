@@ -2,6 +2,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 LFR_LOG_FORMAT_STREAM(at::Tensor);
 
 static void testLoadImageFileDataset() {

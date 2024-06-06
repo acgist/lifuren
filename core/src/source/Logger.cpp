@@ -1,5 +1,7 @@
 #include "../header/Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "opencv2/core/utils/logger.hpp"
 
 #include "spdlog/sinks/daily_file_sink.h"

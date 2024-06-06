@@ -5,6 +5,8 @@
 
 #include "../../header/utils/Strings.hpp"
 
+#include "spdlog/spdlog.h"
+
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path) {
     listFiles(vector, path, {});
 }

@@ -1,5 +1,9 @@
 #include "../../header/LibTorch.hpp"
 
+#include "Logger.hpp"
+
+#include "spdlog/spdlog.h"
+
 // 测试初始化
 static void testInit();
 // 测试拷贝

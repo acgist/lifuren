@@ -2,6 +2,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 static void testLayers() {
     lifuren::layers::batchNorm2d(2);
     lifuren::layers::layerNorm({ 2 });
