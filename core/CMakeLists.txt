@@ -2,7 +2,7 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 
-file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
+file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp" "src/source/*/*/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
 

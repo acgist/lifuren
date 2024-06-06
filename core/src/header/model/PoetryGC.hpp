@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <string>
+
 #include "../Model.hpp"
 #include "./Poetry.hpp"
 
@@ -22,21 +24,22 @@ class PoetryGCModelConfig : public lifuren::ModelConfig {
 /**
  * 诗词生成模型
  */
-class PoetryGCModel : public Model<PoetryGCModelConfig> {
+class PoetryGCModel : public Model<PoetryGCModelConfig, std::string, std::string> {
 
 public:
+    PoetryGCModel();
+    virtual ~PoetryGCModel();
     /**
      * @param config      基本配置
      * @param modelConfig 模型配置
      */
     PoetryGCModel(const lifuren::Config& config, const lifuren::PoetryGCModelConfig& modelConfig);
-    virtual ~PoetryGCModel();
 
 public:
     void train() override;
     void val() override;
     void test() override;
-    void pred() override;
+    std::string pred(std::string path) override;
 
 };
 

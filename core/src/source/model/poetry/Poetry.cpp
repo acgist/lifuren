@@ -1,9 +1,9 @@
-#include "../../header/model/Poetry.hpp"
+#include "../../../header/model/Poetry.hpp"
 
 #include <algorithm>
 
-#include "../../header/utils/Strings.hpp"
-#include "../../header/utils/Collections.hpp"
+#include "../../../header/utils/Strings.hpp"
+#include "../../../header/utils/Collections.hpp"
 
 std::string lifuren::poetry::beautify(const std::string& segment) {
     std::string ret;

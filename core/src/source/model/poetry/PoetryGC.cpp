@@ -1,4 +1,7 @@
-#include "../../header/model/PoetryGC.hpp"
+#include "../../../header/model/PoetryGC.hpp"
+
+lifuren::PoetryGCModel::PoetryGCModel() {
+}
 
 lifuren::PoetryGCModel::~PoetryGCModel() {
 }
@@ -15,5 +18,6 @@ void lifuren::PoetryGCModel::val() {
 void lifuren::PoetryGCModel::test() {
 }
 
-void lifuren::PoetryGCModel::pred() {
+std::string lifuren::PoetryGCModel::pred(std::string) {
+    return "";
 }
