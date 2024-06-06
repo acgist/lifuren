@@ -16,12 +16,14 @@ namespace lifuren {
  * @param path  图片路径
  */
 extern void face(const std::string& model, const std::string& path);
+
 /**
  * 修改图片颜色
  * 
  * @param path 图片路径
  */
 extern void color(const std::string& path);
+
 /**
  * 修改图片大小
  * 

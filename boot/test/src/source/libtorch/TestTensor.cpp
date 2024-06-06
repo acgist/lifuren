@@ -1,27 +1,29 @@
 #include "../../header/LibTorch.hpp"
 
 // 测试初始化
-void testInit();
+static void testInit();
 // 测试拷贝
-void testClone();
+static void testClone();
 // 测试变形
-void testResize();
+static void testResize();
 // 测试切片
-void testSlice();
+static void testSlice();
 // 测试运算
-void testOperator();
+static void testOperator();
 // 测试size
-void testSize();
+static void testSize();
 // 测试argmax
-void testArgmax();
+static void testArgmax();
 // 测试squeeze
-void testSqueeze();
+static void testSqueeze();
 // 测试permute
-void testPermute();
+static void testPermute();
 // 测试图片
-void testImage();
+static void testImage();
 // 测试查找
-void testFind();
+static void testFind();
+// 测试转换
+static void testTransfor();
 
 void lifuren::testTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
@@ -34,10 +36,11 @@ void lifuren::testTensor() {
     // testSqueeze();
     // testPermute();
     // testImage();
-    testFind();
+    // testFind();
+    testTransfor();
 }
 
-void testInit() {
+static void testInit() {
     auto a = torch::zeros({3, 4});
     SPDLOG_DEBUG("a =\r\n{}", a);
     a = torch::ones({3, 4});
@@ -64,7 +67,7 @@ void testInit() {
     SPDLOG_DEBUG("a =\r\n{}", a);
 }
 
-void testClone() {
+static void testClone() {
     auto a = torch::zeros({3, 4});
     // 浅拷贝
     auto b = a;
@@ -86,7 +89,7 @@ void testClone() {
     // auto d = torch::rand_like(b, torch::kFloat);
 }
 
-void testResize() {
+static void testResize() {
     // TODO: flatten、view、reshape、transpose
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
@@ -100,11 +103,11 @@ void testResize() {
     SPDLOG_DEBUG("a =\r\n{}", a[0][0]);
 }
 
-void testSlice() {
+static void testSlice() {
     // TODO: narrow、select、index、index_put_、index_select、slice
 }
 
-void testOperator() {
+static void testOperator() {
     int arrayA[] = { 1, 2, 3, 4 };
     int arrayB[] = { 1, 2, 3, 4 };
     const torch::Tensor lineA = torch::tensor({ 1, 2, 3, 4});
@@ -124,7 +127,7 @@ void testOperator() {
     // TODO: cat、stack
 }
 
-void testSize() {
+static void testSize() {
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
     SPDLOG_DEBUG("a =\r\n{}", a);
@@ -132,7 +135,7 @@ void testSize() {
     SPDLOG_DEBUG("a =\r\n{}", a.sizes());
 }
 
-void testArgmax() {
+static void testArgmax() {
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
     SPDLOG_DEBUG("a =\r\n{}", a);
@@ -140,7 +143,7 @@ void testArgmax() {
     SPDLOG_DEBUG("a =\r\n{}", a.argmax(1, true));
 }
 
-void testSqueeze() {
+static void testSqueeze() {
     int array[6] = { 4, 5, 6, 1, 2, 3 };
     auto a = torch::from_blob(array, { 3, 2 }, torch::kInt);
     SPDLOG_DEBUG("a =\r\n{}", a);
@@ -151,7 +154,7 @@ void testSqueeze() {
     SPDLOG_DEBUG("a =\r\n{}", a.squeeze());
 }
 
-void testPermute() {
+static void testPermute() {
     torch::Tensor a = torch::linspace(1, 30, 30).view({ 3, 2, 5 });
     SPDLOG_DEBUG("a =\r\n{}", a.sizes());
     SPDLOG_DEBUG("a =\r\n{}", a.permute({ 0, 1, 2 }).sizes());
@@ -169,7 +172,7 @@ void testPermute() {
     SPDLOG_DEBUG("a =\r\n{}", a.permute({ 2, 1, 0 }));
 }
 
-void testImage() {
+static void testImage() {
     cv::Mat image = cv::imread("D://tmp/logo.png");
     cv::resize(image, image, cv::Size(200, 200));
     torch::Tensor a = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte);
@@ -181,7 +184,7 @@ void testImage() {
     // cv::imwrite("D://tmp/logo.max.png", b);
 }
 
-void testFind() {
+static void testFind() {
     int array[12] = {
         4,  5,  6,
         14, 35, 16,
@@ -201,6 +204,27 @@ void testFind() {
     SPDLOG_DEBUG("a unsqueeze = \r\n{}", a.unsqueeze(1));
 }
 
+static void testTransfor() {
+    int array[12] = {
+        4,  5,  6,
+        14, 35, 16,
+        24, 25, 26,
+        1,  2,  3
+    };
+    auto a = torch::from_blob(array, { 4, 3 }, torch::kInt);
+    SPDLOG_DEBUG("a = \r\n{}", a);
+    SPDLOG_DEBUG("a = \r\n{}", a[0, 1]);
+    // SPDLOG_DEBUG("a = \r\n{}", a[0, 2]);
+    SPDLOG_DEBUG("a = \r\n{}", a[1, 1]);
+    // SPDLOG_DEBUG("a = \r\n{}", a[1, 2]);
+    SPDLOG_DEBUG("a = \r\n{}", a[2, 1]);
+    // SPDLOG_DEBUG("a = \r\n{}", a[2, 2]);
+    SPDLOG_DEBUG("a = \r\n{}", a.slice(0, 1));
+    SPDLOG_DEBUG("a = \r\n{}", a.slice(1, 1));
+    SPDLOG_DEBUG("a = \r\n{}", a.view(12));
+    SPDLOG_DEBUG("a = \r\n{}", a.view({4, 3, 1, 1}));
+    SPDLOG_DEBUG("a = \r\n{}", a[0][1].template item<int>());
+}
 
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();

@@ -72,5 +72,3 @@ int main(const int argc, const char * const argv[]) {
     lifuren::logger::shutdown();
     return 0;
 }
-
-
