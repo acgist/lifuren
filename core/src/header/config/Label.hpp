@@ -4,7 +4,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_CONFIG_LABEL_HPP
+#define LFR_HEADER_CORE_CONFIG_LABEL_HPP
 
 #include <map>
 #include <string>
@@ -117,3 +118,5 @@ public:
 };
 
 }
+
+#endif // LFR_HEADER_CORE_CONFIG_LABEL_HPP

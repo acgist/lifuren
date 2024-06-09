@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_STRINGS_HPP
+#define LFR_HEADER_CORE_UTILS_STRINGS_HPP
 
 #include <string>
 #include <vector>
@@ -94,3 +95,5 @@ extern void replace(std::string& value, const std::vector<std::string>& oldValue
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_STRINGS_HPP

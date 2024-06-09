@@ -6,7 +6,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_LOGGER_HPP
+#define LFR_HEADER_CORE_LOGGER_HPP
 
 // 定义日志枚举翻译
 #ifndef LFR_LOG_FORMAT_ENUM
@@ -39,3 +40,5 @@ extern void shutdown();
 
 }
 }
+
+#endif // LFR_HEADER_CORE_LOGGER_HPP

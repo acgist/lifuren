@@ -6,7 +6,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_MODEL_POETRYGC_HPP
+#define LFR_HEADER_CORE_MODEL_POETRYGC_HPP
 
 #include <string>
 
@@ -44,3 +45,5 @@ public:
 };
 
 }
+
+#endif // LFR_HEADER_CORE_MODEL_POETRYGC_HPP

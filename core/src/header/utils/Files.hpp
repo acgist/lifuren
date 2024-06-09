@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_FILES_HPP
+#define LFR_HEADER_CORE_UTILS_FILES_HPP
 
 #include <string>
 #include <vector>
@@ -77,3 +78,5 @@ extern bool saveFile(const std::string& path, const std::string& value);
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_FILES_HPP

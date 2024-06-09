@@ -5,7 +5,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_BOOT_REST_HPP
+#define LFR_HEADER_BOOT_REST_HPP
 
 #include "httplib.h"
 
@@ -37,3 +38,5 @@ extern void restGetIndex();
 extern void restGetShutdown();
 
 } // END lifuren
+
+#endif // LFR_HEADER_BOOT_REST_HPP

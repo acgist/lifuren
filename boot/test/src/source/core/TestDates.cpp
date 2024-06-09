@@ -3,6 +3,7 @@
 #include "Logger.hpp"
 
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/chrono.h"
 
 static void testFormat() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();

@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_JSONS_HPP
+#define LFR_HEADER_CORE_UTILS_JSONS_HPP
 
 #include <string>
 
@@ -42,3 +43,5 @@ extern bool saveFile(const std::string& path, const nlohmann::json& json);
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_JSONS_HPP

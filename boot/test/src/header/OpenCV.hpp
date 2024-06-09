@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_BOOT_OPENCV_HPP
+#define LFR_HEADER_BOOT_OPENCV_HPP
 
 #include <string>
 
@@ -32,3 +33,5 @@ extern void color(const std::string& path);
 extern void resize(const std::string& path);
     
 }
+
+#endif // LFR_HEADER_BOOT_OPENCV_HPP

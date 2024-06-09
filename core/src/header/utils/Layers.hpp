@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_LAYERS_HPP
+#define LFR_HEADER_CORE_UTILS_LAYERS_HPP
 
 #include "torch/torch.h"
 
@@ -216,3 +217,5 @@ inline torch::nn::LSTM lstm(
 
 } // END layers
 } // END lifuren
+
+#endif // LFR_HEADER_CORE_UTILS_LAYERS_HPP

@@ -4,7 +4,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_CONFIG_MARK_HPP
+#define LFR_HEADER_CORE_CONFIG_MARK_HPP
 
 #include <string>
 #include <vector>
@@ -102,3 +103,5 @@ public:
 };
 
 }
+
+#endif // LFR_HEADER_CORE_CONFIG_MARK_HPP

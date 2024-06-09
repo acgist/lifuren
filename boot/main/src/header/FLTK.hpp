@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_BOOT_FLTK_HPP
+#define LFR_HEADER_BOOT_FLTK_HPP
 
 #include <string>
 #include <cstring>
@@ -594,3 +595,5 @@ extern std::string fileChooser(const char* title, const char* directory = ".", c
 extern std::string directoryChooser(const char* title, const char* directory = ".");
 
 } // END lifuren
+
+#endif // LFR_HEADER_BOOT_FLTK_HPP

@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_BOOT_LIBTORCH_HPP
+#define LFR_HEADER_BOOT_LIBTORCH_HPP
 
 #include <string>
 #include <vector>
@@ -40,3 +41,5 @@ extern void testModel();
 extern void testTensor();
 
 }
+
+#endif // LFR_HEADER_BOOT_LIBTORCH_HPP

@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_MODEL_POETRY_HPP
+#define LFR_HEADER_CORE_MODEL_POETRY_HPP
 
 #include <vector>
 #include <string>
@@ -84,3 +85,5 @@ public:
 };
 
 }
+
+#endif // LFR_HEADER_CORE_MODEL_POETRY_HPP

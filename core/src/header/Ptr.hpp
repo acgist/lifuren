@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_PTR_HPP
+#define LFR_HEADER_CORE_PTR_HPP
 
 // 删除指针
 #ifndef LFR_DELETE_PTR
@@ -26,3 +27,5 @@
 namespace lifuren {
 
 } // END lifuren
+
+#endif // LFR_HEADER_CORE_PTR_HPP

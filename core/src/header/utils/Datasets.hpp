@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_DATASETS_HPP
+#define LFR_HEADER_CORE_UTILS_DATASETS_HPP
 
 #include <map>
 #include <string>
@@ -114,3 +115,5 @@ using ImageFileDataset = std::result_of<decltype(&lifuren::datasets::loadImageFi
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_DATASETS_HPP

@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_DATES_HPP
+#define LFR_HEADER_CORE_UTILS_DATES_HPP
 
 #include <chrono>
 #include <string>
@@ -96,3 +97,5 @@ inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_DATES_HPP

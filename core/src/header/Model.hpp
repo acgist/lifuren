@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_MODEL_HPP
+#define LFR_HEADER_CORE_MODEL_HPP
 
 #include "torch/torch.h"
 #include "torch/script.h"
@@ -117,3 +118,5 @@ void lifuren::Model<M, I, R>::trainAndVal() {
 }
 
 }
+
+#endif // LFR_HEADER_CORE_MODEL_HPP

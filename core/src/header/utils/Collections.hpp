@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_COLLECTIONS_HPP
+#define LFR_HEADER_CORE_UTILS_COLLECTIONS_HPP
 
 #include <vector>
 #include <string>
@@ -58,3 +59,5 @@ extern std::vector<std::string> split(const std::string& content, const std::vec
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_COLLECTIONS_HPP

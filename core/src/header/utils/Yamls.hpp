@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_YAMLS_HPP
+#define LFR_HEADER_CORE_UTILS_YAMLS_HPP
 
 #include <string>
 
@@ -52,3 +53,5 @@ extern bool saveFile(const YAML::Node& yaml, const std::string& path);
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_YAMLS_HPP

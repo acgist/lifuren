@@ -86,9 +86,9 @@
 
 T5/GPT/BERT/自注意力机制（Self-Attention）
 
+* https://github.com/lencx/ChatGPT
 * https://github.com/ollama/ollama
 * https://github.com/huginn/huginn
-* https://github.com/lencx/ChatGPT
 * https://github.com/xtekky/gpt4free
 * https://github.com/ggerganov/llama.cpp
 * https://github.com/ggerganov/whisper.cpp

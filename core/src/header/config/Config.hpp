@@ -3,7 +3,8 @@
  * 
  * @author acgist
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_CONFIG_CONFIG_HPP
+#define LFR_HEADER_CORE_CONFIG_CONFIG_HPP
 
 #include <map>
 #include <string>
@@ -136,3 +137,5 @@ LFR_YAML_ENUM(Regularization, NONE, BATCH_NORM, NONE)
 LFR_LOG_FORMAT_ENUM(lifuren::Loss)
 LFR_LOG_FORMAT_ENUM(lifuren::Activation)
 LFR_LOG_FORMAT_ENUM(lifuren::Regularization)
+
+#endif // LFR_HEADER_CORE_CONFIG_CONFIG_HPP

@@ -1,7 +1,8 @@
 /**
  * 模型工具
  */
-#pragma once
+#ifndef LFR_HEADER_CORE_UTILS_MODELS_HPP
+#define LFR_HEADER_CORE_UTILS_MODELS_HPP
 
 namespace lifuren {
 namespace models  {
@@ -18,3 +19,5 @@ extern void loadWeight();
 
 }
 }
+
+#endif // LFR_HEADER_CORE_UTILS_MODELS_HPP
