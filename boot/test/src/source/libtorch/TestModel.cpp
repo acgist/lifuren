@@ -1,7 +1,22 @@
 
 #include "../../header/LibTorch.hpp"
 
+#include "Logger.hpp"
+
+#include "torch/torch.h"
+#include "torch/script.h"
+
 #include "spdlog/spdlog.h"
+
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/ranges.h"
+
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+
+LFR_LOG_FORMAT_STREAM(at::Tensor);
+LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 
 static void testDeeplabLocal() {
     auto model = torch::jit::load("D:\\download\\deeplabv3_resnet50.COCO_WITH_VOC_LABELS_V1.pt", torch::kCPU);

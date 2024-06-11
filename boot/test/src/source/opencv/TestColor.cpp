@@ -1,12 +1,12 @@
 #include "../../header/OpenCV.hpp"
 
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-
 #include "Logger.hpp"
 
 #include "spdlog/spdlog.h"
+
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 
 void lifuren::color(const std::string& path) {
     cv::Mat image = cv::imread(path);

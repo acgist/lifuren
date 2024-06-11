@@ -2,7 +2,20 @@
 
 #include "Logger.hpp"
 
+#include "torch/torch.h"
+#include "torch/script.h"
+
 #include "spdlog/spdlog.h"
+
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/fmt/ranges.h"
+
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+
+LFR_LOG_FORMAT_STREAM(at::Tensor);
+LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 
 // 测试初始化
 static void testInit();
