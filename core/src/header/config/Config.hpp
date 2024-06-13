@@ -12,9 +12,7 @@
 #include "Logger.hpp"
 #include "../utils/Yamls.hpp"
 
-#include "spdlog/fmt/ostr.h"
-#include "spdlog/fmt/chrono.h"
-#include "spdlog/fmt/ranges.h"
+#include "spdlog/fmt/fmt.h"
 
 namespace lifuren {
 
