@@ -4,10 +4,10 @@
  * @author acgist
  */
 #if __REST__
-#include "REST.hpp"
+#include "../header/REST.hpp"
 #endif
 #if __FLTK__
-#include "FLTK.hpp"
+#include "../header/FLTK.hpp"
 #endif
 
 #include <mutex>

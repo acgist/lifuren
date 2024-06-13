@@ -127,9 +127,11 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://github.com/PlexPt/awesome-chatgpt-prompts-zh
 * https://github.com/chatchat-space/Langchain-Chatchat
 
+## 迁移学习
+
 ## 模型量化
 
-## 模型微调
+## 模型微调（Fine-tune）
 
 ## 模型精调
 
@@ -190,6 +192,9 @@ ADMA + L2
 ## 术语
 #### 梯度消失
 #### 梯度爆炸
+#### prompt
+#### Tokenizer
+#### Embedding
 
 ## 学习资料
 

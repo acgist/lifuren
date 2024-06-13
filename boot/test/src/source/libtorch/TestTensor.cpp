@@ -17,44 +17,38 @@
 LFR_LOG_FORMAT_STREAM(at::Tensor);
 LFR_LOG_FORMAT_STREAM(torch::jit::IValue);
 
-// 测试初始化
 static void testInit();
-// 测试拷贝
 static void testClone();
-// 测试变形
 static void testResize();
-// 测试切片
 static void testSlice();
-// 测试运算
 static void testOperator();
-// 测试size
 static void testSize();
-// 测试argmax
 static void testArgmax();
-// 测试squeeze
 static void testSqueeze();
-// 测试permute
 static void testPermute();
-// 测试图片
 static void testImage();
-// 测试查找
 static void testFind();
-// 测试转换
 static void testTransfor();
+static void testEqual();
+static void testCUDA();
+static void testGrad();
 
 void lifuren::testTensor() {
     SPDLOG_DEBUG("是否支持CUDA：{}", torch::cuda::is_available());
     SPDLOG_DEBUG("是否支持CUDNN：{}", torch::cuda::cudnn_is_available());
-    // testInit();
-    // testClone();
-    // testResize();
-    // testSize();
-    // testArgmax();
-    // testSqueeze();
-    // testPermute();
-    // testImage();
-    // testFind();
+    testInit();
+    testClone();
+    testResize();
+    testSize();
+    testArgmax();
+    testSqueeze();
+    testPermute();
+    testImage();
+    testFind();
     testTransfor();
+    testEqual();
+    testCUDA();
+    testGrad();
 }
 
 static void testInit() {
@@ -241,6 +235,69 @@ static void testTransfor() {
     SPDLOG_DEBUG("a = \r\n{}", a.view(12));
     SPDLOG_DEBUG("a = \r\n{}", a.view({4, 3, 1, 1}));
     SPDLOG_DEBUG("a = \r\n{}", a[0][1].template item<int>());
+}
+
+static void testEqual() {
+    torch::Tensor a = torch::rand({ 2, 3 });
+    torch::Tensor b = a.view({ 2, 3 });
+    SPDLOG_DEBUG("a = {}", a);
+    SPDLOG_DEBUG("a = {}", b);
+    SPDLOG_DEBUG("a = {}", (long long) &a);
+    SPDLOG_DEBUG("a = {}", (long long) &b);
+    SPDLOG_DEBUG("a = b: {}", a == b);
+    int array[6] = { 4, 5, 6, 1, 2, 3 };
+    auto ax = torch::from_blob(array, { 3, 2 }, torch::kInt);
+    ax += 100;
+    SPDLOG_DEBUG("ax = {}", ax);
+    for(auto& v : array) {
+        SPDLOG_DEBUG("axv = {}", v);
+    }
+}
+
+static void testCUDA() {
+    if(!torch::cuda::is_available()) {
+        return;
+    }
+    auto device = torch::kCUDA;
+    torch::tensor({33, 22, 11}).to(device);
+}
+
+static void testGrad() {
+    torch::Tensor a = torch::ones({2, 3});
+    // a.detach();
+    // a.requires_grad = true;
+    // a.set_requires_grad(false);
+    a.set_requires_grad(true);
+    try {
+        // a.backward();
+        auto b = torch::rand({2, 3});
+        SPDLOG_DEBUG("a = {}", a);
+        SPDLOG_DEBUG("b = {}", b);
+        a.backward(b);
+        // a.backward(torch::zeros({2, 3}));
+    } catch(const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
+    // {
+    //     torch::NoGradGuard noGradGuard;
+    //     // 不算梯度
+    // }
+    SPDLOG_DEBUG("a grad = {}", a.grad());
+    // a.is_leaf();
+    // SPDLOG_DEBUG("a grad = {}", a.grad_fn());
+    try {
+        auto xa = torch::tensor({1, 2, 3, 4}, torch::kFloat64);
+        xa.set_requires_grad(true);
+        auto xb = 2 * xa;
+        auto xc = xb.view({2, 2});
+        SPDLOG_DEBUG("xc = {}", xc);
+        auto xd = torch::tensor({{1.0, 0.1}, {0.01, 0.001}});
+        SPDLOG_DEBUG("xd = {}", xd);
+        xc.backward(xd);
+        SPDLOG_DEBUG("xa grad = {}", xa.grad());
+    } catch(const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 int main(const int argc, const char * const argv[]) {

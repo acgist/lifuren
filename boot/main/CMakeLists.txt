@@ -1,10 +1,25 @@
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
-aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
-
-file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp")
-
-add_executable(${PROJECT_NAME} src/Main.cpp ${SOURCE_FILES} ${SUB_SOURCE_FILES})
+add_executable(
+    ${PROJECT_NAME}
+    src/source/Main.cpp
+    src/source/fltk/FLTK.cpp
+    src/source/fltk/MainWindow.cpp
+    src/source/fltk/AboutWindow.cpp
+    src/source/fltk/AudioGCWindow.cpp
+    src/source/fltk/AudioTSWindow.cpp
+    src/source/fltk/ImageGCWindow.cpp
+    src/source/fltk/ImageTSWindow.cpp
+    src/source/fltk/PoetryGCWindow.cpp
+    src/source/fltk/PoetryTSWindow.cpp
+    src/source/fltk/VideoGCWindow.cpp
+    src/source/fltk/VideoTSWindow.cpp
+    src/source/rest/REST.cpp
+    src/source/rest/AudioAPI.cpp
+    src/source/rest/ImageAPI.cpp
+    src/source/rest/PoetryAPI.cpp
+    src/source/rest/VideoAPI.cpp
+)
 
 add_definitions(-D__FLTK__=true)
 add_definitions(-D__REST__=true)

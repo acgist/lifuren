@@ -1,10 +1,39 @@
 project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
-aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
-
-file(GLOB SUB_SOURCE_FILES "src/source/*/*.cpp" "src/source/*/*/*.cpp")
-
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${SUB_SOURCE_FILES})
+add_library(
+    ${PROJECT_NAME} STATIC
+    src/source/Model.cpp
+    src/source/Logger.cpp
+    src/source/Lifuren.cpp
+    src/source/config/Config.cpp
+    src/source/config/Label.cpp
+    src/source/config/LabelFile.cpp
+    src/source/config/LabelText.cpp
+    src/source/config/Mark.cpp
+    src/source/config/MarkFile.cpp
+    src/source/config/MarkText.cpp
+    src/source/model/audio/Audio.cpp
+    src/source/model/audio/AudioGC.cpp
+    src/source/model/audio/AudioTS.cpp
+    src/source/model/image/Image.cpp
+    src/source/model/image/ImageGC.cpp
+    src/source/model/image/ImageTS.cpp
+    src/source/model/poetry/Poetry.cpp
+    src/source/model/poetry/PoetryGC.cpp
+    src/source/model/poetry/PoetryTS.cpp
+    src/source/model/video/Video.cpp
+    src/source/model/video/VideoGC.cpp
+    src/source/model/video/VideoTS.cpp
+    src/source/utils/Dates.cpp
+    src/source/utils/Files.cpp
+    src/source/utils/Jsons.cpp
+    src/source/utils/Yamls.cpp
+    src/source/utils/Layers.cpp
+    src/source/utils/Models.cpp
+    src/source/utils/Strings.cpp
+    src/source/utils/Datasets.cpp
+    src/source/utils/Collections.cpp
+)
 
 if(CMAKE_HOST_WIN32)
 target_link_libraries(
