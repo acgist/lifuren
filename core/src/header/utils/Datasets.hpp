@@ -143,15 +143,7 @@ public:
     );
 
 public:
-    /**
-     * @return 数据集大小
-     */
     torch::optional<size_t> size() const override;
-    /**
-     * @param index 文件索引
-     * 
-     * @return Tensor
-     */
     torch::data::Example<> get(size_t index) override;
 
 };
@@ -192,11 +184,10 @@ inline auto loadImageFileDataset(
         image.release();
         return data_tensor;
     }).map(torch::data::transforms::Stack<>());
-    auto loader = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-    return loader;
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-using ImageFileDataset = std::result_of<decltype(&lifuren::datasets::loadImageFileDataset)(
+using ImageFileDatasetLoader = std::result_of<decltype(&lifuren::datasets::loadImageFileDataset)(
     const int,
     const int,
     const size_t,
@@ -206,7 +197,27 @@ using ImageFileDataset = std::result_of<decltype(&lifuren::datasets::loadImageFi
     const std::function<void(const cv::Mat&)>
 )>::type;
 
-}
-}
+/**
+ * Tensor数据集
+ */
+class TensorDataset : public torch::data::Dataset<TensorDataset> {
+
+public:
+    // 特征
+    torch::Tensor features;
+    // 标签
+    torch::Tensor labels;
+
+public:
+    TensorDataset(torch::Tensor& features, torch::Tensor& lables);
+
+public:
+    torch::optional<size_t> size() const override;
+    torch::data::Example<> get(size_t index) override;
+
+};
+
+} // END OF datasets
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_UTILS_DATASETS_HPP

@@ -38,11 +38,29 @@ torch::optional<size_t> lifuren::datasets::FileDataset::size() const {
 
 torch::data::Example<> lifuren::datasets::FileDataset::get(size_t index) {
     const std::string& path   = this->paths.at(index);
-    torch::Tensor data_tensor = this->fileTransform(path);
+    torch::Tensor data = this->fileTransform(path);
     const int label = this->labels.at(index);
-    torch::Tensor label_tensor = torch::full({1}, label);
+    torch::Tensor target = torch::full({1}, label);
     return { 
-        data_tensor.clone(),
-        label_tensor.clone()
+        data,
+        target
+    };
+}
+
+lifuren::datasets::TensorDataset::TensorDataset(
+    torch::Tensor& features,
+    torch::Tensor& lables
+) : features(features), labels(labels) {
+}
+
+torch::optional<size_t> lifuren::datasets::TensorDataset::size() const {
+    return this->features.sizes()[0];
+    // return this->labels.sizes[0];
+}
+
+torch::data::Example<> lifuren::datasets::TensorDataset::get(size_t index) {
+    return {
+        this->features[index],
+        this->labels[index]
     };
 }
