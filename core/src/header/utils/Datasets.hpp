@@ -20,6 +20,98 @@ namespace lifuren  {
 namespace datasets {
 
 /**
+ * 数据集类型
+ */
+enum class Type {
+
+    // 训练集
+    TRAIN = 0,
+    // 验证集
+    VAL   = 1,
+    // 测试集
+    TEST  = 2,
+
+};
+
+/**
+ * 数据集分片
+ */
+class DatasetSharding {
+
+public:
+    // 当前训练次数
+    int epoch = 0;
+    // 数据集类型
+    Type type = Type::TRAIN;
+    // 训练集占比
+    float trainRatio = 0.8F;
+    // 验证集占比
+    float valRatio   = 0.1F;
+    // 测试集占比
+    float testRatio  = 0.1F;
+
+public:
+    /**
+     * @param totalSize 总数据集大小
+     * 
+     * @return 分片数据集大小
+     */
+    size_t getSize(size_t totalSize);
+    /**
+     * @param totalSize 总数据集大小
+     * @param index     相对索引
+     * 
+     * @return 绝对索引
+     */
+    size_t getIndex(size_t totalSize, size_t index);
+
+};
+
+inline size_t DatasetSharding::getSize(size_t totalSize) {
+    assert(this->trainRatio > this->valRatio);
+    assert(this->trainRatio > this->testRatio);
+    assert(this->trainRatio + this->valRatio + this->testRatio == 1.0F);
+    switch(this->type) {
+        case Type::TRAIN:
+            return static_cast<size_t>(this->trainRatio * totalSize);
+        case Type::VAL:
+            return this->valRatio * totalSize;
+        case Type::TEST:
+            return this->testRatio * totalSize;
+    }
+    return totalSize;
+}
+
+inline size_t DatasetSharding::getIndex(size_t totalSize, size_t index) {
+    assert(this->trainRatio > this->valRatio);
+    assert(this->trainRatio > this->testRatio);
+    assert(this->trainRatio + this->valRatio + this->testRatio == 1.0F);
+    // K折交叉验证
+    switch(this->type) {
+        case Type::TRAIN:
+        case Type::VAL  : {
+            const int shardingCount = (this->trainRatio + this->valRatio) / this->valRatio;
+            const int valIndex = this->epoch % shardingCount;
+            if(this->type == Type::TRAIN) {
+                if(index < this->valRatio * valIndex * totalSize) {
+                    // train val train test
+                    return index;
+                } else {
+                    // val train test
+                    return this->valRatio * totalSize + index;
+                }
+            } else {
+                return this->valRatio * valIndex * totalSize + index;
+            }
+            return index;
+        }
+        case Type::TEST:
+            return (this->trainRatio + this->valRatio) * totalSize + index;
+    }
+    return index;
+}
+
+/**
  * 文件数据集
  * 
  * ./类型1/文件列表

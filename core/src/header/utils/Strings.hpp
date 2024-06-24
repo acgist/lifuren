@@ -50,7 +50,7 @@ extern size_t length(const char* value);
  * @return 字符串长度
  */
 inline size_t length(const std::string& value) {
-    return lifuren::strings::length(value.data());
+    return lifuren::strings::length(value.c_str());
 }
 
 /**

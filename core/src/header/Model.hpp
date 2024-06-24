@@ -32,6 +32,7 @@ public:
     lifuren::Config config;
     // 模型配置
     M modelConfig;
+    // TODO: 训练数据集、验证数据集、测试数据集
 
 public:
     Model();

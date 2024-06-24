@@ -12,12 +12,12 @@ std::string lifuren::dates::format(const std::tm& datetime, const std::string& f
     #if LFR_DATE_FORMAT_STREAM
     // 性能较差
     std::ostringstream output;
-    output << std::put_time(&datetime, format.data());
+    output << std::put_time(&datetime, format.c_str());
     return output.str();
     #else
     // 性能较高
     char output[20];
-    std::strftime(output, 20, format.data(), &datetime);
+    std::strftime(output, 20, format.c_str(), &datetime);
     return output;
     #endif
 }
@@ -32,9 +32,9 @@ std::tm lifuren::dates::parseTm(const std::string& datetime, const std::string& 
     std::tm tm;
     #ifdef _WIN32
     std::istringstream input(datetime);
-	input >> std::get_time(&tm, format.data());
+	input >> std::get_time(&tm, format.c_str());
     #else
-    strptime(datetime.data(), format.data(), &tm);
+    strptime(datetime.c_str(), format.c_str(), &tm);
     #endif
     return tm;
 }
