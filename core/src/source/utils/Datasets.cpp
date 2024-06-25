@@ -17,11 +17,11 @@ lifuren::datasets::FileDataset::FileDataset(
     }
     auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
     for(const auto& entry : iterator) {
-        std::string filepath = entry.path().u8string();
+        std::string filepath = entry.path().string();
         if(entry.is_directory()) {
-            std::string filename = entry.path().filename().u8string();
+            std::string filename = entry.path().filename().string();
             const uint64_t oldSize = this->paths.size();
-            lifuren::files::listFiles(this->paths, entry.path().u8string(), exts);
+            lifuren::files::listFiles(this->paths, entry.path().string(), exts);
             const uint64_t newSize = this->paths.size();
             for(uint64_t index = oldSize; index < newSize; ++index) {
                 this->labels.push_back(mapping.at(filename));

@@ -187,7 +187,8 @@ inline auto loadImageFileDataset(
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-using ImageFileDatasetLoader = std::result_of<decltype(&lifuren::datasets::loadImageFileDataset)(
+using ImageFileDatasetLoader = std::invoke_result<
+    decltype(&lifuren::datasets::loadImageFileDataset),
     const int,
     const int,
     const size_t,
@@ -195,7 +196,7 @@ using ImageFileDatasetLoader = std::result_of<decltype(&lifuren::datasets::loadI
     const std::string&,
     const std::map<std::string, int>&,
     const std::function<void(const cv::Mat&)>
-)>::type;
+>::type;
 
 /**
  * Tensor数据集
