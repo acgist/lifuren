@@ -21,4 +21,3 @@ deps/libtorch-cpu
 deps/libtorch-gpu
 deps/yaml-cpp
 deps/cpp-httplib
-deps/matplotplusplus

@@ -70,17 +70,17 @@ set(
 )
 
 if(CMAKE_HOST_UNIX)
-include_directories(
-    /usr/include
-    /usr/local/include
-    deps/libtorch/include
-    deps/libtorch/include/torch/csrc/api/include
-)
+    include_directories(
+        /usr/include
+        /usr/local/include
+        deps/libtorch/include
+        deps/libtorch/include/torch/csrc/api/include
+    )
 else()
-include_directories(
-    deps/libtorch/include
-    deps/libtorch/include/torch/csrc/api/include
-)
+    include_directories(
+        deps/libtorch/include
+        deps/libtorch/include/torch/csrc/api/include
+    )
 endif()
 
 if(CMAKE_HOST_WIN32)
@@ -92,7 +92,6 @@ if(CMAKE_HOST_WIN32)
         deps/spdlog
         deps/yaml-cpp
         deps/cpp-httplib
-        deps/matplotplusplus
     )
 
     include_directories(
@@ -101,7 +100,6 @@ if(CMAKE_HOST_WIN32)
         deps/spdlog/include
         deps/yaml-cpp/include
         deps/cpp-httplib/include
-        deps/matplotplusplus/include
     )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -135,12 +133,11 @@ if(CMAKE_HOST_WIN32)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
-find_package(FLTK      REQUIRED)
-find_package(Torch     REQUIRED)
-find_package(OpenCV    REQUIRED)
-find_package(spdlog    REQUIRED)
-find_package(yaml-cpp  REQUIRED)
-find_package(Matplot++ REQUIRED)
+find_package(FLTK     REQUIRED)
+find_package(Torch    REQUIRED)
+find_package(OpenCV   REQUIRED)
+find_package(spdlog   REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(core)

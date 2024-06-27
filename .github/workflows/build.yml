@@ -51,9 +51,6 @@ jobs:
           ################################ opencv
           sudo apt  install libopencv-dev > /dev/null 2>&1
           apt-cache madison libopencv-dev
-          ################################ gnuplot
-          sudo apt  install gnuplot > /dev/null 2>&1
-          apt-cache madison gnuplot
           ################################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip > /dev/null 2>&1
           unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip > /dev/null 2>&1
@@ -63,36 +60,16 @@ jobs:
           ################################ cpp-httplib
           sudo apt  install libcpp-httplib-dev > /dev/null 2>&1
           apt-cache madison libcpp-httplib-dev
-          ################################ matplotplusplus
-          git clone https://github.com/alandefreitas/matplotplusplus.git > /dev/null 2>&1
-          cd matplotplusplus
-          git switch -c v1.2.1
-          mkdir build
-          cd build
-          cmake ..                          \
-            -D CMAKE_BUILD_TYPE=Debug       \
-            -D MATPLOTPP_BUILD_TESTS=OFF    \
-            -D MATPLOTPP_BUILD_EXAMPLES=OFF \
-            -D MATPLOTPP_BUILD_WITH_SANITIZERS=OFF > /dev/null 2>&1
-          make -j 8         > /dev/null 2>&1
-          sudo make install > /dev/null 2>&1
-          cd ../../
       - name: Deploy lifuren
         run: |
-          # 输出目录
           pwd
-          # 输出版本
-          gcc   -v
-          g++   -v
+          gcc -v
+          g++ -v
           cmake -version
-          # 开始编译
           mkdir build
           cd build
           cmake ..
           make -j
-          # make -j 8
-          # 查看信息
           ls -lh debug/bin
-          # 安装项目
           sudo make install
           make clean

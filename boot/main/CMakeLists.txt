@@ -25,34 +25,34 @@ add_definitions(-D__FLTK__=true)
 add_definitions(-D__REST__=true)
 
 if(CMAKE_HOST_WIN32)
-if(TARGET png)
-target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
-    png
-    httplib::httplib
-    libjpeg-turbo::jpeg
-    lifurencore
-    ${FLTK_LIBRARIES}
-)
+    if(TARGET png)
+        target_link_libraries(
+            ${PROJECT_NAME} PUBLIC
+            png
+            httplib::httplib
+            libjpeg-turbo::jpeg
+            lifurencore
+            ${FLTK_LIBRARIES}
+        )
+    else()
+        target_link_libraries(
+            ${PROJECT_NAME} PUBLIC
+            png_shared
+            httplib::httplib
+            libjpeg-turbo::jpeg
+            lifurencore
+            ${FLTK_LIBRARIES}
+        )
+    endif()
 else()
-target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
-    png_shared
-    httplib::httplib
-    libjpeg-turbo::jpeg
-    lifurencore
-    ${FLTK_LIBRARIES}
-)
-endif()
-else()
-target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
-    png
-    jpeg
-    cpp-httplib
-    lifurencore
-    ${FLTK_LIBRARIES}
-)
+    target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        png
+        jpeg
+        cpp-httplib
+        lifurencore
+        ${FLTK_LIBRARIES}
+    )
 endif()
 
 target_include_directories(

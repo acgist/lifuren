@@ -36,24 +36,24 @@ add_library(
 )
 
 if(CMAKE_HOST_WIN32)
-target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
-    spdlog::spdlog
-    yaml-cpp::yaml-cpp
-    nlohmann_json::nlohmann_json
-    ${OpenCV_LIBS}
-    ${TORCH_LIBRARIES}
-)
+    target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        spdlog::spdlog
+        yaml-cpp::yaml-cpp
+        nlohmann_json::nlohmann_json
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+    )
 else()
-target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
-    fmt
-    spdlog
-    yaml-cpp
-    nlohmann_json::nlohmann_json
-    ${OpenCV_LIBS}
-    ${TORCH_LIBRARIES}
-)
+    target_link_libraries(
+        ${PROJECT_NAME} PUBLIC
+        fmt
+        spdlog
+        yaml-cpp
+        nlohmann_json::nlohmann_json
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+    )
 endif()
 
 target_include_directories(
