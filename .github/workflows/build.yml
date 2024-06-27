@@ -34,7 +34,7 @@ jobs:
           git switch -c 10.2.0
           mkdir build
           cd build
-          cmake ..
+          cmake ..          > /dev/null 2>&1
           make -j 8         > /dev/null 2>&1
           sudo make install > /dev/null 2>&1
           cd ../../
@@ -44,7 +44,7 @@ jobs:
           git switch -c v1.12.0
           mkdir build
           cd build
-          cmake ..
+          cmake ..          > /dev/null 2>&1
           make -j 8         > /dev/null 2>&1
           sudo make install > /dev/null 2>&1
           cd ../../
@@ -69,7 +69,11 @@ jobs:
           git switch -c v1.2.1
           mkdir build
           cd build
-          cmake .. -D CMAKE_BUILD_TYPE=Debug -D MATPLOTPP_BUILD_TESTS=OFF -D MATPLOTPP_BUILD_EXAMPLES=OFF -DMATPLOTPP_BUILD_WITH_SANITIZERS=OFF
+          cmake ..                          \
+            -D CMAKE_BUILD_TYPE=Debug       \
+            -D MATPLOTPP_BUILD_TESTS=OFF    \
+            -D MATPLOTPP_BUILD_EXAMPLES=OFF \
+            -D MATPLOTPP_BUILD_WITH_SANITIZERS=OFF > /dev/null 2>&1
           make -j 8         > /dev/null 2>&1
           sudo make install > /dev/null 2>&1
           cd ../../
@@ -85,6 +89,10 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          make -j 8
+          make -j
+          # make -j 8
+          # 查看信息
+          ls -lh debug/bin
+          # 安装项目
           sudo make install
           make clean
