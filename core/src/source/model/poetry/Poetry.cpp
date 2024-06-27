@@ -1,5 +1,6 @@
 #include "../../../header/model/Poetry.hpp"
 
+#include <cstdint>
 #include <algorithm>
 
 #include "../../../header/utils/Strings.hpp"

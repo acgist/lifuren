@@ -1,5 +1,7 @@
 #include "../../header/config/Label.hpp"
 
+#include <cstdint>
+
 #include "spdlog/spdlog.h"
 
 lifuren::LabelText::LabelText() {
