@@ -44,4 +44,5 @@ endif()
 
 add_subdirectory(src/source/core)
 add_subdirectory(src/source/opencv)
+add_subdirectory(src/source/matplot)
 add_subdirectory(src/source/libtorch)

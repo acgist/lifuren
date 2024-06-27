@@ -34,6 +34,7 @@ elseif(CMAKE_HOST_WIN32)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20 /wd4804 /wd4819")
         # add_compile_options("/J")
         add_compile_options("/utf-8")
+        # add_compile_options("/Zc:char8_t")
         add_compile_options("/Zc:__cplusplus")
     else()
         message(WARNING "需要安装MSVC")
@@ -91,6 +92,7 @@ if(CMAKE_HOST_WIN32)
         deps/spdlog
         deps/yaml-cpp
         deps/cpp-httplib
+        deps/matplotplusplus
     )
 
     include_directories(
@@ -99,6 +101,7 @@ if(CMAKE_HOST_WIN32)
         deps/spdlog/include
         deps/yaml-cpp/include
         deps/cpp-httplib/include
+        deps/matplotplusplus/include
     )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -107,22 +110,22 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
         file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
         )
-        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
         file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_world480.dll"
         )
-        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
@@ -132,11 +135,12 @@ if(CMAKE_HOST_WIN32)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
-find_package(FLTK     REQUIRED)
-find_package(Torch    REQUIRED)
-find_package(OpenCV   REQUIRED)
-find_package(spdlog   REQUIRED)
-find_package(yaml-cpp REQUIRED)
+find_package(FLTK      REQUIRED)
+find_package(Torch     REQUIRED)
+find_package(OpenCV    REQUIRED)
+find_package(spdlog    REQUIRED)
+find_package(yaml-cpp  REQUIRED)
+find_package(Matplot++ REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(core)

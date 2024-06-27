@@ -15,21 +15,20 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd ./deps
+          ################################ fltk
+          sudo apt  install libfltk1.3-dev > /dev/null 2>&1
+          apt-cache madison libfltk1.3-dev
           ################################ json
           cd ./json
           git checkout v3.11.2
           cd ../
-          ################################ fltk
-          sudo apt  install libfltk1.3-dev > /dev/null 2>&1
-          apt-cache madison libfltk1.3-dev
-          ################################ opencv
-          sudo apt  install libopencv-dev > /dev/null 2>&1
-          apt-cache madison libopencv-dev
+          ################################ cmake
+          sudo apt  install cmake > /dev/null 2>&1
+          apt-cache madison cmake
           ################################ spdlog
           # sudo apt  install libspdlog-dev > /dev/null 2>&1
           # apt-cache madison libspdlog-dev
-          ################################ spdlog
-          # fmt
+          ################################ fmt
           git clone https://github.com/fmtlib/fmt.git > /dev/null 2>&1
           cd fmt
           git switch -c 10.2.0
@@ -39,7 +38,7 @@ jobs:
           make -j 8         > /dev/null 2>&1
           sudo make install > /dev/null 2>&1
           cd ../../
-          # spdlog
+          ################################ spdlog
           git clone https://github.com/gabime/spdlog.git > /dev/null 2>&1
           cd spdlog
           git switch -c v1.12.0
@@ -49,15 +48,31 @@ jobs:
           make -j 8         > /dev/null 2>&1
           sudo make install > /dev/null 2>&1
           cd ../../
+          ################################ opencv
+          sudo apt  install libopencv-dev > /dev/null 2>&1
+          apt-cache madison libopencv-dev
+          ################################ gnuplot
+          sudo apt  install gnuplot > /dev/null 2>&1
+          apt-cache madison gnuplot
+          ################################ libtorch
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip > /dev/null 2>&1
+          unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip > /dev/null 2>&1
           ################################ yaml-cpp
           sudo apt  install libyaml-cpp-dev > /dev/null 2>&1
           apt-cache madison libyaml-cpp-dev
           ################################ cpp-httplib
           sudo apt  install libcpp-httplib-dev > /dev/null 2>&1
           apt-cache madison libcpp-httplib-dev
-          ################################ libtorch
-          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip > /dev/null 2>&1
-          unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip > /dev/null 2>&1
+          ################################ matplotplusplus
+          git clone https://github.com/alandefreitas/matplotplusplus.git > /dev/null 2>&1
+          cd matplotplusplus
+          git switch -c v1.2.1
+          mkdir build
+          cd build
+          cmake .. -D CMAKE_BUILD_TYPE=Release -D MATPLOTPP_BUILD_TESTS=OFF -D MATPLOTPP_BUILD_EXAMPLES=OFF
+          make -j 8         > /dev/null 2>&1
+          sudo make install > /dev/null 2>&1
+          cd ../../
       - name: Deploy lifuren
         run: |
           # 输出目录

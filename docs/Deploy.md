@@ -7,9 +7,11 @@
 ```
 mkdir build
 cd build
-cmake -D CMAKE_BUILD_TYPE=Debug ..
+cmake -D CMAKE_BUILD_TYPE=Debug|Release ..
 make
 # make install
+# cmake --build . --parallel 8 --config Debug|Release
+# cmake --install .
 # export LD_LIBRARY_PATH=/data/dev/lifuren/target/lib/:/data/dev/lifuren/deps/libtorch/lib/:$LD_LIBRARY_PATH
 ```
 
@@ -19,29 +21,13 @@ make
 mkdir build
 cd build
 cmake -G "Visual Studio 17 2022" ..
-cmake --build . --config Debug
-# cmake --install . --config Debug
+cmake --build . --parallel 8 --config Debug|Release
+# cmake --install .
 ```
 
 ## Linux依赖下载
 
-```
-# 安装依赖
-sudo apt install libtorch-dev
-sudo apt install libopencv-dev
-sudo apt install libspdlog-dev
-sudo apt install libfltk1.3-dev
-sudo apt install libyaml-cpp-dev
-sudo apt install libcpp-httplib-dev
-
-# 配置ld.so.conf
-vim /etc/ld.so.conf
-
----
-/data/dev/lifuren/target/lib
-/data/dev/lifuren/deps/libtorch/lib
----
-```
+[build.yml](../.github/workflows/build.yml)
 
 ## Windows依赖下载
 
@@ -56,17 +42,19 @@ vcpkg install spdlog
 vcpkg install libtorch
 vcpkg install yaml-cpp
 vcpkg install cpp-httplib
+vcpkg install matplotplusplus
 
 # 导出依赖
-vcpkg export fltk        --zip
-vcpkg export opencv      --zip
-vcpkg export spdlog      --zip
-vcpkg export libtorch    --zip
-vcpkg export yaml-cpp    --zip
-vcpkg export cpp-httplib --zip
+vcpkg export fltk            --zip
+vcpkg export opencv          --zip
+vcpkg export spdlog          --zip
+vcpkg export libtorch        --zip
+vcpkg export yaml-cpp        --zip
+vcpkg export cpp-httplib     --zip
+vcpkg export matplotplusplus --zip
 ```
 
-> `Windows`开发时`OpenCV`和`LibTorch`直接官网下载
+> `Windows`开发`OpenCV`和`LibTorch`直接官网下载
 
 * https://opencv.org/releases/
 * https://pytorch.org/get-started/locally/
@@ -79,6 +67,10 @@ vcpkg export cpp-httplib --zip
 
 * https://code.visualstudio.com/
 * https://visualstudio.microsoft.com/zh-hans/downloads/
+
+## gnuplot
+
+* http://www.gnuplot.info/download.html
 
 ## LibTorch
 
