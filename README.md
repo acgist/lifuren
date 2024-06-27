@@ -27,15 +27,15 @@
 |依赖|版本|官网|
 |:--|:--|:--|
 |fltk|1.3.8|https://github.com/fltk/fltk|
-|json|v3.11.2|https://github.com/nlohmann/json|
+|json|3.11.2|https://github.com/nlohmann/json|
 |cmake|3.26.4|https://github.com/Kitware/CMake|
-|spdlog|v1.12.0|https://github.com/gabime/spdlog|
+|spdlog|1.12.0|https://github.com/gabime/spdlog|
 |OpenCV|4.8.0|https://github.com/opencv/opencv|
 |gnuplot|5.4.10|http://www.gnuplot.info/|
-|LibTorch|v2.2.1|https://github.com/pytorch/pytorch|
+|LibTorch|2.2.1|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
-|cpp-httplib|v0.15.3|https://github.com/yhirose/cpp-httplib|
-|matplotplusplus|v1.2.0|https://github.com/alandefreitas/matplotplusplus|
+|cpp-httplib|0.15.3|https://github.com/yhirose/cpp-httplib|
+|matplotplusplus|1.2.0|https://github.com/alandefreitas/matplotplusplus|
 
 ## 模块
 
