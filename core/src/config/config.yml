@@ -1,13 +1,47 @@
 httpServerHost: 0.0.0.0
 httpServerPort: 8080
-ImageGC:
+# 图片转为诗词
+i2p:
   modelPath  : ""
   datasetPath: ""
   activation  : 0
   learningRate: 0.0
   regularization: 0
   regularizationRate: 0.0
-PoetryGC:
+# 标签转为诗词
+l2p:
+  modelPath  : ""
+  datasetPath: ""
+  activation  : 0
+  learningRate: 0.0
+  regularization: 0
+  regularizationRate: 0.0
+# 诗词转为图片
+p2i:
+  modelPath  : ""
+  datasetPath: ""
+  activation  : 0
+  learningRate: 0.0
+  regularization: 0
+  regularizationRate: 0.0
+# 标签转为图片
+l2i:
+  modelPath  : ""
+  datasetPath: ""
+  activation  : 0
+  learningRate: 0.0
+  regularization: 0
+  regularizationRate: 0.0
+# 图片转为图片
+i2i:
+  modelPath  : ""
+  datasetPath: ""
+  activation  : 0
+  learningRate: 0.0
+  regularization: 0
+  regularizationRate: 0.0
+# 视频转为视频
+v2v:
   modelPath  : ""
   datasetPath: ""
   activation  : 0

@@ -10,6 +10,7 @@
 
 #include "yaml-cpp/yaml.h"
 
+// 枚举转换
 #ifndef LFR_YAML_ENUM
 #define LFR_YAML_ENUM(enumName, aValue, zValue, defaultValue)              \
 template <>                                                                \

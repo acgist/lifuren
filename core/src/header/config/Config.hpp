@@ -1,5 +1,5 @@
 /**
- * 设置
+ * 系统设置
  * 
  * @author acgist
  */
@@ -9,20 +9,18 @@
 #include <map>
 #include <string>
 
-#include "Logger.hpp"
-#include "../utils/Yamls.hpp"
-
-#include "spdlog/fmt/fmt.h"
+#include "yaml-cpp/yaml.h"
 
 namespace lifuren {
 
+// 全局配置
 class Config;
 
 // 配置路径
 const char* const CONFIGS_PATH = "../config/config.yml";
 
 /**
- * 全局配置
+ * 模型配置
  */
 extern std::map<std::string, lifuren::Config> CONFIGS;
 
@@ -31,10 +29,10 @@ extern std::map<std::string, lifuren::Config> CONFIGS;
  */
 enum class Loss {
 
-    NONE               = 0,
-    MSE                = 1,
-    NLL                = 2,
-    CROSS_ENTROPY_LOSS = 3,
+    NONE               = 0, // 没有损失函数
+    MSE_LOSS           = 1, // 均方误差损失函数
+    NLL_LOSS           = 2, // 负对数似然损失函数
+    CROSS_ENTROPY_LOSS = 3, // 交叉熵损失函数
 
 };
 
@@ -43,11 +41,11 @@ enum class Loss {
  */
 enum class Activation {
 
-    NONE    = 0,
-    RELU    = 1,
-    TANH    = 2,
-    SIGMOID = 3,
-    SOFTMAX = 4,
+    NONE    = 0, // 没有激活函数
+    RELU    = 1, // ReLU
+    TANH    = 2, // 双曲正切函数
+    SIGMOID = 3, // Sigmoid
+    SOFTMAX = 4, // Softmax
 
 };
 
@@ -56,17 +54,17 @@ enum class Activation {
  */
 enum class Regularization {
 
-    NONE       = 0,
-    L1         = 1,
-    L2         = 2,
-    DROPOUT    = 3,
-    BATCH_NORM = 4,
+    NONE       = 0, // 没有正则
+    L1         = 1, // L1
+    L2         = 2, // L2
+    DROPOUT    = 3, // Dropout
+    BATCH_NORM = 4, // BatchNorm
 
 };
 
 
 /**
- * 设置
+ * 模型设置
  */
 class Config {
 
@@ -107,6 +105,23 @@ class ModelConfig {
 
 };
 
+namespace model {
+
+// 图片转为诗词
+extern const std::string MODEL_I2P;
+// 标签转为诗词
+extern const std::string MODEL_L2P;
+// 诗词转为图片
+extern const std::string MODEL_P2I;
+// 标签转为图片
+extern const std::string MODEL_L2I;
+// 图片转为图片
+extern const std::string MODEL_I2I;
+// 视频转为视频
+extern const std::string MODEL_V2V;
+
+} // END OF model
+
 namespace config {
 
 // 监听地址
@@ -125,15 +140,7 @@ extern std::map<std::string, lifuren::Config> loadFile(const std::string& path);
  */
 extern bool saveFile(const std::string& path);
 
-}
-}
-
-LFR_YAML_ENUM(Loss, NONE, CROSS_ENTROPY_LOSS, NONE)
-LFR_YAML_ENUM(Activation, NONE, SOFTMAX, RELU)
-LFR_YAML_ENUM(Regularization, NONE, BATCH_NORM, NONE)
-
-LFR_LOG_FORMAT_ENUM(lifuren::Loss)
-LFR_LOG_FORMAT_ENUM(lifuren::Activation)
-LFR_LOG_FORMAT_ENUM(lifuren::Regularization)
+} // END OF config
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_CONFIG_CONFIG_HPP

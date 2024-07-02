@@ -26,6 +26,13 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testConfig TestConfig.cpp)
+add_test(NAME testConfig COMMAND testConfig)
+target_link_libraries(
+    testConfig PUBLIC
+    lifurencore
+)
+
 add_executable(testLayers TestLayers.cpp)
 add_test(NAME testLayers COMMAND testLayers)
 target_link_libraries(

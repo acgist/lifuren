@@ -205,6 +205,18 @@ ADMA + L2
 #### Tokenizer
 #### Embedding
 
+## 训练框架
+
+#### PyTorch
+#### TensorFlow
+#### PaddlePaddle
+
+## 模型工具
+
+#### ONNX
+#### Netron
+#### TensorRT
+
 ## 学习资料
 
 * https://zh-v2.d2l.ai/

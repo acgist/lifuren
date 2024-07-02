@@ -1,6 +1,18 @@
 /**
  * 模型
  * 
+ * # onnx
+ * model = ...
+ * torch.onnx.export(model.eval(), torch.randn(1, 3, 256, 256), "model.onnx")
+ * 
+ * # trace
+ * model = torch.jit.trace(model.eval(), torch.randn(1, 3, 256, 256))
+ * model.save("trace.pt")
+ * 
+ * # script
+ * model = torch.jit.script(model.eval())
+ * model.save("script.pt")
+ * 
  * @author acgist
  */
 #ifndef LFR_HEADER_CORE_MODEL_HPP

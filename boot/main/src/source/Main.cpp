@@ -15,6 +15,8 @@
 #include <thread>
 #include <condition_variable>
 
+#include "Logger.hpp"
+
 static std::mutex mutex;
 static std::atomic<int> count(0);
 static std::condition_variable condition;
