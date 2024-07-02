@@ -9,4 +9,15 @@
 #include "./Video.hpp"
 #include "../Model.hpp"
 
+namespace lifuren {
+
+/**
+ * 视频转为视频
+ */
+class VideoToVideoModel {
+
+};
+
+}
+
 #endif // LFR_HEADER_CORE_MODEL_VIDEOTS_HPP

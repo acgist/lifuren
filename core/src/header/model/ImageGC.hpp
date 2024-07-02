@@ -12,4 +12,20 @@
 #include "./Image.hpp"
 #include "../Model.hpp"
 
+namespace lifuren {
+
+/**
+ * 诗词转为图片
+ */
+class PoetryToImageModel {
+};
+
+/**
+ * 标签转为图片
+ */
+class LabelToImageModel {
+};
+
+}
+
 #endif // LFR_HEADER_CORE_MODEL_IMAGEGC_HPP

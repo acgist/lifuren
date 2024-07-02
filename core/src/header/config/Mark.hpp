@@ -1,6 +1,5 @@
 /**
  * 标记
- * 训练文件标签信息
  * 
  * @author acgist
  */
@@ -52,7 +51,7 @@ class MarkFile : public Mark {
 public:
     // 本地文件
     std::string file;
-        // JSON序列化
+    // JSON序列化
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkFile, file, labels);
 
 public:

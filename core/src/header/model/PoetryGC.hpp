@@ -44,6 +44,18 @@ public:
 
 };
 
+/**
+ * 图片转为诗词
+ */
+class ImageToPoetryModel {
+};
+
+/**
+ * 标签转为诗词
+ */
+class LabelToPoetryModel {
+};
+
 }
 
 #endif // LFR_HEADER_CORE_MODEL_POETRYGC_HPP
