@@ -18,9 +18,6 @@
 #ifndef LFR_HEADER_CORE_MODEL_HPP
 #define LFR_HEADER_CORE_MODEL_HPP
 
-#include "torch/torch.h"
-#include "torch/script.h"
-
 #include "./config/Config.hpp"
 
 namespace lifuren {

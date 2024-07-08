@@ -1,5 +1,11 @@
 # 人工智能
 
+特征 + 模型
+
+## 流程
+
+原始数据 -> 特征工程 -> 建模（训练、评估） -> 模型
+
 ## 分类
 
 * 人工智能（AI）
@@ -76,41 +82,68 @@
 * https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
 
 ###### 循环生成对抗网络（CycleGAN）
-###### 基于风格的对抗网络（StyleGAN）
+###### 基于风格对抗网络（StyleGAN）
+
+#### VQGAN
+
+* https://github.com/CompVis/taming-transformers
 
 #### mamba
 
+对比RNN/Transformer结构
+
 * https://github.com/state-spaces/mamba
-
-#### Transformer
-
-T5/GPT/BERT/自注意力机制（Self-Attention）
-
-* https://github.com/lencx/ChatGPT
-* https://github.com/ollama/ollama
-* https://github.com/huginn/huginn
-* https://github.com/xtekky/gpt4free
-* https://github.com/ggerganov/llama.cpp
-* https://github.com/ggerganov/whisper.cpp
-* https://github.com/huggingface/transformers
-
-###### gemma
-###### llama
 
 #### 大语言模型（LLM）
 
 * https://github.com/THUDM/ChatGLM3
 * https://github.com/THUDM/ChatGLM-6B
 * https://github.com/THUDM/ChatGLM2-6B
+* https://github.com/Stability-AI/StableLM
+* https://github.com/tatsu-lab/stanford_alpaca
+
+#### whisper
+
+* https://github.com/openai/whisper
+* https://github.com/ggerganov/whisper.cpp
+
+#### Transformer
+
+* https://github.com/huggingface/transformers
+
+###### T5
+###### GPT
+###### BERF
+###### Self-Attention
+
+#### gemma
+
+* https://github.com/google/gemma.cpp
+* https://github.com/google/gemma_pytorch
+
+#### llama
+
+* https://github.com/ollama/ollama
+* https://github.com/meta-llama/llama
+* https://github.com/meta-llama/llama3
+* https://github.com/ggerganov/llama.cpp
+* https://github.com/LlamaFamily/Llama-Chinese
 * https://github.com/ymcui/Chinese-LLaMA-Alpaca
 * https://github.com/ymcui/Chinese-LLaMA-Alpaca-2
+* https://github.com/ymcui/Chinese-LLaMA-Alpaca-3
 
 #### 扩散模型（Diffusion）
 
-* https://github.com/huggingface/peft
 * https://github.com/huggingface/diffusers
+* https://github.com/CompVis/latent-diffusion
+* https://github.com/CompVis/stable-diffusion
 * https://github.com/leejet/stable-diffusion.cpp
-* https://github.com/AUTOMATIC1111/stable-diffusion-webui
+* https://github.com/Stability-AI/stablediffusion
+
+#### CLIP
+
+* https://github.com/openai/clip
+* https://github.com/monatis/clip.cpp
 
 #### Embedding
 
@@ -118,18 +151,31 @@ T5/GPT/BERT/自注意力机制（Self-Attention）
 * https://github.com/chroma-core/chroma
 * https://github.com/Embedding/Chinese-Word-Vectors
 
-#### AI Agent
+#### 其他
 
+* https://github.com/lencx/ChatGPT
+* https://github.com/ggerganov/ggml
 * https://github.com/geekan/MetaGPT
+* https://github.com/salesforce/BLIP
+* https://github.com/xtekky/gpt4free
 * https://github.com/reworkd/AgentGPT
+* https://github.com/TencentARC/PhotoMaker
+* https://github.com/Akegarasu/lora-scripts
 * https://github.com/langchain-ai/langchain
+* https://github.com/KichangKim/DeepDanbooru
 * https://github.com/Significant-Gravitas/AutoGPT
+* https://github.com/Stability-AI/generative-models
 * https://github.com/PlexPt/awesome-chatgpt-prompts-zh
 * https://github.com/chatchat-space/Langchain-Chatchat
+* https://github.com/AUTOMATIC1111/stable-diffusion-webui
 
 ## 迁移学习
 ## 模型量化
+
 ## 模型微调（Fine-tune）
+
+* https://github.com/huggingface/peft
+
 ## 模型精调
 ## 激活函数
 
@@ -193,6 +239,8 @@ ADMA + L2
 * 动态图
 * 静态图
 
+#### 特征工程
+#### 模型评价
 #### 正向传播
 #### 反向传播
 #### 权重衰减
@@ -204,6 +252,14 @@ ADMA + L2
 #### prompt
 #### Tokenizer
 #### Embedding
+#### Normalization（归一化）
+
+1. (x - min(x))  / (max(x) - min(x)) [ 0, 1]
+2. (x - mean(x)) / (max(x) - min(x)) [-1, 1]
+
+#### Standardization（标准化）
+
+1. (x - mean(x)) / std(x)
 
 ## 训练框架
 
@@ -216,6 +272,12 @@ ADMA + L2
 #### ONNX
 #### Netron
 #### TensorRT
+
+## 模型下载
+
+* https://huggingface.co/
+* https://huggingface.co/stabilityai/
+* https://huggingface.co/stabilityai/stable-diffusion-2-1-base
 
 ## 学习资料
 

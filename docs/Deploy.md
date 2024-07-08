@@ -138,3 +138,8 @@ CPU/GPU/CUDA/cuDNN
 ```
 https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
 ```
+
+#### 模型下载
+#### 模型微调
+#### 模型量化
+#### 模型部署
