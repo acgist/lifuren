@@ -17,6 +17,8 @@
 
 #include "Logger.hpp"
 
+#include "spdlog/spdlog.h"
+
 static std::mutex mutex;
 static std::atomic<int> count(0);
 static std::condition_variable condition;

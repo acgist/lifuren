@@ -1,28 +1,24 @@
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
+option(ENABLE_FLTK "开启FLTK界面" ON)
+option(ENABLE_REST "开启REST接口" ON)
+
+if(ENABLE_FLTK)
+    add_definitions(-D__FLTK__=true)
+    aux_source_directory(src/source/fltk FLTK_FILES)
+endif()
+    
+if(ENABLE_REST)
+    add_definitions(-D__REST__=true)
+    aux_source_directory(src/source/rest REST_FILES)
+endif()
+
 add_executable(
     ${PROJECT_NAME}
     src/source/Main.cpp
-    src/source/fltk/FLTK.cpp
-    src/source/fltk/MainWindow.cpp
-    src/source/fltk/AboutWindow.cpp
-    src/source/fltk/AudioGCWindow.cpp
-    src/source/fltk/AudioTSWindow.cpp
-    src/source/fltk/ImageGCWindow.cpp
-    src/source/fltk/ImageTSWindow.cpp
-    src/source/fltk/PoetryGCWindow.cpp
-    src/source/fltk/PoetryTSWindow.cpp
-    src/source/fltk/VideoGCWindow.cpp
-    src/source/fltk/VideoTSWindow.cpp
-    src/source/rest/REST.cpp
-    src/source/rest/AudioAPI.cpp
-    src/source/rest/ImageAPI.cpp
-    src/source/rest/PoetryAPI.cpp
-    src/source/rest/VideoAPI.cpp
+    ${FLTK_FILES}
+    ${REST_FILES}
 )
-
-add_definitions(-D__FLTK__=true)
-add_definitions(-D__REST__=true)
 
 if(CMAKE_HOST_WIN32)
     if(TARGET png)

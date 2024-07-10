@@ -3,6 +3,8 @@
 #include "../../header/FLTK.hpp"
 #endif
 
+#include "spdlog/spdlog.h"
+
 #include "config/Config.hpp"
 
 httplib::Server lifuren::httpServer;
