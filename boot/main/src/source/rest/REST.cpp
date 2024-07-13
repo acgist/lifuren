@@ -1,5 +1,5 @@
 #include "../../header/REST.hpp"
-#if __FLTK__
+#if LFR_ENABLE_FLTK
 #include "../../header/FLTK.hpp"
 #endif
 
@@ -18,7 +18,7 @@ void lifuren::initHttpServer() {
     SPDLOG_INFO("启动REST服务：{}", lifuren::config::httpServerPort);
     bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerPort, success);
-    #if __FLTK__
+    #if LFR_ENABLE_FLTK
     lifuren::shutdownFltkWindow();
     #endif
 }

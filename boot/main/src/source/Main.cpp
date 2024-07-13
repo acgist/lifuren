@@ -3,10 +3,10 @@
  * 
  * @author acgist
  */
-#if __REST__
+#if LFR_ENABLE_REST
 #include "../header/REST.hpp"
 #endif
-#if __FLTK__
+#if LFR_ENABLE_FLTK
 #include "../header/FLTK.hpp"
 #endif
 
@@ -26,7 +26,7 @@ static std::condition_variable condition;
 int main(const int argc, const char * const argv[]) {
     lifuren::logger::init();
     SPDLOG_DEBUG("启动系统");
-    #if __REST__
+    #if LFR_ENABLE_REST
     count++;
     std::thread httpServerThread([]() {
         lifuren::initHttpServer();
@@ -38,7 +38,7 @@ int main(const int argc, const char * const argv[]) {
     });
     httpServerThread.detach();
     #endif
-    #if __FLTK__
+    #if LFR_ENABLE_FLTK
     count++;
     std::thread fltkWindowThread([]() {
         lifuren::initFltkWindow();

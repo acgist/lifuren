@@ -43,3 +43,5 @@ if(CMAKE_HOST_WIN32)
 endif()
 
 add_subdirectory(src/source/core)
+add_subdirectory(src/source/fltk)
+add_subdirectory(src/source/rest)

@@ -4,12 +4,14 @@ option(ENABLE_FLTK "开启FLTK界面" ON)
 option(ENABLE_REST "开启REST接口" ON)
 
 if(ENABLE_FLTK)
-    add_definitions(-D__FLTK__=true)
+    message(STATUS "开启FLTK界面")
+    add_definitions(-DLFR_ENABLE_FLTK=true)
     aux_source_directory(src/source/fltk FLTK_FILES)
 endif()
     
 if(ENABLE_REST)
-    add_definitions(-D__REST__=true)
+    message(STATUS "开启REST接口")
+    add_definitions(-DLFR_ENABLE_REST=true)
     aux_source_directory(src/source/rest REST_FILES)
 endif()
 

@@ -1,5 +1,5 @@
 #include "Ptr.hpp"
-#if __REST__
+#if LFR_ENABLE_REST
 #include "../../header/REST.hpp"
 #endif
 #include "../../header/FLTK.hpp"
@@ -15,7 +15,7 @@ void lifuren::initFltkWindow() {
     const int code = Fl::run();
     LFR_DELETE_PTR(mainPtr);
     SPDLOG_INFO("结束FLTK服务：{}", code);
-    #if __REST__
+    #if LFR_ENABLE_REST
     lifuren::shutdownHttpServer();
     #endif
 }
