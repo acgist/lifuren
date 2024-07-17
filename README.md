@@ -33,15 +33,23 @@
 |OpenCV|4.8.0|https://github.com/opencv/opencv|
 |LibTorch|2.2.1|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
+|llama.cpp|b3400|https://github.com/ggerganov/llama.cpp|
 |cpp-httplib|0.15.3|https://github.com/yhirose/cpp-httplib|
+|stable-diffusion.cpp|master-9c51d87|https://github.com/leejet/stable-diffusion.cpp|
 
 ## 模块
 
-|模块|描述|
-|:--|:--|
-|boot|启动模块|
-|core|核心模块|
-|deps|依赖|
-|docs|文档|
+|模块|描述|详细描述|
+|:--|:--|:--|
+|boot|启动|`FLTK`界面、`REST`接口|
+|core|核心|项目配置、模型加载、模型推理、模型微调、数据标记|
+|deps|依赖|依赖项目|
+|docs|文档|项目文档、使用说明|
+|script|脚本|训练脚本、微调脚本|
 
-> 白衣卿相 红袖添香
+## 文档
+
+* [学习资料](./docs/AI.md)
+* [部署文档](./docs/Deploy.md)
+* [接口文档](./docs/REST.md)
+* [功能说明](./docs/TODO.md)
