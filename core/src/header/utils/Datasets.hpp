@@ -210,7 +210,7 @@ public:
     torch::Tensor labels;
 
 public:
-    TensorDataset(torch::Tensor& features, torch::Tensor& lables);
+    TensorDataset(torch::Tensor& features, torch::Tensor& labels);
 
 public:
     torch::optional<size_t> size() const override;

@@ -15,7 +15,7 @@ lifuren::datasets::FileDataset::FileDataset(
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
-    auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
+    auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
     for(const auto& entry : iterator) {
         std::string filepath = entry.path().string();
         if(entry.is_directory()) {
@@ -49,7 +49,7 @@ torch::data::Example<> lifuren::datasets::FileDataset::get(size_t index) {
 
 lifuren::datasets::TensorDataset::TensorDataset(
     torch::Tensor& features,
-    torch::Tensor& lables
+    torch::Tensor& labels
 ) : features(features), labels(labels) {
 }
 

@@ -104,8 +104,8 @@ template<typename M, typename I, typename R>
 void lifuren::Model<M, I, R>::trainAndVal() {
     //     SPDLOG_DEBUG("是否使用CUDA：{}", this->device.is_cuda());
     // std::filesystem::path data_path = data_dir;
-    // std::string path_val   = (data_path / "val").u8string();
-    // std::string path_train = (data_path / "train").u8string();
+    // std::string path_val   = (data_path / "val").string();
+    // std::string path_train = (data_path / "train").string();
     // std::map<std::string, int> mapping = {
     //     { "man"  , 1 },
     //     { "woman", 0 }
