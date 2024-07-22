@@ -3,6 +3,10 @@
 #include "spdlog/spdlog.h"
 
 #include "utils/Files.hpp"
+#include "config/Label.hpp"
+
+#include "FL/Fl_Box.H"
+#include "Fl/Fl_Shared_Image.H"
 
 // 头部
 static Fl_Choice* fasePtr     = nullptr;

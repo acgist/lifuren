@@ -7,7 +7,7 @@
 #include "../header/config/Config.hpp"
 
 void lifuren::loadConfig() {
-    SPDLOG_DEBUG("加载配置");
+    SPDLOG_DEBUG("加载全局所有配置");
     // 配置
     auto configs = lifuren::config::loadFile(lifuren::CONFIGS_PATH);
     lifuren::CONFIGS.clear();

@@ -7,12 +7,8 @@
 #define LFR_HEADER_BOOT_FLTK_HPP
 
 #include <string>
-#include <cstring>
-#include <algorithm>
 
 #include "FL/Fl.H"
-#include "FL/fl_ask.H"
-#include "FL/Fl_Box.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
@@ -21,16 +17,18 @@
 #include "FL/Fl_JPEG_Image.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
-#include "Fl/Fl_Shared_Image.H"
-#include "Fl/Fl_Native_File_Chooser.H"
 
 #include "Ptr.hpp"
-#include "config/Label.hpp"
 #include "config/Config.hpp"
 
-// 半个窗口宽度
+// 窗口宽度
 #ifndef LFR_HALF_WIDTH
-#define LFR_HALF_WIDTH (this->w() - 60) / 2
+#define LFR_HALF_WIDTH(padding) (this->w() - padding) / 2
+#endif
+
+// 图片缩放
+#ifndef LFR_IMAGE_PREVIEW_SCALE
+#define LFR_IMAGE_PREVIEW_SCALE 1.2
 #endif
 
 // 模型变量
@@ -71,27 +69,22 @@
 #ifndef LFR_CHOICE_BUTTON
 #define LFR_CHOICE_BUTTON(x, y, map, buttonPtr, groupName, labelName, defaultValue)           \
 {                                                                                             \
-    buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                 \
-    buttonPtr->add(defaultValue);                                                       \
+    buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                       \
+    buttonPtr->add(defaultValue);                                                             \
     auto iterator = lifuren::map.find(groupName);                                             \
     if(iterator != lifuren::map.end()) {                                                      \
         std::vector<LabelFile>& vector = iterator->second;                                    \
         std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
             if(label.name == labelName) {                                                     \
                 std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
-                    buttonPtr->add(value.c_str());                                      \
+                    buttonPtr->add(value.c_str());                                            \
                 });                                                                           \
             }                                                                                 \
         });                                                                                   \
     }                                                                                         \
-    auto defaultPtr = buttonPtr->find_item(defaultValue);                               \
-    buttonPtr->value(defaultPtr);                                                       \
+    auto defaultPtr = buttonPtr->find_item(defaultValue);                                     \
+    buttonPtr->value(defaultPtr);                                                             \
 }
-#endif
-
-// 图片缩放
-#ifndef LFR_IMAGE_PREVIEW_SCALE
-#define LFR_IMAGE_PREVIEW_SCALE 1.2
 #endif
 
 namespace lifuren {
@@ -108,7 +101,7 @@ extern void shutdownFltkWindow();
 class Window : public Fl_Window {
 
 protected:
-    // 全局配置：不用释放
+    // 全局配置（不用释放）
     Config* configPtr = nullptr;
     // 图标指针
     Fl_PNG_Image* iconImagePtr = nullptr;
@@ -135,15 +128,14 @@ protected:
     // 窗口居中
     void center();
     /**
-     * 加载配置
-     * 
-     * @param modelType 模型类型
+     * @param name 配置名称
      */
-    void loadConfig(const std::string& modelType);
+    void loadConfig(const std::string& name);
 
 };
 
 // 定义所有窗口
+class MainWindow;
 class AudioGCWindow;
 class AudioTSWindow;
 class ImageGCWindow;

@@ -7,7 +7,7 @@
 namespace lifuren {
 
 /**
- * 加载配置
+ * 加载所有全局配置
  */
 extern void loadConfig();
 

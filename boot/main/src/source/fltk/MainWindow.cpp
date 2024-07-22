@@ -2,6 +2,9 @@
 
 #include "Lifuren.hpp"
 
+#include "FL/fl_ask.H"
+#include "FL/Fl_Shared_Image.H"
+
 #include "spdlog/spdlog.h"
 
 // 删除资源指针
@@ -72,31 +75,34 @@ lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_THIS_PTR(aboutButtonPtr);
     LFR_DELETE_THIS_PTR(aboutWindowPtr);
     LFR_DELETE_THIS_PTR(imageMarkButtonPtr);
+    LFR_DELETE_THIS_PTR(imageMarkWindowPtr);
     LFR_DELETE_THIS_PTR(poetryMarkButtonPtr);
+    LFR_DELETE_THIS_PTR(poetryMarkWindowPtr);
 }
 
 void lifuren::MainWindow::drawElement() {
     // 音频
-    this->audioGcPtr = new Fl_Button(20, 10, LFR_HALF_WIDTH, 30, "音频内容生成");
-    this->audioTsPtr = new Fl_Button(LFR_HALF_WIDTH + 40, 10, LFR_HALF_WIDTH, 30, "音频风格转换");
+    this->audioGcPtr = new Fl_Button(20, 10, LFR_HALF_WIDTH(60), 30, "音频内容生成");
+    this->audioTsPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10, LFR_HALF_WIDTH(60), 30, "音频风格转换");
     this->audioGcPtr->callback(disable, this);
     // 图片
-    this->imageGcPtr = new Fl_Button(20, 50, LFR_HALF_WIDTH, 30, "图片内容生成");
-    this->imageTsPtr = new Fl_Button(LFR_HALF_WIDTH + 40, 50, LFR_HALF_WIDTH, 30, "图片风格转换");
+    this->imageGcPtr = new Fl_Button(20, 50, LFR_HALF_WIDTH(60), 30, "图片内容生成");
+    this->imageTsPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 50, LFR_HALF_WIDTH(60), 30, "图片风格转换");
     // 视频
-    this->videoGcPtr = new Fl_Button(20, 90, LFR_HALF_WIDTH, 30, "视频内容生成");
-    this->videoTsPtr = new Fl_Button(LFR_HALF_WIDTH + 40, 90, LFR_HALF_WIDTH, 30, "视频风格转换");
+    this->videoGcPtr = new Fl_Button(20, 90, LFR_HALF_WIDTH(60), 30, "视频内容生成");
+    this->videoTsPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "视频风格转换");
     // 诗词
-    this->poetryGcPtr = new Fl_Button(20, 130, LFR_HALF_WIDTH, 30, "诗词内容生成");
-    this->poetryTsPtr = new Fl_Button(LFR_HALF_WIDTH + 40, 130, LFR_HALF_WIDTH, 30, "诗词风格转换");
+    this->poetryGcPtr = new Fl_Button(20, 130, LFR_HALF_WIDTH(60), 30, "诗词内容生成");
+    this->poetryTsPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 130, LFR_HALF_WIDTH(60), 30, "诗词风格转换");
     this->poetryTsPtr->callback(disable, this);
     // 标记
-    this->imageMarkButtonPtr  = new Fl_Button(20, 170, LFR_HALF_WIDTH, 30, "图片标记");
-    this->poetryMarkButtonPtr = new Fl_Button(LFR_HALF_WIDTH + 40, 170, LFR_HALF_WIDTH, 30, "诗词标记");
+    this->imageMarkButtonPtr  = new Fl_Button(20, 170, LFR_HALF_WIDTH(60), 30, "图片标记");
+    this->poetryMarkButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 170, LFR_HALF_WIDTH(60), 30, "诗词标记");
     // 重新加载配置
     this->reloadButtonPtr = new Fl_Button((this->w() - 80) / 4 * 2 + 40, this->h() - 40, (this->w() - 80) / 4, 30, "重新加载配置");
     // 关于
     this->aboutButtonPtr  = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
+    // 大小修改
     this->resizable(this);
     // 绑定事件
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(audioTsPtr,          audioTs);
@@ -108,6 +114,7 @@ void lifuren::MainWindow::drawElement() {
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageMarkButtonPtr,  imageMark);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryMarkButtonPtr, poetryMark);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr,      about);
+    // 重新加载配置
     this->reloadButtonPtr->callback([](Fl_Widget*, void*) {
         lifuren::loadConfig();
     }, this);

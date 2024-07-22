@@ -7,8 +7,18 @@
 
 #include "spdlog/spdlog.h"
 
+#include "Fl/Fl_Native_File_Chooser.H"
+
 // 是否关闭
 static bool fltkClose = false;
+
+/**
+ * @param source 原始值
+ * @param target 比较值
+ * 
+ * @return 绝对值
+ */
+static int abs(const int& source, const int& target);
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
@@ -99,14 +109,6 @@ int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
     return Fl_Input::handle(event);
 }
 
-/**
- * @param source 原始值
- * @param target 比较值
- * 
- * @return 绝对值
- */
-static int abs(int source, int target);
-
 lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {
 }
 
@@ -141,21 +143,14 @@ void lifuren::Window::center() {
     this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
 }
 
-void lifuren::Window::loadConfig(const std::string& modelType) {
-    auto iterator = CONFIGS.find(modelType);
+void lifuren::Window::loadConfig(const std::string& name) {
+    SPDLOG_DEBUG("加载窗口配置：{}", name);
+    auto iterator = CONFIGS.find(name);
     if(iterator == CONFIGS.end()) {
-        auto pair = CONFIGS.emplace(modelType, Config{});
+        auto pair = CONFIGS.emplace(name, Config{});
         this->configPtr = &pair.first->second;
     } else {
         this->configPtr = &iterator->second;
-    }
-}
-
-static int abs(int source, int target) {
-    if(source > target) {
-        return source - target;
-    } else {
-        return target - source;
     }
 }
 
@@ -194,4 +189,12 @@ lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) 
 lifuren::ModelTSWindow::~ModelTSWindow() {
     SPDLOG_DEBUG("关闭TS窗口");
     LFR_DELETE_THIS_PTR(transferPtr);
+}
+
+static int abs(const int& source, const int& target) {
+    if(source > target) {
+        return source - target;
+    } else {
+        return target - source;
+    }
 }
