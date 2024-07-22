@@ -107,9 +107,9 @@ if(CMAKE_HOST_WIN32)
         file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
-        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
-                              "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64d.dll"
-                              "deps/opencv/x64/vc16/bin/opencv_world480d.dll"
+        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
+                              "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
+                              "deps/opencv/x64/vc16/bin/opencv_world4100d.dll"
         )
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
@@ -118,9 +118,9 @@ if(CMAKE_HOST_WIN32)
         file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/bin/*.dll")
         file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
-        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg480_64.dll"
-                              "deps/opencv/x64/vc16/bin/opencv_videoio_msmf480_64.dll"
-                              "deps/opencv/x64/vc16/bin/opencv_world480.dll"
+        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
+                              "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
+                              "deps/opencv/x64/vc16/bin/opencv_world4100.dll"
         )
     endif()
 
