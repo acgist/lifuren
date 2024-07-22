@@ -2,6 +2,8 @@
 
 #include "FL/filename.H"
 
+#include "spdlog/spdlog.h"
+
 lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 

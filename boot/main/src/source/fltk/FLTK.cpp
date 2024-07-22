@@ -1,8 +1,11 @@
-#include "Ptr.hpp"
 #if LFR_ENABLE_REST
 #include "../../header/REST.hpp"
 #endif
 #include "../../header/FLTK.hpp"
+
+#include "Ptr.hpp"
+
+#include "spdlog/spdlog.h"
 
 // 是否关闭
 static bool fltkClose = false;
@@ -138,24 +141,7 @@ void lifuren::Window::center() {
     this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
 }
 
-static int abs(int source, int target) {
-    if(source > target) {
-        return source - target;
-    } else {
-        return target - source;
-    }
-}
-
-lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Window(width, height, title) {
-}
-
-lifuren::ModelWindow::~ModelWindow() {
-    SPDLOG_DEBUG("关闭窗口");
-    LFR_DELETE_THIS_PTR(modelPathPtr);
-    LFR_DELETE_THIS_PTR(datasetPathPtr);
-}
-
-void lifuren::ModelWindow::loadConfig(const std::string& modelType) {
+void lifuren::Window::loadConfig(const std::string& modelType) {
     auto iterator = CONFIGS.find(modelType);
     if(iterator == CONFIGS.end()) {
         auto pair = CONFIGS.emplace(modelType, Config{});
@@ -165,15 +151,40 @@ void lifuren::ModelWindow::loadConfig(const std::string& modelType) {
     }
 }
 
+static int abs(int source, int target) {
+    if(source > target) {
+        return source - target;
+    } else {
+        return target - source;
+    }
+}
+
+lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Window(width, height, title) {
+}
+
+lifuren::MarkWindow::~MarkWindow() {
+    SPDLOG_DEBUG("关闭窗口");
+    LFR_DELETE_THIS_PTR(prevPtr);
+    LFR_DELETE_THIS_PTR(nextPtr);
+    LFR_DELETE_THIS_PTR(datasetPathPtr);
+}
+
+lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Window(width, height, title) {
+}
+
+lifuren::ModelWindow::~ModelWindow() {
+    SPDLOG_DEBUG("关闭窗口");
+    LFR_DELETE_THIS_PTR(modelPathPtr);
+    LFR_DELETE_THIS_PTR(datasetPathPtr);
+    LFR_DELETE_THIS_PTR(trainStartPtr);
+    LFR_DELETE_THIS_PTR(trainStopPtr);
+}
+
 lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }
 
 lifuren::ModelGCWindow::~ModelGCWindow() {
     SPDLOG_DEBUG("关闭GC窗口");
-    LFR_DELETE_THIS_PTR(prevPtr);
-    LFR_DELETE_THIS_PTR(nextPtr);
-    LFR_DELETE_THIS_PTR(trainStartPtr);
-    LFR_DELETE_THIS_PTR(trainStopPtr);
     LFR_DELETE_THIS_PTR(generatePtr);
 }
 
@@ -182,7 +193,5 @@ lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) 
 
 lifuren::ModelTSWindow::~ModelTSWindow() {
     SPDLOG_DEBUG("关闭TS窗口");
-    LFR_DELETE_THIS_PTR(trainStartPtr);
-    LFR_DELETE_THIS_PTR(trainStopPtr);
     LFR_DELETE_THIS_PTR(transferPtr);
 }

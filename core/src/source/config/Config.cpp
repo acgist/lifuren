@@ -29,6 +29,8 @@ const std::string lifuren::model::MODEL_L2I = "l2i";
 const std::string lifuren::model::MODEL_I2I = "i2i";
 const std::string lifuren::model::MODEL_V2V = "v2v";
 
+const std::string lifuren::config::CONFIG_DATASET = "dataset";
+
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 

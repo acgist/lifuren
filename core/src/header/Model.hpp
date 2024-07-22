@@ -63,6 +63,10 @@ public:
     virtual void val() = 0;
     // 测试模型
     virtual void test() = 0;
+    // 模型微调
+    virtual void finetune() = 0;
+    // 模型量化
+    virtual void quantization() = 0;
     /**
      * 模型预测
      * 

@@ -129,6 +129,9 @@ extern std::string httpServerHost;
 // 监听端口
 extern int         httpServerPort;
 
+// 训练数据集
+extern const std::string CONFIG_DATASET;
+
 /**
  * @param path 文件路径
  * 

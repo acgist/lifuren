@@ -1,5 +1,7 @@
 #include "../../header/FLTK.hpp"
 
+#include "spdlog/spdlog.h"
+
 lifuren::VideoTSWindow::VideoTSWindow(int width, int height, const char* title) : ModelTSWindow(width, height, title) {
 }
 

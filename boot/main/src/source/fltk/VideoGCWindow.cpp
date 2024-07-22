@@ -1,5 +1,7 @@
 #include "../../header/FLTK.hpp"
 
+#include "spdlog/spdlog.h"
+
 lifuren::VideoGCWindow::VideoGCWindow(int width, int height, const char* title) : ModelGCWindow(width, height, title) {
 }
 

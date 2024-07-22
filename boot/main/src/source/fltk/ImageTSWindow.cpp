@@ -1,6 +1,6 @@
 #include "../../header/FLTK.hpp"
 
-#include "utils/Jsons.hpp"
+#include "spdlog/spdlog.h"
 
 lifuren::ImageTSWindow::ImageTSWindow(int width, int height, const char* title) :ModelTSWindow(width, height, title) {
     this->loadConfig("ImageTS");
@@ -16,8 +16,7 @@ void lifuren::ImageTSWindow::drawElement() {
     this->modelPathPtr->value(this->configPtr->modelPath.c_str());
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 50, this->w() - 200, 30, "数据目录");
     this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
-    // LFR_INPUT_DIRECTORY_CHOOSER(modelPathPtr, modelPath, ImageGCWindow);
-    // LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageGCWindow, loadImageVector);
+    LFR_INPUT_DIRECTORY_CHOOSER(modelPathPtr, modelPath, ImageTSWindow);
     this->trainStartPtr = new Fl_Button(10,  90, 100, 30, "开始训练");
     this->trainStopPtr  = new Fl_Button(120, 90, 100, 30, "结束训练");
     this->transferPtr   = new Fl_Button(230, 90, 100, 30, "风格迁移");

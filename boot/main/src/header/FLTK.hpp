@@ -25,9 +25,13 @@
 #include "Fl/Fl_Native_File_Chooser.H"
 
 #include "Ptr.hpp"
-#include "utils/Files.hpp"
 #include "config/Label.hpp"
 #include "config/Config.hpp"
+
+// 半个窗口宽度
+#ifndef LFR_HALF_WIDTH
+#define LFR_HALF_WIDTH (this->w() - 60) / 2
+#endif
 
 // 模型变量
 #ifndef LFR_MODEL_DEFINE
@@ -67,21 +71,21 @@
 #ifndef LFR_CHOICE_BUTTON
 #define LFR_CHOICE_BUTTON(x, y, map, buttonPtr, groupName, labelName, defaultValue)           \
 {                                                                                             \
-    this->buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                 \
-    this->buttonPtr->add(defaultValue);                                                       \
+    buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                 \
+    buttonPtr->add(defaultValue);                                                       \
     auto iterator = lifuren::map.find(groupName);                                             \
     if(iterator != lifuren::map.end()) {                                                      \
         std::vector<LabelFile>& vector = iterator->second;                                    \
         std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
             if(label.name == labelName) {                                                     \
                 std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
-                    this->buttonPtr->add(value.c_str());                                      \
+                    buttonPtr->add(value.c_str());                                      \
                 });                                                                           \
             }                                                                                 \
         });                                                                                   \
     }                                                                                         \
-    auto defaultPtr = this->buttonPtr->find_item(defaultValue);                               \
-    this->buttonPtr->value(defaultPtr);                                                       \
+    auto defaultPtr = buttonPtr->find_item(defaultValue);                               \
+    buttonPtr->value(defaultPtr);                                                       \
 }
 #endif
 
@@ -104,6 +108,8 @@ extern void shutdownFltkWindow();
 class Window : public Fl_Window {
 
 protected:
+    // 全局配置：不用释放
+    Config* configPtr = nullptr;
     // 图标指针
     Fl_PNG_Image* iconImagePtr = nullptr;
 
@@ -128,11 +134,16 @@ protected:
     void icon();
     // 窗口居中
     void center();
+    /**
+     * 加载配置
+     * 
+     * @param modelType 模型类型
+     */
+    void loadConfig(const std::string& modelType);
 
 };
 
 // 定义所有窗口
-
 class AudioGCWindow;
 class AudioTSWindow;
 class ImageGCWindow;
@@ -141,6 +152,8 @@ class VideoGCWindow;
 class VideoTSWindow;
 class PoetryGCWindow;
 class PoetryTSWindow;
+class ImageMarkWindow;
+class PoetryMarkWindow;
 class AboutWindow;
 
 /**
@@ -157,12 +170,20 @@ private:
     LFR_MODEL_DEFINE(video,  Video);
     // 诗词模块
     LFR_MODEL_DEFINE(poetry, Poetry);
+    // 图片标记按钮
+    Fl_Button* imageMarkButtonPtr = nullptr;
+    // 图片标记窗口
+    ImageMarkWindow* imageMarkWindowPtr = nullptr;
+    // 诗词标记按钮
+    Fl_Button* poetryMarkButtonPtr = nullptr;
+    // 诗词标记窗口
+    PoetryMarkWindow* poetryMarkWindowPtr = nullptr;
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
-    // 重新加载配置按钮
-    Fl_Button* reloadButtonPtr = nullptr;
     // 关于窗口
     AboutWindow* aboutWindowPtr = nullptr;
+    // 重新加载配置按钮
+    Fl_Button* reloadButtonPtr = nullptr;
 
 public:
     /**
@@ -187,8 +208,83 @@ public:
     void videoTs();
     // 诗词内容生成
     void poetryGc();
+    // 图片标记
+    void imageMark();
+    // 诗词标记
+    void poetryMark();
     // 关于
     void about();
+
+protected:
+    // 加载组件
+    virtual void drawElement() override;
+
+};
+
+/**
+ * 标记窗口
+ */
+class MarkWindow : public Window {
+
+public:
+    // 上个内容
+    Fl_Button* prevPtr = nullptr;
+    // 下个内容
+    Fl_Button* nextPtr = nullptr;
+    // 数据路径
+    Fl_Input* datasetPathPtr = nullptr;
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    MarkWindow(int width, int height, const char* title = "关于");
+    // 析构函数
+    virtual ~MarkWindow();
+
+};
+
+/**
+ * 图片标记窗口
+ */
+class ImageMarkWindow : public MarkWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ImageMarkWindow(int width, int height, const char* title = "图片标记");
+    // 析构函数
+    virtual ~ImageMarkWindow();
+
+protected:
+    // 加载组件
+    virtual void drawElement() override;
+
+};
+
+/**
+ * 诗词标记窗口
+ */
+class PoetryMarkWindow : public MarkWindow {
+
+public:
+    // 自动标记：通过已有标记自动标记
+    Fl_Button* autoMarkPtr = nullptr;
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    PoetryMarkWindow(int width, int height, const char* title = "诗词标记");
+    // 析构函数
+    virtual ~PoetryMarkWindow();
 
 protected:
     // 加载组件
@@ -226,60 +322,6 @@ protected:
 };
 
 /**
- * 图片标记
- * 
- * config/image.yml
- */
-class ImageLabel {
-
-protected:
-    // 头部
-    Fl_Choice* fasePtr     = nullptr;
-    Fl_Choice* faxingPtr   = nullptr;
-    Fl_Choice* meimaoPtr   = nullptr;
-    Fl_Choice* yanjingPtr  = nullptr;
-    Fl_Choice* biziPtr     = nullptr;
-    Fl_Choice* yachiPtr    = nullptr;
-    Fl_Choice* zuibaPtr    = nullptr;
-    Fl_Choice* kouhongPtr  = nullptr;
-    Fl_Choice* biaoqingPtr = nullptr;
-    Fl_Choice* lianxingPtr = nullptr;
-    // 上身
-    Fl_Choice* rufangPtr   = nullptr;
-    Fl_Choice* shouxingPtr = nullptr;
-    Fl_Choice* yaobuPtr    = nullptr;
-    // 下身
-    Fl_Choice* tunbuPtr   = nullptr;
-    Fl_Choice* tuixingPtr = nullptr;
-    // 衣着
-    Fl_Choice* sediaoPtr = nullptr;
-    Fl_Choice* yifuPtr   = nullptr;
-    Fl_Choice* kuziPtr   = nullptr;
-    Fl_Choice* xieziPtr  = nullptr;
-    // 饰品
-    Fl_Choice* toushiPtr  = nullptr;
-    Fl_Choice* ershiPtr   = nullptr;
-    Fl_Choice* yanshiPtr  = nullptr;
-    Fl_Choice* lianshiPtr = nullptr;
-    Fl_Choice* shoushiPtr = nullptr;
-    Fl_Choice* baobaoPtr  = nullptr;
-    // 整体
-    Fl_Choice* fusePtr     = nullptr;
-    Fl_Choice* pifuPtr     = nullptr;
-    Fl_Choice* xinggePtr   = nullptr;
-    Fl_Choice* nianlingPtr = nullptr;
-    Fl_Choice* shengaoPtr  = nullptr;
-    Fl_Choice* tixingPtr   = nullptr;
-    Fl_Choice* titaiPtr    = nullptr;
-    Fl_Choice* zhiyePtr    = nullptr;
-    // 环境
-    Fl_Choice* tianqiPtr   = nullptr;
-    Fl_Choice* qianjingPtr = nullptr;
-    Fl_Choice* beijingPtr  = nullptr;
-
-};
-
-/**
  * 模型窗口
  */
 class ModelWindow : public Window {
@@ -295,20 +337,16 @@ public:
     virtual ~ModelWindow();
 
 protected:
-    // 全局配置：不用释放
-    Config* configPtr = nullptr;
     // 模型路径
     Fl_Input* modelPathPtr = nullptr;
     // 数据路径
     Fl_Input* datasetPathPtr = nullptr;
-
-protected:
-    /**
-     * 加载配置
-     * 
-     * @param modelType 模型类型
-     */
-    void loadConfig(const std::string& modelType);
+    // 开始训练
+    Fl_Button* trainStartPtr = nullptr;
+    // 结束训练
+    Fl_Button* trainStopPtr  = nullptr;
+    // TODO: 微调
+    // TODO: 量化
 
 };
 
@@ -328,16 +366,8 @@ public:
     virtual ~ModelGCWindow();
 
 protected:
-    // 上个内容
-    Fl_Button* prevPtr = nullptr;
-    // 下个内容
-    Fl_Button* nextPtr = nullptr;
-    // 开始训练
-    Fl_Button* trainStartPtr = nullptr;
-    // 结束训练
-    Fl_Button* trainStopPtr  = nullptr;
     // 内容生成
-    Fl_Button* generatePtr   = nullptr;
+    Fl_Button* generatePtr = nullptr;
 
 };
 
@@ -357,12 +387,8 @@ public:
     virtual ~ModelTSWindow();
 
 protected:
-    // 开始训练
-    Fl_Button* trainStartPtr = nullptr;
-    // 结束训练
-    Fl_Button* trainStopPtr  = nullptr;
     // 风格迁移
-    Fl_Button* transferPtr   = nullptr;
+    Fl_Button* transferPtr = nullptr;
 
 };
 
@@ -409,7 +435,7 @@ protected:
  * 
  * @see ImageGC
  */
-class ImageGCWindow : public ModelGCWindow, public ImageLabel {
+class ImageGCWindow : public ModelGCWindow {
 
 public:
     /**
@@ -456,10 +482,6 @@ protected:
  * @see PoetryGC
  */
 class PoetryGCWindow : public ModelGCWindow {
-
-public:
-    // 自动标记：通过已有标记自动标记
-    Fl_Button* autoMarkPtr = nullptr;
 
 public:
     /**

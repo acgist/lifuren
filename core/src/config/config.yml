@@ -1,5 +1,9 @@
 httpServerHost: 0.0.0.0
 httpServerPort: 8080
+# 数据集
+dataset:
+  imagePath: ""
+  poetryPath: ""
 # 图片转为诗词
 i2p:
   modelPath  : ""

@@ -17,17 +17,15 @@ add_library(
     src/source/config/MarkFile.cpp
     src/source/config/MarkText.cpp
     src/source/model/audio/Audio.cpp
-    src/source/model/audio/AudioGC.cpp
-    src/source/model/audio/AudioTS.cpp
     src/source/model/image/Image.cpp
-    src/source/model/image/ImageGC.cpp
-    src/source/model/image/ImageTS.cpp
-    src/source/model/poetry/Poetry.cpp
-    src/source/model/poetry/PoetryGC.cpp
-    src/source/model/poetry/PoetryTS.cpp
     src/source/model/video/Video.cpp
-    src/source/model/video/VideoGC.cpp
-    src/source/model/video/VideoTS.cpp
+    src/source/model/poetry/Poetry.cpp
+    src/source/model/image/ImageToImageModel.cpp
+    src/source/model/video/VideoToVideoModel.cpp
+    src/source/model/image/LabelToImageModel.cpp
+    src/source/model/image/PoetryToImageModel.cpp
+    src/source/model/poetry/LabelToPoetryModel.cpp
+    src/source/model/poetry/ImageToPoetryModel.cpp
     src/source/utils/Dates.cpp
     src/source/utils/Files.cpp
     src/source/utils/Jsons.cpp
