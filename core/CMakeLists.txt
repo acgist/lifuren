@@ -63,7 +63,7 @@ target_include_directories(
     ${HEADER_DIR}
 )
 
-file(COPY src/config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/config/)
+file(COPY src/config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE_LOWER}/config)
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
@@ -73,4 +73,4 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
-install(DIRECTORY src/config/   DESTINATION ${CMAKE_INSTALL_PREFIX}/config/)
+install(DIRECTORY src/config/   DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
