@@ -1,9 +1,9 @@
-#include "../../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 
 #include "spdlog/spdlog.h"
 
-#include "utils/Files.hpp"
-#include "config/Label.hpp"
+#include "lifuren/utils/Files.hpp"
+#include "lifuren/config/Label.hpp"
 
 #include "FL/Fl_Box.H"
 #include "Fl/Fl_Shared_Image.H"

@@ -1,4 +1,4 @@
-#include "../../header/config/Label.hpp"
+#include "lifuren/config/Label.hpp"
 
 #include "spdlog/spdlog.h"
 

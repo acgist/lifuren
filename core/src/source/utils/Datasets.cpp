@@ -1,7 +1,7 @@
-#include "../../header/utils/Datasets.hpp"
+#include "lifuren/utils/Datasets.hpp"
 
-#include "../../header/Logger.hpp"
-#include "../../header/utils/Files.hpp"
+#include "lifuren/Logger.hpp"
+#include "lifuren/utils/Files.hpp"
 
 #include "spdlog/spdlog.h"
 

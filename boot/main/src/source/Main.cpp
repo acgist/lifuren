@@ -4,10 +4,10 @@
  * @author acgist
  */
 #if LFR_ENABLE_REST
-#include "../header/REST.hpp"
+#include "lifuren/REST.hpp"
 #endif
 #if LFR_ENABLE_FLTK
-#include "../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 #endif
 
 #include <mutex>
@@ -15,7 +15,7 @@
 #include <thread>
 #include <condition_variable>
 
-#include "Logger.hpp"
+#include "lifuren/Logger.hpp"
 
 #include "spdlog/spdlog.h"
 

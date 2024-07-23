@@ -1,9 +1,9 @@
-#include "../../header/config/Config.hpp"
+#include "lifuren/config/Config.hpp"
 
 #include "spdlog/spdlog.h"
 
-#include "../../header/Logger.hpp"
-#include "../../header/utils/Yamls.hpp"
+#include "lifuren/Logger.hpp"
+#include "lifuren/utils/Yamls.hpp"
 
 // 配置读取
 #ifndef LFR_CONFIG_YAML_GETTER

@@ -1,10 +1,10 @@
-#include "../../../header/model/Poetry.hpp"
+#include "lifuren/model/Poetry.hpp"
 
 #include <cstdint>
 #include <algorithm>
 
-#include "../../../header/utils/Strings.hpp"
-#include "../../../header/utils/Collections.hpp"
+#include "lifuren/utils/Strings.hpp"
+#include "lifuren/utils/Collections.hpp"
 
 std::string lifuren::poetry::beautify(const std::string& segment) {
     std::string ret;

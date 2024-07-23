@@ -1,9 +1,9 @@
-#include "../../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 
 #include "spdlog/spdlog.h"
 
-#include "utils/Jsons.hpp"
-#include "model/Poetry.hpp"
+#include "lifuren/utils/Jsons.hpp"
+#include "lifuren/model/Poetry.hpp"
 
 // TODO: 问题双击选中中文崩溃
 

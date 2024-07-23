@@ -1,11 +1,11 @@
-#include "../../header/REST.hpp"
+#include "lifuren/REST.hpp"
 #if LFR_ENABLE_FLTK
-#include "../../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 #endif
 
 #include "spdlog/spdlog.h"
 
-#include "config/Config.hpp"
+#include "lifuren/config/Config.hpp"
 
 httplib::Server lifuren::httpServer;
 

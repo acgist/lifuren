@@ -1,4 +1,4 @@
-#include "../../header/utils/Collections.hpp"
+#include "lifuren/utils/Collections.hpp"
 
 std::vector<std::string> lifuren::collections::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
     std::vector<std::string> vector;

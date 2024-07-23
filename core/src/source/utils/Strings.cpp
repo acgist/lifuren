@@ -1,4 +1,4 @@
-#include "../../header/utils/Strings.hpp"
+#include "lifuren/utils/Strings.hpp"
 
 #include <cctype>
 

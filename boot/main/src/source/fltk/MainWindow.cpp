@@ -1,6 +1,6 @@
-#include "../../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 
-#include "Lifuren.hpp"
+#include "lifuren/Lifuren.hpp"
 
 #include "FL/fl_ask.H"
 #include "FL/Fl_Shared_Image.H"

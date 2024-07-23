@@ -1,10 +1,10 @@
-#include "../header/Lifuren.hpp"
+#include "lifuren/Lifuren.hpp"
 
 #include "spdlog/spdlog.h"
 
-#include "../header/utils/Yamls.hpp"
-#include "../header/config/Label.hpp"
-#include "../header/config/Config.hpp"
+#include "lifuren/utils/Yamls.hpp"
+#include "lifuren/config/Label.hpp"
+#include "lifuren/config/Config.hpp"
 
 void lifuren::loadConfig() {
     SPDLOG_DEBUG("加载全局所有配置");

@@ -4,9 +4,9 @@
 
 #include "nlohmann/json.hpp"
 
-#include "Logger.hpp"
-#include "utils/Strings.hpp"
-#include "utils/Collections.hpp"
+#include "lifuren/Logger.hpp"
+#include "lifuren/utils/Strings.hpp"
+#include "lifuren/utils/Collections.hpp"
 
 #include "spdlog/spdlog.h"
 

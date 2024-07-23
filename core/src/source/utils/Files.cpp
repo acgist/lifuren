@@ -1,9 +1,9 @@
-#include "../../header/utils/Files.hpp"
+#include "lifuren/utils/Files.hpp"
 
 #include <fstream>
 #include <algorithm>
 
-#include "../../header/utils/Strings.hpp"
+#include "lifuren/utils/Strings.hpp"
 
 #include "spdlog/spdlog.h"
 

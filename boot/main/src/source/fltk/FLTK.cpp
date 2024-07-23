@@ -1,9 +1,9 @@
 #if LFR_ENABLE_REST
-#include "../../header/REST.hpp"
+#include "lifuren/REST.hpp"
 #endif
-#include "../../header/FLTK.hpp"
+#include "lifuren/FLTK.hpp"
 
-#include "Ptr.hpp"
+#include "lifuren/Ptr.hpp"
 
 #include "spdlog/spdlog.h"
 

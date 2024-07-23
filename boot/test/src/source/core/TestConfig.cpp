@@ -1,8 +1,8 @@
-#include "config/Config.hpp"
+#include "lifuren/config/Config.hpp"
 
 #include <sstream>
 
-#include "Logger.hpp"
+#include "lifuren/Logger.hpp"
 
 #include "spdlog/spdlog.h"
 

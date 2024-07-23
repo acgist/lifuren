@@ -1,9 +1,9 @@
-#include "../../header/utils/Yamls.hpp"
+#include "lifuren/utils/Yamls.hpp"
 
 #include <fstream>
 #include <filesystem>
 
-#include "Logger.hpp"
+#include "lifuren/Logger.hpp"
 
 #include "spdlog/spdlog.h"
 

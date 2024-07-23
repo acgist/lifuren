@@ -18,8 +18,8 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
-#include "Ptr.hpp"
-#include "config/Config.hpp"
+#include "lifuren/Ptr.hpp"
+#include "lifuren/config/Config.hpp"
 
 // 窗口宽度
 #ifndef LFR_HALF_WIDTH
