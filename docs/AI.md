@@ -13,6 +13,13 @@
 * 神经网络（NN）
 * 深度学习（DL）
 
+#### 学习方式
+
+* 强化学习
+* 有监督学习
+* 无监督学习
+* 半监督学习
+
 ## 应用
 
 * 传统任务：回归、分类、聚类
@@ -154,10 +161,10 @@
 #### 其他
 
 * https://github.com/lencx/ChatGPT
-* https://github.com/ggerganov/ggml
 * https://github.com/geekan/MetaGPT
-* https://github.com/salesforce/BLIP
+* https://github.com/ggerganov/ggml
 * https://github.com/xtekky/gpt4free
+* https://github.com/salesforce/BLIP
 * https://github.com/reworkd/AgentGPT
 * https://github.com/TencentARC/PhotoMaker
 * https://github.com/Akegarasu/lora-scripts
@@ -290,3 +297,11 @@ ADMA + L2
 ## 学习资料
 
 * https://zh-v2.d2l.ai/
+* https://github.com/datawhalechina
+* https://github.com/datawhalechina/fun-rec
+* https://github.com/datawhalechina/easy-rl
+* https://github.com/datawhalechina/self-llm
+* https://github.com/datawhalechina/pumpkin-book
+* https://github.com/datawhalechina/llm-cookbook
+* https://github.com/datawhalechina/llm-universe
+* https://github.com/datawhalechina/leedl-tutorial

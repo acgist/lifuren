@@ -1,6 +1,8 @@
 /**
  * FLTK GUI
  * 
+ * REST.hpp必须在FLTK.hpp的前面
+ * 
  * @author acgist
  */
 #ifndef LFR_HEADER_BOOT_FLTK_HPP
@@ -134,8 +136,7 @@ protected:
 
 };
 
-// 定义所有窗口
-class MainWindow;
+// 模型窗口
 class AudioGCWindow;
 class AudioTSWindow;
 class ImageGCWindow;
@@ -144,9 +145,12 @@ class VideoGCWindow;
 class VideoTSWindow;
 class PoetryGCWindow;
 class PoetryTSWindow;
+
+// 功能窗口
+class MainWindow;
+class AboutWindow;
 class ImageMarkWindow;
 class PoetryMarkWindow;
-class AboutWindow;
 
 /**
  * 主窗口
@@ -336,7 +340,7 @@ protected:
     // 开始训练
     Fl_Button* trainStartPtr = nullptr;
     // 结束训练
-    Fl_Button* trainStopPtr  = nullptr;
+    Fl_Button* trainStopPtr = nullptr;
     // TODO: 微调
     // TODO: 量化
 

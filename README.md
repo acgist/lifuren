@@ -33,9 +33,7 @@
 |OpenCV|4.10.0|https://github.com/opencv/opencv|
 |LibTorch|2.2.1|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
-|llama.cpp|master|https://github.com/ggerganov/llama.cpp|
 |cpp-httplib|0.15.3|https://github.com/yhirose/cpp-httplib|
-|stable-diffusion.cpp|master|https://github.com/leejet/stable-diffusion.cpp|
 
 ## 模块
 
@@ -45,7 +43,7 @@
 |core|核心|项目配置、模型加载、模型推理、模型微调、数据标记|
 |deps|依赖|依赖项目|
 |docs|文档|项目文档、使用说明|
-|scripts1|脚本|训练脚本、微调脚本|
+|client|终端|服务调用|
 
 ## 文档
 

@@ -34,6 +34,15 @@ extern nlohmann::json buildResponse(const char* code, const char* message);
 // 主页
 extern void restGetIndex();
 
+extern void restGetImageToImage();
+extern void restGetLabelToImage();
+extern void restGetPoetryToImage();
+
+extern void restGetImageToPoetry();
+extern void restGetLabelToPoetry();
+
+extern void restGetVideoToVideo();
+
 // 关闭
 extern void restGetShutdown();
 

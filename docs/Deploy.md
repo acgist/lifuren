@@ -149,6 +149,12 @@ https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installe
 
 #### 模型微调
 
+[模型微调](./optimize/Finetune.md)
+
 #### 模型量化
 
+[模型量化](./optimize/Quantization.md)
+
 #### 模型部署
+
+[模型部署](./model)
