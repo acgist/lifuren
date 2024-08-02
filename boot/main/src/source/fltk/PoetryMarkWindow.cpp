@@ -2,7 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/utils/Jsons.hpp"
+#include "lifuren/Jsons.hpp"
 #include "lifuren/model/Poetry.hpp"
 
 // TODO: 问题双击选中中文崩溃

@@ -2,7 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/utils/Files.hpp"
+#include "lifuren/Files.hpp"
 #include "lifuren/config/Label.hpp"
 
 #include "FL/Fl_Box.H"

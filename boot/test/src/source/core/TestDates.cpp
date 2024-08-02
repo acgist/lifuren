@@ -1,4 +1,4 @@
-#include "lifuren/utils/Dates.hpp"
+#include "lifuren/Dates.hpp"
 
 #include "lifuren/Logger.hpp"
 

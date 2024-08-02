@@ -2,7 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/utils/Yamls.hpp"
+#include "lifuren/Yamls.hpp"
 #include "lifuren/config/Label.hpp"
 #include "lifuren/config/Config.hpp"
 

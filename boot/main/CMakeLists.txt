@@ -29,7 +29,7 @@ if(CMAKE_HOST_WIN32)
             png
             httplib::httplib
             libjpeg-turbo::jpeg
-            lifurencore
+            lifurenmodel
             ${FLTK_LIBRARIES}
         )
     else()
@@ -38,7 +38,7 @@ if(CMAKE_HOST_WIN32)
             png_shared
             httplib::httplib
             libjpeg-turbo::jpeg
-            lifurencore
+            lifurenmodel
             ${FLTK_LIBRARIES}
         )
     endif()
@@ -48,7 +48,7 @@ else()
         png
         jpeg
         cpp-httplib
-        lifurencore
+        lifurenmodel
         ${FLTK_LIBRARIES}
     )
 endif()

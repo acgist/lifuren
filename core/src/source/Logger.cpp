@@ -6,8 +6,6 @@
 #include "spdlog/fmt/chrono.h"
 #include "spdlog/fmt/ranges.h"
 
-#include "opencv2/core/utils/logger.hpp"
-
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -31,11 +29,6 @@ void lifuren::logger::init() {
     logger->flush_on(spdlog::level::warn);
     logger->set_pattern("[%D %T] [%L] [%t] [%s:%#] %v");
     spdlog::set_default_logger(logger);
-    // 关闭OpenCV日志
-    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_WARNING);
-    // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
-    // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_FATAL);
-    // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
     SPDLOG_DEBUG(R"(
         
         北方有佳人，绝世而独立。

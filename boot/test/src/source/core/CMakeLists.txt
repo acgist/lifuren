@@ -33,13 +33,6 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testLayers TestLayers.cpp)
-add_test(NAME testLayers COMMAND testLayers)
-target_link_libraries(
-    testLayers PUBLIC
-    lifurencore
-)
-
 add_executable(testPoetry TestPoetry.cpp)
 add_test(NAME testPoetry COMMAND testPoetry)
 target_link_libraries(
@@ -51,13 +44,6 @@ add_executable(testStrings TestStrings.cpp)
 add_test(NAME testStrings COMMAND testStrings)
 target_link_libraries(
     testStrings PUBLIC
-    lifurencore
-)
-
-add_executable(testDatasets TestDatasets.cpp)
-add_test(NAME testDatasets COMMAND testDatasets)
-target_link_libraries(
-    testDatasets PUBLIC
     lifurencore
 )
 

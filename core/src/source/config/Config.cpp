@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Logger.hpp"
-#include "lifuren/utils/Yamls.hpp"
+#include "lifuren/Yamls.hpp"
 
 // 配置读取
 #ifndef LFR_CONFIG_YAML_GETTER

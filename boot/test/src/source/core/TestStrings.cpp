@@ -1,4 +1,4 @@
-#include "lifuren/utils/Strings.hpp"
+#include "lifuren/Strings.hpp"
 
 #include "lifuren/Logger.hpp"
 

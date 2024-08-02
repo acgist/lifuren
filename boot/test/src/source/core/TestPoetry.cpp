@@ -5,8 +5,8 @@
 #include "nlohmann/json.hpp"
 
 #include "lifuren/Logger.hpp"
-#include "lifuren/utils/Strings.hpp"
-#include "lifuren/utils/Collections.hpp"
+#include "lifuren/Strings.hpp"
+#include "lifuren/Collections.hpp"
 
 #include "spdlog/spdlog.h"
 
