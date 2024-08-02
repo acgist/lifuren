@@ -2,12 +2,10 @@ name: build
 on:
   push:
     branches: [ master ]
-permissions:
-  contents: write
 jobs:
   lifuren:
     name: Build lifuren
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04.2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,7 +32,7 @@ jobs:
           git switch -c 10.2.0
           mkdir build
           cd build
-          cmake ..
+          cmake .. -DFMT_TEST=OFF
           make -j 8
           sudo make install
           cd ../../
@@ -44,7 +42,7 @@ jobs:
           git switch -c v1.12.0
           mkdir build
           cd build
-          cmake ..
+          cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF
           make -j 8
           sudo make install
           cd ../../
