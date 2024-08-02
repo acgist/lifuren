@@ -32,8 +32,10 @@ namespace lifuren {
  * @author acgist
  */
 template <typename M, typename I, typename R>
+// TODO requires std::derived_from<M, lifuren::ModelConfig>
 class Model {
 
+// TODO: concept derived_from
 static_assert(std::is_base_of_v<lifuren::ModelConfig, M>, "必须继承模型配置");
 
 public:
@@ -79,6 +81,8 @@ public:
     virtual void trainAndVal();
 
 };
+
+// TODO: concept
 
 template<typename M, typename I, typename R>
 lifuren::Model<M, I, R>::Model() {

@@ -52,9 +52,3 @@ v2v:
   learningRate: 0.0
   regularization: 0
   regularizationRate: 0.0
-# Ollama
-ollama:
-  uri:
-# SD
-stable-diffusion:
-  uri:

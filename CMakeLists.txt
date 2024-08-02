@@ -138,6 +138,10 @@ find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(core)
+add_subdirectory(cv)
+add_subdirectory(nlp)
+add_subdirectory(model)
+add_subdirectory(client)
 add_subdirectory(boot)
 
 set(HELP "LICENSE" "README.md")

@@ -1,0 +1,7 @@
+# Ollama
+ollama:
+  uri:
+# SD
+stable-diffusion:
+  uri:
+  

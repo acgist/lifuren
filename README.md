@@ -22,32 +22,24 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/acgist/lifuren?style=flat-square&color=blue" />
 </p>
 
-## 依赖
-
-|依赖|版本|官网|
-|:--|:--|:--|
-|fltk|1.3.8|https://github.com/fltk/fltk|
-|json|3.11.2|https://github.com/nlohmann/json|
-|cmake|3.26.4|https://github.com/Kitware/CMake|
-|spdlog|1.12.0|https://github.com/gabime/spdlog|
-|OpenCV|4.10.0|https://github.com/opencv/opencv|
-|LibTorch|2.2.1|https://github.com/pytorch/pytorch|
-|yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
-|cpp-httplib|0.15.3|https://github.com/yhirose/cpp-httplib|
-
 ## 模块
 
 |模块|描述|详细描述|
 |:--|:--|:--|
-|boot|启动|`FLTK`界面、`REST`接口|
-|core|核心|项目配置、模型加载、模型推理、模型微调、数据标记|
 |deps|依赖|依赖项目|
-|docs|文档|项目文档、使用说明|
+|core|核心|项目配置、数据标记|
+|cv|机器视觉|机器视觉相关|
+|nlp|自然语义|自然语言相关|
+|model|模型|模型加载、模型推理、模型微调|
 |client|终端|服务调用|
+|boot|启动|`FLTK`界面、`REST`接口|
+|docs|文档|项目文档、使用说明|
 
 ## 文档
 
 * [学习资料](./docs/AI.md)
 * [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
-* [功能说明](./docs/TODO.md)
+* [功能文档](./docs/TODO.md)
+* [模型部署](./docs/model/)
+* [模型调优](./docs/optimize/)

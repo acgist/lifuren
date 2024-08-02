@@ -1,7 +1,5 @@
 project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
-# 训练模式=libtorch
-# 用户模式=llama.cpp/stable-diffusion.cpp
 option(ENABLE_TRAIN "打开训练模型" ON)
 
 add_library(
