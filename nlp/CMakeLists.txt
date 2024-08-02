@@ -2,6 +2,7 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME} STATIC
+    src/source/Docs.cpp
 )
 
 target_link_libraries(
