@@ -30,6 +30,7 @@ if(CMAKE_HOST_WIN32)
             httplib::httplib
             libjpeg-turbo::jpeg
             lifurenmodel
+            lifurenclient
             ${FLTK_LIBRARIES}
         )
     else()
@@ -39,6 +40,7 @@ if(CMAKE_HOST_WIN32)
             httplib::httplib
             libjpeg-turbo::jpeg
             lifurenmodel
+            lifurenclient
             ${FLTK_LIBRARIES}
         )
     endif()
@@ -49,6 +51,7 @@ else()
         jpeg
         cpp-httplib
         lifurenmodel
+        lifurenclient
         ${FLTK_LIBRARIES}
     )
 endif()

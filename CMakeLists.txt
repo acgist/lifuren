@@ -68,17 +68,15 @@ set(
     deps/libtorch
 )
 
+include_directories(
+    deps/libtorch/include
+    deps/libtorch/include/torch/csrc/api/include
+)
+
 if(CMAKE_HOST_UNIX)
     include_directories(
         /usr/include
         /usr/local/include
-        deps/libtorch/include
-        deps/libtorch/include/torch/csrc/api/include
-    )
-else()
-    include_directories(
-        deps/libtorch/include
-        deps/libtorch/include/torch/csrc/api/include
     )
 endif()
 
