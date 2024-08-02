@@ -16,17 +16,17 @@ jobs:
           git submodule update --init --recursive
           cd ./deps
           ################################ fltk
-          sudo apt  install libfltk1.3-dev > /dev/null 2>&1
+          sudo apt  install libfltk1.3-dev -y > /dev/null 2>&1
           apt-cache madison libfltk1.3-dev
           ################################ json
           cd ./json
           git checkout v3.11.2
           cd ../
           ################################ cmake
-          sudo apt  install cmake > /dev/null 2>&1
+          sudo apt  install cmake -y > /dev/null 2>&1
           apt-cache madison cmake
           ################################ spdlog
-          # sudo apt  install libspdlog-dev > /dev/null 2>&1
+          # sudo apt  install libspdlog-dev -y > /dev/null 2>&1
           # apt-cache madison libspdlog-dev
           ################################ fmt
           git clone https://github.com/fmtlib/fmt.git > /dev/null 2>&1
@@ -49,16 +49,16 @@ jobs:
           sudo make install > /dev/null 2>&1
           cd ../../
           ################################ opencv
-          sudo apt  install libopencv-dev > /dev/null 2>&1
+          sudo apt  install libopencv-dev -y > /dev/null 2>&1
           apt-cache madison libopencv-dev
           ################################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip > /dev/null 2>&1
           unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip > /dev/null 2>&1
           ################################ yaml-cpp
-          sudo apt  install libyaml-cpp-dev > /dev/null 2>&1
+          sudo apt  install libyaml-cpp-dev -y > /dev/null 2>&1
           apt-cache madison libyaml-cpp-dev
           ################################ cpp-httplib
-          sudo apt  install libcpp-httplib-dev > /dev/null 2>&1
+          sudo apt  install libcpp-httplib-dev -y > /dev/null 2>&1
           apt-cache madison libcpp-httplib-dev
       - name: Deploy lifuren
         run: |
