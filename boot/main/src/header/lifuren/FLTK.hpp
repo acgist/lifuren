@@ -33,15 +33,6 @@
 #define LFR_IMAGE_PREVIEW_SCALE 1.2
 #endif
 
-// 模型变量
-#ifndef LFR_MODEL_DEFINE
-#define LFR_MODEL_DEFINE(modelTypeLower, modelTypeUpper)             \
-    Fl_Button* modelTypeLower##GcPtr = nullptr;                      \
-    Fl_Button* modelTypeLower##TsPtr = nullptr;                      \
-    modelTypeUpper##GCWindow* modelTypeLower##GcWindowPtr = nullptr; \
-    modelTypeUpper##TSWindow* modelTypeLower##TsWindowPtr = nullptr;
-#endif
-
 // 目录选择
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER
 #define LFR_INPUT_DIRECTORY_CHOOSER(inputPtr, configName, windowName)   \
@@ -136,21 +127,17 @@ protected:
 
 };
 
-// 模型窗口
-class AudioGCWindow;
-class AudioTSWindow;
-class ImageGCWindow;
-class ImageTSWindow;
-class VideoGCWindow;
-class VideoTSWindow;
-class PoetryGCWindow;
-class PoetryTSWindow;
-
 // 功能窗口
 class MainWindow;
+class ChatWindow;
+class ImageWindow;
+class VideoWindow;
 class AboutWindow;
+class DocsMarkWindow;
 class ImageMarkWindow;
 class PoetryMarkWindow;
+class FinetuneWindow;
+class QuantizationWindow;
 
 /**
  * 主窗口
@@ -158,14 +145,10 @@ class PoetryMarkWindow;
 class MainWindow : public Window {
 
 private:
-    // 音频模块
-    LFR_MODEL_DEFINE(audio,  Audio);
-    // 图片模块
-    LFR_MODEL_DEFINE(image,  Image);
-    // 视频模块
-    LFR_MODEL_DEFINE(video,  Video);
-    // 诗词模块
-    LFR_MODEL_DEFINE(poetry, Poetry);
+    // 文档标记按钮
+    Fl_Button* docsMarkButtonPtr = nullptr;
+    // 文档标记窗口
+    DocsMarkWindow* docsMarkWindowPtr = nullptr;
     // 图片标记按钮
     Fl_Button* imageMarkButtonPtr = nullptr;
     // 图片标记窗口
@@ -174,12 +157,32 @@ private:
     Fl_Button* poetryMarkButtonPtr = nullptr;
     // 诗词标记窗口
     PoetryMarkWindow* poetryMarkWindowPtr = nullptr;
+    // 模型微调按钮
+    Fl_Button* finetuneButtonPtr = nullptr;
+    // 模型微调窗口
+    FinetuneWindow* finetuneWindowPtr = nullptr;
+    // 模型量化按钮
+    Fl_Button* quantizationButtonPtr = nullptr;
+    // 模型量化窗口
+    QuantizationWindow* quantizationWindowPtr = nullptr;
+    // 聊天按钮
+    Fl_Button* chatButtonPtr = nullptr;
+    // 聊天窗口
+    ChatWindow* chatWindowPtr = nullptr;
+    // 图片生成按钮
+    Fl_Button* imageButtonPtr = nullptr;
+    // 图片生成窗口
+    ImageWindow* imageWindowPtr = nullptr;
+    // 视频生成按钮
+    Fl_Button* videoButtonPtr = nullptr;
+    // 视频生成窗口
+    VideoWindow* videoWindowPtr = nullptr;
+    // 重新加载配置按钮
+    Fl_Button* reloadButtonPtr = nullptr;
     // 关于按钮
     Fl_Button* aboutButtonPtr = nullptr;
     // 关于窗口
     AboutWindow* aboutWindowPtr = nullptr;
-    // 重新加载配置按钮
-    Fl_Button* reloadButtonPtr = nullptr;
 
 public:
     /**
@@ -192,22 +195,22 @@ public:
     virtual ~MainWindow();
 
 public:
-    // 音频风格迁移
-    void audioTs();
-    // 图片内容生成
-    void imageGc();
-    // 图片风格迁移
-    void imageTs();
-    // 视频内容生成
-    void videoGc();
-    // 视频风格迁移
-    void videoTs();
-    // 诗词内容生成
-    void poetryGc();
+    // 文档标记
+    void docsMark();
     // 图片标记
     void imageMark();
     // 诗词标记
     void poetryMark();
+    // 模型微调
+    void finetune();
+    // 模型量化
+    void quantization();
+    // 对话
+    void chat();
+    // 图片内容生成
+    void image();
+    // 视频内容生成
+    void video();
     // 关于
     void about();
 
@@ -239,6 +242,27 @@ public:
     MarkWindow(int width, int height, const char* title = "关于");
     // 析构函数
     virtual ~MarkWindow();
+
+};
+
+/**
+ * 文档标记窗口
+ */
+class DocsMarkWindow : public MarkWindow {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    DocsMarkWindow(int width, int height, const char* title = "文档标记");
+    // 析构函数
+    virtual ~DocsMarkWindow();
+
+protected:
+    // 加载组件
+    virtual void drawElement() override;
 
 };
 
@@ -289,17 +313,11 @@ protected:
 };
 
 /**
- * 关于窗口
+ * 模型微调窗口
  */
-class AboutWindow : public Window {
+class FinetuneWindow : public Window {
 
 private:
-    // 官网
-    Fl_Button* homePagePtr = nullptr;
-    // 关于内容
-    Fl_Text_Buffer* aboutBufferPtr = nullptr;
-    // 关于组件
-    Fl_Text_Display* aboutDisplayPtr = nullptr;
 
 public:
     /**
@@ -307,9 +325,32 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    AboutWindow(int width, int height, const char* title = "关于");
+    FinetuneWindow(int width, int height, const char* title = "模型微调");
     // 析构函数
-    virtual ~AboutWindow();
+    virtual ~FinetuneWindow();
+
+protected:
+    // 加载组件
+    virtual void drawElement() override;
+
+};
+
+/**
+ * 模型量化窗口
+ */
+class QuantizationWindow : public Window {
+
+private:
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    QuantizationWindow(int width, int height, const char* title = "模型量化");
+    // 析构函数
+    virtual ~QuantizationWindow();
 
 protected:
     // 加载组件
@@ -347,9 +388,9 @@ protected:
 };
 
 /**
- * 内容生成窗口
+ * 聊天
  */
-class ModelGCWindow : public ModelWindow {
+class ChatWindow : public ModelWindow {
 
 public:
     /**
@@ -357,68 +398,9 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    ModelGCWindow(int width, int height, const char* title);
+    ChatWindow(int width, int height, const char* title = "聊天");
     // 析构函数
-    virtual ~ModelGCWindow();
-
-protected:
-    // 内容生成
-    Fl_Button* generatePtr = nullptr;
-
-};
-
-/**
- * 风格迁移窗口
- */
-class ModelTSWindow : public ModelWindow {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ModelTSWindow(int width, int height, const char* title);
-    // 析构函数
-    virtual ~ModelTSWindow();
-
-protected:
-    // 风格迁移
-    Fl_Button* transferPtr = nullptr;
-
-};
-
-/**
- * 音频内容生成
- * 
- * @see AudioGC
- * 
- * @deprecated
- */
-class AudioGCWindow : public ModelGCWindow {
-
-public:
-    // 不会实现
-    AudioGCWindow() = delete;
-
-};
-
-/**
- * 音频风格迁移
- * 
- * @see AudioTS
- */
-class AudioTSWindow : public ModelTSWindow {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    AudioTSWindow(int width, int height, const char* title = "音频风格迁移");
-    // 析构函数
-    virtual ~AudioTSWindow();
+    virtual ~ChatWindow();
 
 protected:
     // 加载组件
@@ -428,10 +410,8 @@ protected:
 
 /**
  * 图片内容生成
- * 
- * @see ImageGC
  */
-class ImageGCWindow : public ModelGCWindow {
+class ImageWindow : public ModelWindow {
 
 public:
     /**
@@ -439,83 +419,20 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    ImageGCWindow(int width, int height, const char* title = "图片内容生成");
+    ImageWindow(int width, int height, const char* title = "图片内容生成");
     // 析构函数
-    virtual ~ImageGCWindow();
+    virtual ~ImageWindow();
 
 protected:
     // 加载组件
     virtual void drawElement() override;
-
-};
-
-/**
- * 图片风格迁移
- * 
- * @see ImageTS
- */
-class ImageTSWindow : public ModelTSWindow {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ImageTSWindow(int width, int height, const char* title = "图片风格迁移");
-    // 析构函数
-    virtual ~ImageTSWindow();
-
-protected:
-    // 加载组件
-    virtual void drawElement() override;
-
-};
-
-/**
- * 诗词内容生成
- * 
- * @see PoetryGC
- */
-class PoetryGCWindow : public ModelGCWindow {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    PoetryGCWindow(int width, int height, const char* title = "诗词内容生成");
-    // 析构函数
-    virtual ~PoetryGCWindow();
-
-protected:
-    // 加载组件
-    virtual void drawElement() override;
-
-};
-
-/**
- * 诗词风格迁移
- * 
- * @see PoetryTS
- * 
- * @deprecated
- */
-class PoetryTSWindow : public ModelTSWindow {
-
-public:
-    // 不会实现
-    PoetryTSWindow() = delete;
 
 };
 
 /**
  * 视频内容生成
- * 
- * @see VideoGC
  */
-class VideoGCWindow : public ModelGCWindow {
+class VideoWindow : public ModelWindow {
 
 public:
     /**
@@ -523,9 +440,9 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    VideoGCWindow(int width, int height, const char* title = "视频内容生成");
+    VideoWindow(int width, int height, const char* title = "视频内容生成");
     // 析构函数
-    virtual ~VideoGCWindow();
+    virtual ~VideoWindow();
 
 protected:
     // 加载组件
@@ -534,11 +451,17 @@ protected:
 };
 
 /**
- * 视频风格迁移
- * 
- * @see VideoTS
+ * 关于窗口
  */
-class VideoTSWindow : public ModelTSWindow {
+class AboutWindow : public Window {
+
+private:
+    // 官网
+    Fl_Button* homePagePtr = nullptr;
+    // 关于内容
+    Fl_Text_Buffer* aboutBufferPtr = nullptr;
+    // 关于组件
+    Fl_Text_Display* aboutDisplayPtr = nullptr;
 
 public:
     /**
@@ -546,9 +469,9 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    VideoTSWindow(int width, int height, const char* title = "视频风格迁移");
+    AboutWindow(int width, int height, const char* title = "关于");
     // 析构函数
-    virtual ~VideoTSWindow();
+    virtual ~AboutWindow();
 
 protected:
     // 加载组件

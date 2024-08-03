@@ -6,7 +6,10 @@ option(ENABLE_REST "开启REST接口" ON)
 if(ENABLE_FLTK)
     message(STATUS "开启FLTK界面")
     add_definitions(-DLFR_ENABLE_FLTK=true)
-    aux_source_directory(src/source/fltk FLTK_FILES)
+    aux_source_directory(src/source/fltk          FLTK_FILES)
+    aux_source_directory(src/source/fltk/mark     FLTK_FILES)
+    aux_source_directory(src/source/fltk/model    FLTK_FILES)
+    aux_source_directory(src/source/fltk/optimize FLTK_FILES)
 endif()
     
 if(ENABLE_REST)
@@ -29,8 +32,8 @@ if(CMAKE_HOST_WIN32)
             png
             httplib::httplib
             libjpeg-turbo::jpeg
-            lifurenmodel
-            lifurenclient
+            lifurencv
+            lifurennlp
             ${FLTK_LIBRARIES}
         )
     else()
@@ -39,8 +42,8 @@ if(CMAKE_HOST_WIN32)
             png_shared
             httplib::httplib
             libjpeg-turbo::jpeg
-            lifurenmodel
-            lifurenclient
+            lifurencv
+            lifurennlp
             ${FLTK_LIBRARIES}
         )
     endif()
@@ -50,8 +53,8 @@ else()
         png
         jpeg
         cpp-httplib
-        lifurenmodel
-        lifurenclient
+        lifurencv
+        lifurennlp
         ${FLTK_LIBRARIES}
     )
 endif()

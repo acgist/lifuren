@@ -36,3 +36,13 @@ index-url=https://pypi.tuna.tsinghua.edu.cn/simple
 ## stability-ai
 
 ## StableDiffusion
+
+## Redis
+
+## Neo4j
+
+## Chroma
+
+## MongoDB
+
+## ElasticSearch

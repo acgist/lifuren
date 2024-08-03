@@ -8,6 +8,7 @@ add_library(
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
     lifurenmodel
+    lifurenclient
 )
 
 target_include_directories(

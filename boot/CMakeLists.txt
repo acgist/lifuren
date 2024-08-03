@@ -1,8 +1,15 @@
 add_subdirectory(main)
 
+option(ENABLE_TEST "打开测试" ON)
+
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  message(STATUS "Debug with test")
-  add_subdirectory(test)
+    if(ENABLE_TEST)
+        message(STATUS "编译测试代码")
+        add_definitions(-DLFR_ENABLE_TEST=true)
+        add_subdirectory(test)
+    else()
+        message(STATUS "忽略编译测试代码")
+    endif()
 else()
-  message(STATUS "Release without test")
+    message(STATUS "忽略编译测试代码")
 endif()

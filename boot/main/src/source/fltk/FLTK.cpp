@@ -175,22 +175,6 @@ lifuren::ModelWindow::~ModelWindow() {
     LFR_DELETE_THIS_PTR(trainStopPtr);
 }
 
-lifuren::ModelGCWindow::ModelGCWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
-}
-
-lifuren::ModelGCWindow::~ModelGCWindow() {
-    SPDLOG_DEBUG("关闭GC窗口");
-    LFR_DELETE_THIS_PTR(generatePtr);
-}
-
-lifuren::ModelTSWindow::ModelTSWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
-}
-
-lifuren::ModelTSWindow::~ModelTSWindow() {
-    SPDLOG_DEBUG("关闭TS窗口");
-    LFR_DELETE_THIS_PTR(transferPtr);
-}
-
 static int abs(const int& source, const int& target) {
     if(source > target) {
         return source - target;
