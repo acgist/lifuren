@@ -32,15 +32,13 @@ namespace lifuren {
  * @author acgist
  */
 template <typename M, typename I, typename R>
-// TODO requires std::derived_from<M, lifuren::ModelConfig>
+// TODO requires std::derived_from<M, lifuren::config::ModelConfig>
 class Model {
 
 // TODO: concept derived_from
-static_assert(std::is_base_of_v<lifuren::ModelConfig, M>, "必须继承模型配置");
+static_assert(std::is_base_of_v<lifuren::config::ModelConfig, M>, "必须继承模型配置");
 
 public:
-    // 基本配置
-    lifuren::Config config;
     // 模型配置
     M modelConfig;
     // TODO: 训练数据集、验证数据集、测试数据集
@@ -52,7 +50,7 @@ public:
      * @param config      基本配置
      * @param modelConfig 模型配置
      */
-    Model(const lifuren::Config& config, const M& modelConfig);
+    Model(const M& modelConfig);
 
 public:
     // 保存模型
@@ -93,7 +91,7 @@ lifuren::Model<M, I, R>::~Model() {
 }
 
 template<typename M, typename I, typename R>
-lifuren::Model<M, I, R>::Model(const lifuren::Config& config, const M& modelConfig) : config(config), modelConfig(modelConfig) {
+lifuren::Model<M, I, R>::Model(const M& modelConfig) : modelConfig(modelConfig) {
 }
 
 template<typename M, typename I, typename R>

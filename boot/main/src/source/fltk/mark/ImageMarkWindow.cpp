@@ -79,12 +79,12 @@ static void nextImage(Fl_Widget*, void*);
 static void previewImage();
 
 lifuren::ImageMarkWindow::ImageMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
-    this->loadConfig(lifuren::config::CONFIG_DATASET);
+    this->imageConfigPtr = &lifuren::config::CONFIG.imageMark;
 }
 
 lifuren::ImageMarkWindow::~ImageMarkWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::config::saveFile(CONFIGS_PATH);
+    lifuren::config::saveFile();
     // 清理数据
     oldPath = "";
     imageVector.clear();
@@ -95,12 +95,12 @@ lifuren::ImageMarkWindow::~ImageMarkWindow() {
 void lifuren::ImageMarkWindow::drawElement() {
     // 配置按钮
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 10, this->w() - 200, 30, "数据目录");
-    this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
+    this->datasetPathPtr->value(this->imageConfigPtr->datasetPath.c_str());
     this->prevPtr = new Fl_Button(10,  50, 100, 30, "上张图片");
     this->nextPtr = new Fl_Button(120, 50, 100, 30, "下张图片");
     this->prevPtr->callback(prevImage, this);
     this->nextPtr->callback(nextImage, this);
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, ImageMarkWindow, loadImageVector);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, imageConfigPtr, datasetPath, ImageMarkWindow, loadImageVector);
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
@@ -112,7 +112,7 @@ void lifuren::ImageMarkWindow::drawElement() {
     LFR_CHOICE_BUTTON(520, 90, LABEL_IMAGE, biziPtr,    "头部", "鼻子", "默认");
     LFR_CHOICE_BUTTON(640, 90, LABEL_IMAGE, yachiPtr,   "头部", "牙齿", "默认");
     // 加载资源
-    loadImageVector(this->configPtr->datasetPath);
+    loadImageVector(this->imageConfigPtr->datasetPath);
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {

@@ -15,7 +15,8 @@ endif()
 if(ENABLE_REST)
     message(STATUS "开启REST接口")
     add_definitions(-DLFR_ENABLE_REST=true)
-    aux_source_directory(src/source/rest REST_FILES)
+    aux_source_directory(src/source/rest     REST_FILES)
+    aux_source_directory(src/source/rest/api REST_FILES)
 endif()
 
 add_executable(

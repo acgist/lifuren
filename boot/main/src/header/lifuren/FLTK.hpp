@@ -35,26 +35,26 @@
 
 // 目录选择
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER
-#define LFR_INPUT_DIRECTORY_CHOOSER(inputPtr, configName, windowName)   \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {  \
-        const char* value = ((windowName*) voidPtr)->inputPtr->value(); \
-        if(value == nullptr || std::strlen(value) == 0) {               \
-            return;                                                     \
-        }                                                               \
-        ((windowName*) voidPtr)->configPtr->configName = value;         \
+#define LFR_INPUT_DIRECTORY_CHOOSER(inputPtr, configPtr, configName, windowName)   \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {             \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();            \
+        if(value == nullptr || std::strlen(value) == 0) {                          \
+            return;                                                                \
+        }                                                                          \
+        ((windowName*) voidPtr)->configPtr->configName = value;                    \
     }, this);
 #endif
 
 // 目录选择并且回调
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
-#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configName, windowName, callbackName) \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                       \
-        const char* value = ((windowName*) voidPtr)->inputPtr->value();                      \
-        if(value == nullptr || std::strlen(value) == 0) {                                    \
-            return;                                                                          \
-        }                                                                                    \
-        ((windowName*) voidPtr)->configPtr->configName = value;                              \
-        callbackName(value);                                                                 \
+#define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configPtr, configName, windowName, callbackName) \
+    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                                  \
+        const char* value = ((windowName*) voidPtr)->inputPtr->value();                                 \
+        if(value == nullptr || std::strlen(value) == 0) {                                               \
+            return;                                                                                     \
+        }                                                                                               \
+        ((windowName*) voidPtr)->configPtr->configName = value;                                         \
+        callbackName(value);                                                                            \
     }, this);
 #endif
 
@@ -94,8 +94,6 @@ extern void shutdownFltkWindow();
 class Window : public Fl_Window {
 
 protected:
-    // 全局配置（不用释放）
-    Config* configPtr = nullptr;
     // 图标指针
     Fl_PNG_Image* iconImagePtr = nullptr;
 
@@ -120,10 +118,6 @@ protected:
     void icon();
     // 窗口居中
     void center();
-    /**
-     * @param name 配置名称
-     */
-    void loadConfig(const std::string& name);
 
 };
 
@@ -251,6 +245,10 @@ public:
 class DocsMarkWindow : public MarkWindow {
 
 public:
+    // 配置
+    lifuren::config::DocsMark* docsConfigPtr{ nullptr };
+
+public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -270,6 +268,10 @@ protected:
  * 图片标记窗口
  */
 class ImageMarkWindow : public MarkWindow {
+
+public:
+    // 配置
+    lifuren::config::ImageMark* imageConfigPtr{ nullptr };
 
 public:
     /**
@@ -295,6 +297,8 @@ class PoetryMarkWindow : public MarkWindow {
 public:
     // 自动标记：通过已有标记自动标记
     Fl_Button* autoMarkPtr = nullptr;
+    // 配置
+    lifuren::config::PoetryMark* poetryConfigPtr{ nullptr };
 
 public:
     /**
@@ -374,16 +378,12 @@ public:
     virtual ~ModelWindow();
 
 protected:
-    // 模型路径
-    Fl_Input* modelPathPtr = nullptr;
-    // 数据路径
-    Fl_Input* datasetPathPtr = nullptr;
+    // 模型名称
+    Fl_Choice* modelPtr = nullptr;
     // 开始训练
     Fl_Button* trainStartPtr = nullptr;
     // 结束训练
     Fl_Button* trainStopPtr = nullptr;
-    // TODO: 微调
-    // TODO: 量化
 
 };
 
@@ -391,6 +391,10 @@ protected:
  * 聊天
  */
 class ChatWindow : public ModelWindow {
+
+public:
+    // 配置
+    lifuren::config::Chat* chatConfigPtr{ nullptr };
 
 public:
     /**
@@ -414,6 +418,10 @@ protected:
 class ImageWindow : public ModelWindow {
 
 public:
+    // 配置
+    lifuren::config::Image* imageConfigPtr{ nullptr };
+
+public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -433,6 +441,10 @@ protected:
  * 视频内容生成
  */
 class VideoWindow : public ModelWindow {
+
+public:
+    // 配置
+    lifuren::config::Video* videoConfigPtr{ nullptr };
 
 public:
     /**

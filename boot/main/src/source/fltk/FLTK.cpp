@@ -143,17 +143,6 @@ void lifuren::Window::center() {
     this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
 }
 
-void lifuren::Window::loadConfig(const std::string& name) {
-    SPDLOG_DEBUG("加载窗口配置：{}", name);
-    auto iterator = CONFIGS.find(name);
-    if(iterator == CONFIGS.end()) {
-        auto pair = CONFIGS.emplace(name, Config{});
-        this->configPtr = &pair.first->second;
-    } else {
-        this->configPtr = &iterator->second;
-    }
-}
-
 lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
@@ -169,8 +158,7 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Wi
 
 lifuren::ModelWindow::~ModelWindow() {
     SPDLOG_DEBUG("关闭窗口");
-    LFR_DELETE_THIS_PTR(modelPathPtr);
-    LFR_DELETE_THIS_PTR(datasetPathPtr);
+    LFR_DELETE_THIS_PTR(modelPtr);
     LFR_DELETE_THIS_PTR(trainStartPtr);
     LFR_DELETE_THIS_PTR(trainStopPtr);
 }

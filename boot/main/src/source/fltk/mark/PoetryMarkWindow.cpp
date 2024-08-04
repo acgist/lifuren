@@ -48,12 +48,12 @@ static void prevPoetry(Fl_Widget*, void*);
 static void nextPoetry(Fl_Widget*, void*);
 
 lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
-    this->loadConfig(lifuren::config::CONFIG_DATASET);
+    this->poetryConfigPtr = &lifuren::config::CONFIG.poetryMark;
 }
 
 lifuren::PoetryMarkWindow::~PoetryMarkWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::config::saveFile(CONFIGS_PATH);
+    lifuren::config::saveFile();
     LFR_DELETE_THIS_PTR(autoMarkPtr);
     // 静态资源
     LFR_DELETE_PTR(sourceDisplayPtr);
@@ -71,11 +71,11 @@ lifuren::PoetryMarkWindow::~PoetryMarkWindow() {
 void lifuren::PoetryMarkWindow::drawElement() {
     // 配置按钮
     this->datasetPathPtr = new Fl_Input_Directory_Chooser(100, 10, this->w() - 200, 30, "数据目录");
-    this->datasetPathPtr->value(this->configPtr->datasetPath.c_str());
+    this->datasetPathPtr->value(this->poetryConfigPtr->datasetPath.c_str());
     this->prevPtr     = new Fl_Button(10,  50, 100, 30, "上首诗词");
     this->nextPtr     = new Fl_Button(120, 50, 100, 30, "下首诗词");
     this->autoMarkPtr = new Fl_Button(230, 50, 100, 30, "自动匹配");
-    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, datasetPath, PoetryMarkWindow, loadFileVector);
+    LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, poetryConfigPtr, datasetPath, PoetryMarkWindow, loadFileVector);
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
@@ -98,7 +98,7 @@ void lifuren::PoetryMarkWindow::drawElement() {
     this->prevPtr->callback(prevPoetry, this);
     this->nextPtr->callback(nextPoetry, this);
     // 加载资源
-    loadFileVector(this->configPtr->datasetPath);
+    loadFileVector(this->poetryConfigPtr->datasetPath);
 }
 
 static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {

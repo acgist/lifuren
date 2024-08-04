@@ -37,6 +37,21 @@ extern void restGetIndex();
 // 关闭
 extern void restGetShutdown();
 
+extern void restGetImageToImage();
+extern void restGetLabelToImage();
+extern void restGetPoetryToImage();
+
+extern void restGetImageToPoetry();
+extern void restGetLabelToPoetry();
+
+extern void restGetVideoToVideo();
+
+extern void restGetDocsIndex();
+extern void restPostDocsIndex();
+extern void restGetChatSetting();
+extern void restPostChatSetting();
+extern void restGetChat();
+
 } // END lifuren
 
 #endif // LFR_HEADER_BOOT_REST_HPP

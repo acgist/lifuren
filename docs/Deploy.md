@@ -171,3 +171,7 @@ https://developer.nvidia.com/downloads/compute/cudnn/secure/8.9.2/local_installe
 #### 模型部署
 
 [模型部署](./model)
+
+## 线上部署
+
+一般来说如果租用线上`GPU`服务器非常贵，所以建议应用服务放到线上，`AI`相关服务本地部署使用`frp`/`autossh`内网穿透软件为线上应用提供服务。

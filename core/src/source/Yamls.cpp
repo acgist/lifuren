@@ -1,5 +1,6 @@
 #include "lifuren/Yamls.hpp"
 
+#include <locale>
 #include <fstream>
 #include <filesystem>
 

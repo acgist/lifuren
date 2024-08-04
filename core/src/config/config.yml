@@ -1,54 +1,39 @@
+# REST监听地址
 httpServerHost: 0.0.0.0
+# REST监听端口
 httpServerPort: 8080
-# 数据集
-dataset:
-  imagePath: ""
-  poetryPath: ""
-# 图片转为诗词
-i2p:
-  modelPath  : ""
+# 自然语言终端列表
+nlpClients:
+  - ollama
+  - openai
+# 聊天页面配置
+chat:
+  model: ollama
+  embedding:
+# 图片生成页面配置
+image:
+  model:
+  embedding:
+# 视频生成页面配置
+video:
+  model:
+  embedding:
+# 文档标记页面配置
+docsMark:
   datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
-# 标签转为诗词
-l2p:
-  modelPath  : ""
+# 图片标记页面配置
+imageMark:
   datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
-# 诗词转为图片
-p2i:
-  modelPath  : ""
+# 诗词标记页面配置
+poetryMark:
   datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
-# 标签转为图片
-l2i:
-  modelPath  : ""
-  datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
-# 图片转为图片
-i2i:
-  modelPath  : ""
-  datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
-# 视频转为视频
-v2v:
-  modelPath  : ""
-  datasetPath: ""
-  activation  : 0
-  learningRate: 0.0
-  regularization: 0
-  regularizationRate: 0.0
+# OpenAI配置
+openai:
+  api:
+  username:
+  password:
+# Ollama配置
+ollama:
+  api:
+  username:
+  password:

@@ -9,10 +9,8 @@
 void lifuren::loadConfig() {
     SPDLOG_DEBUG("加载全局所有配置");
     // 配置
-    auto configs = lifuren::config::loadFile(lifuren::CONFIGS_PATH);
-    lifuren::CONFIGS.clear();
-    // std::swap(lifuren::CONFIGS, configs);
-    lifuren::CONFIGS.insert(configs.begin(), configs.end());
+    auto config = lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+    lifuren::config::CONFIG = config;
     // 音频
     auto audio = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
     lifuren::LABEL_AUDIO.clear();
