@@ -13,6 +13,16 @@
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |cpp-httplib|0.15.3|https://github.com/yhirose/cpp-httplib|
 
+## 服务
+
+|服务|版本|官网|
+|:--|:--|:--|
+yolo
+neo4j
+ollama
+openai
+elasticsearch
+
 ## 源码编译
 
 #### Linux

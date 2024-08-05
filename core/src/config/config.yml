@@ -37,3 +37,6 @@ ollama:
   api:
   username:
   password:
+# SD配置
+stable-diffusion:
+  

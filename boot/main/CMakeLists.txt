@@ -8,7 +8,7 @@ if(ENABLE_FLTK)
     add_definitions(-DLFR_ENABLE_FLTK=true)
     aux_source_directory(src/source/fltk          FLTK_FILES)
     aux_source_directory(src/source/fltk/mark     FLTK_FILES)
-    aux_source_directory(src/source/fltk/model    FLTK_FILES)
+    aux_source_directory(src/source/fltk/client   FLTK_FILES)
     aux_source_directory(src/source/fltk/optimize FLTK_FILES)
 endif()
     

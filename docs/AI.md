@@ -155,6 +155,10 @@
 
 #### Embedding
 
+###### GloVe
+###### Word2Vec
+###### FastText
+
 * https://github.com/supabase/supabase
 * https://github.com/chroma-core/chroma
 * https://github.com/Embedding/Chinese-Word-Vectors
