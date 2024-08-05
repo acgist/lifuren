@@ -27,6 +27,12 @@ elasticsearch
 
 #### Linux
 
+###### 编译环境
+
+```
+sudo apt install build-essential
+```
+
 ###### 依赖下载
 
 [build.yml](../.github/workflows/build.yml)
@@ -50,6 +56,10 @@ export LD_LIBRARY_PATH=/data/dev/lifuren/install/lib/:/data/dev/lifuren/deps/lib
 ```
 
 #### Windows
+
+#### 编译环境
+
+* https://visualstudio.microsoft.com/zh-hans/downloads/
 
 ###### 依赖下载
 
@@ -96,15 +106,14 @@ cmake --install .
 ## 开发环境
 
 * https://code.visualstudio.com/
-* https://visualstudio.microsoft.com/zh-hans/downloads/
 
 #### NVIDIA
 
-[Nvidia](../client/tutorial/Nvidia.md)
+[Nvidia](./tutorial/Nvidia.md)
 
 #### LibTorch
 
-[Nvidia](../client/tutorial/LibTorch.md)
+[Nvidia](./tutorial/LibTorch.md)
 
 ## 模型
 

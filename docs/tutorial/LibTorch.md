@@ -33,6 +33,7 @@ https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.2.1%2Bcpu.
 https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip
 https://download.pytorch.org/libtorch/cu118/libtorch-shared-with-deps-2.2.1%2Bcu118.zip
 https://download.pytorch.org/libtorch/cu118/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcu118.zip
+
 https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.2.1%2Bcpu.zip
 https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-2.2.1%2Bcpu.zip
 https://download.pytorch.org/libtorch/cu118/libtorch-win-shared-with-deps-2.2.1%2Bcu118.zip
