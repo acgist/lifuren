@@ -43,3 +43,7 @@
 * [功能文档](./docs/TODO.md)
 * [模型部署](./docs/model/)
 * [模型调优](./docs/optimize/)
+
+## 下载
+
+* https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1

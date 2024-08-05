@@ -4,4 +4,4 @@
 
 ## 服务部署
 
-* [模型部署服务](../../client/tutorial/)
+* [模型服务部署](../../client/tutorial/)

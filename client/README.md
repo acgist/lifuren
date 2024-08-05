@@ -7,42 +7,22 @@
 ```
 sudo apt install build-essential
 sudo apt install python3 python3-pip
-sudo apt install nvidia-cuda-toolkit
 
+# 配置
 vim ~/.pip/pip.conf
 
 ---
 [global]
 index-url=https://pypi.tuna.tsinghua.edu.cn/simple
 ---
+
+# 验证
+pip3 config list
 ```
 
-## Ollama
+## PIP
 
-## OpenAI
-
-## ChatGPT
-
-## graphrag
-
-## Xinference
-
-## langchain-chatchat
-
-## llama_index
-
-## zhipu-ai
-
-## stability-ai
-
-## StableDiffusion
-
-## Redis
-
-## Neo4j
-
-## Chroma
-
-## MongoDB
-
-## ElasticSearch
+```
+pip install xxx
+pip list
+```
