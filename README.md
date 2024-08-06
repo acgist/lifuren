@@ -41,8 +41,6 @@
 * [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
 * [功能文档](./docs/TODO.md)
-* [模型部署](./docs/model/)
-* [模型调优](./docs/optimize/)
 
 ## 下载
 

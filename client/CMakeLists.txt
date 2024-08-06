@@ -3,6 +3,7 @@ project(lifurenclient VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME} STATIC
     src/source/Client.cpp
+    src/source/RestClient.cpp
 )
 
 target_link_libraries(

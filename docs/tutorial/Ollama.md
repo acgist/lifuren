@@ -21,6 +21,17 @@ vim install.sh
 https://github.com/ollama/ollama/releases/download/v0.3.3/ollama-linux-amd64
 ---
 
+# 修改端口
+sudo vim /etc/systemd/system/ollama.service
+
+---
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+---
+
+# 重启服务
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+
 # 安装
 sh install.sh
 
@@ -34,11 +45,14 @@ conda deactivate
 ## 常用功能
 
 ```
-# 
+# 查看运行模型
 ollama ps
+# 查看下载模型
 ollama list
-ollama run
-ollama pull
+# 运行模型
+ollama run 模型名称
+# 下载模型
+ollama pull 模型名称
 ```
 
 ## 相关链接

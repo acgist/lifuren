@@ -295,8 +295,8 @@ ADMA + L2
 
 ## 模型下载
 
-* https://huggingface.co/
-* https://huggingface.co/stabilityai/
+* https://huggingface.co
+* https://huggingface.co/stabilityai
 * https://huggingface.co/stabilityai/stable-diffusion-2-1-base
 
 ## 学习资料
