@@ -88,6 +88,7 @@ public:
      * @return 是否成功
      */
     bool auth(const AuthType& authType, const std::string& username, const std::string& password, const std::string& path = "");
+
     /**
      * @param path    请求地址
      * @param headers 请求头部
@@ -95,6 +96,7 @@ public:
      * @return 响应内容
      */
     httplib::Result get(const std::string& path, const httplib::Headers& headers = {}) const;
+
     /**
      * 数据请求
      * 
@@ -105,6 +107,7 @@ public:
      * @return 响应内容
      */
     httplib::Result postJson(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
+
     /**
      * 表单请求
      * 
@@ -117,7 +120,7 @@ public:
     httplib::Result postForm(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
 
     /**
-     * 请求
+     * 表单请求
      * 
      * @param path    请求地址
      * @param params  请求参数
@@ -126,6 +129,18 @@ public:
      * @return 响应内容
      */
     httplib::Result post(const std::string& path, const httplib::Params& params, const httplib::Headers& headers = {}) const;
+
+    /**
+     * 流式请求
+     * 
+     * @param path     请求地址
+     * @param data     请求数据
+     * @param callback 响应回调
+     * @param headers  请求头部
+     * 
+     * @return 是否成功
+     */
+    bool postStream(const std::string& path, const std::string& data, std::function<bool(const char* data, size_t data_length)> callback, const httplib::Headers& headers = {}) const;
 
 };
 

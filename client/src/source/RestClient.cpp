@@ -111,12 +111,35 @@ httplib::Result lifuren::RestClient::post(const std::string& path, const httplib
     return response;
 }
 
+bool lifuren::RestClient::postStream(const std::string& path, const std::string& data, std::function<bool(const char* data, size_t data_length)> callback, const httplib::Headers& headers) const {
+    httplib::Request request{};
+    request.path    = path;
+    request.body    = data;
+    request.method  = "POST";
+    request.headers = headers;
+    request.set_header("Content-Type", "application/json");
+    request.content_receiver = [&callback](const char* data, size_t data_length, uint64_t /* offset */, uint64_t /* total_length */) {
+        return callback(data, data_length);
+    };
+    auto response = this->client->send(request);
+    if(response) {
+        if(response->status != httplib::StatusCode::OK_200) {
+            SPDLOG_DEBUG("Rest Client PostStream请求失败：{} - {}", response->status, response->body);
+        } else {
+            // 忽略
+        }
+    } else {
+        auto error = response.error();
+        SPDLOG_DEBUG("Rest Client PostStream请求失败：{} - {}", response->status, httplib::to_string(error));
+    }
+    return true;
+}
+
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password) {
-    httplib::Params params{
+    auto response = client.post(path, {
         { "username", username },
         { "password", password }
-    };
-    auto response = client.post(path, params);
+    });
     if(response && response->status == httplib::StatusCode::OK_200) {
         return response->body;
     }
