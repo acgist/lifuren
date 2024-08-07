@@ -8,6 +8,12 @@
 #ifndef LFR_HEADER_BOOT_REST_HPP
 #define LFR_HEADER_BOOT_REST_HPP
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#endif
+
 #include "httplib.h"
 
 #include "nlohmann/json.hpp"

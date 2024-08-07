@@ -33,12 +33,12 @@
 
 语音识别、机器翻译、自动摘要、观点提取、文本分类、问题回答等等
 
-## 回归算法
+## 回归算法（regression）
 
 #### 线性回归算法（Linear Regression）
 #### 多项式回归算法（Polynomial Regression）
 
-## 分类算法
+## 分类算法（classification）
 
 #### 邻近算法（KNN）
 #### 支持向量机（SVM）
@@ -243,6 +243,8 @@ ADMA + L2
 
 ## 术语
 
+#### 学习率（learning rate）
+#### 超参数（hyperparameter）
 #### 过拟合
 #### 欠拟合
 #### 丢弃法

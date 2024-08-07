@@ -21,13 +21,17 @@ extern std::string httpServerHost;
 // 监听端口
 extern int         httpServerPort;
 // 自然语言终端列表
-extern std::set<std::string> nlpClients;
+extern std::set<std::string> chatClients;
 // 聊天配置
 extern const std::string CONFIG_CHAT;
 // 训练数据集
 extern const std::string CONFIG_DATASET;
 // 自然语言终端列表
-extern const std::string CONFIG_NLP_CLIENTS;
+extern const std::string CONFIG_CHAT_CLIENTS;
+// OpenAI
+extern const std::string CONFIG_OPENAI;
+// Ollama
+extern const std::string CONFIG_OLLAMA;
 // 监听地址
 extern const std::string CONFIG_HTTP_SERVER_HOST;
 // 监听端口
@@ -78,43 +82,31 @@ enum class Regularization {
 /**
  * 聊天页面配置
  */
-struct Chat {
+struct ChatConfig {
 
-    // 模型名称
-    std::string model;
-    // Embedding名称
-    std::string embedding;
+    // 终端名称
+    std::string client;
 
 };
 
 /**
  * 图片生成页面配置
  */
-struct Image {
-
-    // 模型名称
-    std::string model;
-    // Embedding名称
-    std::string embedding;
+struct ImageConfig {
 
 };
 
 /**
  * 视频生成页面配置
  */
-struct Video {
-
-    // 模型名称
-    std::string model;
-    // Embedding名称
-    std::string embedding;
+struct VideoConfig {
 
 };
 
 /**
- * REST Client配置
+ * REST配置
  */
-struct RestClient {
+struct RestConfig {
 
     // 接口地址
     std::string api;
@@ -122,27 +114,72 @@ struct RestClient {
     std::string username;
     // 密码
     std::string password;
+    // 授权方式
+    std::string authType;
+
+};
+
+/**
+ * LLM配置
+ */
+struct LLMConfig {
+
+    double topP;
+    size_t topK;
+    double temperature;
+    std::string options;
+
+};
+
+/**
+ * 聊天终端
+ */
+struct ChatClientConfig : public LLMConfig {
+
+    std::string path;
+    std::string model;
+
+};
+
+/**
+ * 词嵌入终端
+ */
+struct EmbeddingClientConfig {
+
+    std::string path;
+    std::string model;
+    std::string options;
 
 };
 
 /**
  * OpenAi配置
  */
-struct OpenAi : public RestClient {
+struct OpenAiConfig : public RestConfig {
+
+    // 聊天终端
+    ChatClientConfig chatClient;
+    // 词嵌入终端
+    EmbeddingClientConfig embeddingClient;
 
 };
 
 /**
  * Ollama配置
  */
-struct Ollama : public RestClient {
+struct OllamaConfig : public RestConfig {
+
+    // 聊天终端
+    ChatClientConfig chatClient;
+    // 词嵌入终端
+    EmbeddingClientConfig embeddingClient;
 
 };
 
 /**
  * 模型配置
  */
-struct Model {
+struct ModelConfig {
 
     // 模型目录
     std::string modelPath;
@@ -160,7 +197,7 @@ struct Model {
 /**
  * 数据集配置
  */
-struct Dataset {
+struct DatasetConfig {
 
     // 数据集目录
     std::string datasetPath;
@@ -170,19 +207,19 @@ struct Dataset {
 /**
  * 文档标记页面配置
  */
-struct DocsMark : public Dataset {
+struct DocsMarkConfig : public DatasetConfig {
 };
 
 /**
  * 图片标记页面配置
  */
-struct ImageMark : public Dataset {
+struct ImageMarkConfig : public DatasetConfig {
 };
 
 /**
  * 诗词标记页面配置
  */
-struct PoetryMark : public Dataset {
+struct PoetryMarkConfig : public DatasetConfig {
 };
 
 /**
@@ -191,14 +228,14 @@ struct PoetryMark : public Dataset {
 class Config {
 
 public:
-    lifuren::config::Chat       chat      {};
-    lifuren::config::Image      image     {};
-    lifuren::config::Video      video     {};
-    lifuren::config::OpenAi     openai    {};
-    lifuren::config::Ollama     ollama    {};
-    lifuren::config::DocsMark   docsMark  {};
-    lifuren::config::ImageMark  imageMark {};
-    lifuren::config::PoetryMark poetryMark{};
+    lifuren::config::ChatConfig       chat      {};
+    lifuren::config::ImageConfig      image     {};
+    lifuren::config::VideoConfig      video     {};
+    lifuren::config::OpenAiConfig     openai    {};
+    lifuren::config::OllamaConfig     ollama    {};
+    lifuren::config::DocsMarkConfig   docsMark  {};
+    lifuren::config::ImageMarkConfig  imageMark {};
+    lifuren::config::PoetryMarkConfig poetryMark{};
 
 public:
     Config();
@@ -228,13 +265,6 @@ public:
             return nullptr;
         }
     }
-
-};
-
-/**
- * 模型配置
- */
-class ModelConfig {
 
 };
 

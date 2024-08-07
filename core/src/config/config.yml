@@ -1,42 +1,61 @@
 # REST监听地址
-httpServerHost: 0.0.0.0
+http-server-host: 0.0.0.0
 # REST监听端口
-httpServerPort: 8080
-# 自然语言终端列表
-nlpClients:
+http-server-port: 8080
+################ 聊天页面 ################
+# 聊天终端列表
+chat-clients:
   - ollama
   - openai
 # 聊天页面配置
 chat:
-  model: ollama
-  embedding:
-# 图片生成页面配置
-image:
-  model:
-  embedding:
-# 视频生成页面配置
-video:
-  model:
-  embedding:
+  client: ollama
+################ 图片页面 ################
+image-clients:
+################ 视频页面 ################
+video-clients:
+################ 标记页面 ################
 # 文档标记页面配置
-docsMark:
-  datasetPath: ""
+docs-mark:
+  dataset-path: ""
 # 图片标记页面配置
-imageMark:
-  datasetPath: ""
+image-mark:
+  dataset-path: ""
 # 诗词标记页面配置
-poetryMark:
-  datasetPath: ""
+poetry-mark:
+  dataset-path: ""
+################ 语言模型 ################
 # OpenAI配置
 openai:
   api:
   username:
   password:
+  auth-type: NONE
+  chat:
+    path: /v1/completions
+    # path: /v1/chat/completions
+  embedding:
+    path: /v1/embeddings
 # Ollama配置
+# https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
-  api:
-  username:
-  password:
+  api: http://192.168.8.228:11434
+  username: 
+  password: 
+  auth-type: NONE
+  chat:
+    path: /api/chat
+    model: glm4
+    # path: /api/generate
+    top-p: 
+    top-k:
+    temperature: 
+    options: {}
+  embedding:
+    path: /api/embed
+    model: quentinz/bge-large-zh-v1.5
+    options: {}
+################ 图片模型 ################
 # SD配置
 stable-diffusion:
-  
+################ 视频模型 ################

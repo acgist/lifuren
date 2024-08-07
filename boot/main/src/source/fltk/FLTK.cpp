@@ -143,6 +143,17 @@ void lifuren::Window::center() {
     this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
 }
 
+lifuren::ConfigWindow::ConfigWindow(int width, int height, const char* title) : Window(width, height, title) {
+}
+
+lifuren::ConfigWindow::~ConfigWindow() {
+    SPDLOG_DEBUG("关闭窗口");
+}
+
+void lifuren::ConfigWindow::saveConfig() {
+    lifuren::config::saveFile();
+}
+
 lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
@@ -158,9 +169,6 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Wi
 
 lifuren::ModelWindow::~ModelWindow() {
     SPDLOG_DEBUG("关闭窗口");
-    LFR_DELETE_THIS_PTR(modelPtr);
-    LFR_DELETE_THIS_PTR(trainStartPtr);
-    LFR_DELETE_THIS_PTR(trainStopPtr);
 }
 
 static int abs(const int& source, const int& target) {

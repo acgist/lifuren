@@ -4,6 +4,19 @@ add_library(
     ${PROJECT_NAME} STATIC
     src/source/Client.cpp
     src/source/RestClient.cpp
+    src/source/ChatClient.cpp
+    src/source/RestChatClient.cpp
+    src/source/LocalChatClient.cpp
+    src/source/EmbeddingClient.cpp
+    src/source/RestEmbeddingClient.cpp
+    src/source/LocalEmbeddingClient.cpp
+    src/source/RAGClient.cpp
+    src/source/PaintClient.cpp
+    src/source/RestPaintClient.cpp
+    src/source/LocalPaintClient.cpp
+    src/source/VideoClient.cpp
+    src/source/RestVideoClient.cpp
+    src/source/LocalVideoClient.cpp
 )
 
 target_link_libraries(

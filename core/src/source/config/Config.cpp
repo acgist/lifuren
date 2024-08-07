@@ -1,25 +1,25 @@
 #include "lifuren/config/Config.hpp"
 
+#include <algorithm>
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Yamls.hpp"
 #include "lifuren/Logger.hpp"
 
-#include <algorithm>
-
 // 配置读取
 #ifndef LFR_CONFIG_YAML_GETTER
-#define LFR_CONFIG_YAML_GETTER(config, yaml, name, type) \
-auto& name = yaml[#name];                                \
-if(name && !name.IsNull()) {                             \
-    this->config.name = name.as<type>();                 \
+#define LFR_CONFIG_YAML_GETTER(config, yaml, key, name, type) \
+auto& name = yaml[#key];                                      \
+if(name && !name.IsNull()) {                                  \
+    this->config.name = name.as<type>();                      \
 }
 #endif
 
 // 配置写出
 #ifndef LFR_CONFIG_YAML_SETTER
-#define LFR_CONFIG_YAML_SETTER(config, name) \
-config[#name] = this->config.name;
+#define LFR_CONFIG_YAML_SETTER(config, name, key) \
+config[#key] = this->config.name;
 #endif
 
 LFR_YAML_ENUM(config::Loss,           NONE, CROSS_ENTROPY_LOSS, NONE)
@@ -32,13 +32,15 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 
 const std::string lifuren::config::CONFIG_CHAT             = "chat";
 const std::string lifuren::config::CONFIG_DATASET          = "dataset";
-const std::string lifuren::config::CONFIG_NLP_CLIENTS      = "nlpClients";
-const std::string lifuren::config::CONFIG_HTTP_SERVER_HOST = "httpServerHost";
-const std::string lifuren::config::CONFIG_HTTP_SERVER_PORT = "httpServerPort";
+const std::string lifuren::config::CONFIG_CHAT_CLIENTS     = "chat-clients";
+const std::string lifuren::config::CONFIG_OPENAI           = "openai";
+const std::string lifuren::config::CONFIG_OLLAMA           = "ollama";
+const std::string lifuren::config::CONFIG_HTTP_SERVER_HOST = "http-server-host";
+const std::string lifuren::config::CONFIG_HTTP_SERVER_PORT = "http-server-port";
 
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
-std::set<std::string> lifuren::config::nlpClients{};
+std::set<std::string> lifuren::config::chatClients{};
 
 lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
 
@@ -50,31 +52,38 @@ lifuren::config::Config::~Config() {
 
 void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node& yaml) {
     if(CONFIG_CHAT == name) {
-        LFR_CONFIG_YAML_GETTER(chat, yaml, model,     std::string);
-        LFR_CONFIG_YAML_GETTER(chat, yaml, embedding, std::string);
+        LFR_CONFIG_YAML_GETTER(chat, yaml, client, client, std::string);
+    } else if(CONFIG_OPENAI == name) {
+    } else if(CONFIG_OLLAMA == name) {
+        LFR_CONFIG_YAML_GETTER(ollama, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(ollama, yaml, username,  username, std::string);
+        LFR_CONFIG_YAML_GETTER(ollama, yaml, password,  password, std::string);
+        LFR_CONFIG_YAML_GETTER(ollama, yaml, auth-type, authType, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
-    // LFR_CONFIG_YAML_GETTER(model, yaml, regularization,     lifuren::Regularization);
-    // LFR_CONFIG_YAML_GETTER(model, yaml, regularizationRate, double);
 }
 
 YAML::Node lifuren::config::Config::toYaml() {
     YAML::Node yaml;
     YAML::Node chat;
-    LFR_CONFIG_YAML_SETTER(chat, model);
-    LFR_CONFIG_YAML_SETTER(chat, embedding);
+    LFR_CONFIG_YAML_SETTER(chat, client, client);
     yaml[CONFIG_CHAT] = chat;
-    YAML::Node nlpClients;
-    std::for_each(lifuren::config::nlpClients.begin(), lifuren::config::nlpClients.end(), [&nlpClients](auto& v) {
-        nlpClients.push_back(v);
+    YAML::Node ollama;
+    LFR_CONFIG_YAML_SETTER(ollama, api,      api);
+    LFR_CONFIG_YAML_SETTER(ollama, username, username);
+    LFR_CONFIG_YAML_SETTER(ollama, password, password);
+    LFR_CONFIG_YAML_SETTER(ollama, authType, auth-type);
+    yaml[CONFIG_OLLAMA] = ollama;
+    YAML::Node chatClients;
+    std::for_each(lifuren::config::chatClients.begin(), lifuren::config::chatClients.end(), [&chatClients](auto& v) {
+        chatClients.push_back(v);
     });
-    yaml[CONFIG_NLP_CLIENTS] = nlpClients;
-    // TODO: 其他保存
+    yaml[CONFIG_CHAT_CLIENTS] = chatClients;
     return yaml;
 }
 
-inline lifuren::config::Config loadFile() {
+inline lifuren::config::Config lifuren::config::loadFile() {
     return lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
 }
 
@@ -92,9 +101,9 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
             lifuren::config::httpServerHost = value.as<std::string>();
         } else if(key == CONFIG_HTTP_SERVER_PORT) {
             lifuren::config::httpServerPort = value.as<int>();
-        } else if(key == CONFIG_NLP_CLIENTS) {
+        } else if(key == CONFIG_CHAT_CLIENTS) {
             std::for_each(value.begin(), value.end(), [](auto client) {
-                lifuren::config::nlpClients.emplace(client.as<std::string>());
+                lifuren::config::chatClients.emplace(client.as<std::string>());
             });
         } else {
             config.loadYaml(key, value);

@@ -8,6 +8,12 @@
 #ifndef LFR_HEADER_BOOT_FLTK_HPP
 #define LFR_HEADER_BOOT_FLTK_HPP
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#endif
+
 #include <string>
 
 #include "FL/Fl.H"
@@ -21,6 +27,7 @@
 #include "FL/Fl_Text_Display.H"
 
 #include "lifuren/Ptr.hpp"
+#include "lifuren/Client.hpp"
 #include "lifuren/config/Config.hpp"
 
 // 窗口宽度
@@ -121,11 +128,41 @@ protected:
 
 };
 
+/**
+ * 配置窗口
+ */
+class ConfigWindow : public Window {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ConfigWindow(int width, int height, const char* title = "配置");
+    // 析构函数
+    virtual ~ConfigWindow();
+
+protected:
+    /**
+     * 保存配置
+     */
+    virtual void saveConfig();
+    /**
+     * 重新绘制配置元素
+     */
+    virtual void redrawConfigElement() = 0;
+
+};
+
 // 功能窗口
 class MainWindow;
 class ChatWindow;
+class ChatConfigWindow;
 class ImageWindow;
+class ImageConfigWindow;
 class VideoWindow;
+class VideoConfigWindow;
 class AboutWindow;
 class DocsMarkWindow;
 class ImageMarkWindow;
@@ -233,7 +270,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    MarkWindow(int width, int height, const char* title = "关于");
+    MarkWindow(int width, int height, const char* title = "标记");
     // 析构函数
     virtual ~MarkWindow();
 
@@ -246,7 +283,7 @@ class DocsMarkWindow : public MarkWindow {
 
 public:
     // 配置
-    lifuren::config::DocsMark* docsConfigPtr{ nullptr };
+    lifuren::config::DocsMarkConfig* docsMarkConfigPtr{ nullptr };
 
 public:
     /**
@@ -271,7 +308,7 @@ class ImageMarkWindow : public MarkWindow {
 
 public:
     // 配置
-    lifuren::config::ImageMark* imageConfigPtr{ nullptr };
+    lifuren::config::ImageMarkConfig* imageMarkConfigPtr{ nullptr };
 
 public:
     /**
@@ -298,7 +335,7 @@ public:
     // 自动标记：通过已有标记自动标记
     Fl_Button* autoMarkPtr = nullptr;
     // 配置
-    lifuren::config::PoetryMark* poetryConfigPtr{ nullptr };
+    lifuren::config::PoetryMarkConfig* poetryMarkConfigPtr{ nullptr };
 
 public:
     /**
@@ -377,14 +414,6 @@ public:
     // 析构函数
     virtual ~ModelWindow();
 
-protected:
-    // 模型名称
-    Fl_Choice* modelPtr = nullptr;
-    // 开始训练
-    Fl_Button* trainStartPtr = nullptr;
-    // 结束训练
-    Fl_Button* trainStopPtr = nullptr;
-
 };
 
 /**
@@ -393,8 +422,7 @@ protected:
 class ChatWindow : public ModelWindow {
 
 public:
-    // 配置
-    lifuren::config::Chat* chatConfigPtr{ nullptr };
+    ChatClient* clientPtr{ nullptr };
 
 public:
     /**
@@ -413,13 +441,32 @@ protected:
 };
 
 /**
+ * 聊天配置
+ */
+class ChatConfigWindow : public ConfigWindow {
+
+private:
+    lifuren::config::ChatConfig* chatConfigPtr{ nullptr };
+
+public:
+    ChatConfigWindow(int width, int height, const char* title = "聊天配置");
+    virtual ~ChatConfigWindow();
+
+protected:
+    virtual void drawElement() override;
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+
+};
+
+/**
  * 图片内容生成
  */
 class ImageWindow : public ModelWindow {
 
 public:
     // 配置
-    lifuren::config::Image* imageConfigPtr{ nullptr };
+    lifuren::config::ImageConfig* imageConfigPtr{ nullptr };
 
 public:
     /**
@@ -444,7 +491,7 @@ class VideoWindow : public ModelWindow {
 
 public:
     // 配置
-    lifuren::config::Video* videoConfigPtr{ nullptr };
+    lifuren::config::VideoConfig* videoConfigPtr{ nullptr };
 
 public:
     /**

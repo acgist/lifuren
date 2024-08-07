@@ -4,28 +4,45 @@
 
 #include <algorithm>
 
+static Fl_Button* sendPtr   { nullptr };
+static Fl_Button* stopPtr   { nullptr };
+static Fl_Button* configPtr { nullptr };
+static lifuren::ChatConfigWindow* chatConfigWindowPtr { nullptr };
+
+static bool stop = true;
+
 lifuren::ChatWindow::ChatWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
-    this->chatConfigPtr = &lifuren::config::CONFIG.chat;
 }
 
 lifuren::ChatWindow::~ChatWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::config::saveFile();
+    stop = true;
+    LFR_DELETE_PTR(sendPtr);
+    LFR_DELETE_PTR(stopPtr);
+    LFR_DELETE_PTR(configPtr);
+    LFR_DELETE_PTR(chatConfigWindowPtr);
+    LFR_DELETE_THIS_PTR(clientPtr);
 }
 
 void lifuren::ChatWindow::drawElement() {
-    this->modelPtr = new Fl_Choice(100, 10, this->w() - 200, 30, "模型名称");
-    std::for_each(lifuren::config::nlpClients.begin(), lifuren::config::nlpClients.end(), [this](const auto& v) {
-        this->modelPtr->add(v.c_str());
+    sendPtr   = new Fl_Button(this->w() - 120, this->h() - 50, 100, 30, "发送消息");
+    stopPtr   = new Fl_Button(this->w() - 230, this->h() - 50, 100, 30, "结束回答");
+    configPtr = new Fl_Button(this->w() - 340, this->h() - 50, 100, 30, "⚙配置");
+    // 发送
+    sendPtr->callback([](Fl_Widget*, void*) {
     });
-    auto defaultPtr = this->modelPtr->find_item(this->chatConfigPtr->model.c_str());
-    if(defaultPtr) {
-        this->modelPtr->value(defaultPtr); 
-    }
-    this->modelPtr->callback([](Fl_Widget*, void* voidPtr) {
-        ChatWindow* windowPtr = static_cast<ChatWindow*>(voidPtr);
-        windowPtr->chatConfigPtr->model = windowPtr->modelPtr->text();
+    // 结束
+    stopPtr->callback([](Fl_Widget*, void*) {
+        stop = true;
+    });
+    // 配置
+    configPtr->callback([](Fl_Widget*, void*) {
+        chatConfigWindowPtr = new lifuren::ChatConfigWindow{620, 800};
+        chatConfigWindowPtr->init();
+        chatConfigWindowPtr->show();
+        chatConfigWindowPtr->callback([](Fl_Widget*, void*) {
+            chatConfigWindowPtr->hide();
+            LFR_DELETE_PTR(chatConfigWindowPtr);
+        }, nullptr);
     }, this);
-    this->trainStartPtr = new Fl_Button(10,  50, 100, 30, "开始训练");
-    this->trainStopPtr  = new Fl_Button(120, 50, 100, 30, "结束训练");
 }

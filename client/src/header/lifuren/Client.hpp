@@ -12,18 +12,29 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "httplib.h"
+
+#include "ClientOptions.hpp"
 
 namespace lifuren {
 
 class Client;
 class RestClient;
 class ChatClient;
+class RestChatClient;
+class LocalChatClient;
 class EmbeddingClient;
+class RestEmbeddingClient;
+class LocalEmbeddingClient;
 class RAGClient;
 class PaintClient;
+class RestPaintClient;
+class LocalPaintClient;
 class VideoClient;
+class RestVideoClient;
+class LocalVideoClient;
 
 /**
  * 终端父类
@@ -38,7 +49,7 @@ public:
 /**
  * REST终端
  */
-class RestClient {
+class RestClient : public Client {
 
 /**
  * 授权方式
@@ -140,10 +151,82 @@ public:
      * 
      * @return 是否成功
      */
-    bool postStream(const std::string& path, const std::string& data, std::function<bool(const char* data, size_t data_length)> callback, const httplib::Headers& headers = {}) const;
+    bool postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const httplib::Headers& headers = {}) const;
 
 };
 
-}
+/**
+ * 聊天终端
+ */
+class ChatClient : public Client {
+
+public:
+    /**
+     * 正常聊天
+     * 
+     * @param prompt 提示词
+     * 
+     * @return 返回内容
+     */
+    virtual std::string chat(const std::string& prompt) = 0;
+    /**
+     * 流式聊天
+     * 
+     * @param prompt   提示词
+     * @param callback 回调函数
+     */
+    virtual void chat(const std::string& prompt, std::function<bool(const char*, size_t)> callback) = 0;
+
+};
+
+/**
+ * Rest聊天终端
+ */
+class RestChatClient : public ChatClient {
+
+public:
+    // 配置
+    lifuren::RestChatOptions options;
+    
+
+};
+
+/**
+ * 词嵌入终端
+ */
+class EmbeddingClient : public Client {
+
+};
+
+class RestEmbeddingClient : public EmbeddingClient {
+
+};
+
+/**
+ * RAG终端
+ * 
+ * 文档解析、文档分段、文档搜索
+ */
+class RAGClient : public Client {
+
+public:
+    // 词嵌入终端
+    std::unique_ptr<EmbeddingClient> embeddingClient{ nullptr };
+
+};
+
+/**
+ * 绘画终端
+ */
+class PaintClient : public Client {
+};
+
+/**
+ * 视频终端
+ */
+class VideoClient : public Client {
+};
+
+} // END OF lifuren
 
 #endif // END OF LFR_HEADER_CLIENT_CLIENT_HPP
