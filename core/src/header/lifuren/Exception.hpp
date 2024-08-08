@@ -87,7 +87,7 @@ public:
     static void notEqualThrow(const T& source, const T& target, const std::string& code = CODE_9999, const std::string& message = "未知异常") {
         falseThrow(&source == &target, code, message);
     }
-    char const* what() const override;
+    virtual const char* what() const noexcept override;
 
 };
 

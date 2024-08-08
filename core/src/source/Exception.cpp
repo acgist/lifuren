@@ -26,6 +26,6 @@ void lifuren::Exception::falseThrow(bool ret, const std::string& code, const std
     }
 }
 
-const char* lifuren::Exception::what() const {
+const char* lifuren::Exception::what() const noexcept {
     return this->message.c_str();
 }

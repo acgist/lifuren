@@ -22,7 +22,7 @@ if(name && !name.IsNull() && name.IsScalar()) {               \
 const auto& name = yaml[#key];                                      \
 if(name && !name.IsNull() && name.IsMap()) {                        \
     std::for_each(name.begin(), name.end(), [&map](const auto& v) { \
-        const std::string& vk = v.first.as<std::string>();          \
+        const std::string& vk = v.first.template as<std::string>(); \
         const auto&        vv = v.second;                           \
         if(vv && !vv.IsNull() && vv.IsScalar()) {                   \
             map.emplace(vk, vv.template as<type>());                \
