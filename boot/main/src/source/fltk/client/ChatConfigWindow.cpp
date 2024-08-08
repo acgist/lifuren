@@ -1,5 +1,9 @@
 #include "lifuren/FLTK.hpp"
 
+#include "FL/Fl_Input.H"
+#include "FL/Fl_Button.H"
+#include "FL/Fl_Choice.H"
+
 static Fl_Choice* clientPtr{ nullptr };
 static Fl_Input*  apiPtr   { nullptr };
 static Fl_Input*  usernamePtr{ nullptr };

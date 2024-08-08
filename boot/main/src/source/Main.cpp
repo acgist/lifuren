@@ -23,9 +23,10 @@ static std::mutex mutex;
 static std::atomic<int> count(0);
 static std::condition_variable condition;
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("启动系统");
+/**
+ * 启动项目
+ */
+static void launch() {
     #if LFR_ENABLE_REST
     count++;
     std::thread httpServerThread([]() {
@@ -57,6 +58,12 @@ int main(const int argc, const char * const argv[]) {
             condition.wait(lock);
         }
     }
+}
+
+int main(const int argc, const char * const argv[]) {
+    lifuren::logger::init();
+    SPDLOG_DEBUG("启动系统");
+    launch();
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();
     return 0;

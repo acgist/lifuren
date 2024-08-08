@@ -4,12 +4,16 @@
 
 #include "spdlog/spdlog.h"
 
-static Fl_Button* sendPtr   { nullptr };
-static Fl_Button* stopPtr   { nullptr };
-static Fl_Button* configPtr { nullptr };
-static lifuren::ChatConfigWindow* chatConfigWindowPtr { nullptr };
+#include "FL/Fl_Button.H"
 
-static bool stop = true;
+static Fl_Button* sendPtr  { nullptr };
+static Fl_Button* stopPtr  { nullptr };
+static Fl_Button* configPtr{ nullptr };
+
+// 是否停止
+static bool stop{ true };
+// 配置窗口
+static lifuren::ChatConfigWindow* chatConfigWindowPtr{ nullptr };
 
 lifuren::ChatWindow::ChatWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }

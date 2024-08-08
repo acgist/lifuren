@@ -1,7 +1,7 @@
 /**
  * FLTK GUI
  * 
- * REST.hpp必须在FLTK.hpp的前面
+ * 文档：https://www.fltk.org/doc-1.3/index.html
  * 
  * @author acgist
  */
@@ -17,14 +17,8 @@
 #include <string>
 
 #include "FL/Fl.H"
-#include "FL/Fl_Input.H"
-#include "FL/Fl_Button.H"
-#include "FL/Fl_Choice.H"
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
-#include "FL/Fl_JPEG_Image.H"
-#include "FL/Fl_Text_Buffer.H"
-#include "FL/Fl_Text_Display.H"
 
 #include "lifuren/Ptr.hpp"
 #include "lifuren/Client.hpp"
@@ -55,8 +49,8 @@
 // 目录选择并且回调
 #ifndef LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK
 #define LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(inputPtr, configPtr, configName, windowName, callbackName) \
-    this->inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                                  \
-        const char* value = ((windowName*) voidPtr)->inputPtr->value();                                 \
+    inputPtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) {                                        \
+        const char* value = inputPtr->value();                                                          \
         if(value == nullptr || std::strlen(value) == 0) {                                               \
             return;                                                                                     \
         }                                                                                               \
@@ -128,6 +122,20 @@ protected:
 
 };
 
+class MainWindow;
+class ChatWindow;
+class ChatConfigWindow;
+class ImageWindow;
+class ImageConfigWindow;
+class VideoWindow;
+class VideoConfigWindow;
+class AboutWindow;
+class DocsMarkWindow;
+class ImageMarkWindow;
+class PoetryMarkWindow;
+class FinetuneWindow;
+class QuantizationWindow;
+
 /**
  * 配置窗口
  */
@@ -155,63 +163,28 @@ protected:
 
 };
 
-// 功能窗口
-class MainWindow;
-class ChatWindow;
-class ChatConfigWindow;
-class ImageWindow;
-class ImageConfigWindow;
-class VideoWindow;
-class VideoConfigWindow;
-class AboutWindow;
-class DocsMarkWindow;
-class ImageMarkWindow;
-class PoetryMarkWindow;
-class FinetuneWindow;
-class QuantizationWindow;
-
 /**
  * 主窗口
  */
 class MainWindow : public Window {
 
 private:
-    // 文档标记按钮
-    Fl_Button* docsMarkButtonPtr = nullptr;
     // 文档标记窗口
-    DocsMarkWindow* docsMarkWindowPtr = nullptr;
-    // 图片标记按钮
-    Fl_Button* imageMarkButtonPtr = nullptr;
+    DocsMarkWindow*   docsMarkWindowPtr   = nullptr;
     // 图片标记窗口
-    ImageMarkWindow* imageMarkWindowPtr = nullptr;
-    // 诗词标记按钮
-    Fl_Button* poetryMarkButtonPtr = nullptr;
+    ImageMarkWindow*  imageMarkWindowPtr  = nullptr;
     // 诗词标记窗口
     PoetryMarkWindow* poetryMarkWindowPtr = nullptr;
-    // 模型微调按钮
-    Fl_Button* finetuneButtonPtr = nullptr;
     // 模型微调窗口
-    FinetuneWindow* finetuneWindowPtr = nullptr;
-    // 模型量化按钮
-    Fl_Button* quantizationButtonPtr = nullptr;
+    FinetuneWindow*     finetuneWindowPtr     = nullptr;
     // 模型量化窗口
     QuantizationWindow* quantizationWindowPtr = nullptr;
-    // 聊天按钮
-    Fl_Button* chatButtonPtr = nullptr;
     // 聊天窗口
-    ChatWindow* chatWindowPtr = nullptr;
-    // 图片生成按钮
-    Fl_Button* imageButtonPtr = nullptr;
+    ChatWindow*  chatWindowPtr  = nullptr;
     // 图片生成窗口
     ImageWindow* imageWindowPtr = nullptr;
-    // 视频生成按钮
-    Fl_Button* videoButtonPtr = nullptr;
     // 视频生成窗口
     VideoWindow* videoWindowPtr = nullptr;
-    // 重新加载配置按钮
-    Fl_Button* reloadButtonPtr = nullptr;
-    // 关于按钮
-    Fl_Button* aboutButtonPtr = nullptr;
     // 关于窗口
     AboutWindow* aboutWindowPtr = nullptr;
 
@@ -257,14 +230,6 @@ protected:
 class MarkWindow : public Window {
 
 public:
-    // 上个内容
-    Fl_Button* prevPtr = nullptr;
-    // 下个内容
-    Fl_Button* nextPtr = nullptr;
-    // 数据路径
-    Fl_Input* datasetPathPtr = nullptr;
-
-public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -273,6 +238,16 @@ public:
     MarkWindow(int width, int height, const char* title = "标记");
     // 析构函数
     virtual ~MarkWindow();
+
+protected:
+    /**
+     * 下一个标记
+     */
+    virtual void prevMark();
+    /**
+     * 上一个标记
+     */
+    virtual void nextMark();
 
 };
 
@@ -332,8 +307,6 @@ protected:
 class PoetryMarkWindow : public MarkWindow {
 
 public:
-    // 自动标记：通过已有标记自动标记
-    Fl_Button* autoMarkPtr = nullptr;
     // 配置
     lifuren::config::PoetryMarkConfig* poetryMarkConfigPtr{ nullptr };
 
@@ -514,14 +487,6 @@ protected:
  */
 class AboutWindow : public Window {
 
-private:
-    // 官网
-    Fl_Button* homePagePtr = nullptr;
-    // 关于内容
-    Fl_Text_Buffer* aboutBufferPtr = nullptr;
-    // 关于组件
-    Fl_Text_Display* aboutDisplayPtr = nullptr;
-
 public:
     /**
      * @param width  窗口宽度
@@ -535,45 +500,6 @@ public:
 protected:
     // 加载组件
     virtual void drawElement() override;
-
-};
-
-/**
- * 目录选择组件
- */
-class Fl_Input_Directory_Chooser : public Fl_Input {
-
-private:
-    // 标题
-    const char* title = nullptr;
-    // 目录
-    const char* directory = nullptr;
-
-public:
-    /**
-     * @param x         x
-     * @param y         y
-     * @param width     宽度
-     * @param height    高度
-     * @param title     标题
-     * @param directory 当前目录
-     */
-    Fl_Input_Directory_Chooser(
-        int x,
-        int y,
-        int width,
-        int height,
-        const char* title,
-        const char* directory = "."
-    );
-    // 析构函数
-    virtual ~Fl_Input_Directory_Chooser();
-
-public:
-    /**
-     * @param event 事件
-     */
-    int handle(int event) override;
 
 };
 

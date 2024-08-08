@@ -1,8 +1,6 @@
 /**
  * REST API
  * 
- * REST.hpp必须在FLTK.hpp的前面
- * 
  * @author acgist
  */
 #ifndef LFR_HEADER_BOOT_REST_HPP

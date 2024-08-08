@@ -7,6 +7,8 @@
 #define LFR_HEADER_CORE_CONFIG_CONFIG_HPP
 
 #include <set>
+#include <map>
+#include <list>
 #include <string>
 
 #include "yaml-cpp/yaml.h"
@@ -127,7 +129,7 @@ struct LLMConfig {
     double topP;
     size_t topK;
     double temperature;
-    std::string options{ "{}" };
+    std::map<std::string, std::string> options{};
 
 };
 
@@ -148,7 +150,7 @@ struct EmbeddingClientConfig {
 
     std::string path;
     std::string model;
-    std::string options{ "{}" };
+    std::map<std::string, std::string> options{};
 
 };
 

@@ -1,7 +1,8 @@
+#include "lifuren/FLTK.hpp"
+
 #if LFR_ENABLE_REST
 #include "lifuren/REST.hpp"
 #endif
-#include "lifuren/FLTK.hpp"
 
 #include "lifuren/Ptr.hpp"
 
@@ -78,37 +79,6 @@ std::string lifuren::directoryChooser(const char* title, const char* directory) 
     }
 }
 
-lifuren::Fl_Input_Directory_Chooser::Fl_Input_Directory_Chooser(
-    int x,
-    int y,
-    int width,
-    int height,
-    const char* title,
-    const char* directory
-) :
-    Fl_Input(x, y, width, height),
-    title(title),
-    directory(directory)
-{
-    this->label(title);
-}
-
-lifuren::Fl_Input_Directory_Chooser::~Fl_Input_Directory_Chooser() {
-}
-
-int lifuren::Fl_Input_Directory_Chooser::handle(int event) {
-    if(event == FL_LEFT_MOUSE) {
-        const std::string filename = directoryChooser(this->title);
-        if(filename.empty()) {
-            return 0;
-        }
-        this->value(filename.c_str());
-        this->do_callback();
-        return 0;
-    }
-    return Fl_Input::handle(event);
-}
-
 lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {
 }
 
@@ -159,9 +129,12 @@ lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Wind
 
 lifuren::MarkWindow::~MarkWindow() {
     SPDLOG_DEBUG("关闭窗口");
-    LFR_DELETE_THIS_PTR(prevPtr);
-    LFR_DELETE_THIS_PTR(nextPtr);
-    LFR_DELETE_THIS_PTR(datasetPathPtr);
+}
+
+void lifuren::MarkWindow::prevMark() {
+}
+
+void lifuren::MarkWindow::nextMark() {
 }
 
 lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Window(width, height, title) {

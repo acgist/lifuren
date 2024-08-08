@@ -1,17 +1,30 @@
 #include "lifuren/FLTK.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "lifuren/Lifuren.hpp"
 
 #include "FL/fl_ask.H"
+#include "FL/Fl_Input.H"
+#include "FL/Fl_Button.H"
 #include "FL/Fl_Shared_Image.H"
 
-#include "spdlog/spdlog.h"
+static Fl_Button* docsMarkButtonPtr    { nullptr };
+static Fl_Button* imageMarkButtonPtr   { nullptr };
+static Fl_Button* poetryMarkButtonPtr  { nullptr };
+static Fl_Button* finetuneButtonPtr    { nullptr };
+static Fl_Button* quantizationButtonPtr{ nullptr };
+static Fl_Button* chatButtonPtr  { nullptr };
+static Fl_Button* imageButtonPtr { nullptr };
+static Fl_Button* videoButtonPtr { nullptr };
+static Fl_Button* aboutButtonPtr { nullptr };
+static Fl_Button* reloadButtonPtr{ nullptr };
 
 // 回调按钮绑定
 #ifndef LFR_BUTTON_CALLBACK_FUNCTION_BINDER
-#define LFR_BUTTON_CALLBACK_FUNCTION_BINDER(button, function)                \
-    this->button->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
-        ((MainWindow*) voidPtr)->function();                                 \
+#define LFR_BUTTON_CALLBACK_FUNCTION_BINDER(button, function)          \
+    button->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void { \
+        ((MainWindow*) voidPtr)->function();                           \
     }, this);
 #endif
 
@@ -42,43 +55,43 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Wind
 
 lifuren::MainWindow::~MainWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    LFR_DELETE_THIS_PTR(docsMarkButtonPtr);
+    LFR_DELETE_PTR(docsMarkButtonPtr);
     LFR_DELETE_THIS_PTR(docsMarkWindowPtr);
-    LFR_DELETE_THIS_PTR(imageMarkButtonPtr);
+    LFR_DELETE_PTR(imageMarkButtonPtr);
     LFR_DELETE_THIS_PTR(imageMarkWindowPtr);
-    LFR_DELETE_THIS_PTR(poetryMarkButtonPtr);
+    LFR_DELETE_PTR(poetryMarkButtonPtr);
     LFR_DELETE_THIS_PTR(poetryMarkWindowPtr);
-    LFR_DELETE_THIS_PTR(finetuneButtonPtr);
+    LFR_DELETE_PTR(finetuneButtonPtr);
     LFR_DELETE_THIS_PTR(finetuneWindowPtr);
-    LFR_DELETE_THIS_PTR(quantizationButtonPtr);
+    LFR_DELETE_PTR(quantizationButtonPtr);
     LFR_DELETE_THIS_PTR(quantizationWindowPtr);
-    LFR_DELETE_THIS_PTR(chatButtonPtr);
+    LFR_DELETE_PTR(chatButtonPtr);
     LFR_DELETE_THIS_PTR(chatWindowPtr);
-    LFR_DELETE_THIS_PTR(chatWindowPtr);
+    LFR_DELETE_PTR(imageButtonPtr);
     LFR_DELETE_THIS_PTR(imageWindowPtr);
-    LFR_DELETE_THIS_PTR(videoButtonPtr);
+    LFR_DELETE_PTR(videoButtonPtr);
     LFR_DELETE_THIS_PTR(videoWindowPtr);
-    LFR_DELETE_THIS_PTR(reloadButtonPtr);
-    LFR_DELETE_THIS_PTR(aboutButtonPtr);
+    LFR_DELETE_PTR(aboutButtonPtr);
     LFR_DELETE_THIS_PTR(aboutWindowPtr);
+    LFR_DELETE_PTR(reloadButtonPtr);
 }
 
 void lifuren::MainWindow::drawElement() {
-    // 标记
-    this->docsMarkButtonPtr   = new Fl_Button(20,                      10, LFR_HALF_WIDTH(60), 30, "文档标记");
-    this->imageMarkButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10, LFR_HALF_WIDTH(60), 30, "图片标记");
-    this->poetryMarkButtonPtr = new Fl_Button(20,                      50, LFR_HALF_WIDTH(60), 30, "诗词标记");
+    // 数据标记
+    docsMarkButtonPtr   = new Fl_Button(20,                      10, LFR_HALF_WIDTH(60), 30, "文档标记");
+    imageMarkButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10, LFR_HALF_WIDTH(60), 30, "图片标记");
+    poetryMarkButtonPtr = new Fl_Button(20,                      50, LFR_HALF_WIDTH(60), 30, "诗词标记");
     // 模型优化
-    this->finetuneButtonPtr     = new Fl_Button(20,                      90, LFR_HALF_WIDTH(60), 30, "模型微调");
-    this->quantizationButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "模型量化");
-    // 模型
-    this->chatButtonPtr  = new Fl_Button(20,                      130, LFR_HALF_WIDTH(60), 30, "聊天");
-    this->imageButtonPtr = new Fl_Button(20,                      170, LFR_HALF_WIDTH(60), 30, "图片生成");
-    this->videoButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 170, LFR_HALF_WIDTH(60), 30, "视频生成");
-    // 重新加载配置
-    this->reloadButtonPtr = new Fl_Button((this->w() - 80) / 4 * 2 + 40, this->h() - 40, (this->w() - 80) / 4, 30, "重新加载配置");
+    finetuneButtonPtr     = new Fl_Button(20,                      90, LFR_HALF_WIDTH(60), 30, "模型微调");
+    quantizationButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "模型量化");
+    // 模型功能
+    chatButtonPtr  = new Fl_Button(20,                      130, LFR_HALF_WIDTH(60), 30, "聊天");
+    imageButtonPtr = new Fl_Button(20,                      170, LFR_HALF_WIDTH(60), 30, "图片生成");
+    videoButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 170, LFR_HALF_WIDTH(60), 30, "视频生成");
     // 关于
-    this->aboutButtonPtr  = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
+    aboutButtonPtr  = new Fl_Button((this->w() - 80) / 4 * 3 + 60, this->h() - 40, (this->w() - 80) / 4, 30, "关于");
+    // 重新加载配置
+    reloadButtonPtr = new Fl_Button((this->w() - 80) / 4 * 2 + 40, this->h() - 40, (this->w() - 80) / 4, 30, "重新加载配置");
     // 大小修改
     this->resizable(this);
     // 绑定事件
@@ -92,7 +105,7 @@ void lifuren::MainWindow::drawElement() {
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(videoButtonPtr,        video);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr,        about);
     // 重新加载配置
-    this->reloadButtonPtr->callback([](Fl_Widget*, void*) {
+    reloadButtonPtr->callback([](Fl_Widget*, void*) {
         lifuren::loadConfig();
     }, this);
 }

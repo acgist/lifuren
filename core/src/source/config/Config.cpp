@@ -10,9 +10,37 @@
 // 配置读取
 #ifndef LFR_CONFIG_YAML_GETTER
 #define LFR_CONFIG_YAML_GETTER(config, yaml, key, name, type) \
-auto& name = yaml[#key];                                      \
-if(name && !name.IsNull()) {                                  \
-    config.name = name.as<type>();                      \
+const auto& name = yaml[#key];                                \
+if(name && !name.IsNull() && name.IsScalar()) {               \
+    config.name = name.as<type>();                            \
+}
+#endif
+
+// Map配置读取
+#ifndef LFR_CONFIG_YAML_MAP_GETTER
+#define LFR_CONFIG_YAML_MAP_GETTER(map, yaml, key, name, type)      \
+const auto& name = yaml[#key];                                      \
+if(name && !name.IsNull() && name.IsMap()) {                        \
+    std::for_each(name.begin(), name.end(), [&map](const auto& v) { \
+        const std::string& vk = v.first.as<std::string>();          \
+        const auto&        vv = v.second;                           \
+        if(vv && !vv.IsNull() && vv.IsScalar()) {                   \
+            map.emplace(vk, vv.as<type>());                         \
+        }                                                           \
+    });                                                             \
+}
+#endif
+
+// List配置读取
+#ifndef LFR_CONFIG_YAML_LIST_GETTER
+#define LFR_CONFIG_YAML_LIST_GETTER(list, yaml, key, name, type)     \
+const auto& name = yaml[#key];                                       \
+if(name && !name.IsNull() && name.IsSequence()) {                    \
+    std::for_each(name.begin(), name.end(), [&list](const auto& v) { \
+        if(v && !v.IsNull() && v.IsScalar()) {                       \
+            list.push_back(v.as<std::string>());                     \
+        }                                                            \
+    });                                                              \
 }
 #endif
 
@@ -42,7 +70,7 @@ std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 std::set<std::string> lifuren::config::chatClients{};
 
-lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile();
 
 lifuren::config::Config::Config() {
 }
@@ -75,7 +103,9 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
             LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, top-p,       topP,        double);
             LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, top-k,       topK,        size_t);
             LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, temperature, temperature, double);
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, options,     options,     std::string);
+            std::map<std::string, std::string> map;
+            LFR_CONFIG_YAML_MAP_GETTER(map, chatClientNode, options, options, std::string);
+            chatClient.options.insert(map.begin(), map.end());
             this->ollama.chatClient = chatClient;
         }
         const YAML::Node& embeddingClientNode = yaml["embedding"];
@@ -83,7 +113,9 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
             lifuren::config::EmbeddingClientConfig embeddingClient{};
             LFR_CONFIG_YAML_GETTER(embeddingClient, embeddingClientNode, path,    path,    std::string);
             LFR_CONFIG_YAML_GETTER(embeddingClient, embeddingClientNode, model,   model,   std::string);
-            LFR_CONFIG_YAML_GETTER(embeddingClient, embeddingClientNode, options, options, std::string);
+            std::map<std::string, std::string> map;
+            LFR_CONFIG_YAML_MAP_GETTER(map, embeddingClientNode, options, options, std::string);
+            embeddingClient.options.insert(map.begin(), map.end());
             this->ollama.embeddingClient = embeddingClient;
         }
     } else {
@@ -135,8 +167,15 @@ YAML::Node lifuren::config::Config::toYaml() {
     return yaml;
 }
 
-inline lifuren::config::Config lifuren::config::loadFile() {
-    return lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+lifuren::config::Config lifuren::config::loadFile() {
+    try {
+        return lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+    } catch(const std::exception& e) {
+        SPDLOG_ERROR("加载配置异常：{}", e.what());
+    } catch(...) {
+        SPDLOG_ERROR("加载配置异常：未知原因");
+    }
+    return {};
 }
 
 lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
@@ -147,9 +186,13 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
         return config;
     }
     for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
-        std::string key   = iterator->first.as<std::string>();
-        auto&       value = iterator->second;
-        config.loadYaml(key, value);
+        const std::string& key   = iterator->first.as<std::string>();
+        const auto&        value = iterator->second;
+        try {
+            config.loadYaml(key, value);
+        } catch(...) {
+            SPDLOG_ERROR("加载配置异常：{}", key);
+        }
     }
     return config;
 }
