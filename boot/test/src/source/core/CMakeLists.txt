@@ -47,6 +47,13 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testException TestException.cpp)
+add_test(NAME testException COMMAND testException)
+target_link_libraries(
+    testException PUBLIC
+    lifurencore
+)
+
 add_executable(testCollections TestCollections.cpp)
 add_test(NAME testCollections COMMAND testCollections)
 target_link_libraries(

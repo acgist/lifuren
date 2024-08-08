@@ -3,13 +3,13 @@ http-server-host: 0.0.0.0
 # REST监听端口
 http-server-port: 8080
 ################ 聊天页面 ################
+# 聊天页面配置
+chat:
+  client: ollama
 # 聊天终端列表
 chat-clients:
   - ollama
   - openai
-# 聊天页面配置
-chat:
-  client: ollama
 ################ 图片页面 ################
 image-clients:
 ################ 视频页面 ################

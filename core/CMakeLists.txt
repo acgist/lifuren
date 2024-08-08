@@ -9,6 +9,7 @@ add_library(
     src/source/Logger.cpp
     src/source/Strings.cpp
     src/source/Lifuren.cpp
+    src/source/Exception.cpp
     src/source/Collections.cpp
     src/source/config/Config.cpp
     src/source/config/Label.cpp

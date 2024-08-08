@@ -6,7 +6,7 @@
 #include "lifuren/config/Label.hpp"
 #include "lifuren/config/Config.hpp"
 
-void lifuren::loadConfig() {
+void lifuren::loadConfig() noexcept {
     SPDLOG_DEBUG("加载全局所有配置");
     // 配置
     auto config = lifuren::config::loadFile(lifuren::config::CONFIG_PATH);

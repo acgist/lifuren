@@ -127,7 +127,7 @@ struct LLMConfig {
     double topP;
     size_t topK;
     double temperature;
-    std::string options;
+    std::string options{ "{}" };
 
 };
 
@@ -148,7 +148,7 @@ struct EmbeddingClientConfig {
 
     std::string path;
     std::string model;
-    std::string options;
+    std::string options{ "{}" };
 
 };
 

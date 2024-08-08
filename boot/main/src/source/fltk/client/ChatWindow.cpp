@@ -1,8 +1,8 @@
 #include "lifuren/FLTK.hpp"
 
-#include "spdlog/spdlog.h"
-
 #include <algorithm>
+
+#include "spdlog/spdlog.h"
 
 static Fl_Button* sendPtr   { nullptr };
 static Fl_Button* stopPtr   { nullptr };
@@ -36,13 +36,13 @@ void lifuren::ChatWindow::drawElement() {
         stop = true;
     });
     // 配置
-    configPtr->callback([](Fl_Widget*, void*) {
+    configPtr->callback([](Fl_Widget*, void* voidPtr) {
         chatConfigWindowPtr = new lifuren::ChatConfigWindow{620, 800};
         chatConfigWindowPtr->init();
         chatConfigWindowPtr->show();
         chatConfigWindowPtr->callback([](Fl_Widget*, void*) {
             chatConfigWindowPtr->hide();
             LFR_DELETE_PTR(chatConfigWindowPtr);
-        }, nullptr);
+        }, voidPtr);
     }, this);
 }
