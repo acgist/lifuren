@@ -197,7 +197,7 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
     return config;
 }
 
-inline bool lifuren::config::saveFile() {
+bool lifuren::config::saveFile() {
     return lifuren::config::saveFile(lifuren::config::CONFIG_PATH);
 }
 

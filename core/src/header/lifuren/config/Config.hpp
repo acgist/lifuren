@@ -273,7 +273,7 @@ public:
 /**
  * 加载配置
  */
-extern inline lifuren::config::Config loadFile();
+extern lifuren::config::Config loadFile();
 
 /**
  * @param path 文件路径
@@ -287,7 +287,7 @@ extern lifuren::config::Config loadFile(const std::string& path);
  * 
  * @return 是否成功
  */
-extern inline bool saveFile();
+extern bool saveFile();
 
 /**
  * @param path 文件路径

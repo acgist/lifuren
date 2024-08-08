@@ -2,18 +2,15 @@
 
 #include <sstream>
 
-#include "lifuren/Logger.hpp"
-
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Logger.hpp"
+
 static void testConfig() {
-    auto& configs = lifuren::CONFIGS;
+    auto& config = lifuren::config::CONFIG;
     std::stringstream stream;
-    for(auto& v : configs) {
-        stream << v.second.toYaml();
-        SPDLOG_DEBUG("k = {} | v =\n{}", v.first, stream.str());
-        stream.str("");
-    }
+    stream << config.toYaml();
+    SPDLOG_DEBUG("配置：{}", stream.str());
 }
 
 int main() {

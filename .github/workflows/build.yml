@@ -27,7 +27,6 @@ jobs:
           ################################ spdlog
           # sudo apt  install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
-          ################################ fmt
           git clone https://github.com/fmtlib/fmt.git
           cd fmt
           git switch -c 10.2.0
@@ -37,7 +36,6 @@ jobs:
           make -j 8
           sudo make install
           cd ../../
-          ################################ spdlog
           git clone https://github.com/gabime/spdlog.git
           cd spdlog
           git switch -c v1.12.0
@@ -57,8 +55,17 @@ jobs:
           sudo apt  install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev
           ################################ cpp-httplib
-          sudo apt  install libcpp-httplib-dev -y
-          apt-cache madison libcpp-httplib-dev
+          # sudo apt  install libcpp-httplib-dev -y
+          # apt-cache madison libcpp-httplib-dev
+          git clone https://github.com/yhirose/cpp-httplib.git
+          cd cpp-httplib
+          git switch -c v0.16.1
+          mkdir build
+          cd build
+          cmake ..
+          make -j 8
+          sudo make install
+          cd ../../
       - name: Deploy lifuren
         run: |
           pwd
