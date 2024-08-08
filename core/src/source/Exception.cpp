@@ -1,6 +1,6 @@
 #include "lifuren/Exception.hpp"
 
-lifuren::Exception::Exception(const std::string& code, const std::string& message) : code(code), message(message), std::exception(message.c_str()) {
+lifuren::Exception::Exception(const std::string& code, const std::string& message) : code(code), message(message){
 }
 
 lifuren::Exception::~Exception() {
@@ -24,4 +24,8 @@ void lifuren::Exception::falseThrow(bool ret, const std::string& code, const std
     } else {
         throw lifuren::Exception(code, message);
     }
+}
+
+const char* lifuren::Exception::what() const {
+    return this->message.c_str();
 }

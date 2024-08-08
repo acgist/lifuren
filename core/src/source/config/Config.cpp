@@ -25,7 +25,7 @@ if(name && !name.IsNull() && name.IsMap()) {                        \
         const std::string& vk = v.first.as<std::string>();          \
         const auto&        vv = v.second;                           \
         if(vv && !vv.IsNull() && vv.IsScalar()) {                   \
-            map.emplace(vk, vv.as<type>());                         \
+            map.emplace(vk, vv.template as<type>());                \
         }                                                           \
     });                                                             \
 }
@@ -38,7 +38,7 @@ const auto& name = yaml[#key];                                       \
 if(name && !name.IsNull() && name.IsSequence()) {                    \
     std::for_each(name.begin(), name.end(), [&list](const auto& v) { \
         if(v && !v.IsNull() && v.IsScalar()) {                       \
-            list.push_back(v.as<std::string>());                     \
+            list.push_back(v.template as<std::string>());            \
         }                                                            \
     });                                                              \
 }
@@ -87,7 +87,7 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
         LFR_CONFIG_YAML_GETTER(this->chat, yaml, client, client, std::string);
     } else if(CONFIG_CHAT_CLIENTS == name) {
         std::for_each(yaml.begin(), yaml.end(), [](const auto& client) {
-            lifuren::config::chatClients.emplace(client.as<std::string>());
+            lifuren::config::chatClients.emplace(client.template as<std::string>());
         });
     } else if(CONFIG_OPENAI == name) {
     } else if(CONFIG_OLLAMA == name) {
