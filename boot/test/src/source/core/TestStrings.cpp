@@ -13,7 +13,7 @@ static void testLowerUpper() {
     value = " 1234 ";
 }
 
-static void testTrim() {
+static void testStringTrim() {
     std::string value = " 1234 ";
     std::string trim  = lifuren::strings::trim(value);
     assert("1234" == trim);
@@ -26,6 +26,21 @@ static void testTrim() {
     value = "1234";
     trim = lifuren::strings::trim(value);
     assert("1234" == trim);
+}
+
+static void testConstCharTrim() {
+    char value1[]{' ', '1', '2', '3', '4', ' ', '\0'};
+    char* trim  = lifuren::strings::trim(value1);
+    assert(std::strcmp("1234", trim) == 0);
+    char value2[]{' ', '1', '2', '3', '4', '\0'};
+    trim = lifuren::strings::trim(value2);
+    assert(std::strcmp("1234", trim) == 0);
+    char value3[]{'1', '2', '3', '4', ' ', '\0'};
+    trim = lifuren::strings::trim(value3);
+    assert(std::strcmp("1234", trim) == 0);
+    char value4[]{'1', '2', '3', '4', '\0'};
+    trim = lifuren::strings::trim(value4);
+    assert(std::strcmp("1234", trim) == 0);
 }
 
 static void testLength() {
@@ -53,7 +68,8 @@ int main() {
     lifuren::logger::init();
     SPDLOG_DEBUG("测试");
     testLowerUpper();
-    testTrim();
+    testStringTrim();
+    testConstCharTrim();
     testLength();
     testSubstr();
     testReplace();

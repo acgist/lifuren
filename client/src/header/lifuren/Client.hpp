@@ -160,6 +160,10 @@ public:
  */
 class ChatClient : public Client {
 
+protected:
+    // TODO: 历史记录
+    // std::list
+
 public:
     /**
      * 正常聊天
@@ -175,7 +179,7 @@ public:
      * @param prompt   提示词
      * @param callback 回调函数
      */
-    virtual void chat(const std::string& prompt, std::function<bool(const char*, size_t)> callback) = 0;
+    virtual void chat(const std::string& prompt, std::function<bool(const char*, size_t, bool)> callback) = 0;
 
 };
 
@@ -185,9 +189,18 @@ public:
 class RestChatClient : public ChatClient {
 
 public:
+    // REST终端
+    std::unique_ptr<lifuren::RestClient> restClient{ nullptr };
     // 配置
-    lifuren::RestChatOptions options;
-    
+    lifuren::RestChatOptions options{};
+
+public:
+    RestChatClient(lifuren::RestChatOptions options);
+    ~RestChatClient();
+
+public:
+    std::string chat(const std::string& prompt) override;
+    void chat(const std::string& prompt, std::function<bool(const char*, size_t, bool)> callback) override;
 
 };
 

@@ -39,6 +39,13 @@ extern void toUpper(std::string& value);
 extern std::string trim(const std::string& value);
 
 /**
+ * @param value 字符串
+ * 
+ * @return 去掉空格后的字符串
+ */
+extern char* trim(char* value);
+
+/**
  * @param value UTF8字符串
  * 
  * @return 字符串长度

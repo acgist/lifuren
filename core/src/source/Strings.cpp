@@ -31,6 +31,26 @@ std::string lifuren::strings::trim(const std::string& value) {
     return value.substr(index, jndex + 1 - index);
 }
 
+char* lifuren::strings::trim(char* value) {
+    const int size = std::strlen(value);
+    char* index = value;
+    char* jndex = value + size - 1;
+    int length = size;
+    while(index >= value && std::strchr(EMPTY_CHARS, *index)) {
+        ++index;
+        --length;
+    }
+    while(*jndex != '\0' && std::strchr(EMPTY_CHARS, *jndex)) {
+        *jndex = '\0';
+        --jndex;
+        --length;
+    }
+    if(index <= jndex) {
+        std::memmove(value, index, length + 1);
+    }
+    return value;
+}
+
 size_t lifuren::strings::length(const char* value) {
     size_t index = 0;
     size_t jndex = 0;

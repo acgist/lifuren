@@ -395,6 +395,7 @@ public:
 class ChatWindow : public ModelWindow {
 
 public:
+    // 聊天终端
     ChatClient* clientPtr{ nullptr };
 
 public:

@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "lifuren/config/Config.hpp"
+
 namespace lifuren {
 
 struct RestOptions {
@@ -43,6 +45,12 @@ struct RestChatOptions : public RestOptions, public ChatOptions {
 
     // 聊天地址
     std::string path;
+
+    void of(const lifuren::config::OllamaConfig& config) {
+        this->api   = config.api;
+        this->path  = config.chatClient.path;
+        this->model = config.chatClient.model;
+    }
 
 };
 

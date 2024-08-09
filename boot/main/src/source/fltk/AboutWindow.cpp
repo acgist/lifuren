@@ -17,22 +17,22 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : Wi
 lifuren::AboutWindow::~AboutWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     LFR_DELETE_PTR(homePagePtr);
-    // 注意顺序：display->buffer
     LFR_DELETE_PTR(aboutDisplayPtr);
     LFR_DELETE_PTR(aboutBufferPtr);
 }
 
 void lifuren::AboutWindow::drawElement() {
-    aboutDisplayPtr = new Fl_Text_Display(10, 30, this->w() - 20, this->h() - 90, "关于");
-    aboutDisplayPtr->wrap_mode(aboutDisplayPtr->WRAP_AT_COLUMN, aboutDisplayPtr->textfont());
-    aboutDisplayPtr->color(FL_BACKGROUND_COLOR);
     // 内容
-    aboutBufferPtr = new Fl_Text_Buffer();
+    aboutDisplayPtr = new Fl_Text_Display(10, 30, this->w() - 20, this->h() - 90, "关于");
+    aboutBufferPtr  = new Fl_Text_Buffer();
+    aboutDisplayPtr->color(FL_BACKGROUND_COLOR);
+    aboutDisplayPtr->buffer(aboutBufferPtr);
+    aboutDisplayPtr->wrap_mode(aboutDisplayPtr->WRAP_AT_COLUMN, aboutDisplayPtr->textfont());
     aboutBufferPtr->text("李夫人，这是一个研究生成网络、机器视觉、自然语言处理的程序。\n");
     aboutBufferPtr->append("Gitee：https://gitee.com/acgist/lifuren\n");
     aboutBufferPtr->append("Github：https://github.com/acgist/lifuren\n");
     aboutBufferPtr->append("作者：碧螺萧萧（acgist）");
-    aboutDisplayPtr->buffer(aboutBufferPtr);
+    aboutDisplayPtr->end();
     // 主页
     homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
     homePagePtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {

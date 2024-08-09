@@ -13,11 +13,12 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
+#include <exception>
 #include <condition_variable>
 
-#include "lifuren/Logger.hpp"
-
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Logger.hpp"
 
 static std::mutex mutex;
 static std::atomic<int> count(0);
@@ -61,6 +62,9 @@ static void launch() {
 }
 
 int main(const int argc, const char * const argv[]) {
+    std::set_terminate([]() {
+        std::exit(-9999);
+    });
     lifuren::logger::init();
     SPDLOG_DEBUG("启动系统");
     launch();
