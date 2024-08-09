@@ -8,8 +8,6 @@
 
 #include <string>
 #include <vector>
-#include <cstdint>
-#include <algorithm>
 
 namespace lifuren {
 namespace strings {

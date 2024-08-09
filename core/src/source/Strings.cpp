@@ -1,6 +1,9 @@
 #include "lifuren/Strings.hpp"
 
 #include <cctype>
+#include <cstdint>
+#include <cstring>
+#include <algorithm>
 
 void lifuren::strings::toLower(std::string& value) {
     #if _WIN32
