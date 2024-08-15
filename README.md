@@ -41,7 +41,3 @@
 * [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
 * [功能文档](./docs/TODO.md)
-
-## 下载
-
-* https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1

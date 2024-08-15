@@ -232,7 +232,7 @@ class CWVEmbeddingClient : public EmbeddingClient {
 
 };
 
-class OllamaEmbeddingClient {
+class OllamaEmbeddingClient : public EmbeddingClient {
 };
 
 /**

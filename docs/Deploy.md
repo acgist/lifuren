@@ -146,3 +146,7 @@ cmake --install .
 ## 线上部署
 
 一般来说如果租用线上`GPU`服务器非常贵，所以建议应用服务放到线上，`AI`相关服务本地部署使用`frp`/`autossh`内网穿透软件为线上应用提供服务。
+
+## 更多下载
+
+* https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1

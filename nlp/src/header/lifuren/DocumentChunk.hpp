@@ -77,18 +77,22 @@ public:
 class ChunkService {
 
 public:
-    // 文档读取
-    std::unique_ptr<lifuren::DocumentReader> documentReader{ nullptr };
     // 分段策略
     std::unique_ptr<lifuren::ChunkStrategy> chunkStrategy{ nullptr };
+
+public:
+    ChunkService(const std::string& chunkType);
+    ~ChunkService();
 
 public:
     /**
      * 执行分段
      * 
+     * @param path 文件路径
+     * 
      * @return 分段内容
      */
-    std::list<std::string> chunk();
+    std::list<std::string> chunk(const std::string& path);
 
 };
 

@@ -15,6 +15,7 @@ static Fl_Button* newPtr     { nullptr };
 static Fl_Button* deletePtr  { nullptr };
 static Fl_Choice* ragPtr     { nullptr };
 static Fl_Button* markPtr    { nullptr };
+static Fl_Button* stopPtr    { nullptr };
 static Fl_Choice* chunkPtr   { nullptr };
 static Fl_Input*  apiPtr     { nullptr };
 static Fl_Input*  usernamePtr{ nullptr };
@@ -27,6 +28,8 @@ static Fl_Input*  embeddingModelPtr{ nullptr };
 static void newCallback(Fl_Widget*, void*);
 static void deleteCallback(Fl_Widget*, void*);
 static void pathCallback(Fl_Widget*, void*);
+static void markCallback(Fl_Widget*, void*);
+static void stopCallback(Fl_Widget*, void*);
 static bool reloadConfig(lifuren::DocumentMarkWindow*, const std::string&);
 
 lifuren::DocumentMarkWindow::DocumentMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
@@ -39,6 +42,7 @@ lifuren::DocumentMarkWindow::~DocumentMarkWindow() {
     LFR_DELETE_PTR(newPtr);
     LFR_DELETE_PTR(ragPtr);
     LFR_DELETE_PTR(markPtr);
+    LFR_DELETE_PTR(stopPtr);
     LFR_DELETE_PTR(chunkPtr);
     LFR_DELETE_PTR(apiPtr);
     LFR_DELETE_PTR(usernamePtr);
@@ -105,6 +109,7 @@ void lifuren::DocumentMarkWindow::drawElement() {
     embeddingPathPtr  = new Fl_Input(110,  330, this->w() - 200, 30, "词嵌入地址");
     embeddingModelPtr = new Fl_Input(110,  370, this->w() - 200, 30, "词嵌入模型");
     markPtr           = new Fl_Button(110, 410, 100,             30, "开始标记");
+    stopPtr           = new Fl_Button(210, 410, 100,             30, "停止标记");
     // 事件
     // 文件目录
     const auto& documentMark = lifuren::config::CONFIG.documentMark;
@@ -137,6 +142,10 @@ void lifuren::DocumentMarkWindow::drawElement() {
     authTypePtr->add("NONE");
     authTypePtr->add("Basic");
     authTypePtr->add("Token");
+    // 开始标记
+    markPtr->callback(markCallback, this);
+    // 停止标记
+    stopPtr->callback(stopCallback, this);
 }
 
 static void newCallback(Fl_Widget*, void* voidPtr) {
@@ -197,4 +206,10 @@ static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::stri
     }
     windowPtr->redrawConfigElement();
     return newPath;
+}
+
+static void markCallback(Fl_Widget*, void* voidPtr) {
+}
+
+static void stopCallback(Fl_Widget*, void* voidPtr) {
 }

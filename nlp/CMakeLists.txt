@@ -11,7 +11,11 @@ add_library(
     src/source/reader/MarkdownReader.cpp
     src/source/chunk/ChunkStrategy.cpp
     src/source/chunk/LineChunkStrategy.cpp
-    src/source/rag/Neo4jRAGClient.cpp
+    src/source/rag/RAGClient.cpp
+    src/source/rag/RAGService.cpp
+    src/source/rag/RAGTaskRunner.cpp
+    src/source/rag/ElasticSearchRAGClient.cpp
+    src/source/rag/EmbeddingService.cpp
 )
 
 target_link_libraries(
