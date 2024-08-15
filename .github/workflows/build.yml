@@ -1,0 +1,96 @@
+name: build
+on:
+  push:
+    branches: [ master ]
+jobs:
+  lifuren:
+    name: Build lifuren
+    # https://docs.github.com/zh/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Checkout deps
+        run: |
+          git submodule update --init --recursive
+          cd ./deps
+          ################################ fltk
+          sudo apt  install libfltk1.3-dev -y
+          apt-cache madison libfltk1.3-dev
+          ################################ json
+          cd ./json
+          git switch -c v3.11.2
+          cd ../
+          ################################ cmake
+          sudo apt  install cmake -y
+          apt-cache madison cmake
+          ################################ podofo
+          # sudo apt  install libpodofo-dev -y
+          # apt-cache madison libpodofo-dev
+          sudo apt  install libxml2-dev     -y
+          apt-cache madison libxml2-dev
+          sudo apt  install libfreetype-dev -y
+          apt-cache madison libfreetype-dev
+          git clone https://github.com/podofo/podofo.git
+          cd podofo
+          git switch -c 0.10.2
+          mkdir build ; cd $_
+          cmake .. -DPODOFO_BUILD_LIB_ONLY=ON
+          make -j 8
+          sudo make install
+          cd ../../
+          ################################ spdlog
+          # sudo apt  install libspdlog-dev -y
+          # apt-cache madison libspdlog-dev
+          git clone https://github.com/fmtlib/fmt.git
+          cd fmt
+          git switch -c 10.2.0
+          mkdir build ; cd $_
+          cmake .. -DFMT_TEST=OFF
+          make -j 8
+          sudo make install
+          cd ../../
+          git clone https://github.com/gabime/spdlog.git
+          cd spdlog
+          git switch -c v1.12.0
+          mkdir build ; cd $_
+          cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF
+          make -j 8
+          sudo make install
+          cd ../../
+          ################################ opencv
+          sudo apt  install libopencv-dev -y
+          apt-cache madison libopencv-dev
+          ################################ libtorch
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.1%2Bcpu.zip
+          unzip libtorch-cxx11-abi-shared-with-deps-2.2.1+cpu.zip
+          ################################ yaml-cpp
+          sudo apt  install libyaml-cpp-dev -y
+          apt-cache madison libyaml-cpp-dev
+          ################################ minidocx
+          cd ./minidocx
+          git switch -c v0.5.0
+          cd ../
+          ################################ cpp-httplib
+          # sudo apt  install libcpp-httplib-dev -y
+          # apt-cache madison libcpp-httplib-dev
+          git clone https://github.com/yhirose/cpp-httplib.git
+          cd cpp-httplib
+          git switch -c v0.16.2
+          mkdir build ; cd $_
+          cmake ..
+          make -j 8
+          sudo make install
+          cd ../../
+      - name: Deploy lifuren
+        run: |
+          pwd
+          gcc -v
+          g++ -v
+          cmake -version
+          mkdir build ; cd $_
+          cmake ..
+          make -j
+          ls -lh debug/bin
+          sudo make install
+          make clean

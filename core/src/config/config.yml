@@ -1,0 +1,63 @@
+# REST监听地址
+http-server-host: 0.0.0.0
+# REST监听端口
+http-server-port: 8080
+################ 聊天页面 ################
+# 聊天页面配置
+chat:
+  client: ollama
+  clients:
+    - ollama
+    - openai
+################ 图片页面 ################
+image:
+  client: stable-diffusion-cpp
+  clients:
+    - stable-diffusion-cpp
+################ 诗词页面 ################
+################ 标记页面 ################
+# 图片标记页面配置
+image-mark:
+# 诗词标记页面配置
+poetry-mark:
+# 文档标记页面配置
+document-mark:
+  # - rag: elasticsearch
+  #   path: /data/document
+  #   chunk: TITLE
+  #   embedding: ollama
+################ 语言模型 ################
+# OpenAI配置
+openai:
+  api:
+  username:
+  password:
+  auth-type: NONE
+  chat:
+    path: /v1/completions
+    # path: /v1/chat/completions
+  embedding:
+    path: /v1/embeddings
+# Ollama配置
+# https://github.com/ollama/ollama/blob/main/docs/api.md
+ollama:
+  api: http://localhost:11434
+  username: 
+  password: 
+  auth-type: NONE
+  chat:
+    path: /api/chat
+    model: glm4
+    # path: /api/generate
+    top-p: 
+    top-k:
+    temperature: 
+    options: {}
+  embedding:
+    path: /api/embed
+    model: quentinz/bge-large-zh-v1.5
+    options: {}
+################ 图片模型 ################
+# SD配置
+stable-diffusion-cpp:
+################ 诗词模型 ################

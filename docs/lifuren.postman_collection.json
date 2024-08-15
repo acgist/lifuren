@@ -1,0 +1,69 @@
+{
+	"info": {
+		"_postman_id": "fa05364c-5508-4a31-8d2a-a0e7d89d5246",
+		"name": "lifuren",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "3067433"
+	},
+	"item": [
+		{
+			"name": "chat",
+			"item": [
+				{
+					"name": "PostChat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prompt\": \"你好，李夫人！\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/chat"
+					},
+					"response": []
+				},
+				{
+					"name": "PostChatStream",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prompt\": \"你好，李夫人！\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/chat/stream"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetIndex",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080"
+			},
+			"response": []
+		},
+		{
+			"name": "GetShutdown",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/shutdown"
+			},
+			"response": []
+		}
+	]
+}
