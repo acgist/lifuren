@@ -21,6 +21,7 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
             }
             this->saveIndex();
             this->finish = true;
+            this->doneFileCount = this->fileCount;
         } catch(const std::exception& e) {
             SPDLOG_ERROR("执行RAG任务异常：{} - {}", this->task.path, e.what());
         } catch(...) {
@@ -96,6 +97,9 @@ bool lifuren::RAGTaskRunner::execute() {
     this->fileCount = list.size();
     SPDLOG_DEBUG("RAG任务文件总量：{}", this->fileCount);
     for(auto& path : list) {
+        if(this->stop) {
+            break;
+        }
         if(this->doneFile.contains(path)) {
             SPDLOG_DEBUG("RAG任务跳过已经处理过的任务：{}", path);
             continue;
@@ -120,7 +124,7 @@ bool lifuren::RAGTaskRunner::execute() {
 
 float lifuren::RAGTaskRunner::percent() {
     if(this->fileCount <= 0) {
-        return 1.0F;
+        return 0.0F;
     }
     return static_cast<float>(this->doneFileCount) / this->fileCount;
 }

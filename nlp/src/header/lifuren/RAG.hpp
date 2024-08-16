@@ -173,12 +173,14 @@ public:
     virtual ~RAGTaskRunner();
 
 private:
+    // 加载索引
     void initIndex();
+    // 保存索引
     void saveIndex();
-
-public:
     // 执行任务
     bool execute();
+
+public:
     // 任务进度
     float percent();
 
@@ -198,11 +200,15 @@ private:
     RAGService();
 
 public:
+    RAGService(RAGService& ) = delete;
+    RAGService(RAGService&&) = delete;
+    RAGService operator=(RAGService& ) = delete;
+    RAGService operator=(RAGService&&) = delete;
     ~RAGService();
 
 private:
     // RAG任务列表
-    std::map<std::string, RAGTaskRunner> tasks;
+    std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks;
 
 public:
     /**
@@ -212,7 +218,7 @@ public:
      * 
      * @return 是否成功
      */
-    bool buildRAGTask(RAGTask task);
+    std::shared_ptr<RAGTaskRunner> buildRAGTask(RAGTask task);
     /**
      * 结束任务
      * 
@@ -222,9 +228,17 @@ public:
      */
     bool stopRAGTask(const std::string& path);
     /**
+     * 删除任务
+     * 
+     * @param path 任务路径
+     * 
+     * @return 是否成功
+     */
+    bool deleteRAGTask(const std::string& path);
+    /**
      * @return 当前任务总量（执行中和待执行的总量）
      */
-    int taskCount();
+    size_t taskCount();
     /**
      * @param path 任务路径
      * 

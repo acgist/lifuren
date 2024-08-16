@@ -15,6 +15,9 @@ wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2024.06-1-L
 # 安装
 sh Anaconda3-2024.06-1-Linux-x86_64.sh
 
+# 升级
+sh Anaconda3-2024.06-1-Linux-x86_64.sh -u
+
 # 配置安装目录
 # /data/conda/anaconda3
 

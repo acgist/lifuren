@@ -41,3 +41,5 @@ https://download.pytorch.org/libtorch/cu118/libtorch-win-shared-with-deps-debug-
 ```
 
 ## 注意事项
+
+* https://download.pytorch.org/whl/torch_stable.html

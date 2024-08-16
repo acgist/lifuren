@@ -6,28 +6,22 @@
 # 目录
 mkdir -p /data/nvidia ; cd $_
 
-# cuda
-sudo apt install nvidia-cuda-toolkit
+# 驱动
+sudo apt install nvidia-driver-560
 
-# 环境
-
-# 下载
-
-# 安装
-
-# 配置
-
-# 环境变量
+# CUDA
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt update
+sudo apt -y install cuda-toolkit-12-6
 
 # 验证
-
-# 退出
+nvcc -V
 ```
 
 ## 常用功能
 
 ```
-nvcc
 nvidia-smi
 ```
 

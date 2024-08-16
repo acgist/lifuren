@@ -27,6 +27,6 @@ mkdir -p /data ; cd $_
 
 ## 相关链接
 
-https://github.com/acgist/lifuren
+* https://github.com/acgist/lifuren
 
 ## 注意事项
