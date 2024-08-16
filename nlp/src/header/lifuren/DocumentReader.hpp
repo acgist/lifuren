@@ -19,7 +19,7 @@
 namespace lifuren {
 
 /**
- * 文档读取
+ * 文档阅读器
  */
 class DocumentReader {
 
@@ -64,6 +64,12 @@ public:
      * @return 是否成功
      */
     virtual bool reset() = 0;
+    /**
+     * @param path 文件路径
+     * 
+     * @return 文档阅读器
+     */
+    static std::unique_ptr<lifuren::DocumentReader> getReader(const std::string& path);
 
 };
 

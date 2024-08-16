@@ -76,6 +76,27 @@ extern std::string loadFile(const std::string& path);
  */
 extern bool saveFile(const std::string& path, const std::string& value);
 
+/**
+ * @param path 文件路径
+ * 
+ * @return 是否成功
+ */
+extern bool createParent(const std::string& path);
+
+/**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+extern bool createFolder(const std::string& path);
+
+/**
+ * @param path 文件路径
+ * 
+ * @return 文件后缀
+ */
+extern std::string fileType(const std::string& path);
+
 }
 }
 

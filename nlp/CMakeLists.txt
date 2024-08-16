@@ -9,6 +9,7 @@ add_library(
     src/source/reader/WordReader.cpp
     src/source/reader/TextReader.cpp
     src/source/reader/MarkdownReader.cpp
+    src/source/chunk/ChunkService.cpp
     src/source/chunk/ChunkStrategy.cpp
     src/source/chunk/LineChunkStrategy.cpp
     src/source/rag/RAGClient.cpp

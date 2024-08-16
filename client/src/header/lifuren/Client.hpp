@@ -76,6 +76,24 @@ public:
     /**
      * 授权
      * 
+     * @param config 配置
+     * 
+     * @return 是否成功
+     */
+    bool auth(const lifuren::config::RestConfig& config);
+
+    /**
+     * 授权
+     * 
+     * @param options 配置
+     * 
+     * @return 是否成功
+     */
+    bool auth(const lifuren::options::RestOptions& options);
+
+    /**
+     * 授权
+     * 
      * @param authType 授权方式
      * @param username 账号
      * @param password 密码
@@ -91,7 +109,26 @@ public:
      * 
      * @return 响应内容
      */
+    httplib::Result head(const std::string& path, const httplib::Headers& headers = {});
+
+    /**
+     * @param path    请求地址
+     * @param headers 请求头部
+     * 
+     * @return 响应内容
+     */
     httplib::Result get(const std::string& path, const httplib::Headers& headers = {}) const;
+
+    /**
+     * 数据请求
+     * 
+     * @param path    请求地址
+     * @param data    请求数据
+     * @param headers 请求头部
+     * 
+     * @return 响应内容
+     */
+    httplib::Result putJson(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
 
     /**
      * 数据请求
@@ -137,6 +174,16 @@ public:
      * @return 是否成功
      */
     bool postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const httplib::Headers& headers = {}) const;
+
+    /**
+     * 删除请求
+     * 
+     * @param path    请求地址
+     * @param headers 请求头部
+     * 
+     * @return 响应内容
+     */
+    httplib::Result deletePath(const std::string& path, const httplib::Headers& headers = {});
 
 };
 

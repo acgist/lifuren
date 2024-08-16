@@ -11,6 +11,11 @@ namespace lifuren {
  */
 extern void loadConfig() noexcept;
 
+/**
+ * @return ID(yyyyMMddHHmmssxxxx)
+ */
+extern size_t uuid() noexcept;
+
 }
 
 #endif // LFR_HEADER_CORE_LIFUREN_HPP

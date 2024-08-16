@@ -47,6 +47,13 @@ target_link_libraries(
     lifurencore
 )
 
+add_executable(testLifuren TestLifuren.cpp)
+add_test(NAME testLifuren COMMAND testLifuren)
+target_link_libraries(
+    testLifuren
+    lifurencore
+)
+
 add_executable(testException TestException.cpp)
 add_test(NAME testException COMMAND testException)
 target_link_libraries(

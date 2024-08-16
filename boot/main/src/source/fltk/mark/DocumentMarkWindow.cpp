@@ -133,7 +133,6 @@ void lifuren::DocumentMarkWindow::drawElement() {
     ragPtr->add("ElasticSearch");
     // 分段策略
     chunkPtr->add("LINE");
-    chunkPtr->add("MULTI_LINE");
     chunkPtr->add("TITLE");
     // 词嵌入策略
     embeddingPtr->add("ollama");

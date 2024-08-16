@@ -1,7 +1,14 @@
-add_executable(testChunkStrategy TestChunkStrategy.cpp)
-add_test(NAME testChunkStrategy COMMAND testChunkStrategy)
+add_executable(testRAG TestRAG.cpp)
+add_test(NAME testRAG COMMAND testRAG)
 target_link_libraries(
-    testChunkStrategy
+    testRAG
+    lifurennlp
+)
+
+add_executable(testDocumentChunk TestDocumentChunk.cpp)
+add_test(NAME testDocumentChunk COMMAND testDocumentChunk)
+target_link_libraries(
+    testDocumentChunk
     lifurennlp
 )
 

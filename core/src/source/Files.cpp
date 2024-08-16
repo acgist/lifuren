@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
@@ -46,6 +47,7 @@ std::string lifuren::files::loadFile(const std::string& path) {
 }
 
 bool lifuren::files::saveFile(const std::string& path, const std::string& value) {
+    createParent(path);
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
@@ -56,4 +58,28 @@ bool lifuren::files::saveFile(const std::string& path, const std::string& value)
     output << value;
     output.close();
     return true;
+}
+
+bool lifuren::files::createParent(const std::string& path) {
+    std::filesystem::path file(path);
+    auto parent = file.parent_path();
+    return lifuren::files::createFolder(parent.string());
+}
+
+bool lifuren::files::createFolder(const std::string& path) {
+    std::filesystem::path file(path);
+    if(std::filesystem::exists(file)) {
+        return true;
+    } else {
+        return std::filesystem::create_directories(file);
+    }
+}
+
+std::string lifuren::files::fileType(const std::string& path) {
+     std::filesystem::path filePath{ path };
+     std::string extension = filePath.extension().string();
+     if(extension.at(0) == '.') {
+        return extension.substr(1);
+     }
+     return extension;
 }

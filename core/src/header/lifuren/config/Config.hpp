@@ -28,6 +28,7 @@ extern const std::string CONFIG_POETRY_MARK;
 extern const std::string CONFIG_DOCUMENT_MARK;
 extern const std::string CONFIG_OPENAI;
 extern const std::string CONFIG_OLLAMA;
+extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_HTTP_SERVER_HOST;
 extern const std::string CONFIG_HTTP_SERVER_PORT;
 
@@ -76,6 +77,8 @@ enum class Regularization {
  */
 struct ChatConfig {
 
+    // RAG文档资料数量
+    int ragSize = 1;
     // 终端名称
     std::string client;
     // 终端列表
@@ -110,6 +113,8 @@ struct RestConfig {
     std::string password;
     // 授权方式
     std::string authType;
+    // 授权地址
+    std::string authPath;
 
 };
 
@@ -230,6 +235,16 @@ struct DocumentMarkConfig : public MarkConfig {
 };
 
 /**
+ * ElasticSearch配置
+ */
+struct ElasticSearchConfig : public RestConfig {
+
+    // 词嵌入类型
+    std::string embedding;
+
+};
+
+/**
  * 通用设置
  */
 class Config {
@@ -243,6 +258,7 @@ public:
     std::list<lifuren::config::ImageMarkConfig>    imageMark   {};
     std::list<lifuren::config::PoetryMarkConfig>   poetryMark  {};
     std::list<lifuren::config::DocumentMarkConfig> documentMark{};
+    lifuren::config::ElasticSearchConfig elasticsearch{};
 
 public:
     Config();

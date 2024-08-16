@@ -58,6 +58,30 @@ lifuren::RestClient::RestClient(const std::string& baseUrl, bool trustAllCert, c
 lifuren::RestClient::~RestClient() {
 }
 
+bool lifuren::RestClient::auth(const lifuren::config::RestConfig& config) {
+    lifuren::RestClient::AuthType authType = lifuren::RestClient::AuthType::NONE;
+    if(config.authType == "Basic") {
+        authType = lifuren::RestClient::AuthType::BASIC;
+    } else if(config.authType == "Token") {
+        authType = lifuren::RestClient::AuthType::TOKEN;
+    } else {
+
+    }
+    return this->auth(authType, config.username, config.password, config.authPath);
+}
+
+bool lifuren::RestClient::auth(const lifuren::options::RestOptions& options) {
+    lifuren::RestClient::AuthType authType = lifuren::RestClient::AuthType::NONE;
+    if(options.authType == "Basic") {
+        authType = lifuren::RestClient::AuthType::BASIC;
+    } else if(options.authType == "Token") {
+        authType = lifuren::RestClient::AuthType::TOKEN;
+    } else {
+
+    }
+    return this->auth(authType, options.username, options.password, options.authPath);
+}
+
 bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, const std::string& username, const std::string& password, const std::string& path) {
     this->authType = authType;
     this->username = username;
@@ -72,12 +96,27 @@ bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, co
         if(this->token.empty()) {
             return false;
         }
+        this->client->set_default_headers({
+            { "Authorization", "Bearer " + this->token }
+        });
     }
     return true;
 }
 
+httplib::Result lifuren::RestClient::head(const std::string& path, const httplib::Headers& headers) {
+    auto response = this->client->Head(path, headers);
+    checkResponse(response);
+    return response;
+}
+
 httplib::Result lifuren::RestClient::get(const std::string& path, const httplib::Headers& headers) const {
     auto response = this->client->Get(path, headers);
+    checkResponse(response);
+    return response;
+}
+
+httplib::Result lifuren::RestClient::putJson(const std::string& path, const std::string& data, const httplib::Headers& headers) const {
+    auto response = this->client->Put(path, headers, data, "application/json");
     checkResponse(response);
     return response;
 }
@@ -115,6 +154,12 @@ bool lifuren::RestClient::postStream(const std::string& path, const std::string&
     return response;
 }
 
+httplib::Result lifuren::RestClient::deletePath(const std::string& path, const httplib::Headers& headers) {
+    auto response = this->client->Delete(path, headers);
+    checkResponse(response);
+    return response;
+}
+
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password) {
     auto response = client.post(path, {
         { "username", username },
@@ -128,7 +173,10 @@ static std::string oauthToken(const lifuren::RestClient& client, const std::stri
 
 static bool checkResponse(const httplib::Result& response) {
     if(response) {
-        if(response->status != httplib::StatusCode::OK_200) {
+        if(
+            response->status != httplib::StatusCode::OK_200 &&
+            response->status != httplib::StatusCode::Created_201
+        ) {
             SPDLOG_DEBUG("RestClient响应失败：{} - {}", response->status, response->body);
         } else {
             return true;

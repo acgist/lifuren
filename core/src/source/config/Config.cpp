@@ -61,6 +61,7 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 const std::string lifuren::config::CONFIG_CHAT             = "chat";
 const std::string lifuren::config::CONFIG_OPENAI           = "openai";
 const std::string lifuren::config::CONFIG_OLLAMA           = "ollama";
+const std::string lifuren::config::CONFIG_ELASTICSEARCH    = "elasticsearch";
 const std::string lifuren::config::CONFIG_IMAGE_MARK       = "image-mark";
 const std::string lifuren::config::CONFIG_POETRY_MARK      = "poetry-mark";
 const std::string lifuren::config::CONFIG_DOCUMENT_MARK    = "document-mark";
@@ -84,7 +85,8 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
     } else if(name == CONFIG_HTTP_SERVER_PORT) {
         lifuren::config::httpServerPort = yaml.as<int>();
     } else if(CONFIG_CHAT == name) {
-        LFR_CONFIG_YAML_GETTER(this->chat, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(this->chat, yaml, client,   client,  std::string);
+        LFR_CONFIG_YAML_GETTER(this->chat, yaml, rag-size, ragSize, int);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [this](const auto& client) {
@@ -129,6 +131,12 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
             LFR_CONFIG_YAML_GETTER(config, value, embedding, embedding, std::string);
             this->documentMark.push_back(config);
         });
+    } else if(CONFIG_ELASTICSEARCH == name) {
+        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, username,  username, std::string);
+        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, password,  password, std::string);
+        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, auth-type, authType, std::string);
+        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, embedding, embedding, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -142,7 +150,8 @@ YAML::Node lifuren::config::Config::toYaml() {
     }
     {
         YAML::Node chat;
-        LFR_CONFIG_YAML_SETTER(chat, this->chat, client, client);
+        LFR_CONFIG_YAML_SETTER(chat, this->chat, client,  client);
+        LFR_CONFIG_YAML_SETTER(chat, this->chat, ragSize, rag-size);
         YAML::Node clients;
         std::for_each(this->chat.clients.begin(), this->chat.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -184,6 +193,15 @@ YAML::Node lifuren::config::Config::toYaml() {
             documentMark.push_back(mark);
         }
         yaml[CONFIG_DOCUMENT_MARK] = documentMark;
+    }
+    {
+        YAML::Node elasticsearch;
+        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, api,       api);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, username,  username);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, password,  password);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, authType,  auth-type);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, embedding, embedding);
+        yaml[CONFIG_ELASTICSEARCH] = elasticsearch;
     }
     return yaml;
 }

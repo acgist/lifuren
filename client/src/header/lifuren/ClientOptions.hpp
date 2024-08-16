@@ -52,6 +52,8 @@ struct RestOptions {
     std::string password;
     // 授权类型
     std::string authType;
+    // 授权地址
+    std::string authPath;
 
 };
 

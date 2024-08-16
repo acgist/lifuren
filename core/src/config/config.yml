@@ -5,6 +5,7 @@ http-server-port: 8080
 ################ 聊天页面 ################
 # 聊天页面配置
 chat:
+  rag-size: 4
   client: ollama
   clients:
     - ollama
@@ -24,7 +25,7 @@ poetry-mark:
 document-mark:
   # - rag: elasticsearch
   #   path: /data/document
-  #   chunk: TITLE
+  #   chunk: LINE
   #   embedding: ollama
 ################ 语言模型 ################
 # OpenAI配置
@@ -32,6 +33,7 @@ openai:
   api:
   username:
   password:
+  # NONE|Basic|Token
   auth-type: NONE
   chat:
     path: /v1/completions
@@ -44,6 +46,7 @@ ollama:
   api: http://localhost:11434
   username: 
   password: 
+  # NONE|Basic|Token
   auth-type: NONE
   chat:
     path: /api/chat
@@ -61,3 +64,13 @@ ollama:
 # SD配置
 stable-diffusion-cpp:
 ################ 诗词模型 ################
+################ 服务配置 ################
+elasticsearch:
+  api: http://192.168.8.183:9200
+  username: elastic
+  password: elastic
+  # NONE|Basic|Token
+  auth-type: Basic
+  # RAG|TEXT
+  embedding: TEXT
+  

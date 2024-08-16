@@ -18,8 +18,6 @@ enum class ChunkType {
 
     // 按行分段
     LINE,
-    // 多行分段
-    MULTI_LINE,
     // 标题分段
     TITLE,
 
@@ -54,6 +52,12 @@ public:
      * @return 分段内容
      */
     virtual std::list<std::string> chunk(const std::string& content, bool last = false) = 0;
+    /**
+     * @param chunkType 分段类型
+     * 
+     * @return 分段策略
+     */
+    static std::unique_ptr<lifuren::ChunkStrategy> getChunkStrategy(const std::string& chunkType);
 
 };
 
