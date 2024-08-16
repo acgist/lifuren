@@ -171,6 +171,7 @@
 * https://github.com/xtekky/gpt4free
 * https://github.com/salesforce/BLIP
 * https://github.com/reworkd/AgentGPT
+* https://github.com/opendatalab/MinerU
 * https://github.com/TencentARC/PhotoMaker
 * https://github.com/Akegarasu/lora-scripts
 * https://github.com/langchain-ai/langchain
@@ -244,7 +245,12 @@ ADMA + L2
 ###### L2
 
 #### 丢弃法（Dropout）
-#### BatchNorm
+#### 批量归一化（Batch Normalization）
+
+#### 特征归一化（feature normalization）
+
+* Z值归一化（Z-score normalization）也叫标准化（standardization）
+
 #### 学习率（learning rate）
 #### 超参数（hyperparameter）
 

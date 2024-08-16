@@ -1,6 +1,8 @@
 /**
  * 文档分段
  * 
+ * TODO:
+ * 1. 添加智能分段：通过词频和稀疏度
  */
 #ifndef LIFUREN_HEADER_NLP_DOCUMENT_CHUNK_HPP
 #define LIFUREN_HEADER_NLP_DOCUMENT_CHUNK_HPP

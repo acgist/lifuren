@@ -9,11 +9,6 @@
 #include "lifuren/config/Label.hpp"
 #include "lifuren/config/Config.hpp"
 
-static int index = 0;
-
-const static int MIN_INDEX = 0;
-const static int MAX_INDEX = 9999;
-
 static std::mutex mutex;
 
 void lifuren::loadConfig() noexcept {
@@ -44,6 +39,9 @@ void lifuren::loadConfig() noexcept {
 }
 
 size_t lifuren::uuid() noexcept {
+    static int index = 0;
+    const static int MIN_INDEX = 0;
+    const static int MAX_INDEX = 9999;
     auto timePoint = std::chrono::system_clock::now();
     auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
     auto localtime = std::localtime(&timestamp);

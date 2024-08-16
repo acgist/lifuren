@@ -4,6 +4,14 @@
  * 注意：
  * 1. PDF没有实现OCR功能
  * 2. 
+ * 
+ * 其他阅读器推荐：
+ * 1. https://github.com/opendatalab/MinerU
+ * 
+ * TODO:
+ * 1. 优化阅读性能
+ * 2. 优化阅读效果
+ * 3. PDF/Word公式支持
  */
 #ifndef LIFUREN_HEADER_NLP_DOCUMENT_READER_HPP
 #define LIFUREN_HEADER_NLP_DOCUMENT_READER_HPP

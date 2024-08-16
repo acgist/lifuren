@@ -1,6 +1,7 @@
 #include "lifuren/RAG.hpp"
 
 #include <thread>
+#include <chrono>
 
 #include "spdlog/spdlog.h"
 
@@ -14,7 +15,7 @@ static void testRAGTaskRunner() {
         "elasticsearch"
     };
     lifuren::RAGTaskRunner runner{ task };
-    std::this_thread::sleep_for(std::chrono::seconds::duration(120));
+    std::this_thread::sleep_for(std::chrono::seconds(120));
 }
 
 static void testElasticSearchRAGClient() {
