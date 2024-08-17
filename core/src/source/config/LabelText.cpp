@@ -22,7 +22,6 @@ lifuren::LabelText::LabelText(const std::string& name) : Label(name, name) {
 }
 
 std::string lifuren::LabelText::toYaml() {
-    std::stringstream stream;
     YAML::Node yaml;
     yaml["rhythmic"]       = this->rhythmic;
     yaml["example"]        = this->example;
@@ -30,6 +29,7 @@ std::string lifuren::LabelText::toYaml() {
     yaml["segmentSize"]    = this->segmentSize;
     yaml["segmentRule"]    = this->segmentRule;
     yaml["participleRule"] = this->participleRule;
+    std::stringstream stream;
     stream << yaml;
     return stream.str();
 }

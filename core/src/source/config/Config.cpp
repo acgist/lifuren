@@ -90,6 +90,13 @@ lifuren::config::Config::Config() {
 lifuren::config::Config::~Config() {
 }
 
+std::string lifuren::config::Config::toYaml() {
+    YAML::Node&& node = ::toYaml();
+    std::stringstream stream;
+    stream << node;
+    return stream.str();
+}
+
 void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
     if(name == lifuren::config::CONFIG_HTTP_SERVER_HOST) {
         lifuren::config::httpServerHost = yaml.as<std::string>();

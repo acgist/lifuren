@@ -263,6 +263,7 @@ public:
     virtual ~Config();
 
 public:
+    std::string toYaml();
     /**
      * @param T    配置泛型
      * @param name 配置名称

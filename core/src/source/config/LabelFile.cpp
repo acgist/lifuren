@@ -14,9 +14,9 @@ lifuren::LabelFile::LabelFile(const std::string& name) : Label(name, name) {
 }
 
 std::string lifuren::LabelFile::toYaml() {
-    std::stringstream stream;
     YAML::Node yaml;
     yaml.push_back(this->labels);
+    std::stringstream stream;
     stream << yaml;
     return stream.str();
 }
