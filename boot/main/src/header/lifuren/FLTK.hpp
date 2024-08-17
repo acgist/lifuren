@@ -24,6 +24,14 @@
 #include "lifuren/Client.hpp"
 #include "lifuren/config/Config.hpp"
 
+#ifndef LFR_WINDOW_DEFAULT
+#define LFR_WINDOW_DEFAULT
+#define LFR_WINDOW_WIDTH         1280
+#define LFR_WINDOW_WIDTH_CONFIG  820
+#define LFR_WINDOW_HEIGHT        800
+#define LFR_WINDOW_HEIGHT_CONFIG 820
+#endif
+
 #ifndef LFR_CHOICE_SET_DEFAULT
 #define LFR_CHOICE_SET_DEFAULT(widget, defaultValue)           \
 auto widget##Index = widget->find_index(defaultValue.c_str()); \

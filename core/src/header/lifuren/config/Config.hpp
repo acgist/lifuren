@@ -11,8 +11,6 @@
 #include <list>
 #include <string>
 
-#include "yaml-cpp/yaml.h"
-
 namespace lifuren::config {
 
 const char* const CONFIG_PATH = "../config/config.yml";
@@ -265,15 +263,6 @@ public:
     virtual ~Config();
 
 public:
-    /**
-     * @param name 配置名称
-     * @param yaml 配置内容
-     */
-    void loadYaml(const std::string& name, const YAML::Node& yaml);
-    /**
-     * @return YAML
-     */
-    YAML::Node toYaml();
     /**
      * @param T    配置泛型
      * @param name 配置名称

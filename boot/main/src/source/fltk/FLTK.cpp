@@ -23,7 +23,7 @@ static int abs(const int& source, const int& target);
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
-    lifuren::MainWindow* mainPtr = new lifuren::MainWindow(1200, 800, "李夫人");
+    lifuren::MainWindow* mainPtr = new lifuren::MainWindow(LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT, "李夫人");
     mainPtr->init();
     mainPtr->show();
     const int code = Fl::run();

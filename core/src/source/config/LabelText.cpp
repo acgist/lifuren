@@ -1,36 +1,28 @@
 #include "lifuren/config/Label.hpp"
 
 #include <cstdint>
+#include <sstream>
 
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Yamls.hpp"
+
+#ifndef LFR_LABEL_TEXT_SETTER
+#define LFR_LABEL_TEXT_SETTER(source, key, target, field, type) \
+const auto& key##Node = source[#key];                           \
+if(key##Node) {                                                 \
+    target.field = key##Node.as<type>();                        \
+}
+#endif
 
 lifuren::LabelText::LabelText() {
 }
 
-lifuren::LabelText::LabelText(const std::string& name, const YAML::Node& yaml) {
-    this->name  = name;
-    this->alias = name;
-    if(yaml["rhythmic"]) {
-        this->rhythmic = yaml["rhythmic"].as<std::string>();
-    }
-    if(yaml["example"]) {
-        this->example = yaml["example"].as<std::string>();
-    }
-    if(yaml["fontSize"]) {
-        this->fontSize = yaml["fontSize"].as<int>();
-    }
-    if(yaml["segmentSize"]) {
-        this->segmentSize = yaml["segmentSize"].as<int>();
-    }
-    if(yaml["segmentRule"]) {
-        this->segmentRule = yaml["segmentRule"].as<std::vector<uint32_t>>();
-    }
-    if(yaml["participleRule"]) {
-        this->participleRule = yaml["participleRule"].as<std::vector<uint32_t>>();
-    }
+lifuren::LabelText::LabelText(const std::string& name) : Label(name, name) {
 }
 
-YAML::Node lifuren::LabelText::toYaml() {
+std::string lifuren::LabelText::toYaml() {
+    std::stringstream stream;
     YAML::Node yaml;
     yaml["rhythmic"]       = this->rhythmic;
     yaml["example"]        = this->example;
@@ -38,7 +30,8 @@ YAML::Node lifuren::LabelText::toYaml() {
     yaml["segmentSize"]    = this->segmentSize;
     yaml["segmentRule"]    = this->segmentRule;
     yaml["participleRule"] = this->participleRule;
-    return yaml;
+    stream << yaml;
+    return stream.str();
 }
 
 std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std::string& path) {
@@ -48,19 +41,17 @@ std::map<std::string, lifuren::LabelText> lifuren::LabelText::loadFile(const std
     if(yaml.size() == 0L) {
         return map;
     }
-    for(
-        auto iterator = yaml.begin();
-        iterator != yaml.end();
-        ++iterator
-    ) {
-        std::string key = iterator->first.as<std::string>();
-        LabelText label(
-            key,
-            iterator->second
-        );
+    for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
+        const std::string key = iterator->first.as<std::string>();
+        const auto value      = iterator->second;
+        LabelText label(key);
+        LFR_LABEL_TEXT_SETTER(value, rhythmic,       label, rhythmic,       std::string);
+        LFR_LABEL_TEXT_SETTER(value, example,        label, example,        std::string);
+        LFR_LABEL_TEXT_SETTER(value, fontSize,       label, fontSize,       int);
+        LFR_LABEL_TEXT_SETTER(value, segmentSize,    label, segmentSize,    int);
+        LFR_LABEL_TEXT_SETTER(value, segmentRule,    label, segmentRule,    std::vector<uint32_t>);
+        LFR_LABEL_TEXT_SETTER(value, participleRule, label, participleRule, std::vector<uint32_t>);
         map.emplace(key, label);
     }
     return map;
-    // 没有必要使用move
-    // return std::move(map);
 }

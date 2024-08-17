@@ -116,12 +116,12 @@ void lifuren::MainWindow::drawElement() {
 }
 
 // 定义窗口
-LFR_BUTTON_CALLBACK_FUNCTION(imageMark,    ImageMarkWindow,    imageMarkWindowPtr,    1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(poetryMark,   PoetryMarkWindow,   poetryMarkWindowPtr,   1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(documentMark, DocumentMarkWindow, documentMarkWindowPtr, 1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(finetune,     FinetuneWindow,     finetuneWindowPtr,     1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(quantization, QuantizationWindow, quantizationWindowPtr, 1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(chat,         ChatWindow,         chatWindowPtr,         1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(image,        ImageWindow,        imageWindowPtr,        1200, 800);
-LFR_BUTTON_CALLBACK_FUNCTION(poetry,       PoetryWindow,       poetryWindowPtr,       1200, 800);
+LFR_BUTTON_CALLBACK_FUNCTION(imageMark,    ImageMarkWindow,    imageMarkWindowPtr,    LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(poetryMark,   PoetryMarkWindow,   poetryMarkWindowPtr,   LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(documentMark, DocumentMarkWindow, documentMarkWindowPtr, LFR_WINDOW_WIDTH_CONFIG, LFR_WINDOW_HEIGHT_CONFIG);
+LFR_BUTTON_CALLBACK_FUNCTION(finetune,     FinetuneWindow,     finetuneWindowPtr,     LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(quantization, QuantizationWindow, quantizationWindowPtr, LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(chat,         ChatWindow,         chatWindowPtr,         LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(image,        ImageWindow,        imageWindowPtr,        LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(poetry,       PoetryWindow,       poetryWindowPtr,       LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(about,        AboutWindow,        aboutWindowPtr,        512,  256);

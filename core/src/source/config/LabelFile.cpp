@@ -1,20 +1,24 @@
 #include "lifuren/config/Label.hpp"
 
+#include <sstream>
+
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Yamls.hpp"
 
 lifuren::LabelFile::LabelFile() {
 }
 
-lifuren::LabelFile::LabelFile(const std::string& name, const YAML::Node& yaml) {
-    this->name  = name;
-    this->alias = name;
-    this->labels = yaml.as<std::vector<std::string>>();
+// TODO: move
+lifuren::LabelFile::LabelFile(const std::string& name) : Label(name, name) {
 }
 
-YAML::Node lifuren::LabelFile::toYaml() {
+std::string lifuren::LabelFile::toYaml() {
+    std::stringstream stream;
     YAML::Node yaml;
     yaml.push_back(this->labels);
-    return yaml;
+    stream << yaml;
+    return stream.str();
 }
 
 std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadFile(const std::string& path) {
@@ -24,29 +28,18 @@ std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LabelFile::loadF
     if(yaml.size() == 0L) {
         return map;
     }
-    for(
-        auto iterator = yaml.begin();
-        iterator != yaml.end();
-        ++iterator
-    ) {
-        std::string key = iterator->first.as<std::string>();
-        auto& value     = iterator->second;
+    for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
+        const std::string key = iterator->first.as<std::string>();
+        const auto value      = iterator->second;
         std::vector<LabelFile> vector;
         vector.reserve(value.size());
-        for(
-            auto labelIterator = value.begin();
-            labelIterator != value.end();
-            ++labelIterator
-        ) {
-            LabelFile label(
-                labelIterator->first.as<std::string>(),
-                labelIterator->second
-            );
+        for(auto labelIterator = value.begin(); labelIterator != value.end(); ++labelIterator) {
+            LabelFile label(labelIterator->first.as<std::string>());
+            // TODO: 减少拷贝
+            label.labels = labelIterator->second.as<std::vector<std::string>>();
             vector.push_back(label);
         }
         map.emplace(key, std::move(vector));
     }
     return map;
-    // 没有必要使用move
-    // return std::move(map);
 }

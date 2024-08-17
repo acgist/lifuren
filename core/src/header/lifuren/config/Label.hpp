@@ -11,8 +11,6 @@
 #include <vector>
 #include <cstdint>
 
-#include "../Yamls.hpp"
-
 namespace lifuren {
 
 // 音频标签路径
@@ -38,6 +36,11 @@ extern std::map<std::string, LabelText> LABEL_POETRY;
 class Label {
 
 public:
+    Label();
+    Label(const std::string& name, const std::string& alias);
+    virtual ~Label();
+
+public:
     // 标签名称
     std::string name;
     // 标签别名
@@ -47,7 +50,7 @@ public:
     /**
      * @return YAML
      */
-    virtual YAML::Node toYaml() = 0;
+    virtual std::string toYaml() = 0;
 
 };
 
@@ -63,13 +66,13 @@ public:
 public:
     LabelFile();
     /**
-     * @param name 名称
-     * @param yaml YAML
+     * @param name   名称
+     * @param labels 标签数组
      */
-    LabelFile(const std::string& name, const YAML::Node& yaml);
+    LabelFile(const std::string& name);
 
 public:
-    virtual YAML::Node toYaml() override;
+    virtual std::string toYaml() override;
     /**
      * @param path 文件路径
      * 
@@ -102,12 +105,11 @@ public:
     LabelText();
     /**
      * @param name 名称
-     * @param yaml YAML
      */
-    LabelText(const std::string& name, const YAML::Node& yaml);
+    LabelText(const std::string& name);
 
 public:
-    virtual YAML::Node toYaml() override;
+    virtual std::string toYaml() override;
     /**
      * @param path 文件路径
      * 

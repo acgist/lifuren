@@ -71,6 +71,17 @@ const std::string lifuren::config::CONFIG_HTTP_SERVER_PORT = "http-server-port";
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 
+/**
+ * @param config 配置
+ * @param name   配置名称
+ * @param yaml   配置内容
+ */
+static void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml);
+/**
+ * @return YAML
+ */
+static YAML::Node toYaml();
+
 lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile();
 
 lifuren::config::Config::Config() {
@@ -79,26 +90,26 @@ lifuren::config::Config::Config() {
 lifuren::config::Config::~Config() {
 }
 
-void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node& yaml) {
-    if(name == CONFIG_HTTP_SERVER_HOST) {
+void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
+    if(name == lifuren::config::CONFIG_HTTP_SERVER_HOST) {
         lifuren::config::httpServerHost = yaml.as<std::string>();
-    } else if(name == CONFIG_HTTP_SERVER_PORT) {
+    } else if(name == lifuren::config::CONFIG_HTTP_SERVER_PORT) {
         lifuren::config::httpServerPort = yaml.as<int>();
-    } else if(CONFIG_CHAT == name) {
-        LFR_CONFIG_YAML_GETTER(this->chat, yaml, client,   client,  std::string);
-        LFR_CONFIG_YAML_GETTER(this->chat, yaml, rag-size, ragSize, int);
+    } else if(lifuren::config::CONFIG_CHAT == name) {
+        LFR_CONFIG_YAML_GETTER(config.chat, yaml, client,   client,  std::string);
+        LFR_CONFIG_YAML_GETTER(config.chat, yaml, rag-size, ragSize, int);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
-            std::for_each(clients.begin(), clients.end(), [this](const auto& client) {
-                this->chat.clients.emplace(client.template as<std::string>());
+            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
+                config.chat.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(CONFIG_OPENAI == name) {
-    } else if(CONFIG_OLLAMA == name) {
-        LFR_CONFIG_YAML_GETTER(this->ollama, yaml, api,       api,      std::string);
-        LFR_CONFIG_YAML_GETTER(this->ollama, yaml, username,  username, std::string);
-        LFR_CONFIG_YAML_GETTER(this->ollama, yaml, password,  password, std::string);
-        LFR_CONFIG_YAML_GETTER(this->ollama, yaml, auth-type, authType, std::string);
+    } else if(lifuren::config::CONFIG_OPENAI == name) {
+    } else if(lifuren::config::CONFIG_OLLAMA == name) {
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, password,  password, std::string);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, auth-type, authType, std::string);
         const YAML::Node& chatClientNode = yaml["chat"];
         if(chatClientNode) {
             lifuren::config::ChatClientConfig chatClient{};
@@ -110,7 +121,7 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
             std::map<std::string, std::string> map;
             LFR_CONFIG_YAML_MAP_GETTER(map, chatClientNode, options, options, std::string);
             chatClient.options.insert(map.begin(), map.end());
-            this->ollama.chatClient = chatClient;
+            config.ollama.chatClient = chatClient;
         }
         const YAML::Node& embeddingClientNode = yaml["embedding"];
         if(embeddingClientNode) {
@@ -120,53 +131,54 @@ void lifuren::config::Config::loadYaml(const std::string& name, const YAML::Node
             std::map<std::string, std::string> map;
             LFR_CONFIG_YAML_MAP_GETTER(map, embeddingClientNode, options, options, std::string);
             embeddingClient.options.insert(map.begin(), map.end());
-            this->ollama.embeddingClient = embeddingClient;
+            config.ollama.embeddingClient = embeddingClient;
         }
-    } else if(CONFIG_DOCUMENT_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [this](const auto& value) {
-            lifuren::config::DocumentMarkConfig config{};
-            LFR_CONFIG_YAML_GETTER(config, value, rag,       rag,       std::string);
-            LFR_CONFIG_YAML_GETTER(config, value, path,      path,      std::string);
-            LFR_CONFIG_YAML_GETTER(config, value, chunk,     chunk,     std::string);
-            LFR_CONFIG_YAML_GETTER(config, value, embedding, embedding, std::string);
-            this->documentMark.push_back(config);
+    } else if(lifuren::config::CONFIG_DOCUMENT_MARK == name) {
+        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
+            lifuren::config::DocumentMarkConfig documentMarkConfig{};
+            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, rag,       rag,       std::string);
+            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, path,      path,      std::string);
+            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, chunk,     chunk,     std::string);
+            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, embedding, embedding, std::string);
+            config.documentMark.push_back(documentMarkConfig);
         });
-    } else if(CONFIG_ELASTICSEARCH == name) {
-        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, api,       api,      std::string);
-        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, username,  username, std::string);
-        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, password,  password, std::string);
-        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, auth-type, authType, std::string);
-        LFR_CONFIG_YAML_GETTER(this->elasticsearch, yaml, embedding, embedding, std::string);
+    } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, embedding, embedding, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
 }
 
-YAML::Node lifuren::config::Config::toYaml() {
+YAML::Node toYaml() {
+    const auto& config = lifuren::config::CONFIG;
     YAML::Node yaml;
     {
-        yaml[CONFIG_HTTP_SERVER_HOST] = lifuren::config::httpServerHost;
-        yaml[CONFIG_HTTP_SERVER_PORT] = lifuren::config::httpServerPort;
+        yaml[lifuren::config::CONFIG_HTTP_SERVER_HOST] = lifuren::config::httpServerHost;
+        yaml[lifuren::config::CONFIG_HTTP_SERVER_PORT] = lifuren::config::httpServerPort;
     }
     {
         YAML::Node chat;
-        LFR_CONFIG_YAML_SETTER(chat, this->chat, client,  client);
-        LFR_CONFIG_YAML_SETTER(chat, this->chat, ragSize, rag-size);
+        LFR_CONFIG_YAML_SETTER(chat, config.chat, client,  client);
+        LFR_CONFIG_YAML_SETTER(chat, config.chat, ragSize, rag-size);
         YAML::Node clients;
-        std::for_each(this->chat.clients.begin(), this->chat.clients.end(), [&clients](auto& v) {
+        std::for_each(config.chat.clients.begin(), config.chat.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
         });
         chat["clients"] = clients;
-        yaml[CONFIG_CHAT] = chat;
+        yaml[lifuren::config::CONFIG_CHAT] = chat;
     }
     {
         YAML::Node ollama;
-        LFR_CONFIG_YAML_SETTER(ollama, this->ollama, api,      api);
-        LFR_CONFIG_YAML_SETTER(ollama, this->ollama, username, username);
-        LFR_CONFIG_YAML_SETTER(ollama, this->ollama, password, password);
-        LFR_CONFIG_YAML_SETTER(ollama, this->ollama, authType, auth-type);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, api,      api);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);
         YAML::Node chatClientNode;
-        const lifuren::config::ChatClientConfig& chatClient = this->ollama.chatClient;
+        const lifuren::config::ChatClientConfig& chatClient = config.ollama.chatClient;
         chatClientNode["path"]  = chatClient.path;
         chatClientNode["model"] = chatClient.model;
         chatClientNode["top-p"] = chatClient.topP;
@@ -175,16 +187,16 @@ YAML::Node lifuren::config::Config::toYaml() {
         chatClientNode["options"] = chatClient.options;
         ollama["chat"] = chatClientNode;
         YAML::Node embeddingClientNode;
-        const lifuren::config::EmbeddingClientConfig& embeddingClient = this->ollama.embeddingClient;
+        const lifuren::config::EmbeddingClientConfig& embeddingClient = config.ollama.embeddingClient;
         embeddingClientNode["path"]    = embeddingClient.path;
         embeddingClientNode["model"]   = embeddingClient.model;
         embeddingClientNode["options"] = embeddingClient.options;
         ollama["embedding"] = embeddingClientNode;
-        yaml[CONFIG_OLLAMA] = ollama;
+        yaml[lifuren::config::CONFIG_OLLAMA] = ollama;
     }
     {
         YAML::Node documentMark;
-        for(const auto& value : this->documentMark) {
+        for(const auto& value : config.documentMark) {
             YAML::Node mark;
             mark["rag"]       = value.rag;
             mark["path"]      = value.path;
@@ -192,16 +204,16 @@ YAML::Node lifuren::config::Config::toYaml() {
             mark["embedding"] = value.embedding;
             documentMark.push_back(mark);
         }
-        yaml[CONFIG_DOCUMENT_MARK] = documentMark;
+        yaml[lifuren::config::CONFIG_DOCUMENT_MARK] = documentMark;
     }
     {
         YAML::Node elasticsearch;
-        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, api,       api);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, username,  username);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, password,  password);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, authType,  auth-type);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, this->elasticsearch, embedding, embedding);
-        yaml[CONFIG_ELASTICSEARCH] = elasticsearch;
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, api,       api);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, username,  username);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, embedding, embedding);
+        yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
     }
     return yaml;
 }
@@ -228,7 +240,7 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
         const std::string& key   = iterator->first.as<std::string>();
         const auto&        value = iterator->second;
         try {
-            config.loadYaml(key, value);
+            loadYaml(config, key, value);
         } catch(...) {
             SPDLOG_ERROR("加载配置异常：{}", key);
         }
@@ -242,5 +254,5 @@ bool lifuren::config::saveFile() {
 
 bool lifuren::config::saveFile(const std::string& path) {
     SPDLOG_INFO("保存配置文件：{}", path);
-    return lifuren::yamls::saveFile(CONFIG.toYaml(), path);
+    return lifuren::yamls::saveFile(toYaml(), path);
 }

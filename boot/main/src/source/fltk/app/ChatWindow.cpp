@@ -109,7 +109,7 @@ void lifuren::ChatWindow::drawElement() {
     }, this);
     // 配置
     configPtr->callback([](Fl_Widget*, void* voidPtr) {
-        chatConfigWindowPtr = new lifuren::ChatConfigWindow{620, 800};
+        chatConfigWindowPtr = new lifuren::ChatConfigWindow{LFR_WINDOW_WIDTH_CONFIG, LFR_WINDOW_HEIGHT_CONFIG};
         chatConfigWindowPtr->init();
         chatConfigWindowPtr->show();
         chatConfigWindowPtr->callback([](Fl_Widget*, void*) {
