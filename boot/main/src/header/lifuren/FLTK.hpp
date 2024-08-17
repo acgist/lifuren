@@ -45,23 +45,23 @@ target = source->value() >= 0 ? source->text() : ""
 
 // 下拉选择
 #ifndef LFR_CHOICE_ADD_LIST
-#define LFR_CHOICE_ADD_LIST(x, y, map, buttonPtr, groupName, labelName, defaultValue)         \
+#define LFR_CHOICE_ADD_LIST(x, y, map, choicePtr, groupName, labelName, defaultValue)         \
 {                                                                                             \
-    buttonPtr = new Fl_Choice(x, y, 80, 30, labelName);                                       \
-    buttonPtr->add(defaultValue);                                                             \
+    choicePtr = new Fl_Choice(x, y, 80, 30, labelName);                                       \
+    choicePtr->add(defaultValue);                                                             \
     auto iterator = lifuren::map.find(groupName);                                             \
     if(iterator != lifuren::map.end()) {                                                      \
         std::vector<LabelFile>& vector = iterator->second;                                    \
         std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
             if(label.name == labelName) {                                                     \
                 std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
-                    buttonPtr->add(value.c_str());                                            \
+                    choicePtr->add(value.c_str());                                            \
                 });                                                                           \
             }                                                                                 \
         });                                                                                   \
     }                                                                                         \
-    auto defaultIndex = buttonPtr->find_index(defaultValue);                                  \
-    buttonPtr->value(defaultIndex);                                                           \
+    auto defaultIndex = choicePtr->find_index(defaultValue);                                  \
+    choicePtr->value(defaultIndex);                                                           \
 }
 #endif
 

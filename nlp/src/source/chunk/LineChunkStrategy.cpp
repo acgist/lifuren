@@ -10,7 +10,7 @@ std::list<std::string> lifuren::LineChunkStrategy::chunk(const std::string& cont
     this->document += content;
     std::list<std::string> list;
     size_t pos = this->document.find('\n');
-    while(pos >= 0 && pos != std::string::npos) {
+    while(pos != std::string::npos) {
         list.emplace_back(this->document.substr(0, pos));
         this->document = this->document.substr(pos + 1);
         pos = this->document.find('\n');
