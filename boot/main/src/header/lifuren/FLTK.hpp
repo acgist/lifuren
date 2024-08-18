@@ -22,7 +22,6 @@
 
 #include "lifuren/Ptr.hpp"
 #include "lifuren/Client.hpp"
-#include "lifuren/config/Config.hpp"
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
@@ -247,10 +246,6 @@ protected:
 class ImageMarkWindow : public MarkWindow, public Configuration {
 
 public:
-    // 配置
-    lifuren::config::ImageMarkConfig* imageMarkConfig{ nullptr };
-
-public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -275,10 +270,6 @@ protected:
 class PoetryMarkWindow : public MarkWindow, public Configuration {
 
 public:
-    // 配置
-    lifuren::config::PoetryMarkConfig* poetryMarkConfig{ nullptr };
-
-public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -301,9 +292,6 @@ protected:
  * 文档标记窗口
  */
 class DocumentMarkWindow : public MarkWindow, public Configuration {
-
-public:
-    lifuren::config::DocumentMarkConfig* documentMarkConfig{ nullptr };
 
 public:
     /**

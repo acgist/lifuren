@@ -10,8 +10,8 @@
 
 #include "lifuren/Strings.hpp"
 
-static Fl_Choice* pathPtr    { nullptr };
 static Fl_Button* newPtr     { nullptr };
+static Fl_Choice* pathPtr    { nullptr };
 static Fl_Button* deletePtr  { nullptr };
 static Fl_Choice* ragPtr     { nullptr };
 static Fl_Button* markPtr    { nullptr };
@@ -26,18 +26,24 @@ static Fl_Input*  embeddingPathPtr { nullptr };
 static Fl_Input*  embeddingModelPtr{ nullptr };
 
 static void newCallback   (Fl_Widget*, void*);
-static void deleteCallback(Fl_Widget*, void*);
 static void pathCallback  (Fl_Widget*, void*);
+static void deleteCallback(Fl_Widget*, void*);
 static void markCallback  (Fl_Widget*, void*);
 static void stopCallback  (Fl_Widget*, void*);
 static bool reloadConfig(lifuren::DocumentMarkWindow*, const std::string&);
+
+static lifuren::config::DocumentMarkConfig* documentMarkConfig{ nullptr };
 
 lifuren::DocumentMarkWindow::DocumentMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
 }
 
 lifuren::DocumentMarkWindow::~DocumentMarkWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
+    // 重置配置
+    documentMarkConfig = nullptr;
+    // 保存配置
     this->saveConfig();
+    // 释放资源
     LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(newPtr);
     LFR_DELETE_PTR(deletePtr);
@@ -55,11 +61,11 @@ lifuren::DocumentMarkWindow::~DocumentMarkWindow() {
 }
 
 void lifuren::DocumentMarkWindow::saveConfig() {
-    if(this->documentMarkConfig) {
-        LFR_CHOICE_GET_DEFAULT(this->documentMarkConfig->rag, ragPtr);
-        LFR_CHOICE_GET_DEFAULT(this->documentMarkConfig->chunk, chunkPtr);
-        LFR_CHOICE_GET_DEFAULT(this->documentMarkConfig->embedding, embeddingPtr);
-        if(this->documentMarkConfig->embedding == "ollama") {
+    if(documentMarkConfig) {
+        LFR_CHOICE_GET_DEFAULT(documentMarkConfig->rag, ragPtr);
+        LFR_CHOICE_GET_DEFAULT(documentMarkConfig->chunk, chunkPtr);
+        LFR_CHOICE_GET_DEFAULT(documentMarkConfig->embedding, embeddingPtr);
+        if(documentMarkConfig->embedding == "ollama") {
             auto& ollamaConfig    = lifuren::config::CONFIG.ollama;
             ollamaConfig.api      = apiPtr->value();
             ollamaConfig.username = usernamePtr->value();
@@ -75,11 +81,11 @@ void lifuren::DocumentMarkWindow::saveConfig() {
 }
 
 void lifuren::DocumentMarkWindow::redrawConfigElement() {
-    if(this->documentMarkConfig) {
-        LFR_CHOICE_SET_DEFAULT(ragPtr,       this->documentMarkConfig->rag);
-        LFR_CHOICE_SET_DEFAULT(chunkPtr,     this->documentMarkConfig->chunk);
-        LFR_CHOICE_SET_DEFAULT(embeddingPtr, this->documentMarkConfig->embedding);
-        if(this->documentMarkConfig->embedding == "ollama") {
+    if(documentMarkConfig) {
+        LFR_CHOICE_SET_DEFAULT(ragPtr,       documentMarkConfig->rag);
+        LFR_CHOICE_SET_DEFAULT(chunkPtr,     documentMarkConfig->chunk);
+        LFR_CHOICE_SET_DEFAULT(embeddingPtr, documentMarkConfig->embedding);
+        if(documentMarkConfig->embedding == "ollama") {
             const auto& ollamaConfig = lifuren::config::CONFIG.ollama;
             apiPtr->value(ollamaConfig.api.c_str());
             usernamePtr->value(ollamaConfig.username.c_str());
@@ -167,6 +173,12 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
     pathPtr->value(index);
 }
 
+static void pathCallback(Fl_Widget*, void* voidPtr) {
+    lifuren::DocumentMarkWindow* windowPtr = static_cast<lifuren::DocumentMarkWindow*>(voidPtr);
+    windowPtr->saveConfig();
+    reloadConfig(windowPtr, pathPtr->text());
+}
+
 static void deleteCallback(Fl_Widget*, void* voidPtr) {
     int index = pathPtr->value();
     if(index < 0) {
@@ -177,18 +189,18 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     auto iterator = std::find(documentMarkConfig.begin(), documentMarkConfig.end(), pathPtr->text());
     if(iterator != documentMarkConfig.end()) {
         documentMarkConfig.erase(iterator);
-        windowPtr->documentMarkConfig = nullptr;
     }
     pathPtr->remove(index);
-    windowPtr->redrawConfigElement();
-}
-
-static void pathCallback(Fl_Widget*, void* voidPtr) {
-    lifuren::DocumentMarkWindow* windowPtr = static_cast<lifuren::DocumentMarkWindow*>(voidPtr);
-    // 保存旧的配置
-    windowPtr->saveConfig();
-    // 加载新的配置
-    reloadConfig(windowPtr, pathPtr->text());
+    ::documentMarkConfig = nullptr;
+    if(documentMarkConfig.size() > 0) {
+        index = pathPtr->find_index(documentMarkConfig.begin()->path.c_str());
+        pathPtr->value(index);
+        pathPtr->redraw();
+        reloadConfig(windowPtr, pathPtr->text());
+    } else {
+        pathPtr->value(-1);
+        windowPtr->redrawConfigElement();
+    }
 }
 
 static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::string& path) {
@@ -198,10 +210,10 @@ static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::stri
     if(iterator == documentMarkConfig.end()) {
         lifuren::config::DocumentMarkConfig config{};
         config.path = path;
-        windowPtr->documentMarkConfig = &documentMarkConfig.emplace_back(config);
+        ::documentMarkConfig = &documentMarkConfig.emplace_back(config);
         newPath = true;
     } else {
-        windowPtr->documentMarkConfig = &*iterator;
+        ::documentMarkConfig = &*iterator;
         newPath = false;
     }
     windowPtr->redrawConfigElement();
