@@ -140,6 +140,18 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             embeddingClient.options.insert(map.begin(), map.end());
             config.ollama.embeddingClient = embeddingClient;
         }
+    } else if(lifuren::config::CONFIG_IMAGE_MARK == name) {
+        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
+            lifuren::config::ImageMarkConfig imageMarkConfig{};
+            LFR_CONFIG_YAML_GETTER(imageMarkConfig, value, path, path, std::string);
+            config.imageMark.push_back(imageMarkConfig);
+        });
+    } else if(lifuren::config::CONFIG_POETRY_MARK == name) {
+        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
+            lifuren::config::PoetryMarkConfig poetryMarkConfig{};
+            LFR_CONFIG_YAML_GETTER(poetryMarkConfig, value, path, path, std::string);
+            config.poetryMark.push_back(poetryMarkConfig);
+        });
     } else if(lifuren::config::CONFIG_DOCUMENT_MARK == name) {
         std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
             lifuren::config::DocumentMarkConfig documentMarkConfig{};
@@ -200,6 +212,24 @@ YAML::Node toYaml() {
         embeddingClientNode["options"] = embeddingClient.options;
         ollama["embedding"] = embeddingClientNode;
         yaml[lifuren::config::CONFIG_OLLAMA] = ollama;
+    }
+    {
+        YAML::Node imageMark;
+        for(const auto& value : config.imageMark) {
+            YAML::Node mark;
+            mark["path"] = value.path;
+            imageMark.push_back(mark);
+        }
+        yaml[lifuren::config::CONFIG_IMAGE_MARK] = imageMark;
+    }
+    {
+        YAML::Node poetryMark;
+        for(const auto& value : config.poetryMark) {
+            YAML::Node mark;
+            mark["path"] = value.path;
+            poetryMark.push_back(mark);
+        }
+        yaml[lifuren::config::CONFIG_POETRY_MARK] = poetryMark;
     }
     {
         YAML::Node documentMark;

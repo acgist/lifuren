@@ -244,11 +244,11 @@ protected:
 /**
  * 图片标记窗口
  */
-class ImageMarkWindow : public MarkWindow {
+class ImageMarkWindow : public MarkWindow, public Configuration {
 
 public:
     // 配置
-    std::list<lifuren::config::ImageMarkConfig>* imageMarkConfigPtr{ nullptr };
+    lifuren::config::ImageMarkConfig* imageMarkConfig{ nullptr };
 
 public:
     /**
@@ -260,6 +260,10 @@ public:
     // 析构函数
     virtual ~ImageMarkWindow();
 
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+
 protected:
     virtual void drawElement() override;
 
@@ -268,11 +272,11 @@ protected:
 /**
  * 诗词标记窗口
  */
-class PoetryMarkWindow : public MarkWindow {
+class PoetryMarkWindow : public MarkWindow, public Configuration {
 
 public:
     // 配置
-    std::list<lifuren::config::PoetryMarkConfig>* poetryMarkConfigPtr{ nullptr };
+    lifuren::config::PoetryMarkConfig* poetryMarkConfig{ nullptr };
 
 public:
     /**
@@ -284,6 +288,10 @@ public:
     // 析构函数
     virtual ~PoetryMarkWindow();
 
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+    
 protected:
     virtual void drawElement() override;
 

@@ -199,6 +199,11 @@ struct MarkConfig {
     // 目录
     std::string path;
 
+    // 路径相同即为相等
+    bool operator==(const std::string& path) {
+        return this->path == path;
+    }
+
 };
 
 /**
@@ -224,11 +229,6 @@ struct DocumentMarkConfig : public MarkConfig {
     std::string chunk;
     // 词嵌入
     std::string embedding;
-
-    // 路径相同即为相等
-    bool operator==(const std::string& path) {
-        return this->path == path;
-    }
 
 };
 

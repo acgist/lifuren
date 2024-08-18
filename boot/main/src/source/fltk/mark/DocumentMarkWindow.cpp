@@ -25,11 +25,11 @@ static Fl_Choice* embeddingPtr     { nullptr };
 static Fl_Input*  embeddingPathPtr { nullptr };
 static Fl_Input*  embeddingModelPtr{ nullptr };
 
-static void newCallback(Fl_Widget*, void*);
+static void newCallback   (Fl_Widget*, void*);
 static void deleteCallback(Fl_Widget*, void*);
-static void pathCallback(Fl_Widget*, void*);
-static void markCallback(Fl_Widget*, void*);
-static void stopCallback(Fl_Widget*, void*);
+static void pathCallback  (Fl_Widget*, void*);
+static void markCallback  (Fl_Widget*, void*);
+static void stopCallback  (Fl_Widget*, void*);
 static bool reloadConfig(lifuren::DocumentMarkWindow*, const std::string&);
 
 lifuren::DocumentMarkWindow::DocumentMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
@@ -40,6 +40,7 @@ lifuren::DocumentMarkWindow::~DocumentMarkWindow() {
     this->saveConfig();
     LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(newPtr);
+    LFR_DELETE_PTR(deletePtr);
     LFR_DELETE_PTR(ragPtr);
     LFR_DELETE_PTR(markPtr);
     LFR_DELETE_PTR(stopPtr);
@@ -111,7 +112,7 @@ void lifuren::DocumentMarkWindow::drawElement() {
     markPtr           = new Fl_Button(110, 410, 100,             30, "开始标记");
     stopPtr           = new Fl_Button(210, 410, 100,             30, "停止标记");
     // 事件
-    // 文件目录
+    // 文档目录
     const auto& documentMark = lifuren::config::CONFIG.documentMark;
     for(auto& value : documentMark) {
         std::string path = value.path;

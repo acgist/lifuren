@@ -5,6 +5,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"
+#include "lifuren/Strings.hpp"
 #include "lifuren/FLTKWidget.hpp"
 #include "lifuren/config/Label.hpp"
 
@@ -72,10 +73,12 @@ static Fl_Choice* qianjingPtr = nullptr;
 static Fl_Choice* beijingPtr  = nullptr;
 
 // 功能按钮
-static Fl_Button* prevPtr { nullptr };
-static Fl_Button* nextPtr { nullptr };
-static Fl_Button* resetPtr{ nullptr };
-static Fl_Input*  datasetPathPtr { nullptr };
+static Fl_Choice* pathPtr  { nullptr };
+static Fl_Button* newPtr   { nullptr };
+static Fl_Button* deletePtr{ nullptr };
+static Fl_Button* prevPtr  { nullptr };
+static Fl_Button* nextPtr  { nullptr };
+static Fl_Button* resetPtr { nullptr };
 static Fl_Box*    previewBoxPtr  { nullptr };
 static Fl_Image*  previewImagePtr{ nullptr };
 static Fl_Text_Buffer* moreBufferPtr{ nullptr };
@@ -90,42 +93,54 @@ static std::vector<std::string> imageVector;
 // 当前图片索引
 static std::vector<std::string>::iterator imageIterator;
 
+static void newCallback   (Fl_Widget*, void*);
+static void deleteCallback(Fl_Widget*, void*);
+static void pathCallback  (Fl_Widget*, void*);
+static bool reloadConfig(lifuren::ImageMarkWindow*, const std::string&);
+static void prevImage  (Fl_Widget*, void*);
+static void nextImage  (Fl_Widget*, void*);
 static void resetChoice(Fl_Widget*, void*);
-static void loadImageVector(const std::string& path);
-static void prevImage(Fl_Widget*, void*);
-static void nextImage(Fl_Widget*, void*);
 static void previewImage();
+static void loadImageVector(const std::string& path);
 
 lifuren::ImageMarkWindow::ImageMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
-    this->imageMarkConfigPtr = &lifuren::config::CONFIG.imageMark;
 }
 
 lifuren::ImageMarkWindow::~ImageMarkWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    lifuren::config::saveFile();
+    this->saveConfig();
     // 清理数据
     oldPath = "";
     choiceList.clear();
     imageVector.clear();
     // 释放资源
+    LFR_DELETE_PTR(pathPtr);
+    LFR_DELETE_PTR(newPtr);
+    LFR_DELETE_PTR(deletePtr);
     LFR_DELETE_PTR(prevPtr);
     LFR_DELETE_PTR(nextPtr);
     LFR_DELETE_PTR(resetPtr);
-    LFR_DELETE_PTR(datasetPathPtr);
     LFR_DELETE_PTR(previewBoxPtr);
     LFR_DELETE_PTR(previewImagePtr);
     LFR_DELETE_PTR(moreEditorPtr);
     LFR_DELETE_PTR(moreBufferPtr);
 }
 
+void lifuren::ImageMarkWindow::saveConfig() {
+    lifuren::Configuration::saveConfig();
+}
+
+void lifuren::ImageMarkWindow::redrawConfigElement() {
+}
+
 void lifuren::ImageMarkWindow::drawElement() {
     // 配置按钮
-    datasetPathPtr = new lifuren::Fl_Input_Directory_Chooser(110, 10, this->w() - 200, 30, "数据目录");
-    // datasetPathPtr->value(this->imageMarkConfigPtr->datasetPath.c_str());
-    prevPtr  = new Fl_Button(10,  50, 100, 30, "上张图片");
-    nextPtr  = new Fl_Button(120, 50, 100, 30, "下张图片");
-    resetPtr = new Fl_Button(230, 50, 100, 30, "重置选项");
-    // LFR_INPUT_DIRECTORY_CHOOSER_CALLBACK(datasetPathPtr, imageMarkConfigPtr, datasetPath, ImageMarkWindow, loadImageVector);
+    pathPtr   = new Fl_Choice(80,  10, 200, 30, "图片目录");
+    newPtr    = new Fl_Button(280, 10, 100, 30, "新增目录");
+    deletePtr = new Fl_Button(380, 10, 100, 30, "删除目录");
+    prevPtr   = new Fl_Button(80,  50, 100, 30, "上张图片");
+    nextPtr   = new Fl_Button(190, 50, 100, 30, "下张图片");
+    resetPtr  = new Fl_Button(300, 50, 100, 30, "重置选项");
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
@@ -189,18 +204,90 @@ void lifuren::ImageMarkWindow::drawElement() {
     moreEditorPtr->wrap_mode(moreEditorPtr->WRAP_AT_COLUMN, moreEditorPtr->textfont());
     moreEditorPtr->end();
     // 事件
+    // 图片目录
+    const auto& imageMark = lifuren::config::CONFIG.imageMark;
+    for(auto& value : imageMark) {
+        std::string path = value.path;
+        #if _WIN32
+        lifuren::strings::replace(path, "\\", "\\\\");
+        #else
+        lifuren::strings::replace(path, "/", "\\/");
+        #endif
+        pathPtr->add(path.c_str());
+    }
+    pathPtr->callback(pathCallback, this);
+    // 新增目录
+    newPtr->callback(newCallback, this);
+    // 删除目录
+    deletePtr->callback(deleteCallback, this);
+    // 上张图片
     prevPtr->callback(prevImage, this);
+    // 下张图片
     nextPtr->callback(nextImage, this);
+    // 重置选项
     resetPtr->callback(resetChoice, this);
     // 加载资源
     // loadImageVector(this->imageMarkConfigPtr->datasetPath);
 }
 
-static void resetChoice(Fl_Widget*, void*) {
-    for(auto ptr : choiceList) {
-        const int index = ptr->find_index("默认");
-        ptr->value(index);
+static void newCallback(Fl_Widget*, void* voidPtr) {
+    std::string filename = lifuren::directoryChooser("选择图片目录");
+    if(filename.empty()) {
+        return;
     }
+    lifuren::ImageMarkWindow* windowPtr = static_cast<lifuren::ImageMarkWindow*>(voidPtr);
+    if(reloadConfig(windowPtr, filename)) {
+        std::string path = filename;
+        #if _WIN32
+        lifuren::strings::replace(path, "\\", "\\\\");
+        #else
+        lifuren::strings::replace(path, "/", "\\/");
+        #endif
+        pathPtr->add(path.c_str());
+    }
+    int index = pathPtr->find_index(filename.c_str());
+    pathPtr->value(index);
+}
+
+static void deleteCallback(Fl_Widget*, void* voidPtr) {
+    int index = pathPtr->value();
+    if(index < 0) {
+        return;
+    }
+    lifuren::ImageMarkWindow* windowPtr = static_cast<lifuren::ImageMarkWindow*>(voidPtr);
+    auto& imageMarkConfig = lifuren::config::CONFIG.imageMark;
+    auto iterator = std::find(imageMarkConfig.begin(), imageMarkConfig.end(), pathPtr->text());
+    if(iterator != imageMarkConfig.end()) {
+        imageMarkConfig.erase(iterator);
+        windowPtr->imageMarkConfig = nullptr;
+    }
+    pathPtr->remove(index);
+    windowPtr->redrawConfigElement();
+}
+
+static void pathCallback(Fl_Widget*, void* voidPtr) {
+    lifuren::ImageMarkWindow* windowPtr = static_cast<lifuren::ImageMarkWindow*>(voidPtr);
+    // 保存旧的配置
+    windowPtr->saveConfig();
+    // 加载新的配置
+    reloadConfig(windowPtr, pathPtr->text());
+}
+
+static bool reloadConfig(lifuren::ImageMarkWindow* windowPtr, const std::string& path) {
+    bool newPath = false;
+    auto& imageMarkConfig = lifuren::config::CONFIG.imageMark;
+    auto iterator = std::find(imageMarkConfig.begin(), imageMarkConfig.end(), path);
+    if(iterator == imageMarkConfig.end()) {
+        lifuren::config::ImageMarkConfig config{};
+        config.path = path;
+        windowPtr->imageMarkConfig = &imageMarkConfig.emplace_back(config);
+        newPath = true;
+    } else {
+        windowPtr->imageMarkConfig = &*iterator;
+        newPath = false;
+    }
+    windowPtr->redrawConfigElement();
+    return newPath;
 }
 
 static void prevImage(Fl_Widget* widgetPtr, void* voidPtr) {
@@ -227,16 +314,11 @@ static void nextImage(Fl_Widget* widgetPtr, void* voidPtr) {
     previewImage();
 }
 
-static void loadImageVector(const std::string& path) {
-    if(path.empty() || path == oldPath) {
-        SPDLOG_DEBUG("忽略图片目录加载：{}", path);
-        return;
+static void resetChoice(Fl_Widget*, void*) {
+    for(auto ptr : choiceList) {
+        const int index = ptr->find_index("默认");
+        ptr->value(index);
     }
-    oldPath = path;
-    imageVector.clear();
-    lifuren::files::listFiles(imageVector, oldPath, { ".jpg", ".jpeg", ".png" });
-    imageIterator = imageVector.begin();
-    previewImage();
 }
 
 static void previewImage() {
@@ -264,4 +346,16 @@ static void previewImage() {
     // 显示图片
     previewBoxPtr->image(previewImagePtr);
     previewBoxPtr->redraw();
+}
+
+static void loadImageVector(const std::string& path) {
+    if(path.empty() || path == oldPath) {
+        SPDLOG_DEBUG("忽略图片目录加载：{}", path);
+        return;
+    }
+    oldPath = path;
+    imageVector.clear();
+    lifuren::files::listFiles(imageVector, oldPath, { ".jpg", ".jpeg", ".png" });
+    imageIterator = imageVector.begin();
+    previewImage();
 }

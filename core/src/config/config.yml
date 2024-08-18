@@ -2,7 +2,6 @@
 http-server-host: 0.0.0.0
 # REST监听端口
 http-server-port: 8080
-################ 聊天页面 ################
 # 聊天页面配置
 chat:
   rag-size: 4
@@ -10,24 +9,25 @@ chat:
   clients:
     - ollama
     - openai
-################ 图片页面 ################
+# 图片页面配置
 image:
   client: stable-diffusion-cpp
   clients:
     - stable-diffusion-cpp
-################ 诗词页面 ################
-################ 标记页面 ################
+# 诗词页面配置
+poetry:
 # 图片标记页面配置
 image-mark:
+  # - path: /data/image
 # 诗词标记页面配置
 poetry-mark:
+  # - path: /data/poetry
 # 文档标记页面配置
 document-mark:
   # - rag: elasticsearch
   #   path: /data/document
   #   chunk: LINE
   #   embedding: ollama
-################ 语言模型 ################
 # OpenAI配置
 openai:
   api:
@@ -60,11 +60,8 @@ ollama:
     path: /api/embed
     model: quentinz/bge-large-zh-v1.5
     options: {}
-################ 图片模型 ################
-# SD配置
+# stable-diffusion-cpp配置
 stable-diffusion-cpp:
-################ 诗词模型 ################
-################ 服务配置 ################
 elasticsearch:
   api: http://192.168.8.183:9200
   username: elastic
