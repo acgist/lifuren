@@ -169,8 +169,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
         #endif
         pathPtr->add(path.c_str());
     }
-    int index = pathPtr->find_index(filename.c_str());
-    pathPtr->value(index);
+    pathPtr->value(pathPtr->find_index(filename.c_str()));
 }
 
 static void pathCallback(Fl_Widget*, void* voidPtr) {
@@ -193,8 +192,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     pathPtr->remove(index);
     ::documentMarkConfig = nullptr;
     if(documentMarkConfig.size() > 0) {
-        index = pathPtr->find_index(documentMarkConfig.begin()->path.c_str());
-        pathPtr->value(index);
+        pathPtr->value(pathPtr->find_index(documentMarkConfig.begin()->path.c_str()));
         pathPtr->redraw();
         reloadConfig(windowPtr, pathPtr->text());
     } else {
@@ -208,8 +206,7 @@ static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::stri
     auto& documentMarkConfig = lifuren::config::CONFIG.documentMark;
     auto iterator = std::find(documentMarkConfig.begin(), documentMarkConfig.end(), path);
     if(iterator == documentMarkConfig.end()) {
-        lifuren::config::DocumentMarkConfig config{};
-        config.path = path;
+        lifuren::config::DocumentMarkConfig config{ path };
         ::documentMarkConfig = &documentMarkConfig.emplace_back(config);
         newPath = true;
     } else {

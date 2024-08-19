@@ -32,9 +32,8 @@
 #endif
 
 #ifndef LFR_CHOICE_SET_DEFAULT
-#define LFR_CHOICE_SET_DEFAULT(widget, defaultValue)           \
-auto widget##Index = widget->find_index(defaultValue.c_str()); \
-widget->value(widget##Index);
+#define LFR_CHOICE_SET_DEFAULT(widget, defaultValue) \
+widget->value(widget->find_index(defaultValue.c_str()));
 #endif
 
 #ifndef LFR_CHOICE_GET_DEFAULT

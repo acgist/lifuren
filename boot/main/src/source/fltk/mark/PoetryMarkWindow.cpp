@@ -150,8 +150,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
         #endif
         pathPtr->add(path.c_str());
     }
-    int index = pathPtr->find_index(filename.c_str());
-    pathPtr->value(index);
+    pathPtr->value(pathPtr->find_index(filename.c_str()));
 }
 
 static void pathCallback(Fl_Widget*, void* voidPtr) {
@@ -174,8 +173,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     pathPtr->remove(index);
     ::poetryMarkConfig = nullptr;
     if(poetryMarkConfig.size() > 0) {
-        index = pathPtr->find_index(poetryMarkConfig.begin()->path.c_str());
-        pathPtr->value(index);
+        pathPtr->value(pathPtr->find_index(poetryMarkConfig.begin()->path.c_str()));
         pathPtr->redraw();
         reloadConfig(windowPtr, pathPtr->text());
     } else {
@@ -189,8 +187,7 @@ static bool reloadConfig(lifuren::PoetryMarkWindow* windowPtr, const std::string
     auto& poetryMarkConfig = lifuren::config::CONFIG.poetryMark;
     auto iterator = std::find(poetryMarkConfig.begin(), poetryMarkConfig.end(), path);
     if(iterator == poetryMarkConfig.end()) {
-        lifuren::config::PoetryMarkConfig config{};
-        config.path = path;
+        lifuren::config::PoetryMarkConfig config{ path };
         ::poetryMarkConfig = &poetryMarkConfig.emplace_back(config);
         newPath = true;
     } else {

@@ -1,3 +1,8 @@
+/**
+ * TODO:
+ * 1. 添加图片缩放
+ * 2. 添加图片反转
+ */
 #include "lifuren/FLTK.hpp"
 
 #include <list>
@@ -9,6 +14,7 @@
 #include "lifuren/FLTKWidget.hpp"
 #include "lifuren/config/Label.hpp"
 
+#include "FL/fl_ask.H"
 #include "FL/Fl_Box.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
@@ -16,6 +22,8 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 #include "Fl/Fl_Shared_Image.H"
+
+#include "nlohmann/json.hpp"
 
 // 图片缩放
 #ifndef LFR_IMAGE_PREVIEW_SCALE
@@ -97,8 +105,9 @@ static bool reloadConfig(lifuren::ImageMarkWindow*, const std::string&);
 static void prevImage  (Fl_Widget*, void*);
 static void nextImage  (Fl_Widget*, void*);
 static void markImage  (Fl_Widget*, void*);
-static void resetChoice(Fl_Widget*, void*);
+static void resetConfig(Fl_Widget*, void*);
 static void resetImage();
+static void remarkConfig();
 static void previewImage();
 static void loadImageVector(const std::string& path);
 
@@ -111,11 +120,14 @@ lifuren::ImageMarkWindow::~ImageMarkWindow() {
     this->saveConfig();
     // 清理数据
     imageMarkConfig = nullptr;
+    for(auto ptr : choiceList) {
+        delete ptr;
+    }
     choiceList.clear();
     imageVector.clear();
     // 释放资源
-    LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(newPtr);
+    LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(deletePtr);
     LFR_DELETE_PTR(prevPtr);
     LFR_DELETE_PTR(nextPtr);
@@ -173,7 +185,7 @@ void lifuren::ImageMarkWindow::drawElement() {
     LFR_CHOICE_ADD_LIST_PROXY(40,  yPos, LABEL_IMAGE, sediaoPtr, "衣着", "色调", "默认");
     LFR_CHOICE_ADD_LIST_PROXY(160, yPos, LABEL_IMAGE, yifuPtr  , "衣着", "衣服", "默认");
     LFR_CHOICE_ADD_LIST_PROXY(280, yPos, LABEL_IMAGE, kuziPtr  , "衣着", "裤子", "默认");
-    LFR_CHOICE_ADD_LIST(400, yPos, LABEL_IMAGE, xieziPtr , "衣着", "鞋子", "默认");
+    LFR_CHOICE_ADD_LIST_PROXY(400, yPos, LABEL_IMAGE, xieziPtr , "衣着", "鞋子", "默认");
     // 饰品设置
     yPos += 40;
     LFR_CHOICE_ADD_LIST_PROXY(40,  yPos, LABEL_IMAGE, toushiPtr , "饰品", "头饰", "默认");
@@ -229,7 +241,7 @@ void lifuren::ImageMarkWindow::drawElement() {
     // 标记图片
     markPtr->callback(markImage, this);
     // 重置选项
-    resetPtr->callback(resetChoice, this);
+    resetPtr->callback(resetConfig, this);
 }
 
 static void newCallback(Fl_Widget*, void* voidPtr) {
@@ -247,8 +259,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
         #endif
         pathPtr->add(path.c_str());
     }
-    int index = pathPtr->find_index(filename.c_str());
-    pathPtr->value(index);
+    pathPtr->value(pathPtr->find_index(filename.c_str()));
 }
 
 static void pathCallback(Fl_Widget*, void* voidPtr) {
@@ -258,7 +269,7 @@ static void pathCallback(Fl_Widget*, void* voidPtr) {
 }
 
 static void deleteCallback(Fl_Widget*, void* voidPtr) {
-    int index = pathPtr->value();
+    const int index = pathPtr->value();
     if(index < 0) {
         return;
     }
@@ -272,8 +283,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     pathPtr->remove(index);
     ::imageMarkConfig = nullptr;
     if(imageMarkConfig.size() > 0) {
-        index = pathPtr->find_index(imageMarkConfig.begin()->path.c_str());
-        pathPtr->value(index);
+        pathPtr->value(pathPtr->find_index(imageMarkConfig.begin()->path.c_str()));
         pathPtr->redraw();
         reloadConfig(windowPtr, pathPtr->text());
     } else {
@@ -287,8 +297,7 @@ static bool reloadConfig(lifuren::ImageMarkWindow* windowPtr, const std::string&
     auto& imageMarkConfig = lifuren::config::CONFIG.imageMark;
     auto iterator = std::find(imageMarkConfig.begin(), imageMarkConfig.end(), path);
     if(iterator == imageMarkConfig.end()) {
-        lifuren::config::ImageMarkConfig config{};
-        config.path = path;
+        lifuren::config::ImageMarkConfig config{ path };
         ::imageMarkConfig = &imageMarkConfig.emplace_back(config);
         newPath = true;
     } else {
@@ -334,24 +343,26 @@ static void markImage(Fl_Widget*, void*) {
     if(!imageMarkConfig) {
         return;
     }
-    std::string mark{};
+    nlohmann::json mark{};
     for(auto ptr : choiceList) {
         if(ptr->value() <= 0) {
             continue;
         }
-        mark = mark + ptr->text() + " ";
+        mark[ptr->label()] = ptr->text();
     }
-    mark += moreBufferPtr->text();
+    const char* more = moreBufferPtr->text();
+    if(std::strlen(more) > 0) {
+        mark["描述"] = more;
+    }
     std::filesystem::path path      = imageMarkConfig->path;
     std::filesystem::path imagePath = *imageIterator;
     path = path / "index" / (imagePath.filename().string() + ".mark");
-    lifuren::files::saveFile(path.string(), mark);
+    lifuren::files::saveFile(path.string(), mark.dump());
 }
 
-static void resetChoice(Fl_Widget*, void*) {
+static void resetConfig(Fl_Widget*, void*) {
     for(auto ptr : choiceList) {
-        const int index = ptr->find_index("默认");
-        ptr->value(index);
+        ptr->value(0);
     }
     moreBufferPtr->text("");
 }
@@ -360,6 +371,31 @@ static void resetImage() {
     LFR_DELETE_PTR(previewImagePtr);
     previewBoxPtr->image(nullptr);
     previewBoxPtr->redraw();
+}
+
+static void remarkConfig() {
+    if(!imageMarkConfig) {
+        return;
+    }
+    std::filesystem::path path      = imageMarkConfig->path;
+    std::filesystem::path imagePath = *imageIterator;
+    path = path / "index" / (imagePath.filename().string() + ".mark");
+    const auto&& json = lifuren::files::loadFile(path.string());
+    if(json.empty()) {
+        resetConfig(nullptr, nullptr);
+        return;
+    }
+    nlohmann::json mark = nlohmann::json::parse(json);
+    for(auto ptr : choiceList) {
+        auto iterator = mark.find(ptr->label());
+        if(iterator != mark.end()) {
+            ptr->value(ptr->find_index(iterator->get<std::string>().c_str()));
+        }
+    }
+    auto iterator = mark.find("描述");
+    if(iterator != mark.end()) {
+        moreBufferPtr->text(iterator->get<std::string>().c_str());
+    }
 }
 
 static void previewImage() {
@@ -372,13 +408,14 @@ static void previewImage() {
     LFR_DELETE_PTR(previewImagePtr);
     Fl_Shared_Image* previewSharedPtr = Fl_Shared_Image::get((*imageIterator).c_str());
     if(previewSharedPtr->num_images() <= 0) {
+        fl_message("图片读取失败");
         resetImage();
         SPDLOG_WARN("图片加载失败：{}", *imageIterator);
         // previewSharedPtr->release();
         return;
     }
-    const int boxWidth  = previewBoxPtr->w();
-    const int boxHeight = previewBoxPtr->h();
+    const int boxWidth    = previewBoxPtr->w();
+    const int boxHeight   = previewBoxPtr->h();
     const int imageWidth  = previewSharedPtr->w();
     const int imageHeight = previewSharedPtr->h();
     double scale;
@@ -391,20 +428,17 @@ static void previewImage() {
     previewSharedPtr->release();
     previewBoxPtr->image(previewImagePtr);
     previewBoxPtr->redraw();
-    // TODO: 回填数据
+    remarkConfig();
 }
 
 static void loadImageVector(const std::string& path) {
-    if(!imageMarkConfig) {
-        return;
-    }
     if(path.empty()) {
         SPDLOG_DEBUG("忽略图片目录加载：{}", path);
         return;
     }
     resetImage();
     imageVector.clear();
-    lifuren::files::listFiles(imageVector, imageMarkConfig->path, { ".jpg", ".jpeg", ".png" });
+    lifuren::files::listFiles(imageVector, path, { ".jpg", ".jpeg", ".png" });
     imageIterator = imageVector.begin();
     previewImage();
 }

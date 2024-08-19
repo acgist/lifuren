@@ -293,3 +293,7 @@ bool lifuren::config::saveFile(const std::string& path) {
     SPDLOG_INFO("保存配置文件：{}", path);
     return lifuren::yamls::saveFile(toYaml(), path);
 }
+
+bool lifuren::config::MarkConfig::operator==(const std::string& path) {
+    return this->path == path;
+}

@@ -60,6 +60,10 @@
 
 机器视觉
 
+* 核
+* 步幅
+* 填充
+
 ###### 视觉几何组（VGG）
 ###### 残差神经网络（ResNet）
 ###### 稠密连接⽹络（DenseNET）
@@ -251,6 +255,8 @@ ADMA + L2
 
 * Z值归一化（Z-score normalization）也叫标准化（standardization）
 
+#### 感受野（receptive field）
+#### 滤波器（filter）
 #### 学习率（learning rate）
 #### 超参数（hyperparameter）
 
@@ -281,6 +287,7 @@ ADMA + L2
 ###### 图像裁剪
 ###### 图像增⼴
 
+#### 共享参数（parameter sharing）
 #### 数据增强
 #### 模型评价
 #### 正向传播
