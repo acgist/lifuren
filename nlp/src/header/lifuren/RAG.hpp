@@ -11,6 +11,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <functional>
 
 #include "lifuren/Client.hpp"
 #include "lifuren/DocumentChunk.hpp"
@@ -167,6 +168,8 @@ protected:
     std::unique_ptr<lifuren::RAGClient> ragClient{ nullptr };
     // 分段服务
     std::unique_ptr<lifuren::ChunkService> chunkService{ nullptr };
+    // 进度回调
+    std::function<void(float, bool)> percentCallback{ nullptr };
 
 public:
     RAGTaskRunner(RAGTask task);
@@ -183,6 +186,14 @@ private:
 public:
     // 任务进度
     float percent();
+    /**
+     * 注册进度回调
+     */
+    void registerCallback(std::function<void(float, bool)> percentCallback);
+    /**
+     * 取消进度回调注册
+     */
+    void unregisterCallback();
 
 };
 
@@ -214,6 +225,14 @@ public:
     /**
      * 添加任务
      * 
+     * @param path 任务路径
+     * 
+     * @return RAG任务
+     */
+    std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path);
+    /**
+     * 添加任务
+     * 
      * @param task RAG任务
      * 
      * @return 是否成功
@@ -239,12 +258,6 @@ public:
      * @return 当前任务总量（执行中和待执行的总量）
      */
     size_t taskCount();
-    /**
-     * @param path 任务路径
-     * 
-     * @return 任务进度
-     */
-    float taskPercent(const std::string& path);
 
 };
 

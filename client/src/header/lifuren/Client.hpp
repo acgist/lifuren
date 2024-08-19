@@ -268,6 +268,10 @@ class OpenAIChatClient {
  * 词嵌入终端
  */
 class EmbeddingClient : public Client {
+
+public:
+    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
+
 };
 
 /**

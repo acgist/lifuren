@@ -8,6 +8,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/RAG.hpp"
 #include "lifuren/Strings.hpp"
 
 static Fl_Button* newPtr     { nullptr };
@@ -31,7 +32,9 @@ static void deleteCallback(Fl_Widget*, void*);
 static void markCallback  (Fl_Widget*, void*);
 static void stopCallback  (Fl_Widget*, void*);
 static bool reloadConfig(lifuren::DocumentMarkWindow*, const std::string&);
+static void percentCallback(float, bool);
 
+static std::shared_ptr<lifuren::RAGTaskRunner> ragTaskRunner{ nullptr };
 static lifuren::config::DocumentMarkConfig* documentMarkConfig{ nullptr };
 
 lifuren::DocumentMarkWindow::DocumentMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
@@ -39,13 +42,17 @@ lifuren::DocumentMarkWindow::DocumentMarkWindow(int width, int height, const cha
 
 lifuren::DocumentMarkWindow::~DocumentMarkWindow() {
     SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
-    // 重置配置
-    documentMarkConfig = nullptr;
     // 保存配置
     this->saveConfig();
+    // 清理数据
+    if(ragTaskRunner) {
+        ragTaskRunner->unregisterCallback();
+        ragTaskRunner = nullptr;
+    }
+    documentMarkConfig = nullptr;
     // 释放资源
-    LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(newPtr);
+    LFR_DELETE_PTR(pathPtr);
     LFR_DELETE_PTR(deletePtr);
     LFR_DELETE_PTR(ragPtr);
     LFR_DELETE_PTR(markPtr);
@@ -183,6 +190,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     if(index < 0) {
         return;
     }
+    const std::string path = pathPtr->text();
     lifuren::DocumentMarkWindow* windowPtr = static_cast<lifuren::DocumentMarkWindow*>(voidPtr);
     auto& documentMarkConfig = lifuren::config::CONFIG.documentMark;
     auto iterator = std::find(documentMarkConfig.begin(), documentMarkConfig.end(), pathPtr->text());
@@ -191,6 +199,12 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     }
     pathPtr->remove(index);
     ::documentMarkConfig = nullptr;
+    if(ragTaskRunner) {
+        ragTaskRunner->unregisterCallback();
+        ragTaskRunner->stop = true;
+        ragTaskRunner = nullptr;
+        lifuren::RAGService::getInstance().deleteRAGTask(path);
+    }
     if(documentMarkConfig.size() > 0) {
         pathPtr->value(pathPtr->find_index(documentMarkConfig.begin()->path.c_str()));
         pathPtr->redraw();
@@ -198,6 +212,26 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     } else {
         pathPtr->value(-1);
         windowPtr->redrawConfigElement();
+    }
+}
+
+static void markCallback(Fl_Widget*, void* voidPtr) {
+    auto& ragService = lifuren::RAGService::getInstance();
+    lifuren::RAGTask task{
+        pathPtr->text(),
+        ragPtr->text(),
+        chunkPtr->text(),
+        embeddingPtr->text(),
+    };
+    ragTaskRunner = ragService.buildRAGTask(task);
+    ragTaskRunner->registerCallback(percentCallback);
+}
+
+static void stopCallback(Fl_Widget*, void* voidPtr) {
+    if(ragTaskRunner) {
+        ragTaskRunner->unregisterCallback();
+        ragTaskRunner->stop = true;
+        ragTaskRunner = nullptr;
     }
 }
 
@@ -214,11 +248,19 @@ static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::stri
         newPath = false;
     }
     windowPtr->redrawConfigElement();
+    if(ragTaskRunner) {
+        ragTaskRunner->unregisterCallback();
+        ragTaskRunner->stop = true;
+        ragTaskRunner = nullptr;
+    }
+    auto& ragService = lifuren::RAGService::getInstance();
+    ragTaskRunner = ragService.getRAGTask(path);
+    if(ragTaskRunner) {
+        ragTaskRunner->registerCallback(percentCallback);
+    }
     return newPath;
 }
 
-static void markCallback(Fl_Widget*, void* voidPtr) {
-}
-
-static void stopCallback(Fl_Widget*, void* voidPtr) {
+static void percentCallback(float percent, bool done) {
+    SPDLOG_DEBUG("当前任务进度：{} - {}", percent, done);
 }

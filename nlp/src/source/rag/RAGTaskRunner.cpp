@@ -32,7 +32,7 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
 }
 
 lifuren::RAGTaskRunner::~RAGTaskRunner() {
-    // this->saveIndex();
+    SPDLOG_DEBUG("RAG任务析构：{}", this->task.path);
 }
 
 void lifuren::RAGTaskRunner::initIndex() {
@@ -118,6 +118,12 @@ bool lifuren::RAGTaskRunner::execute() {
             this->ragClient->index(chunk);
         }
         ++this->doneFileCount;
+        if(this->percentCallback) {
+            this->percentCallback(this->percent(), false);
+        }
+    }
+    if(this->percentCallback) {
+        this->percentCallback(this->percent(), true);
     }
     return true;
 }
@@ -127,4 +133,12 @@ float lifuren::RAGTaskRunner::percent() {
         return 0.0F;
     }
     return static_cast<float>(this->doneFileCount) / this->fileCount;
+}
+
+void lifuren::RAGTaskRunner::registerCallback(std::function<void(float, bool)> percentCallback) {
+    this->percentCallback = percentCallback;
+}
+
+void lifuren::RAGTaskRunner::unregisterCallback() {
+    this->percentCallback = nullptr;
 }

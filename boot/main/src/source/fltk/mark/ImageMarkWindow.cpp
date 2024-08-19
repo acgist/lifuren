@@ -37,48 +37,48 @@ choiceList.push_back(choicePtr);
 #endif
 
 // 头部
-static Fl_Choice* fasePtr     = nullptr;
-static Fl_Choice* faxingPtr   = nullptr;
-static Fl_Choice* meimaoPtr   = nullptr;
-static Fl_Choice* yanjingPtr  = nullptr;
-static Fl_Choice* biziPtr     = nullptr;
-static Fl_Choice* yachiPtr    = nullptr;
-static Fl_Choice* zuibaPtr    = nullptr;
-static Fl_Choice* kouhongPtr  = nullptr;
-static Fl_Choice* biaoqingPtr = nullptr;
-static Fl_Choice* lianxingPtr = nullptr;
+static Fl_Choice* fasePtr    { nullptr };
+static Fl_Choice* faxingPtr  { nullptr };
+static Fl_Choice* meimaoPtr  { nullptr };
+static Fl_Choice* yanjingPtr { nullptr };
+static Fl_Choice* biziPtr    { nullptr };
+static Fl_Choice* yachiPtr   { nullptr };
+static Fl_Choice* zuibaPtr   { nullptr };
+static Fl_Choice* kouhongPtr { nullptr };
+static Fl_Choice* biaoqingPtr{ nullptr };
+static Fl_Choice* lianxingPtr{ nullptr };
 // 上身
-static Fl_Choice* rufangPtr   = nullptr;
-static Fl_Choice* shouxingPtr = nullptr;
-static Fl_Choice* yaobuPtr    = nullptr;
+static Fl_Choice* rufangPtr  { nullptr };
+static Fl_Choice* shouxingPtr{ nullptr };
+static Fl_Choice* yaobuPtr   { nullptr };
 // 下身
-static Fl_Choice* tunbuPtr   = nullptr;
-static Fl_Choice* tuixingPtr = nullptr;
+static Fl_Choice* tunbuPtr  { nullptr };
+static Fl_Choice* tuixingPtr{ nullptr };
 // 衣着
-static Fl_Choice* sediaoPtr = nullptr;
-static Fl_Choice* yifuPtr   = nullptr;
-static Fl_Choice* kuziPtr   = nullptr;
-static Fl_Choice* xieziPtr  = nullptr;
+static Fl_Choice* sediaoPtr{ nullptr };
+static Fl_Choice* yifuPtr  { nullptr };
+static Fl_Choice* kuziPtr  { nullptr };
+static Fl_Choice* xieziPtr { nullptr };
 // 饰品
-static Fl_Choice* toushiPtr  = nullptr;
-static Fl_Choice* ershiPtr   = nullptr;
-static Fl_Choice* yanshiPtr  = nullptr;
-static Fl_Choice* lianshiPtr = nullptr;
-static Fl_Choice* shoushiPtr = nullptr;
-static Fl_Choice* baobaoPtr  = nullptr;
+static Fl_Choice* toushiPtr { nullptr };
+static Fl_Choice* ershiPtr  { nullptr };
+static Fl_Choice* yanshiPtr { nullptr };
+static Fl_Choice* lianshiPtr{ nullptr };
+static Fl_Choice* shoushiPtr{ nullptr };
+static Fl_Choice* baobaoPtr { nullptr };
 // 特征
-static Fl_Choice* fusePtr     = nullptr;
-static Fl_Choice* pifuPtr     = nullptr;
-static Fl_Choice* xinggePtr   = nullptr;
-static Fl_Choice* nianlingPtr = nullptr;
-static Fl_Choice* shengaoPtr  = nullptr;
-static Fl_Choice* tixingPtr   = nullptr;
-static Fl_Choice* titaiPtr    = nullptr;
-static Fl_Choice* zhiyePtr    = nullptr;
+static Fl_Choice* fusePtr    { nullptr };
+static Fl_Choice* pifuPtr    { nullptr };
+static Fl_Choice* xinggePtr  { nullptr };
+static Fl_Choice* nianlingPtr{ nullptr };
+static Fl_Choice* shengaoPtr { nullptr };
+static Fl_Choice* tixingPtr  { nullptr };
+static Fl_Choice* titaiPtr   { nullptr };
+static Fl_Choice* zhiyePtr   { nullptr };
 // 环境
-static Fl_Choice* tianqiPtr   = nullptr;
-static Fl_Choice* qianjingPtr = nullptr;
-static Fl_Choice* beijingPtr  = nullptr;
+static Fl_Choice* tianqiPtr  { nullptr };
+static Fl_Choice* qianjingPtr{ nullptr };
+static Fl_Choice* beijingPtr { nullptr };
 
 // 功能按钮
 static Fl_Button* newPtr   { nullptr };

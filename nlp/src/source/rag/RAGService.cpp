@@ -4,7 +4,7 @@
 
 #include "spdlog/spdlog.h"
 
-static std::mutex mutex;
+static std::recursive_mutex mutex;
 
 lifuren::RAGService::RAGService() {
 }
@@ -17,8 +17,17 @@ lifuren::RAGService& lifuren::RAGService::getInstance() {
     return instance;
 }
 
+std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const std::string& path) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto iterator = this->tasks.find(path);
+    if(iterator == this->tasks.end()) {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
 std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(RAGTask task) {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
     auto iterator = this->tasks.find(task.path);
     if(iterator != this->tasks.end()) {
         SPDLOG_DEBUG("RAG任务已经添加：{}", task.path);
@@ -30,7 +39,7 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(RAGTas
 }
 
 bool lifuren::RAGService::stopRAGTask(const std::string& path) {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
     auto iterator = this->tasks.find(path);
     if(iterator == this->tasks.end()) {
         SPDLOG_DEBUG("RAG任务已经结束：{}", path);
@@ -42,20 +51,18 @@ bool lifuren::RAGService::stopRAGTask(const std::string& path) {
 }
 
 bool lifuren::RAGService::deleteRAGTask(const std::string& path) {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto iterator = this->tasks.find(path);
+    if(iterator == this->tasks.end()) {
+        SPDLOG_DEBUG("RAG任务已经删除：{}", path);
+        return true;
+    }
+    SPDLOG_DEBUG("删除RAG任务：{}", path);
+    iterator->second->stop = true;
     return this->tasks.erase(path) > 0;
 }
 
 size_t lifuren::RAGService::taskCount() {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
     return this->tasks.size();
-}
-
-float lifuren::RAGService::taskPercent(const std::string& path) {
-    std::lock_guard<std::mutex> lock(mutex);
-    auto iterator = this->tasks.find(path);
-    if(iterator == this->tasks.end()) {
-        return 0.0F;
-    }
-    return iterator->second->percent();
 }
