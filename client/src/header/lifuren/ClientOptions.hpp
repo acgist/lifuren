@@ -7,6 +7,7 @@
 #define LFR_HEADER_CLIENT_CLIENTOPTIONS_HPP
 
 #include <string>
+#include <vector>
 
 #include "lifuren/config/Config.hpp"
 
@@ -33,6 +34,8 @@ struct ChatMessage {
     Role role;
     // 消息
     std::string message;
+    // 附加资料
+    std::vector<std::string> library;
     // 是否完成
     bool done;
 
@@ -66,14 +69,14 @@ struct LLMOptions {
 
 };
 
-struct ChatOptions : public LLMOptions {
+struct ChatOptions : LLMOptions {
 
     // 聊天模型
     std::string model;
 
 };
 
-struct RestChatOptions : public RestOptions, public ChatOptions {
+struct RestChatOptions : RestOptions, ChatOptions {
 
     // 聊天地址
     std::string path;
@@ -93,7 +96,7 @@ struct EmbeddingOptions {
 
 };
 
-struct RestEmbeddingOptions : public RestOptions, public EmbeddingOptions {
+struct RestEmbeddingOptions : RestOptions, EmbeddingOptions {
 
     std::string path;
 
@@ -109,19 +112,19 @@ struct Mark {
 /**
  * 图片标记页面配置
  */
-struct ImageMark : public Mark {
+struct ImageMark : Mark {
 };
 
 /**
  * 诗词标记页面配置
  */
-struct PoetryMark : public Mark {
+struct PoetryMark : Mark {
 };
 
 /**
  * 文档标记页面配置
  */
-struct DocumentMark : public Mark {
+struct DocumentMark : Mark {
 };
 
 struct ImageOptions {

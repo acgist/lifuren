@@ -131,7 +131,7 @@ struct LLMConfig {
 /**
  * 聊天终端
  */
-struct ChatClientConfig : public LLMConfig {
+struct ChatClientConfig : LLMConfig {
 
     std::string path;
     std::string model;
@@ -152,7 +152,7 @@ struct EmbeddingClientConfig {
 /**
  * OpenAi配置
  */
-struct OpenAiConfig : public RestConfig {
+struct OpenAiConfig : RestConfig {
 
     // 聊天终端
     ChatClientConfig chatClient;
@@ -164,7 +164,7 @@ struct OpenAiConfig : public RestConfig {
 /**
  * Ollama配置
  */
-struct OllamaConfig : public RestConfig {
+struct OllamaConfig : RestConfig {
 
     // 聊天终端
     ChatClientConfig chatClient;
@@ -207,19 +207,19 @@ struct MarkConfig {
 /**
  * 图片标记页面配置
  */
-struct ImageMarkConfig : public MarkConfig {
+struct ImageMarkConfig : MarkConfig {
 };
 
 /**
  * 诗词标记页面配置
  */
-struct PoetryMarkConfig : public MarkConfig {
+struct PoetryMarkConfig : MarkConfig {
 };
 
 /**
  * 文档标记页面配置
  */
-struct DocumentMarkConfig : public MarkConfig {
+struct DocumentMarkConfig : MarkConfig {
 
     // RAG
     std::string rag;
@@ -233,7 +233,7 @@ struct DocumentMarkConfig : public MarkConfig {
 /**
  * ElasticSearch配置
  */
-struct ElasticSearchConfig : public RestConfig {
+struct ElasticSearchConfig : RestConfig {
 
     // 词嵌入类型
     std::string embedding;

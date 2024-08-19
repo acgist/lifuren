@@ -17,7 +17,7 @@ static std::vector<std::string> ragSearch(const size_t& id, const std::string& p
 static bool textIndex(const size_t& id, const std::string& content, std::shared_ptr<lifuren::RestClient> client);
 static std::vector<std::string> textSearch(const size_t& id, const std::string& prompt, const int& size, std::shared_ptr<lifuren::RestClient> client);
 
-lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(size_t id, const std::string& path, const std::string& embedding) :RAGClient(id, path, embedding) {
+lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path, const std::string& embedding) :RAGClient(path, embedding) {
     const auto& elasticsearchConfig = lifuren::config::CONFIG.elasticsearch;
     this->restClient = std::make_shared<lifuren::RestClient>(elasticsearchConfig.api);
     this->restClient->auth(elasticsearchConfig);

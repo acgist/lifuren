@@ -63,6 +63,16 @@ target = source->value() >= 0 ? source->text() : ""
 }
 #endif
 
+#ifndef LFR_CHOICE_TRANSFER
+#if _WIN32
+#define LFR_CHOICE_TRANSFER(path) \
+lifuren::strings::replace(path, "\\", "\\\\");
+#else
+#define LFR_CHOICE_TRANSFER(path) \
+lifuren::strings::replace(path, "/", "\\/");
+#endif
+#endif
+
 namespace lifuren {
 
 // 加载FLTK窗口

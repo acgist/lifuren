@@ -1,10 +1,16 @@
 #include "lifuren/Client.hpp"
 
-void lifuren::ChatClient::appendMessage(const lifuren::chat::Role& role, const std::string& message, bool done) {
+void lifuren::ChatClient::appendMessage(
+    const lifuren::chat::Role& role,
+    const std::string& message,
+    const std::vector<std::string>& library,
+    bool done
+) {
     if(this->historyMessages.empty()) {
         this->historyMessages.push_back({
             .role    = role,
             .message = message,
+            .library = library,
             .done    = done
         });
     } else {
@@ -13,6 +19,7 @@ void lifuren::ChatClient::appendMessage(const lifuren::chat::Role& role, const s
             this->historyMessages.push_back({
                 .role    = role,
                 .message = message,
+                .library = library,
                 .done    = done
             });
         } else {

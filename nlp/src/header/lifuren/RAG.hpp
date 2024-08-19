@@ -35,43 +35,37 @@ struct RAGTask {
 };
 
 /**
- * 词嵌入服务
- */
-class EmbeddingService {
-
-private:
-    // 词嵌入终端
-    std::unique_ptr<EmbeddingClient> embeddingClient{ nullptr };
-
-public:
-    EmbeddingService(const std::string& embedding);
-    virtual ~EmbeddingService();
-
-};
-
-/**
  * RAG终端
  */
-class RAGClient {
+class RAGClient : public RAGSearchEngine {
 
 protected:
     // 唯一标识
-    size_t id;
+    size_t id = 0L;
+    // 处理文件列表
+    std::set<std::string> doneFile;
     // 文档路径
     std::string path;
     // 词嵌入服务
-    std::unique_ptr<lifuren::EmbeddingService> embeddingService{ nullptr };
+    std::unique_ptr<lifuren::EmbeddingClient> embeddingClient{ nullptr };
 
 public:
     /**
-     * @param id        唯一标识
      * @param path      文档路径
      * @param embedding 词嵌入方式
      */
-    RAGClient(size_t id, const std::string& path, const std::string& embedding);
+    RAGClient(const std::string& path, const std::string& embedding);
     virtual ~RAGClient();
 
 public:
+    // 加载索引
+    void loadIndex();
+    // 保存索引
+    void saveIndex();
+    // 添加已经处理文件
+    void doneFileEmplace(const std::string& file);
+    // 文件是否已经处理
+    bool doneFileContains(const std::string& file);
     /**
      * 索引建立
      * 
@@ -81,26 +75,17 @@ public:
      */
     virtual std::vector<double> index(const std::string& content) = 0;
     /**
-     * 索引搜索
-     * 
-     * @param prompt 索引内容
-     * 
-     * @return 文档内容
-     */
-    virtual std::vector<std::string> search(const std::string& prompt) = 0;
-    /**
      * 删除索引
      */
     virtual bool deleteRAG() = 0;
     /**
      * @param type      RAG终端类型
-     * @param id        唯一标识
      * @param path      文档路径
      * @param embedding 词嵌入方式
      * 
      * @return RAG终端
      */
-    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& type, size_t id, const std::string& path, const std::string& embedding);
+    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& type, const std::string& path, const std::string& embedding);
 
 };
 
@@ -130,7 +115,7 @@ public:
     std::shared_ptr<lifuren::RestClient> restClient{ nullptr };
 
 public:
-    ElasticSearchRAGClient(size_t id, const std::string& path, const std::string& embedding);
+    ElasticSearchRAGClient(const std::string& path, const std::string& embedding);
     ~ElasticSearchRAGClient();
 
 public:
@@ -156,10 +141,6 @@ protected:
     uint32_t fileCount = 0;
     // 处理文件总数
     uint32_t doneFileCount = 0;
-    // 处理文件列表
-    std::set<std::string> doneFile;
-    // 任务唯一索引
-    size_t id = 0L;
     // RAG任务
     RAGTask task;
     // 执行线程
@@ -176,10 +157,6 @@ public:
     virtual ~RAGTaskRunner();
 
 private:
-    // 加载索引
-    void initIndex();
-    // 保存索引
-    void saveIndex();
     // 执行任务
     bool execute();
 

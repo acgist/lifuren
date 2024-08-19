@@ -16,7 +16,6 @@ add_library(
     src/source/rag/RAGService.cpp
     src/source/rag/RAGTaskRunner.cpp
     src/source/rag/ElasticSearchRAGClient.cpp
-    src/source/rag/EmbeddingService.cpp
 )
 
 target_link_libraries(

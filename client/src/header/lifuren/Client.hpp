@@ -32,6 +32,23 @@ public:
 };
 
 /**
+ * RAG查询器
+ */
+class RAGSearchEngine {
+
+public:
+    /**
+     * 索引搜索
+     * 
+     * @param prompt 索引内容
+     * 
+     * @return 文档内容
+     */
+    virtual std::vector<std::string> search(const std::string& prompt) = 0;
+
+};
+
+/**
  * REST终端
  */
 class RestClient : public Client {
@@ -204,6 +221,10 @@ protected:
     std::list<lifuren::chat::ChatMessage> historyMessages{};
 
 public:
+    // RAG查询器
+    std::unique_ptr<lifuren::RAGSearchEngine> ragSearchEngine{ nullptr };
+
+public:
     /**
      * 正常聊天
      * 
@@ -232,9 +253,10 @@ protected:
      * 
      * @param role    角色
      * @param message 消息内容
+     * @param library 附加资料
      * @param done    是否完成
      */
-    void appendMessage(const lifuren::chat::Role& role, const std::string& message, bool done = true);
+    void appendMessage(const lifuren::chat::Role& role, const std::string& message, const std::vector<std::string>& library = {}, bool done = true);
 
 };
 

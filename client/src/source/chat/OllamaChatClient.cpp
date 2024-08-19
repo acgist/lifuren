@@ -4,6 +4,7 @@
 
 #include "nlohmann/json.hpp"
 
+static std::string promptLibrary(const std::string& prompt, const std::vector<std::string>& library);
 static std::string body(const std::string& prompt, bool stream, const lifuren::options::RestChatOptions& options);
 
 lifuren::OllamaChatClient::OllamaChatClient(lifuren::options::RestChatOptions options) : options(options) {
@@ -14,8 +15,12 @@ lifuren::OllamaChatClient::~OllamaChatClient() {
 }
 
 std::string lifuren::OllamaChatClient::chat(const std::string& prompt) {
-    this->appendMessage(lifuren::chat::Role::USER, prompt);
-    auto response = this->restClient->postJson(this->options.path, body(prompt, false, this->options));
+    std::vector<std::string> library{};
+    if(this->ragSearchEngine) {
+        library = this->ragSearchEngine->search(prompt);
+    }
+    this->appendMessage(lifuren::chat::Role::USER, prompt, library);
+    auto response = this->restClient->postJson(this->options.path, body(promptLibrary(prompt, library), false, this->options));
     if(!response) {
         return "请求错误";
     }
@@ -33,8 +38,12 @@ std::string lifuren::OllamaChatClient::chat(const std::string& prompt) {
 }
 
 void lifuren::OllamaChatClient::chat(const std::string& prompt, std::function<bool(const char*, size_t, bool)> callback) {
-    this->appendMessage(lifuren::chat::Role::USER, prompt);
-    bool success = this->restClient->postStream(this->options.path, body(prompt, true, this->options), [this, &callback](const char* text, size_t length) {
+    std::vector<std::string> library{};
+    if(this->ragSearchEngine) {
+        library = this->ragSearchEngine->search(prompt);
+    }
+    this->appendMessage(lifuren::chat::Role::USER, prompt, library);
+    bool success = this->restClient->postStream(this->options.path, body(promptLibrary(prompt, library), true, this->options), [this, &callback](const char* text, size_t length) {
         auto json = nlohmann::json::parse(std::string(text, length));
         bool done = true;
         std::string content;
@@ -46,7 +55,7 @@ void lifuren::OllamaChatClient::chat(const std::string& prompt, std::function<bo
         } else if(json.find("message") != json.end()) {
             auto& message = json["message"];
             content = message["content"];
-            this->appendMessage(lifuren::chat::Role::ASSISTANT, content, done);
+            this->appendMessage(lifuren::chat::Role::ASSISTANT, content, {}, done);
         } else {
             content = "没有响应";
         }
@@ -56,6 +65,17 @@ void lifuren::OllamaChatClient::chat(const std::string& prompt, std::function<bo
         const char* response = "请求失败";
         callback(response, std::strlen(response), true);
     }
+}
+
+static std::string promptLibrary(const std::string& prompt, const std::vector<std::string>& library) {
+    std::string ret = prompt;
+    if(library.empty()) {
+        return ret;
+    }
+    for(auto& value : library) {
+        ret += "\n" + value;
+    }
+    return ret;
 }
 
 static std::string body(const std::string& prompt, bool stream, const lifuren::options::RestChatOptions& options) {

@@ -129,11 +129,7 @@ void lifuren::DocumentMarkWindow::drawElement() {
     const auto& documentMark = lifuren::config::CONFIG.documentMark;
     for(auto& value : documentMark) {
         std::string path = value.path;
-        #if _WIN32
-        lifuren::strings::replace(path, "\\", "\\\\");
-        #else
-        lifuren::strings::replace(path, "/", "\\/");
-        #endif
+        LFR_CHOICE_TRANSFER(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->callback(pathCallback, this);
@@ -169,11 +165,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
     lifuren::DocumentMarkWindow* windowPtr = static_cast<lifuren::DocumentMarkWindow*>(voidPtr);
     if(reloadConfig(windowPtr, filename)) {
         std::string path = filename;
-        #if _WIN32
-        lifuren::strings::replace(path, "\\", "\\\\");
-        #else
-        lifuren::strings::replace(path, "/", "\\/");
-        #endif
+        LFR_CHOICE_TRANSFER(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->value(pathPtr->find_index(filename.c_str()));
@@ -240,7 +232,7 @@ static bool reloadConfig(lifuren::DocumentMarkWindow* windowPtr, const std::stri
     auto& documentMarkConfig = lifuren::config::CONFIG.documentMark;
     auto iterator = std::find(documentMarkConfig.begin(), documentMarkConfig.end(), path);
     if(iterator == documentMarkConfig.end()) {
-        lifuren::config::DocumentMarkConfig config{ path };
+        lifuren::config::DocumentMarkConfig config{ path, "", "", "" };
         ::documentMarkConfig = &documentMarkConfig.emplace_back(config);
         newPath = true;
     } else {

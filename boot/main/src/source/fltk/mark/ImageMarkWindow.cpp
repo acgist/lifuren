@@ -222,11 +222,7 @@ void lifuren::ImageMarkWindow::drawElement() {
     const auto& imageMark = lifuren::config::CONFIG.imageMark;
     for(auto& value : imageMark) {
         std::string path = value.path;
-        #if _WIN32
-        lifuren::strings::replace(path, "\\", "\\\\");
-        #else
-        lifuren::strings::replace(path, "/", "\\/");
-        #endif
+        LFR_CHOICE_TRANSFER(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->callback(pathCallback, this);
@@ -252,11 +248,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
     lifuren::ImageMarkWindow* windowPtr = static_cast<lifuren::ImageMarkWindow*>(voidPtr);
     if(reloadConfig(windowPtr, filename)) {
         std::string path = filename;
-        #if _WIN32
-        lifuren::strings::replace(path, "\\", "\\\\");
-        #else
-        lifuren::strings::replace(path, "/", "\\/");
-        #endif
+        LFR_CHOICE_TRANSFER(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->value(pathPtr->find_index(filename.c_str()));

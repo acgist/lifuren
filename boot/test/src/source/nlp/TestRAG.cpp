@@ -7,7 +7,7 @@
 
 #include "lifuren/Logger.hpp"
 
-static void testRAGService() {
+[[maybe_unused]] static void testRAGService() {
     lifuren::RAGTask task {
         "D:/tmp/docs",
         "elasticsearch",
@@ -23,7 +23,7 @@ static void testRAGService() {
     SPDLOG_DEBUG("任务完成");
 }
 
-static void testRAGTaskRunner() {
+[[maybe_unused]] static void testRAGTaskRunner() {
     lifuren::RAGTask task {
         "D:/tmp/docs",
         "elasticsearch",
@@ -34,8 +34,8 @@ static void testRAGTaskRunner() {
     std::this_thread::sleep_for(std::chrono::seconds(16));
 }
 
-static void testElasticSearchRAGClient() {
-    lifuren::ElasticSearchRAGClient client{ 8888, "D:/tmp/docs", "" };
+[[maybe_unused]] static void testElasticSearchRAGClient() {
+    lifuren::ElasticSearchRAGClient client{ "D:/tmp/docs", "" };
     // client.index("李夫人");
     client.search("李");
     // client.deleteRAG();

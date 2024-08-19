@@ -11,21 +11,24 @@
 #include "Fl/Fl_Pack.H"
 #include "FL/Fl_Button.H"
 #include "Fl/Fl_Scroll.H"
+#include "Fl/Fl_Choice.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 #include "FL/Fl_Text_Display.H"
 
+#include "lifuren/RAG.hpp"
 #include "lifuren/Strings.hpp"
 
 #ifndef LFR_CHAT_STREAM
 #define LFR_CHAT_STREAM true
 #endif
 
-static Fl_Button* sendPtr  { nullptr };
-static Fl_Button* stopPtr  { nullptr };
-static Fl_Button* configPtr{ nullptr };
-static Fl_Scroll* scrollPtr{ nullptr };
-static Fl_Pack*   packPtr  { nullptr };
+static Fl_Button* sendPtr    { nullptr };
+static Fl_Button* stopPtr    { nullptr };
+static Fl_Button* configPtr  { nullptr };
+static Fl_Choice* documentPtr{ nullptr };
+static Fl_Scroll* scrollPtr  { nullptr };
+static Fl_Pack*   packPtr    { nullptr };
 static Fl_Text_Buffer* messageBufferPtr{ nullptr };
 static Fl_Text_Editor* messageEditorPtr{ nullptr };
 
@@ -37,6 +40,7 @@ static std::list<std::tuple<Fl_Text_Buffer*, Fl_Text_Display*, bool>> messageLis
 // 配置窗口
 static lifuren::ChatConfigWindow* chatConfigWindowPtr{ nullptr };
 
+static void documentCallback(Fl_Widget*, void*);
 static void chatMessageThread(const lifuren::ChatWindow& window);
 static void chatMessage(const char* message, const lifuren::ChatWindow& window);
 static void appendMessage(const std::string& message, bool done);
@@ -66,6 +70,7 @@ lifuren::ChatWindow::~ChatWindow() {
     LFR_DELETE_PTR(sendPtr);
     LFR_DELETE_PTR(stopPtr);
     LFR_DELETE_PTR(configPtr);
+    LFR_DELETE_PTR(documentPtr);
     LFR_DELETE_PTR(packPtr);
     LFR_DELETE_PTR(scrollPtr);
     LFR_DELETE_PTR(messageEditorPtr);
@@ -75,11 +80,12 @@ lifuren::ChatWindow::~ChatWindow() {
 }
 
 void lifuren::ChatWindow::drawElement() {
-    sendPtr   = new Fl_Button(this->w() - 120, this->h() - 50, 100, 30, "发送消息");
-    stopPtr   = new Fl_Button(this->w() - 230, this->h() - 50, 100, 30, "结束回答");
-    configPtr = new Fl_Button(this->w() - 340, this->h() - 50, 100, 30, "⚙配置");
-    scrollPtr = new Fl_Scroll(10, 10, this->w() - 20, this->h() - 180);
-    packPtr   = new Fl_Pack  (10, 10, this->w() - 40, this->h() - 180);
+    sendPtr     = new Fl_Button(this->w() - 120, this->h() - 50, 100, 30, "发送消息");
+    stopPtr     = new Fl_Button(this->w() - 230, this->h() - 50, 100, 30, "结束回答");
+    configPtr   = new Fl_Button(this->w() - 340, this->h() - 50, 100, 30, "⚙配置");
+    documentPtr = new Fl_Choice(110,             this->h() - 50, 200, 30, "文档目录");
+    scrollPtr   = new Fl_Scroll(10, 10, this->w() - 20, this->h() - 180);
+    packPtr     = new Fl_Pack  (10, 10, this->w() - 40, this->h() - 180);
     scrollPtr->type(Fl_Scroll::VERTICAL_ALWAYS);
     packPtr->type(Fl_Pack::VERTICAL);
     packPtr->spacing(2);
@@ -90,6 +96,15 @@ void lifuren::ChatWindow::drawElement() {
     messageEditorPtr->buffer(messageBufferPtr);
     messageEditorPtr->wrap_mode(messageEditorPtr->WRAP_AT_COLUMN, messageEditorPtr->textfont());
     messageEditorPtr->end();
+    // 事件
+    // 文档目录
+    const auto& documentMark = lifuren::config::CONFIG.documentMark;
+    for(auto& value : documentMark) {
+        std::string path = value.path;
+        LFR_CHOICE_TRANSFER(path);
+        documentPtr->add(path.c_str());
+    }
+    documentPtr->callback(documentCallback, this);
     // 回车发送
     messageEditorPtr->when(Fl_Event::FL_ENTER);
     messageEditorPtr->callback([](Fl_Widget*, void* voidPtr) {
@@ -117,6 +132,25 @@ void lifuren::ChatWindow::drawElement() {
             LFR_DELETE_PTR(chatConfigWindowPtr);
         }, voidPtr);
     }, this);
+}
+
+static void documentCallback(Fl_Widget*, void* voidPtr) {
+    lifuren::ChatWindow* windowPtr = static_cast<lifuren::ChatWindow*>(voidPtr);
+    const std::string path = documentPtr->text();
+    if(path.empty()) {
+        windowPtr->clientPtr->ragSearchEngine = nullptr;
+        return;
+    }
+    auto& documentMark = lifuren::config::CONFIG.documentMark;
+    auto iterator = std::find(documentMark.begin(), documentMark.end(), path);
+    if(iterator != documentMark.end()) {
+        auto ragClient = lifuren::RAGClient::getRAGClient(iterator->rag, iterator->path, iterator->embedding);
+        ragClient->loadIndex();
+        windowPtr->clientPtr->ragSearchEngine = std::move(ragClient);
+        // windowPtr->clientPtr->ragSearchEngine.reset(ragClient.release());
+    } else {
+        SPDLOG_WARN("不支持的文档路径：{}", path);
+    }
 }
 
 static void chatMessageThread(const lifuren::ChatWindow& window) {
