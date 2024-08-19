@@ -294,6 +294,6 @@ bool lifuren::config::saveFile(const std::string& path) {
     return lifuren::yamls::saveFile(toYaml(), path);
 }
 
-bool lifuren::config::MarkConfig::operator==(const std::string& path) {
+bool lifuren::config::MarkConfig::operator==(const std::string& path) const {
     return this->path == path;
 }

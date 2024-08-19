@@ -11,7 +11,8 @@
 #include <vector>
 #include <string>
 
-#include "lifuren/Jsons.hpp"
+#include "nlohmann/json.hpp"
+
 #include "lifuren/config/Label.hpp"
 
 namespace lifuren {
@@ -33,7 +34,7 @@ const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "�
  */
 std::string beautify(const std::string& segment);
 
-}
+} // END OF poetry
 
 /**
  * 诗词
@@ -43,10 +44,10 @@ class Poetry {
 public:
     // 标题
     std::string title;
-    // 格律
-    std::string rhythmic;
     // 作者
     std::string author;
+    // 格律
+    std::string rhythmic;
     // 原始段落
     std::string segment;
     // 朴素段落：没有符号
@@ -61,14 +62,14 @@ public:
     std::vector<std::string> participleParagraphs;
     // 规则：不要释放资源（全局资源）
     LabelText* label = nullptr;
-    // JSON序列化
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, rhythmic, author, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
+    // JSON解析
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythmic, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
 
 public:
     /**
      * 预处理
      * 
-     * @return *this
+     * @return 诗词
      */
     Poetry& preproccess();
     /**
@@ -83,6 +84,12 @@ public:
      * @return 是否分词成功
      */
     bool participle();
+    /**
+     * @param poetry 其他诗词
+     * 
+     * @return 是否相等
+     */
+    bool operator==(const Poetry& poetry) const;
 
 };
 

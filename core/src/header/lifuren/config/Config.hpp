@@ -200,7 +200,7 @@ struct MarkConfig {
     std::string path;
 
     // 路径相同即为相等
-    bool operator==(const std::string& path);
+    bool operator==(const std::string& path) const;
 
 };
 

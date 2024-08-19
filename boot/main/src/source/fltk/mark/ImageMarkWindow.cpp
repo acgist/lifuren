@@ -93,9 +93,9 @@ static Fl_Image*  previewImagePtr{ nullptr };
 static Fl_Text_Buffer* moreBufferPtr{ nullptr };
 static Fl_Text_Editor* moreEditorPtr{ nullptr };
 
-static std::list<Fl_Choice*> choiceList{};
-static std::vector<std::string> imageVector{};
+static std::vector<std::string>           imageVector{};
 static std::vector<std::string>::iterator imageIterator{};
+static std::list<Fl_Choice*> choiceList{};
 static lifuren::config::ImageMarkConfig* imageMarkConfig{ nullptr };
 
 static void newCallback   (Fl_Widget*, void*);

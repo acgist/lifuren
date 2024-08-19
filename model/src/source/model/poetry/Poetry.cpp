@@ -103,3 +103,14 @@ bool lifuren::Poetry::participle() {
     }
     return true;
 }
+
+bool lifuren::Poetry::operator==(const lifuren::Poetry& poetry) const {
+    if(this == &poetry) {
+        return true;
+    }
+    return
+        this->title      == poetry.title    &&
+        this->author     == poetry.author   &&
+        this->rhythmic   == poetry.rhythmic &&
+        this->paragraphs == poetry.paragraphs;
+}

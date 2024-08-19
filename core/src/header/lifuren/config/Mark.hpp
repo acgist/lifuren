@@ -21,7 +21,7 @@ class Mark {
 public:
     // 标签数组
     std::vector<std::string> labels;
-    // JSON序列化
+    // JSON解析
     // NLOHMANN_DEFINE_TYPE_INTRUSIVE
     // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Mark, labels);
@@ -51,7 +51,7 @@ class MarkFile : public Mark {
 public:
     // 本地文件
     std::string file;
-    // JSON序列化
+    // JSON解析
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkFile, file, labels);
 
 public:
@@ -82,7 +82,7 @@ public:
     std::string text;
     // 标记名称
     std::string label;
-    // JSON序列化
+    // JSON解析
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MarkText, name, text, label, labels);
     
 public:
