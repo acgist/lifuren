@@ -9,7 +9,7 @@
 #include "lifuren/Strings.hpp"
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path) {
-    listFiles(vector, path, {});
+    listFiles(vector, path, [](const std::string& path) { return true; });
 }
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& exts) {
@@ -27,6 +27,27 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
             return ret != exts.end();
         }
     });
+}
+
+void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate) {
+    if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+        SPDLOG_DEBUG("目录无效：{}", path);
+        return;
+    }
+    auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
+    for(const auto& entry : iterator) {
+        std::string filepath = entry.path().string();
+        if(entry.is_regular_file()) {
+            std::string filename = entry.path().filename().string();
+            if(predicate(filename)) {
+                vector.push_back(filepath);
+            } else {
+                SPDLOG_DEBUG("忽略无效文件类型：{}", filepath);
+            }
+        } else {
+            SPDLOG_DEBUG("忽略无效文件：{}", filepath);
+        }
+    }
 }
 
 std::string lifuren::files::loadFile(const std::string& path) {

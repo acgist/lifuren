@@ -8,8 +8,8 @@
 #define LIFUREN_HEADER_NLP_DOCUMENT_CHUNK_HPP
 
 #include <list>
-
-#include "lifuren/DocumentReader.hpp"
+#include <string>
+#include <memory>
 
 namespace lifuren {
 

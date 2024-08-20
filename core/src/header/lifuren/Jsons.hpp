@@ -23,12 +23,11 @@ namespace jsons   {
  * @return JSON内容
  */
 template <typename T>
-T loadFile(const std::string& path) {
+inline T loadFile(const std::string& path) {
     std::string json = lifuren::files::loadFile(path);
     if(json.empty()) {
         return {};
     }
-    SPDLOG_DEBUG("加载JSON文件：{}", path);
     return nlohmann::json::parse(json);
 }
 

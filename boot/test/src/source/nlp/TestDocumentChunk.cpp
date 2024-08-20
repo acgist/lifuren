@@ -1,6 +1,7 @@
 #include "lifuren/DocumentChunk.hpp"
 
 #include "lifuren/Logger.hpp"
+#include "lifuren/DocumentReader.hpp"
 
 #include "spdlog/spdlog.h"
 

@@ -1,5 +1,7 @@
 #include "lifuren/DocumentChunk.hpp"
 
+#include "lifuren/DocumentReader.hpp"
+
 lifuren::ChunkService::ChunkService(const std::string& chunkType) {
     this->chunkStrategy = lifuren::ChunkStrategy::getChunkStrategy(chunkType);
 }

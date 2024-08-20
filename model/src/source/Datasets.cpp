@@ -1,6 +1,5 @@
 #include "lifuren/Datasets.hpp"
 
-#include "lifuren/Logger.hpp"
 #include "lifuren/Files.hpp"
 
 #include "spdlog/spdlog.h"
@@ -37,7 +36,7 @@ torch::optional<size_t> lifuren::datasets::FileDataset::size() const {
 }
 
 torch::data::Example<> lifuren::datasets::FileDataset::get(size_t index) {
-    const std::string& path   = this->paths.at(index);
+    const std::string& path = this->paths.at(index);
     torch::Tensor data = this->fileTransform(path);
     const int label = this->labels.at(index);
     torch::Tensor target = torch::full({1}, label);

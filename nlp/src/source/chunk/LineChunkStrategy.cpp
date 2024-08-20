@@ -1,5 +1,7 @@
 #include "lifuren/DocumentChunk.hpp"
 
+#include "lifuren/DocumentReader.hpp"
+
 lifuren::LineChunkStrategy::LineChunkStrategy() : ChunkStrategy(lifuren::ChunkType::LINE) {
 }
 
