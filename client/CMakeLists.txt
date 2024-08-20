@@ -1,7 +1,7 @@
 project(lifurenclient VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
-    ${PROJECT_NAME} STATIC
+    ${PROJECT_NAME}
     src/source/Client.cpp
     src/source/RestClient.cpp
     src/source/chat/ChatClient.cpp

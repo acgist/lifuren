@@ -1,7 +1,7 @@
 project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
-    ${PROJECT_NAME} STATIC
+    ${PROJECT_NAME}
     src/source/CV.cpp
     src/source/image/ImageReader.cpp
 )

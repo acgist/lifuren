@@ -10,4 +10,5 @@ lifuren::QuantizationWindow::~QuantizationWindow() {
 }
 
 void lifuren::QuantizationWindow::drawElement() {
+    // 绘制界面
 }

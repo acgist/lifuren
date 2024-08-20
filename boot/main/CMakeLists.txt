@@ -9,7 +9,6 @@ if(ENABLE_FLTK)
     aux_source_directory(src/source/fltk          FLTK_FILES)
     aux_source_directory(src/source/fltk/app      FLTK_FILES)
     aux_source_directory(src/source/fltk/mark     FLTK_FILES)
-    aux_source_directory(src/source/fltk/widget   FLTK_FILES)
     aux_source_directory(src/source/fltk/optimize FLTK_FILES)
 endif()
     

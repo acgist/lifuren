@@ -82,6 +82,7 @@ lifuren::MainWindow::~MainWindow() {
 }
 
 void lifuren::MainWindow::drawElement() {
+    // 绘制界面
     // 数据标记
     imageMarkButtonPtr    = new Fl_Button(20,                      10, LFR_HALF_WIDTH(60), 30, "图片标记");
     poetryMarkButtonPtr   = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10, LFR_HALF_WIDTH(60), 30, "诗词标记");
@@ -99,6 +100,7 @@ void lifuren::MainWindow::drawElement() {
     reloadButtonPtr = new Fl_Button(this->w() - 260, this->h() - 40, 140, 30, "重新加载配置");
     // 大小修改
     this->resizable(this);
+    // 绑定事件
     // 绑定事件
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageMarkButtonPtr,    imageMark);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryMarkButtonPtr,   poetryMark);

@@ -58,15 +58,15 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Loss)
 LFR_LOG_FORMAT_ENUM(lifuren::config::Activation)
 LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 
-const std::string lifuren::config::CONFIG_CHAT             = "chat";
-const std::string lifuren::config::CONFIG_OPENAI           = "openai";
-const std::string lifuren::config::CONFIG_OLLAMA           = "ollama";
-const std::string lifuren::config::CONFIG_ELASTICSEARCH    = "elasticsearch";
-const std::string lifuren::config::CONFIG_IMAGE_MARK       = "image-mark";
-const std::string lifuren::config::CONFIG_POETRY_MARK      = "poetry-mark";
-const std::string lifuren::config::CONFIG_DOCUMENT_MARK    = "document-mark";
-const std::string lifuren::config::CONFIG_HTTP_SERVER_HOST = "http-server-host";
-const std::string lifuren::config::CONFIG_HTTP_SERVER_PORT = "http-server-port";
+const std::string lifuren::config::CONFIG_CHAT          = "chat";
+const std::string lifuren::config::CONFIG_IMAGE         = "image";
+const std::string lifuren::config::CONFIG_OPENAI        = "openai";
+const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
+const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
+const std::string lifuren::config::CONFIG_IMAGE_MARK    = "image-mark";
+const std::string lifuren::config::CONFIG_POETRY_MARK   = "poetry-mark";
+const std::string lifuren::config::CONFIG_DOCUMENT_MARK = "document-mark";
+const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
 
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
@@ -98,10 +98,15 @@ std::string lifuren::config::Config::toYaml() {
 }
 
 void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
-    if(name == lifuren::config::CONFIG_HTTP_SERVER_HOST) {
-        lifuren::config::httpServerHost = yaml.as<std::string>();
-    } else if(name == lifuren::config::CONFIG_HTTP_SERVER_PORT) {
-        lifuren::config::httpServerPort = yaml.as<int>();
+    if(name == lifuren::config::CONFIG_HTTP_SERVER) {
+        const auto& host = yaml["host"];
+        const auto& port = yaml["port"];
+        if(host) {
+            lifuren::config::httpServerHost = host.as<std::string>();
+        }
+        if(port) {
+            lifuren::config::httpServerPort = port.as<int>();
+        }
     } else if(lifuren::config::CONFIG_CHAT == name) {
         LFR_CONFIG_YAML_GETTER(config.chat, yaml, client,   client,  std::string);
         LFR_CONFIG_YAML_GETTER(config.chat, yaml, rag-size, ragSize, int);
@@ -109,6 +114,15 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
                 config.chat.clients.emplace(client.template as<std::string>());
+            });
+        }
+    } else if(lifuren::config::CONFIG_IMAGE == name) {
+        LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(config.image, yaml, output, output, std::string);
+        const YAML::Node& clients = yaml["clients"];
+        if(clients) {
+            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
+                config.image.clients.emplace(client.template as<std::string>());
             });
         }
     } else if(lifuren::config::CONFIG_OPENAI == name) {
@@ -176,8 +190,10 @@ YAML::Node toYaml() {
     const auto& config = lifuren::config::CONFIG;
     YAML::Node yaml;
     {
-        yaml[lifuren::config::CONFIG_HTTP_SERVER_HOST] = lifuren::config::httpServerHost;
-        yaml[lifuren::config::CONFIG_HTTP_SERVER_PORT] = lifuren::config::httpServerPort;
+        YAML::Node http;
+        http["host"] = lifuren::config::httpServerHost;
+        http["port"] = lifuren::config::httpServerPort;
+        yaml[lifuren::config::CONFIG_HTTP_SERVER] = http;
     }
     {
         YAML::Node chat;
@@ -189,6 +205,17 @@ YAML::Node toYaml() {
         });
         chat["clients"] = clients;
         yaml[lifuren::config::CONFIG_CHAT] = chat;
+    }
+    {
+        YAML::Node image;
+        LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
+        LFR_CONFIG_YAML_SETTER(image, config.image, output, output);
+        YAML::Node clients;
+        std::for_each(config.image.clients.begin(), config.image.clients.end(), [&clients](auto& v) {
+            clients.push_back(v);
+        });
+        image["clients"] = clients;
+        yaml[lifuren::config::CONFIG_IMAGE] = image;
     }
     {
         YAML::Node ollama;

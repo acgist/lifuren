@@ -22,7 +22,7 @@ lifuren::AboutWindow::~AboutWindow() {
 }
 
 void lifuren::AboutWindow::drawElement() {
-    // 内容
+    // 绘制界面
     aboutDisplayPtr = new Fl_Text_Display(10, 30, this->w() - 20, this->h() - 90, "关于");
     aboutBufferPtr  = new Fl_Text_Buffer();
     aboutDisplayPtr->color(FL_BACKGROUND_COLOR);

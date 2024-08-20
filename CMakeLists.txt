@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20.0)
 
+# https://cmake.org/cmake/help/latest/
+
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
-# -D CMAKE_BUILD_TYPE=Debug|Release
 if(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Debug)
-    # SET(CMAKE_BUILD_TYPE Release)
 endif()
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")

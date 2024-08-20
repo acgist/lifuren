@@ -1,7 +1,7 @@
 project(lifurenmodel VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
-    ${PROJECT_NAME} STATIC
+    ${PROJECT_NAME}
     src/source/Model.cpp
     src/source/Layers.cpp
     src/source/Models.cpp

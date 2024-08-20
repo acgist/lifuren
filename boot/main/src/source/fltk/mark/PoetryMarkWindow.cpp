@@ -18,7 +18,6 @@
 #include "spdlog/spdlog.h"
 
 #include "Fl/fl_ask.H"
-#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 #include "FL/Fl_Text_Buffer.H"
@@ -26,7 +25,6 @@
 
 #include "lifuren/Jsons.hpp"
 #include "lifuren/Strings.hpp"
-#include "lifuren/FLTKWidget.hpp"
 #include "lifuren/model/Poetry.hpp"
 
 static nlohmann::json           poetryJson    {};
@@ -93,7 +91,7 @@ void lifuren::PoetryMarkWindow::redrawConfigElement() {
 }
 
 void lifuren::PoetryMarkWindow::drawElement() {
-    // 配置按钮
+    // 绘制界面
     pathPtr     = new Fl_Choice(80,  10, 200, 30, "诗词目录");
     newPtr      = new Fl_Button(280, 10, 100, 30, "新增目录");
     deletePtr   = new Fl_Button(380, 10, 100, 30, "删除目录");
@@ -121,7 +119,7 @@ void lifuren::PoetryMarkWindow::drawElement() {
     targetBufferPtr = new Fl_Text_Buffer();
     targetDisplayPtr->buffer(targetBufferPtr);
     targetDisplayPtr->end();
-    // 事件
+    // 绑定事件
     // 诗词目录
     const auto& poetryMark = lifuren::config::CONFIG.poetryMark;
     for(auto& value : poetryMark) {

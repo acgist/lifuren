@@ -11,12 +11,10 @@
 
 #include "lifuren/Files.hpp"
 #include "lifuren/Strings.hpp"
-#include "lifuren/FLTKWidget.hpp"
 #include "lifuren/config/Label.hpp"
 
 #include "FL/fl_ask.H"
 #include "FL/Fl_Box.H"
-#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 #include "FL/Fl_Text_Buffer.H"
@@ -147,7 +145,7 @@ void lifuren::ImageMarkWindow::redrawConfigElement() {
 }
 
 void lifuren::ImageMarkWindow::drawElement() {
-    // 配置按钮
+    // 绘制界面
     pathPtr   = new Fl_Choice(80,  10, 200, 30, "图片目录");
     newPtr    = new Fl_Button(280, 10, 100, 30, "新增目录");
     deletePtr = new Fl_Button(380, 10, 100, 30, "删除目录");
@@ -217,7 +215,7 @@ void lifuren::ImageMarkWindow::drawElement() {
     moreEditorPtr->buffer(moreBufferPtr);
     moreEditorPtr->wrap_mode(moreEditorPtr->WRAP_AT_COLUMN, moreEditorPtr->textfont());
     moreEditorPtr->end();
-    // 事件
+    // 绑定事件
     // 图片目录
     const auto& imageMark = lifuren::config::CONFIG.imageMark;
     for(auto& value : imageMark) {

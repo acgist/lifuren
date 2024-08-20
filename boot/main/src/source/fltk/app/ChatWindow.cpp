@@ -34,11 +34,11 @@ static Fl_Text_Editor* messageEditorPtr{ nullptr };
 
 // 是否停止
 static bool messageStop{ true  };
+// 是否等待
 static bool messageWait{ false };
-// 消息列表
-static std::list<std::tuple<Fl_Text_Buffer*, Fl_Text_Display*, bool>> messageList{};
-// 配置窗口
+
 static lifuren::ChatConfigWindow* chatConfigWindowPtr{ nullptr };
+static std::list<std::tuple<Fl_Text_Buffer*, Fl_Text_Display*, bool>> messageList{};
 
 static void documentCallback(Fl_Widget*, void*);
 static void chatMessageThread(const lifuren::ChatWindow& window);
@@ -80,10 +80,11 @@ lifuren::ChatWindow::~ChatWindow() {
 }
 
 void lifuren::ChatWindow::drawElement() {
+    // 绘制界面
     sendPtr     = new Fl_Button(this->w() - 120, this->h() - 50, 100, 30, "发送消息");
     stopPtr     = new Fl_Button(this->w() - 230, this->h() - 50, 100, 30, "结束回答");
     configPtr   = new Fl_Button(this->w() - 340, this->h() - 50, 100, 30, "⚙配置");
-    documentPtr = new Fl_Choice(110,             this->h() - 50, 200, 30, "文档目录");
+    documentPtr = new Fl_Choice(this->w() - 550, this->h() - 50, 200, 30, "文档目录");
     scrollPtr   = new Fl_Scroll(10, 10, this->w() - 20, this->h() - 180);
     packPtr     = new Fl_Pack  (10, 10, this->w() - 40, this->h() - 180);
     scrollPtr->type(Fl_Scroll::VERTICAL_ALWAYS);
@@ -96,7 +97,7 @@ void lifuren::ChatWindow::drawElement() {
     messageEditorPtr->buffer(messageBufferPtr);
     messageEditorPtr->wrap_mode(messageEditorPtr->WRAP_AT_COLUMN, messageEditorPtr->textfont());
     messageEditorPtr->end();
-    // 事件
+    // 绑定事件
     // 文档目录
     const auto& documentMark = lifuren::config::CONFIG.documentMark;
     for(auto& value : documentMark) {

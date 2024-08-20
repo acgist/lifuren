@@ -4,8 +4,8 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 
-static Fl_Choice* clientPtr{ nullptr };
 static Fl_Input*  apiPtr   { nullptr };
+static Fl_Choice* clientPtr{ nullptr };
 static Fl_Input*  usernamePtr { nullptr };
 static Fl_Input*  passwordPtr { nullptr };
 static Fl_Choice* authTypePtr { nullptr };
@@ -19,8 +19,8 @@ lifuren::ChatConfigWindow::ChatConfigWindow(int width, int height, const char* t
 
 lifuren::ChatConfigWindow::~ChatConfigWindow() {
     this->saveConfig();
-    LFR_DELETE_PTR(clientPtr);
     LFR_DELETE_PTR(apiPtr);
+    LFR_DELETE_PTR(clientPtr);
     LFR_DELETE_PTR(usernamePtr);
     LFR_DELETE_PTR(passwordPtr);
     LFR_DELETE_PTR(authTypePtr);
@@ -61,15 +61,15 @@ void lifuren::ChatConfigWindow::redrawConfigElement() {
 
 // TODO: 优化模型通过接口查询回来
 void lifuren::ChatConfigWindow::drawElement() {
-    // 布局
+    // 绘制界面
     clientPtr    = new Fl_Choice(110, 10,  200,             30, "终端名称");
-    apiPtr       = new Fl_Input(110,  50,  this->w() - 200, 30, "服务地址");
-    usernamePtr  = new Fl_Input(110,  90,  this->w() - 200, 30, "账号");
-    passwordPtr  = new Fl_Input(110,  130, this->w() - 200, 30, "密码");
+    apiPtr       = new Fl_Input( 110, 50,  this->w() - 200, 30, "服务地址");
+    usernamePtr  = new Fl_Input( 110, 90,  this->w() - 200, 30, "账号");
+    passwordPtr  = new Fl_Input( 110, 130, this->w() - 200, 30, "密码");
     authTypePtr  = new Fl_Choice(110, 170, 200,             30, "授权类型"); 
-    chatPathPtr  = new Fl_Input(110,  210, this->w() - 200, 30, "请求地址");
-    chatModelPtr = new Fl_Input(110,  250, this->w() - 200, 30, "语言模型");
-    // 事件
+    chatPathPtr  = new Fl_Input( 110, 210, this->w() - 200, 30, "请求地址");
+    chatModelPtr = new Fl_Input( 110, 250, this->w() - 200, 30, "语言模型");
+    // 绑定事件
     // 终端名称
     const auto& chatConfig = lifuren::config::CONFIG.chat;
     std::for_each(chatConfig.clients.begin(), chatConfig.clients.end(), [](const auto& v) {

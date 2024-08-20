@@ -109,7 +109,7 @@ void lifuren::DocumentMarkWindow::redrawConfigElement() {
 }
 
 void lifuren::DocumentMarkWindow::drawElement() {
-    // 布局
+    // 绘制界面
     pathPtr           = new Fl_Choice(110, 10,  200,             30, "文档目录");
     newPtr            = new Fl_Button(310, 10,  100,             30, "新增目录");
     deletePtr         = new Fl_Button(410, 10,  100,             30, "删除目录");
@@ -124,7 +124,7 @@ void lifuren::DocumentMarkWindow::drawElement() {
     embeddingModelPtr = new Fl_Input(110,  370, this->w() - 200, 30, "词嵌入模型");
     markPtr           = new Fl_Button(110, 410, 100,             30, "开始标记");
     stopPtr           = new Fl_Button(210, 410, 100,             30, "停止标记");
-    // 事件
+    // 绑定事件
     // 文档目录
     const auto& documentMark = lifuren::config::CONFIG.documentMark;
     for(auto& value : documentMark) {

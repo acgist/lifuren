@@ -21,14 +21,14 @@ class Config;
 extern std::string httpServerHost;
 extern int         httpServerPort;
 extern const std::string CONFIG_CHAT;
+extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_IMAGE_MARK;
 extern const std::string CONFIG_POETRY_MARK;
 extern const std::string CONFIG_DOCUMENT_MARK;
 extern const std::string CONFIG_OPENAI;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
-extern const std::string CONFIG_HTTP_SERVER_HOST;
-extern const std::string CONFIG_HTTP_SERVER_PORT;
+extern const std::string CONFIG_HTTP_SERVER;
 
 extern lifuren::config::Config CONFIG;
 
@@ -76,7 +76,7 @@ enum class Regularization {
 struct ChatConfig {
 
     // RAG文档资料数量
-    int ragSize = 1;
+    int ragSize = 4;
     // 终端名称
     std::string client;
     // 终端列表
@@ -88,6 +88,13 @@ struct ChatConfig {
  * 图片生成页面配置
  */
 struct ImageConfig {
+
+    // 终端名称
+    std::string client;
+    // 输出目录
+    std::string output;
+    // 终端列表
+    std::set<std::string> clients;
 
 };
 

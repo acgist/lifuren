@@ -1,17 +1,18 @@
-# REST监听地址
-http-server-host: 0.0.0.0
-# REST监听端口
-http-server-port: 8080
+# HTTP监听
+http-server:
+  host: 0.0.0.0
+  port: 8080
 # 聊天页面配置
 chat:
-  rag-size: 4
   client: ollama
+  rag-size: 4
   clients:
     - ollama
     - openai
 # 图片页面配置
 image:
   client: stable-diffusion-cpp
+  output: /data/image
   clients:
     - stable-diffusion-cpp
 # 诗词页面配置
@@ -50,8 +51,8 @@ ollama:
   auth-type: NONE
   chat:
     path: /api/chat
-    model: glm4
     # path: /api/generate
+    model: glm4
     top-p: 
     top-k:
     temperature: 
@@ -62,6 +63,8 @@ ollama:
     options: {}
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
+  model: /data/stable-diffusion-cpp/sd/mode.ckpt
+  command: /data/stable-diffusion-cpp/sd
 elasticsearch:
   api: http://192.168.8.183:9200
   username: elastic

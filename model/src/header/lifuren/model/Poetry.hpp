@@ -32,7 +32,7 @@ const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "�
  * 
  * @return 美化后的段落
  */
-std::string beautify(const std::string& segment);
+extern std::string beautify(const std::string& segment);
 
 } // END OF poetry
 

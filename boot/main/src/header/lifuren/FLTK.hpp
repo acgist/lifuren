@@ -427,7 +427,7 @@ protected:
 /**
  * 图片内容生成
  */
-class ImageWindow : public ModelWindow {
+class ImageWindow : public ModelWindow, public Configuration {
 
 public:
     /**
@@ -439,6 +439,10 @@ public:
     // 析构函数
     virtual ~ImageWindow();
 
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+    
 protected:
     virtual void drawElement() override;
 

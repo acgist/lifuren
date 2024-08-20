@@ -16,6 +16,11 @@
 
 ## 源码编译
 
+```
+-DBUILD_SHARED_LIBS=ON|OFF
+-DCMAKE_BUILD_TYPE=Debug|Release
+```
+
 #### Linux
 
 ###### 编译环境
@@ -33,14 +38,15 @@ sudo apt install build-essential
 ```
 mkdir build
 cd build
-cmake -D CMAKE_BUILD_TYPE=Debug|Release ..
-make
+cmake ..
+make -j
 make install
 
 mkdir build
 cd build
-cmake -D CMAKE_BUILD_TYPE=Debug|Release ..
-cmake --build . --parallel 8 --config Debug|Release
+cmake ..
+cmake --build . -j
+cmake --build . --parallel 8
 cmake --install .
 
 export LD_LIBRARY_PATH=/data/dev/lifuren/install/lib/:/data/dev/lifuren/deps/libtorch/lib/:$LD_LIBRARY_PATH
@@ -88,7 +94,8 @@ vcpkg export cpp-httplib --zip
 mkdir build
 cd build
 cmake -G "Visual Studio 17 2022" ..
-cmake --build . --parallel 8 --config Debug|Release
+cmake --build . -j
+cmake --build . --parallel 8
 cmake --install .
 ```
 
