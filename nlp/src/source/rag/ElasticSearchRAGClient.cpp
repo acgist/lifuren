@@ -54,8 +54,7 @@ bool lifuren::ElasticSearchRAGClient::deleteRAG() {
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
-    auto response = client->head("/" + std::to_string(id));
-    return response && response->status == httplib::StatusCode::OK_200;
+    return client->head("/" + std::to_string(id));
 }
 
 static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
@@ -68,20 +67,18 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
             }
         }
     )");
-    return response && response->status == httplib::StatusCode::OK_200;
+    return response;
 }
 
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
-    auto response = client->deletePath("/" + std::to_string(id));
-    return response && response->status == httplib::StatusCode::OK_200;
+    return client->deletePath("/" + std::to_string(id));
 }
 
 static bool textIndex(const size_t& id, const std::string& content, std::shared_ptr<lifuren::RestClient> client) {
     nlohmann::json body = {
         { "content", content }
     };
-    auto response = client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
-    return response && response->status == httplib::StatusCode::Created_201;
+    return client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
 }
 
 static std::vector<std::string> textSearch(const size_t& id, const std::string& prompt, const int& size, std::shared_ptr<lifuren::RestClient> client) {
@@ -97,7 +94,7 @@ static std::vector<std::string> textSearch(const size_t& id, const std::string& 
     if(!response) {
         return {};
     }
-    nlohmann::json data = nlohmann::json::parse(response->body);
+    nlohmann::json data = nlohmann::json::parse(response.body);
     if(data.find("hits") == data.end()) {
         return {};
     }

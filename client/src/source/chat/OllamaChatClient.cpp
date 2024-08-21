@@ -24,7 +24,7 @@ std::string lifuren::OllamaChatClient::chat(const std::string& prompt) {
     if(!response) {
         return "请求错误";
     }
-    auto json = nlohmann::json::parse(response->body);
+    auto json = nlohmann::json::parse(response.body);
     if(json.find("error") != json.end()) {
         return json["error"].template get<std::string>();
     }

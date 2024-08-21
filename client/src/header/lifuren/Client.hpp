@@ -9,16 +9,20 @@
 #ifndef LFR_HEADER_CLIENT_CLIENT_HPP
 #define LFR_HEADER_CLIENT_CLIENT_HPP
 
-
+#include <map>
 #include <list>
 #include <string>
 #include <memory>
 #include <cstdio>
 #include <functional>
 
-#include "httplib.h"
-
 #include "ClientOptions.hpp"
+
+namespace httplib {
+
+class Client;
+
+};
 
 namespace lifuren {
 
@@ -54,6 +58,23 @@ public:
  * REST终端
  */
 class RestClient : public Client {
+
+public:
+
+class Response {
+
+public:
+    int  status  = 200;
+    bool success = true;
+    std::map<std::string, std::string> headers;
+    std::string body;
+
+public:
+    operator bool() {
+        return this->success;
+    }
+
+};
 
 /**
  * 授权方式
@@ -128,7 +149,7 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result head(const std::string& path, const httplib::Headers& headers = {});
+    Response head(const std::string& path, const std::map<std::string, std::string>& headers = {});
 
     /**
      * @param path    请求地址
@@ -136,18 +157,7 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result get(const std::string& path, const httplib::Headers& headers = {}) const;
-
-    /**
-     * 数据请求
-     * 
-     * @param path    请求地址
-     * @param data    请求数据
-     * @param headers 请求头部
-     * 
-     * @return 响应内容
-     */
-    httplib::Result putJson(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
+    Response get(const std::string& path, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * 数据请求
@@ -158,7 +168,18 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result postJson(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
+    Response putJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
+
+    /**
+     * 数据请求
+     * 
+     * @param path    请求地址
+     * @param data    请求数据
+     * @param headers 请求头部
+     * 
+     * @return 响应内容
+     */
+    Response postJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * 表单请求
@@ -169,7 +190,7 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result postForm(const std::string& path, const std::string& data, const httplib::Headers& headers = {}) const;
+    Response postForm(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * 表单请求
@@ -180,7 +201,7 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result post(const std::string& path, const httplib::Params& params, const httplib::Headers& headers = {}) const;
+    Response post(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * 流式请求
@@ -192,7 +213,7 @@ public:
      * 
      * @return 是否成功
      */
-    bool postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const httplib::Headers& headers = {}) const;
+    bool postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * 删除请求
@@ -202,7 +223,7 @@ public:
      * 
      * @return 响应内容
      */
-    httplib::Result deletePath(const std::string& path, const httplib::Headers& headers = {});
+    Response deletePath(const std::string& path, const std::map<std::string, std::string>& headers = {});
 
 };
 

@@ -1,9 +1,14 @@
 /**
  * https://github.com/yhirose/cpp-httplib
+ * 
+ * TODO:
+ * 1. 优化拷贝性能
  */
 #include "lifuren/Client.hpp"
 
 #include <chrono>
+
+#include "httplib.h"
 
 #include "spdlog/spdlog.h"
 
@@ -19,14 +24,9 @@
  */
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password);
 
-/**
- * 验证响应
- * 
- * @param response 响应信息
- * 
- * @return 是否成功
- */
-static bool checkResponse(const httplib::Result& response);
+static lifuren::RestClient::Response buildResponse(const httplib::Result& response);
+static httplib::Params buildParams(const std::map<std::string, std::string>& params);
+static httplib::Headers buildHeaders(const std::map<std::string, std::string>& headers);
 
 lifuren::RestClient::RestClient(const std::string& baseUrl, bool trustAllCert, const std::string& certPath) : baseUrl(baseUrl) {
     this->client = std::make_unique<httplib::Client>(baseUrl);
@@ -103,61 +103,53 @@ bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, co
     return true;
 }
 
-httplib::Result lifuren::RestClient::head(const std::string& path, const httplib::Headers& headers) {
-    auto response = this->client->Head(path, headers);
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::head(const std::string& path, const std::map<std::string, std::string>& headers) {
+    auto response = this->client->Head(path, buildHeaders(headers));
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::get(const std::string& path, const httplib::Headers& headers) const {
-    auto response = this->client->Get(path, headers);
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::get(const std::string& path, const std::map<std::string, std::string>& headers) const {
+    auto response = this->client->Get(path, buildHeaders(headers));
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::putJson(const std::string& path, const std::string& data, const httplib::Headers& headers) const {
-    auto response = this->client->Put(path, headers, data, "application/json");
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::putJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
+    auto response = this->client->Put(path, buildHeaders(headers), data, "application/json");
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::postJson(const std::string& path, const std::string& data, const httplib::Headers& headers) const {
-    auto response = this->client->Post(path, headers, data, "application/json");
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::postJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
+    auto response = this->client->Post(path, buildHeaders(headers), data, "application/json");
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::postForm(const std::string& path, const std::string& data, const httplib::Headers& headers) const {
-    auto response = this->client->Post(path, headers, data, "application/x-www-form-urlencoded");
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::postForm(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
+    auto response = this->client->Post(path, buildHeaders(headers), data, "application/x-www-form-urlencoded");
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::post(const std::string& path, const httplib::Params& params, const httplib::Headers& headers) const {
-    auto response = this->client->Post(path, headers, params);
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::post(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers) const {
+    auto response = this->client->Post(path, buildHeaders(headers), buildParams(params));
+    return buildResponse(response);
 }
 
-bool lifuren::RestClient::postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const httplib::Headers& headers) const {
+bool lifuren::RestClient::postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const std::map<std::string, std::string>& headers) const {
     httplib::Request request{};
     request.path    = path;
     request.body    = data;
     request.method  = "POST";
-    request.headers = headers;
+    request.headers = buildHeaders(headers);
     request.set_header("Content-Type", "application/json");
     request.content_receiver = [&callback](const char* data, size_t data_length, uint64_t /* offset */, uint64_t /* total_length */) {
         return callback(data, data_length);
     };
     auto response = this->client->send(request);
-    checkResponse(response);
-    return response;
+    return buildResponse(response);
 }
 
-httplib::Result lifuren::RestClient::deletePath(const std::string& path, const httplib::Headers& headers) {
-    auto response = this->client->Delete(path, headers);
-    checkResponse(response);
-    return response;
+lifuren::RestClient::Response lifuren::RestClient::deletePath(const std::string& path, const std::map<std::string, std::string>& headers) {
+    auto response = this->client->Delete(path, buildHeaders(headers));
+    return buildResponse(response);
 }
 
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password) {
@@ -165,24 +157,55 @@ static std::string oauthToken(const lifuren::RestClient& client, const std::stri
         { "username", username },
         { "password", password }
     });
-    if(response && response->status == httplib::StatusCode::OK_200) {
-        return response->body;
+    if(response) {
+        return response.body;
     }
     return "";
 }
 
-static bool checkResponse(const httplib::Result& response) {
+static lifuren::RestClient::Response buildResponse(const httplib::Result& response) {
+    lifuren::RestClient::Response ret;
     if(response) {
+        ret.status = response->status;
+        ret.body   = response->body;
+        for(const auto& pair : response->headers) {
+            ret.headers.emplace(pair.first, pair.second);
+        }
         if(
             response->status != httplib::StatusCode::OK_200 &&
             response->status != httplib::StatusCode::Created_201
         ) {
             SPDLOG_DEBUG("RestClient响应失败：{} - {}", response->status, response->body);
+            ret.success = false;
         } else {
-            return true;
+            ret.success = true;
         }
     } else {
         SPDLOG_DEBUG("RestClient请求失败：{}", httplib::to_string(response.error()));
+        ret.status  = 500;
+        ret.success = false;
     }
-    return false;
+    return ret;
+}
+
+static httplib::Params buildParams(const std::map<std::string, std::string>& params) {
+    httplib::Params ret{};
+    if(params.empty()) {
+        return ret;
+    }
+    for(const auto& pair : params) {
+        ret.emplace(pair.first, pair.second);
+    }
+    return ret;
+}
+
+static httplib::Headers buildHeaders(const std::map<std::string, std::string>& headers) {
+    httplib::Headers ret{};
+    if(headers.empty()) {
+        return ret;
+    }
+    for(const auto& pair : headers) {
+        ret.emplace(pair.first, pair.second);
+    }
+    return ret;
 }

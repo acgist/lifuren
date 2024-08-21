@@ -11,7 +11,7 @@
     lifuren::RestClient client{ "http://192.168.8.228:11434" };
     auto response = client.get("/");
     if(response) {
-        SPDLOG_DEBUG("GET : {}", response->body);
+        SPDLOG_DEBUG("GET : {}", response.body);
     }
 }
 
