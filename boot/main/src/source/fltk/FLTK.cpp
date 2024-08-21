@@ -4,6 +4,8 @@
 #include "lifuren/REST.hpp"
 #endif
 
+#include <cmath>
+
 #include "lifuren/Ptr.hpp"
 
 #include "spdlog/spdlog.h"
@@ -12,14 +14,6 @@
 
 // 是否关闭
 static bool fltkClose = false;
-
-/**
- * @param source 原始值
- * @param target 比较值
- * 
- * @return 绝对值
- */
-static int abs(const int& source, const int& target);
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
@@ -110,7 +104,7 @@ void lifuren::Window::center() {
     const int fullHeight = Fl::h();
     const int width  = this->w();
     const int height = this->h();
-    this->position(abs(fullWidth, width) / 2, abs(fullHeight, height) / 2);
+    this->position(std::abs(fullWidth - width) / 2, std::abs(fullHeight - height) / 2);
 }
 
 void lifuren::Configuration::saveConfig() {
@@ -142,12 +136,4 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Wi
 
 lifuren::ModelWindow::~ModelWindow() {
     SPDLOG_DEBUG("关闭窗口");
-}
-
-static int abs(const int& source, const int& target) {
-    if(source > target) {
-        return source - target;
-    } else {
-        return target - source;
-    }
 }

@@ -47,6 +47,8 @@ lifuren::ImageWindow::~ImageWindow() {
 }
 
 void lifuren::ImageWindow::saveConfig() {
+    
+    lifuren::Configuration::saveConfig();
 }
 
 void lifuren::ImageWindow::redrawConfigElement() {

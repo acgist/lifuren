@@ -31,7 +31,7 @@ namespace lifuren {
  * 
  * @author acgist
  */
-template <typename M, typename I, typename R>
+template<typename M, typename I, typename R>
 // TODO requires std::derived_from<M, lifuren::config::ModelConfig>
 class Model {
 

@@ -13,7 +13,7 @@
 // 枚举转换
 #ifndef LFR_YAML_ENUM
 #define LFR_YAML_ENUM(enumName, aValue, zValue, defaultValue)              \
-template <>                                                                \
+template<>                                                                 \
 struct YAML::convert<lifuren::enumName> {                                  \
     static Node encode(const lifuren::enumName& value) {                   \
         return YAML::Node(static_cast<int>(value));                        \

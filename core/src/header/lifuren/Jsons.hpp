@@ -22,7 +22,7 @@ namespace jsons   {
  * 
  * @return JSON内容
  */
-template <typename T>
+template<typename T>
 inline T loadFile(const std::string& path) {
     std::string json = lifuren::files::loadFile(path);
     if(json.empty()) {

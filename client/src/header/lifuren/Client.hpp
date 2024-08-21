@@ -13,6 +13,7 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <cstdio>
 #include <functional>
 
 #include "httplib.h"
@@ -27,6 +28,7 @@ namespace lifuren {
 class Client {
 
 public:
+    Client();
     virtual ~Client();
 
 };
@@ -208,6 +210,26 @@ public:
  * 命令终端
  */
 class CommandClient : public Client {
+
+public:
+    CommandClient(const std::string& command);
+    ~CommandClient();
+
+protected:
+    // 结束状态
+    int code = -1;
+    // 执行结果
+    std::string result;
+    // 执行命令
+    std::string command;
+    // 命令管道
+    FILE* pipe{ nullptr };
+
+public:
+    const int& execute();
+    void shutdown() const;
+    const int& getCode() const;
+    const std::string& getResult() const;
 
 };
 

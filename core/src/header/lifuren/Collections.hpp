@@ -19,7 +19,7 @@ namespace collections {
  * 
  * @return 拼接内容
  */
-template <typename T>
+template<typename T>
 std::string join(T& collection, const std::string& delim = "") {
     std::stringstream ret;
     if(collection.empty()) {

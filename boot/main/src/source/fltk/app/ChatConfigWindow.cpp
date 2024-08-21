@@ -1,5 +1,7 @@
 #include "lifuren/FLTK.hpp"
 
+#include <algorithm>
+
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"

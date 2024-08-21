@@ -21,7 +21,7 @@
 #include "FL/Fl_PNG_Image.H"
 
 #include "lifuren/Ptr.hpp"
-#include "lifuren/Client.hpp"
+#include "lifuren/config/Config.hpp"
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
@@ -386,10 +386,6 @@ public:
  * 聊天
  */
 class ChatWindow : public ModelWindow {
-
-public:
-    // 聊天终端
-    ChatClient* clientPtr{ nullptr };
 
 public:
     /**
