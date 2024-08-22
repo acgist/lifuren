@@ -5,6 +5,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "yaml-cpp/yaml.h"
+
 #include "lifuren/Yamls.hpp"
 
 #ifndef LFR_LABEL_TEXT_SETTER

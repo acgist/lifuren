@@ -44,6 +44,11 @@ target_include_directories(
 
 file(COPY src/config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)
 
+# 开发环境配置
+if(CMAKE_HOST_WIN32 AND (CMAKE_BUILD_TYPE MATCHES "Debug"))
+    file(RENAME ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config/config-dev.yml ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config/config.yml)
+endif()
+
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/

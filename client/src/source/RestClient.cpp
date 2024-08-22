@@ -166,11 +166,6 @@ static std::string oauthToken(const lifuren::RestClient& client, const std::stri
 static lifuren::RestClient::Response buildResponse(const httplib::Result& response) {
     lifuren::RestClient::Response ret;
     if(response) {
-        ret.status = response->status;
-        ret.body   = response->body;
-        for(const auto& pair : response->headers) {
-            ret.headers.emplace(pair.first, pair.second);
-        }
         if(
             response->status != httplib::StatusCode::OK_200 &&
             response->status != httplib::StatusCode::Created_201
@@ -179,6 +174,11 @@ static lifuren::RestClient::Response buildResponse(const httplib::Result& respon
             ret.success = false;
         } else {
             ret.success = true;
+        }
+        ret.status = response->status;
+        ret.body   = std::move(response->body);
+        for(const auto& pair : response->headers) {
+            ret.headers.emplace(pair.first, pair.second);
         }
     } else {
         SPDLOG_DEBUG("RestClient请求失败：{}", httplib::to_string(response.error()));
@@ -208,4 +208,28 @@ static httplib::Headers buildHeaders(const std::map<std::string, std::string>& h
         ret.emplace(pair.first, pair.second);
     }
     return ret;
+}
+
+lifuren::RestClient::Response::Response() {
+}
+
+lifuren::RestClient::Response::Response(const lifuren::RestClient::Response& response) {
+    this->status  = response.status;
+    this->success = response.success;
+    this->headers = response.headers;
+    this->body    = response.body;
+}
+
+lifuren::RestClient::Response::Response(const lifuren::RestClient::Response&& response) {
+    this->status  = response.status;
+    this->success = response.success;
+    this->headers = std::move(response.headers);
+    this->body    = std::move(response.body);
+}
+
+lifuren::RestClient::Response::~Response() {
+}
+
+lifuren::RestClient::Response::operator bool() {
+    return this->success;
 }

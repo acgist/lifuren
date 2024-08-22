@@ -12,21 +12,21 @@ chat:
 # 图片页面配置
 image:
   client: stable-diffusion-cpp
-  output: /data/image
+  output: D:/tmp/data/image
   clients:
     - stable-diffusion-cpp
 # 诗词页面配置
 poetry:
 # 图片标记页面配置
 image-mark:
-  - path: /data/mark/image
+  - path: D:/tmp/data/mark/image
 # 诗词标记页面配置
 poetry-mark:
-  - path: /data/mark/poetry
+  - path: D:/tmp/data/mark/poetry
 # 文档标记页面配置
 document-mark:
   - rag: elasticsearch
-    path: /data/mark/document
+    path: D:/tmp/data/mark/document
     chunk: LINE
     embedding: ollama
 # OpenAI配置
@@ -43,7 +43,7 @@ openai:
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
-  api: http://localhost:11434
+  api: http://192.168.8.228:11434
   username: 
   password: 
   # NONE|Basic|Token
@@ -61,8 +61,8 @@ ollama:
     options: {}
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
-  model: /data/stable-diffusion-cpp/model.ckpt
-  command: /data/stable-diffusion-cpp/sd
+  model: D:/tmp/sdc/v1-5-pruned-emaonly.ckpt
+  command: D:/tmp/sdc/sd.exe
   options: {}
 # ElasticSearch配置
 elasticsearch:

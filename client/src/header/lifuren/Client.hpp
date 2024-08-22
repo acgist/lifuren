@@ -11,9 +11,9 @@
 
 #include <map>
 #include <list>
+#include <cstdio>
 #include <string>
 #include <memory>
-#include <cstdio>
 #include <functional>
 
 #include "ClientOptions.hpp"
@@ -61,6 +61,9 @@ class RestClient : public Client {
 
 public:
 
+/**
+ * 响应内容
+ */
 class Response {
 
 public:
@@ -70,9 +73,13 @@ public:
     std::string body;
 
 public:
-    operator bool() {
-        return this->success;
-    }
+    Response();
+    Response(const Response&  response);
+    Response(const Response&& response);
+    ~Response();
+
+public:
+    operator bool();
 
 };
 

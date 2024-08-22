@@ -4,9 +4,11 @@
 #include <fstream>
 #include <filesystem>
 
-#include "lifuren/Logger.hpp"
-
 #include "spdlog/spdlog.h"
+
+#include "yaml-cpp/yaml.h"
+
+#include "lifuren/Logger.hpp"
 
 YAML::Node lifuren::yamls::loadFile(const std::string& path) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {

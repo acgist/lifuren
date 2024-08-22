@@ -1,7 +1,5 @@
 #include "lifuren/Client.hpp"
 
-#include <cstdio>
-
 #include "spdlog/spdlog.h"
 
 #if _WIN32

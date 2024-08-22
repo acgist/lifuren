@@ -4,6 +4,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "yaml-cpp/yaml.h"
+
 #include "lifuren/Yamls.hpp"
 
 lifuren::LabelFile::LabelFile() {

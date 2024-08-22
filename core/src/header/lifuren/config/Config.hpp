@@ -20,6 +20,8 @@ class Config;
 
 extern std::string httpServerHost;
 extern int         httpServerPort;
+
+extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_CHAT;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_IMAGE_MARK;
@@ -28,7 +30,7 @@ extern const std::string CONFIG_DOCUMENT_MARK;
 extern const std::string CONFIG_OPENAI;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
-extern const std::string CONFIG_HTTP_SERVER;
+extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
 
 extern lifuren::config::Config CONFIG;
 
@@ -124,6 +126,18 @@ struct RestConfig {
 };
 
 /**
+ * 命令配置
+ */
+struct CommandConfig {
+
+    // 命令路径
+    std::string command;
+    // 默认参数
+    std::map<std::string, std::string> options{};
+
+};
+
+/**
  * LLM配置
  */
 struct LLMConfig {
@@ -177,6 +191,16 @@ struct OllamaConfig : RestConfig {
     ChatClientConfig chatClient;
     // 词嵌入终端
     EmbeddingClientConfig embeddingClient;
+
+};
+
+/**
+ * stable-diffusion-cpp配置
+ */
+struct StableDiffusionCPPConfig : CommandConfig {
+
+    // 模型路径
+    std::string model;
 
 };
 
@@ -261,7 +285,8 @@ public:
     std::list<lifuren::config::ImageMarkConfig>    imageMark   {};
     std::list<lifuren::config::PoetryMarkConfig>   poetryMark  {};
     std::list<lifuren::config::DocumentMarkConfig> documentMark{};
-    lifuren::config::ElasticSearchConfig elasticsearch{};
+    lifuren::config::ElasticSearchConfig      elasticsearch{};
+    lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:
     Config();

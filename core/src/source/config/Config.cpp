@@ -4,6 +4,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "yaml-cpp/yaml.h"
+
 #include "lifuren/Yamls.hpp"
 #include "lifuren/Logger.hpp"
 
@@ -58,15 +60,16 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Loss)
 LFR_LOG_FORMAT_ENUM(lifuren::config::Activation)
 LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 
+const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
 const std::string lifuren::config::CONFIG_CHAT          = "chat";
 const std::string lifuren::config::CONFIG_IMAGE         = "image";
 const std::string lifuren::config::CONFIG_OPENAI        = "openai";
 const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
-const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
 const std::string lifuren::config::CONFIG_IMAGE_MARK    = "image-mark";
 const std::string lifuren::config::CONFIG_POETRY_MARK   = "poetry-mark";
 const std::string lifuren::config::CONFIG_DOCUMENT_MARK = "document-mark";
-const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
+const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
+const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
 
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
@@ -181,6 +184,12 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, embedding, embedding, std::string);
+    } else if(lifuren::config::CONFIG_STABLE_DIFFUSION_CPP == name) {
+        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model,   model,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, command, command, std::string);
+        std::map<std::string, std::string> map;
+        LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
+        config.stableDiffusionCPP.options.insert(map.begin(), map.end());
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -278,6 +287,13 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, embedding, embedding);
         yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
+    }
+    {
+        YAML::Node stableDiffusionCPP;
+        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, model,   model);
+        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, command, command);
+        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, options, options);
+        yaml[lifuren::config::CONFIG_STABLE_DIFFUSION_CPP] = stableDiffusionCPP;
     }
     return yaml;
 }
