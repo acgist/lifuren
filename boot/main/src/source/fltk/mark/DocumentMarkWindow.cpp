@@ -138,19 +138,13 @@ void lifuren::DocumentMarkWindow::drawElement() {
     // 删除目录
     deletePtr->callback(deleteCallback, this);
     // 检索策略
-    ragPtr->add("Chroma");
-    ragPtr->add("Typesense");
-    ragPtr->add("ElasticSearch");
+    lifuren::fillChoice(ragPtr, { "Chroma", "Typesense", "ElasticSearch" });
     // 分段策略
-    chunkPtr->add("LINE");
-    chunkPtr->add("TITLE");
+    lifuren::fillChoice(chunkPtr, { "LINE", "TITLE" });
     // 词嵌入策略
-    embeddingPtr->add("ollama");
-    embeddingPtr->add("Chinese-Word-Vectors");
+    lifuren::fillChoice(embeddingPtr, { "ollama", "Chinese-Word-Vectors" });
     // 授权类型
-    authTypePtr->add("NONE");
-    authTypePtr->add("Basic");
-    authTypePtr->add("Token");
+    lifuren::fillChoice(authTypePtr, { "NONE", "Basic", "Token" });
     // 开始标记
     markPtr->callback(markCallback, this);
     // 停止标记

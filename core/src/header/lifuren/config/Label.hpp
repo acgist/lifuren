@@ -66,8 +66,7 @@ public:
 public:
     LabelFile();
     /**
-     * @param name   名称
-     * @param labels 标签数组
+     * @param name 名称
      */
     LabelFile(const std::string& name);
 

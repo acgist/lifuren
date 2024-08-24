@@ -74,18 +74,10 @@ void lifuren::ChatConfigWindow::drawElement() {
     // 绑定事件
     // 终端名称
     const auto& chatConfig = lifuren::config::CONFIG.chat;
-    std::for_each(chatConfig.clients.begin(), chatConfig.clients.end(), [](const auto& v) {
-        lifuren::config::ChatConfig& chatConfig = lifuren::config::CONFIG.chat;
-        int value = clientPtr->add(v.c_str());
-        if(v == chatConfig.client) {
-            clientPtr->value(value);
-        }
-    });
+    lifuren::fillChoice(clientPtr, chatConfig.clients, chatConfig.client);
     clientPtr->callback(clientCallback, this);
     // 授权类型
-    authTypePtr->add("NONE");
-    authTypePtr->add("Basic");
-    authTypePtr->add("Token");
+    lifuren::fillChoice(authTypePtr, { "NONE", "Basic", "Token" });
     // 重绘配置
     this->redrawConfigElement();
 }

@@ -240,7 +240,7 @@ public:
 class CommandClient : public Client {
 
 public:
-    CommandClient(const std::string& command);
+    CommandClient(const std::string& command, std::function<void(bool, const std::string&)> callback = nullptr);
     ~CommandClient();
 
 protected:
@@ -252,6 +252,8 @@ protected:
     std::string command;
     // 命令管道
     FILE* pipe{ nullptr };
+    // 回调函数
+    std::function<void(const std::string&)> callback{ nullptr };
 
 public:
     const int& execute();
@@ -362,9 +364,55 @@ class OllamaEmbeddingClient : public EmbeddingClient {
  * 绘画终端
  */
 class PaintClient : public Client {
+
+public:
+/**
+ * 绘画回调
+ * 
+ * @param finish  是否完成
+ * @param percent 进度
+ * @param message 没有完成=提示内容、任务完成=图片路径
+ * 
+ * @return 是否结束
+ */
+using PaintCallback = std::function<bool(bool finish, float percent, const std::string& message)>;
+
+protected:
+    PaintCallback callback{ nullptr };
+
+public:
+    PaintClient(PaintCallback callback = nullptr);
+    ~PaintClient();
+
+public:
+    /**
+     * @param prompt   提示内容
+     * @param callback 消息回调
+     * @param image    提示图片
+     * 
+     * @return 是否成功
+     */
+    virtual bool paint(const std::string& prompt, PaintCallback callback = nullptr, const std::string& image = "") = 0;
+
 };
 
-class StableDiffusionCPPPaintClient {
+/**
+ * StableDiffusionCPP终端
+ * 
+ * https://github.com/leejet/stable-diffusion.cpp
+ */
+class StableDiffusionCPPPaintClient : public PaintClient {
+
+private:
+    std::unique_ptr<lifuren::CommandClient> commandClient{ nullptr };
+
+public:
+    StableDiffusionCPPPaintClient();
+    ~StableDiffusionCPPPaintClient();
+
+public:
+    bool paint(const std::string& prompt, PaintClient::PaintCallback callback = nullptr, const std::string& image = "") override;
+
 };
 
 } // END OF lifuren

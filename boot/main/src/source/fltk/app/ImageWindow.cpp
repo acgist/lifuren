@@ -1,5 +1,7 @@
 #include "lifuren/FLTK.hpp"
 
+#include <algorithm>
+
 #include "spdlog/spdlog.h"
 
 #include "FL/Fl_Input.H"
@@ -22,7 +24,9 @@ static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
 static void generate(Fl_Widget*, void*);
-static void chooseCallback(Fl_Widget*, void*);
+static void clientCallback(Fl_Widget*, void*);
+static void chooseFileCallback(Fl_Widget*, void*);
+static void chooseDirectoryCallback(Fl_Widget*, void*);
 
 lifuren::ImageWindow::ImageWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
 }
@@ -47,11 +51,26 @@ lifuren::ImageWindow::~ImageWindow() {
 }
 
 void lifuren::ImageWindow::saveConfig() {
-    
+    auto& imageConfig = lifuren::config::CONFIG.image;
+    imageConfig.output = outputPathPtr->value();
+    if(imageConfig.client == "stable-diffusion-cpp") {
+        auto& stableDiffusionCPP   = lifuren::config::CONFIG.stableDiffusionCPP;
+        stableDiffusionCPP.model   = modelPathPtr->value();
+        stableDiffusionCPP.command = commandPathPtr->value();
+    } else {
+    }
     lifuren::Configuration::saveConfig();
 }
 
 void lifuren::ImageWindow::redrawConfigElement() {
+    auto& imageConfig = lifuren::config::CONFIG.image;
+    outputPathPtr->value(imageConfig.output.c_str());
+    if(imageConfig.client == "stable-diffusion-cpp") {
+        auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
+        modelPathPtr->value(stableDiffusionCPP.model.c_str());
+        commandPathPtr->value(stableDiffusionCPP.command.c_str());
+    } else {
+    }
 }
 
 void lifuren::ImageWindow::drawElement() {
@@ -64,36 +83,56 @@ void lifuren::ImageWindow::drawElement() {
     imagePathPtr     = new Fl_Input( 110, 130, 400, 30, "图片路径");
     imageChoosePtr   = new Fl_Button(510, 130, 100, 30, "选择图片");
     clientPtr        = new Fl_Choice(110, 170, 200, 30, "终端名称");
-    modelPathPtr     = new Fl_Input( 110, 210, 400, 30, "模型路径");
-    modelChoosePtr   = new Fl_Button(510, 210, 100, 30, "选择模型");
-    outputPathPtr    = new Fl_Input( 110, 250, 400, 30, "输出路径");
-    outputChoosePtr  = new Fl_Button(510, 250, 100, 30, "选择输出");
-    commandPathPtr   = new Fl_Input( 110, 290, 400, 30, "命令路径");
-    commandChoosePtr = new Fl_Button(510, 290, 100, 30, "选择命令");
+    commandPathPtr   = new Fl_Input( 110, 210, 400, 30, "命令路径");
+    commandChoosePtr = new Fl_Button(510, 210, 100, 30, "选择命令");
+    modelPathPtr     = new Fl_Input( 110, 250, 400, 30, "模型路径");
+    modelChoosePtr   = new Fl_Button(510, 250, 100, 30, "选择模型");
+    outputPathPtr    = new Fl_Input( 110, 290, 400, 30, "输出路径");
+    outputChoosePtr  = new Fl_Button(510, 290, 100, 30, "选择输出");
     generatePtr      = new Fl_Button(110, 330, 100, 30, "生成图片");
     // 绑定事件
     // 终端名称
-    const auto& image = lifuren::config::CONFIG.image;
+    const auto& imageConfig = lifuren::config::CONFIG.image;
+    lifuren::fillChoice(clientPtr, imageConfig.clients, imageConfig.client);
+    clientPtr->callback(clientCallback, this);
     // 选择图片
-    imageChoosePtr->callback(chooseCallback, imagePathPtr);
+    imageChoosePtr->callback(chooseFileCallback, imagePathPtr);
     // 选择模型
-    modelChoosePtr->callback(chooseCallback, modelPathPtr);
+    modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
     // 选择输出
-    outputChoosePtr->callback(chooseCallback, outputPathPtr);
+    outputChoosePtr->callback(chooseDirectoryCallback, outputPathPtr);
     // 选择命令
-    commandChoosePtr->callback(chooseCallback, commandPathPtr);
+    commandChoosePtr->callback(chooseFileCallback, commandPathPtr);
     // 生成图片
     generatePtr->callback(generate, this);
+    // 重绘配置
+    this->redrawConfigElement();
 }
 
 static void generate(Fl_Widget*, void* voidPtr) {
 }
 
-static void chooseCallback(Fl_Widget*, void* voidPtr) {
+static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
+    std::string filename = lifuren::fileChooser("选择文件");
+    if(filename.empty()) {
+        return;
+    }
+    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
+    inputPtr->value(filename.c_str());
+}
+
+static void chooseDirectoryCallback(Fl_Widget*, void* voidPtr) {
     std::string filename = lifuren::directoryChooser("选择目录");
     if(filename.empty()) {
         return;
     }
     Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
     inputPtr->value(filename.c_str());
+}
+
+static void clientCallback(Fl_Widget*, void* voidPtr) {
+    lifuren::ImageWindow* windowPtr = static_cast<lifuren::ImageWindow*>(voidPtr);
+    auto& imageConfig  = lifuren::config::CONFIG.image;
+    imageConfig.client = clientPtr->text();
+    windowPtr->redrawConfigElement();
 }

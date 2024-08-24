@@ -11,7 +11,7 @@
 #endif
 #endif
 
-lifuren::CommandClient::CommandClient(const std::string& command) : command(command) {
+lifuren::CommandClient::CommandClient(const std::string& command, std::function<void(bool, const std::string&)> callback) : command(command), callback(callback) {
 }
 
 lifuren::CommandClient::~CommandClient() {
@@ -36,6 +36,9 @@ const int& lifuren::CommandClient::execute() {
     }
     char buffer[128];
     while(fgets(buffer, 128, this->pipe)) {
+        if(this->callback) {
+            this->callback(buffer);
+        }
         this->result += buffer;
     }
     this->code = fclose(this->pipe);

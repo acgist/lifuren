@@ -1,8 +1,10 @@
 #include "lifuren/Yamls.hpp"
 
-#include "lifuren/Logger.hpp"
-
 #include "spdlog/spdlog.h"
+
+#include "yaml-cpp/yaml.h"
+
+#include "lifuren/Logger.hpp"
 
 static void testYamls() {
     YAML::Node yaml = lifuren::yamls::loadFile("D:\\tmp\\lifuren.yml");

@@ -5,11 +5,13 @@
 #endif
 
 #include <cmath>
+#include <algorithm>
 
 #include "lifuren/Ptr.hpp"
 
 #include "spdlog/spdlog.h"
 
+#include "FL/Fl_Choice.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
 // 是否关闭
@@ -71,6 +73,15 @@ std::string lifuren::directoryChooser(const char* title, const char* directory) 
             SPDLOG_DEBUG("目录选择失败：{} - {}", title, code);
             return "";
     }
+}
+
+void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value) {
+    std::for_each(set.begin(), set.end(), [&value, &choice](const auto& v) {
+        const int index = choice->add(v.c_str());
+        if(v == value) {
+            choice->value(index);
+        }
+    });
 }
 
 lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {

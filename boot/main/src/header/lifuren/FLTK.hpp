@@ -14,6 +14,7 @@
 #endif
 #endif
 
+#include <set>
 #include <string>
 
 #include "FL/Fl.H"
@@ -72,6 +73,8 @@ lifuren::strings::replace(path, "\\", "\\\\");
 lifuren::strings::replace(path, "/", "\\/");
 #endif
 #endif
+
+class Fl_Choice;
 
 namespace lifuren {
 
@@ -500,6 +503,11 @@ extern std::string fileChooser(const char* title, const char* directory = ".", c
  * @return 选择目录路径
  */
 extern std::string directoryChooser(const char* title, const char* directory = ".");
+
+/**
+ * 填充选择
+ */
+extern void fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value = "");
 
 } // END lifuren
 
