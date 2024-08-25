@@ -12,19 +12,20 @@ message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
-set(CMAKE_C_STANDARD   17)
-set(CMAKE_CXX_STANDARD 20)
-
 if(CMAKE_HOST_UNIX)
+    set(CMAKE_C_STANDARD   23)
+    set(CMAKE_CXX_STANDARD 23)
     # https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS}         -std=c17 -Wall -Wextra")
+    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS}         -std=c2x -Wall -Wextra")
     set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG}   -Wno-unused-variable -Wno-unused-parameter -O0 -g")
     set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS_RELEASE} -Wunused-variable    -Wunused-parameter    -O3")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS}         -std=c++20 -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS}         -std=c++23 -Wall -Wextra")
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -Wno-unused-variable -Wno-unused-parameter -O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wunused-variable    -Wunused-parameter    -O3")
 elseif(CMAKE_HOST_WIN32)
     if(MSVC)
+        set(CMAKE_C_STANDARD   17)
+        set(CMAKE_CXX_STANDARD 20)
         # https://learn.microsoft.com/zh-cn/cpp/build/reference/compiler-options-listed-by-category
         # /wd4804 = 忽略告警
         # /wd4819 = 忽略告警
@@ -124,14 +125,14 @@ if(CMAKE_HOST_WIN32)
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
     find_package(libpng        REQUIRED)
-    find_package(httplib       REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
-
+    
 find_package(FLTK     REQUIRED)
 find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(spdlog   REQUIRED)
+find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(deps)
