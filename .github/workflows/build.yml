@@ -21,9 +21,6 @@ jobs:
           cd ./json
           git switch -c v3.11.2
           cd ../
-          ################################ cmake
-          sudo apt  install cmake -y
-          apt-cache madison cmake
           ################################ spdlog
           # sudo apt  install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
@@ -76,6 +73,7 @@ jobs:
           mkdir build ; cd $_
           cmake ..
           make -j
-          ls -lh debug/bin
+          ls -lh Debug/bin
+          ls -lh Debug/lib
           sudo make install
           make clean
