@@ -5,9 +5,6 @@ add_library(
     src/source/Client.cpp
     src/source/RestClient.cpp
     src/source/CommandClient.cpp
-    src/source/chat/ChatClient.cpp
-    src/source/chat/OllamaChatClient.cpp
-    src/source/chat/OpenAIChatClient.cpp
     src/source/paint/PaintClient.cpp
     src/source/paint/StableDiffusionCPPPaintClient.cpp
     src/source/embedding/EmbeddingClient.cpp

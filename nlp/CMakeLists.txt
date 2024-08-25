@@ -3,15 +3,6 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/source/NLP.cpp
-    src/source/reader/DocumentReader.cpp
-    src/source/reader/PDFReader.cpp
-    src/source/reader/TextReader.cpp
-    src/source/reader/WordReader.cpp
-    src/source/reader/TextReader.cpp
-    src/source/reader/MarkdownReader.cpp
-    src/source/chunk/ChunkService.cpp
-    src/source/chunk/ChunkStrategy.cpp
-    src/source/chunk/LineChunkStrategy.cpp
     src/source/rag/RAGClient.cpp
     src/source/rag/RAGService.cpp
     src/source/rag/RAGTaskRunner.cpp
@@ -20,8 +11,6 @@ add_library(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    minidocx
-    $<IF:$<TARGET_EXISTS:podofo_shared>,podofo_shared,podofo_static>
     lifurenmodel
     lifurenclient
 )

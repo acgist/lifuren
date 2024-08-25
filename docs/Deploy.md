@@ -6,12 +6,10 @@
 |:--|:--|:--|
 |fltk|1.3.8|https://github.com/fltk/fltk|
 |json|3.11.2|https://github.com/nlohmann/json|
-|podofo|0.10.2|https://github.com/podofo/podofo|
 |spdlog|1.12.0|https://github.com/gabime/spdlog|
 |OpenCV|4.10.0|https://github.com/opencv/opencv|
 |LibTorch|2.2.1|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
-|minidocx|v0.5.0|https://github.com/totravel/minidocx|
 |cpp-httplib|0.16.2|https://github.com/yhirose/cpp-httplib|
 
 ## 源码编译
@@ -67,7 +65,6 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # 安装依赖
 vcpkg install fltk:x64-windows
-vcpkg install podofo:x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
 vcpkg install libtorch:x64-windows
@@ -76,7 +73,6 @@ vcpkg install cpp-httplib:x64-windows
 
 # 导出依赖
 vcpkg export fltk        --zip
-vcpkg export podofo      --zip
 vcpkg export opencv      --zip
 vcpkg export spdlog      --zip
 vcpkg export libtorch    --zip
@@ -99,6 +95,9 @@ cmake --build . -j
 cmake --build . --parallel 8
 cmake --install .
 ```
+
+* cmake -A x64 ..
+* cmake -G "Visual Studio 17 2022 Win64" ..
 
 #### 注意事项
 

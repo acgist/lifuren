@@ -253,7 +253,7 @@ protected:
     // 命令管道
     FILE* pipe{ nullptr };
     // 回调函数
-    std::function<void(const std::string&)> callback{ nullptr };
+    std::function<void(bool, const std::string&)> callback{ nullptr };
 
 public:
     const int& execute();
@@ -261,81 +261,6 @@ public:
     const int& getCode() const;
     const std::string& getResult() const;
 
-};
-
-/**
- * 聊天终端
- */
-class ChatClient : public Client {
-
-protected:
-    // 历史聊天记录
-    std::list<lifuren::chat::ChatMessage> historyMessages{};
-
-public:
-    // RAG查询器
-    std::unique_ptr<lifuren::RAGSearchEngine> ragSearchEngine{ nullptr };
-
-public:
-    /**
-     * 正常聊天
-     * 
-     * @param prompt 提示词
-     * 
-     * @return 返回内容
-     */
-    virtual std::string chat(const std::string& prompt) = 0;
-    /**
-     * 流式聊天
-     * 
-     * @param prompt   提示词
-     * @param callback 回调函数
-     */
-    virtual void chat(const std::string& prompt, std::function<bool(const char*, size_t, bool)> callback) = 0;
-    /**
-     * 重置会话
-     * 
-     * 1. 清除历史消息
-     */
-    void reset();
-
-protected:
-    /**
-     * 添加历史消息
-     * 
-     * @param role    角色
-     * @param message 消息内容
-     * @param library 附加资料
-     * @param done    是否完成
-     */
-    void appendMessage(const lifuren::chat::Role& role, const std::string& message, const std::vector<std::string>& library = {}, bool done = true);
-
-};
-
-/**
- * Ollama聊天终端
- * 
- * 项目地址：https://github.com/ollama/ollama
- */
-class OllamaChatClient : public ChatClient {
-
-public:
-    // REST终端
-    std::unique_ptr<lifuren::RestClient> restClient{ nullptr };
-    // REST配置
-    lifuren::options::RestChatOptions options{};
-
-public:
-    OllamaChatClient(lifuren::options::RestChatOptions options);
-    ~OllamaChatClient();
-
-public:
-    std::string chat(const std::string& prompt) override;
-    void chat(const std::string& prompt, std::function<bool(const char*, size_t, bool)> callback) override;
-
-};
-
-class OpenAIChatClient {
 };
 
 /**

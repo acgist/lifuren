@@ -118,8 +118,6 @@ protected:
 };
 
 class MainWindow;
-class ChatWindow;
-class ChatConfigWindow;
 class ImageWindow;
 class ImageConfigWindow;
 class PoetryWindow;
@@ -127,7 +125,6 @@ class PoetryConfigWindow;
 class AboutWindow;
 class ImageMarkWindow;
 class PoetryMarkWindow;
-class DocumentMarkWindow;
 class FinetuneWindow;
 class QuantizationWindow;
 
@@ -175,14 +172,10 @@ private:
     ImageMarkWindow*    imageMarkWindowPtr    = nullptr;
     // 诗词标记窗口
     PoetryMarkWindow*   poetryMarkWindowPtr   = nullptr;
-    // 文档标记窗口
-    DocumentMarkWindow* documentMarkWindowPtr = nullptr;
     // 模型微调窗口
     FinetuneWindow*     finetuneWindowPtr     = nullptr;
     // 模型量化窗口
     QuantizationWindow* quantizationWindowPtr = nullptr;
-    // 聊天窗口
-    ChatWindow*  chatWindowPtr  = nullptr;
     // 图片生成窗口
     ImageWindow* imageWindowPtr = nullptr;
     // 诗词生成窗口
@@ -205,14 +198,10 @@ public:
     void imageMark();
     // 诗词标记
     void poetryMark();
-    // 文档标记
-    void documentMark();
     // 模型微调
     void finetune();
     // 模型量化
     void quantization();
-    // 对话
-    void chat();
     // 图片内容生成
     void image();
     // 诗词内容生成
@@ -301,30 +290,6 @@ protected:
 };
 
 /**
- * 文档标记窗口
- */
-class DocumentMarkWindow : public MarkWindow, public Configuration {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    DocumentMarkWindow(int width, int height, const char* title = "文档标记");
-    // 析构函数
-    virtual ~DocumentMarkWindow();
-
-public:
-    virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
-
-protected:
-    virtual void drawElement() override;
-
-};
-
-/**
  * 模型微调窗口
  */
 class FinetuneWindow : public Window {
@@ -382,44 +347,6 @@ public:
     ModelWindow(int width, int height, const char* title);
     // 析构函数
     virtual ~ModelWindow();
-
-};
-
-/**
- * 聊天
- */
-class ChatWindow : public ModelWindow {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ChatWindow(int width, int height, const char* title = "聊天");
-    // 析构函数
-    virtual ~ChatWindow();
-
-protected:
-    virtual void drawElement() override;
-
-};
-
-/**
- * 聊天配置
- */
-class ChatConfigWindow : public ConfigWindow {
-
-public:
-    ChatConfigWindow(int width, int height, const char* title = "聊天配置");
-    virtual ~ChatConfigWindow();
-
-public:
-    virtual void redrawConfigElement() override;
-
-protected:
-    virtual void drawElement() override;
-    virtual void saveConfig()  override;
 
 };
 

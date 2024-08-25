@@ -12,37 +12,6 @@
 #include "lifuren/config/Config.hpp"
 
 namespace lifuren {
-
-namespace chat {
-
-/**
- * 角色
- */
-enum class Role {
-
-    USER,
-    ASSISTANT,
-
-};
-
-/**
- * 聊天信息
- */
-struct ChatMessage {
-
-    // 橘色
-    Role role;
-    // 消息
-    std::string message;
-    // 附加资料
-    std::vector<std::string> library;
-    // 是否完成
-    bool done;
-
-};
-
-} // END OF chat
-
 namespace options {
 
 struct RestOptions {
@@ -57,35 +26,6 @@ struct RestOptions {
     std::string authType;
     // 授权地址
     std::string authPath;
-
-};
-
-struct LLMOptions {
-
-    double topP;
-    size_t topK;
-    double temperature;
-    std::string options;
-
-};
-
-struct ChatOptions : LLMOptions {
-
-    // 聊天模型
-    std::string model;
-
-};
-
-struct RestChatOptions : RestOptions, ChatOptions {
-
-    // 聊天地址
-    std::string path;
-
-    void of(const lifuren::config::OllamaConfig& config) {
-        this->api   = config.api;
-        this->path  = config.chatClient.path;
-        this->model = config.chatClient.model;
-    }
 
 };
 
@@ -105,26 +45,20 @@ struct RestEmbeddingOptions : RestOptions, EmbeddingOptions {
 /**
  * 标记配置
  */
-struct Mark {
+struct MarkOptions {
 
 };
 
 /**
  * 图片标记页面配置
  */
-struct ImageMark : Mark {
+struct ImageMarkOptions : MarkOptions {
 };
 
 /**
  * 诗词标记页面配置
  */
-struct PoetryMark : Mark {
-};
-
-/**
- * 文档标记页面配置
- */
-struct DocumentMark : Mark {
+struct PoetryMarkOptions : MarkOptions {
 };
 
 struct ImageOptions {

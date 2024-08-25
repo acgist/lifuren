@@ -1,5 +1,3 @@
+set(JSON_BuildTests OFF)
 add_subdirectory(json)
-
-set(BUILD_EXAMPLES OFF)
-add_subdirectory(minidocx)
-unset(BUILD_EXAMPLES)
+unset(JSON_BuildTests)

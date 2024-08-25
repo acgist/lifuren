@@ -24,21 +24,6 @@ jobs:
           ################################ cmake
           sudo apt  install cmake -y
           apt-cache madison cmake
-          ################################ podofo
-          # sudo apt  install libpodofo-dev -y
-          # apt-cache madison libpodofo-dev
-          sudo apt  install libxml2-dev     -y
-          apt-cache madison libxml2-dev
-          sudo apt  install libfreetype-dev -y
-          apt-cache madison libfreetype-dev
-          git clone https://github.com/podofo/podofo.git
-          cd podofo
-          git switch -c 0.10.2
-          mkdir build ; cd $_
-          cmake .. -DPODOFO_BUILD_LIB_ONLY=ON
-          make -j 8
-          sudo make install
-          cd ../../
           ################################ spdlog
           # sudo apt  install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
@@ -67,10 +52,6 @@ jobs:
           ################################ yaml-cpp
           sudo apt  install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev
-          ################################ minidocx
-          cd ./minidocx
-          git switch -c v0.5.0
-          cd ../
           ################################ cpp-httplib
           # sudo apt  install libcpp-httplib-dev -y
           # apt-cache madison libcpp-httplib-dev

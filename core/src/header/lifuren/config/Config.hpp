@@ -22,7 +22,6 @@ extern std::string httpServerHost;
 extern int         httpServerPort;
 
 extern const std::string CONFIG_HTTP_SERVER;
-extern const std::string CONFIG_CHAT;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_IMAGE_MARK;
 extern const std::string CONFIG_POETRY_MARK;
@@ -69,20 +68,6 @@ enum class Regularization {
     L2         = 2, // L2
     DROPOUT    = 3, // Dropout
     BATCH_NORM = 4, // BatchNorm
-
-};
-
-/**
- * 聊天页面配置
- */
-struct ChatConfig {
-
-    // RAG文档资料数量
-    int ragSize = 4;
-    // 终端名称
-    std::string client;
-    // 终端列表
-    std::set<std::string> clients;
 
 };
 
@@ -138,28 +123,6 @@ struct CommandConfig {
 };
 
 /**
- * LLM配置
- */
-struct LLMConfig {
-
-    double topP;
-    size_t topK;
-    double temperature;
-    std::map<std::string, std::string> options{};
-
-};
-
-/**
- * 聊天终端
- */
-struct ChatClientConfig : LLMConfig {
-
-    std::string path;
-    std::string model;
-
-};
-
-/**
  * 词嵌入终端
  */
 struct EmbeddingClientConfig {
@@ -175,8 +138,6 @@ struct EmbeddingClientConfig {
  */
 struct OpenAiConfig : RestConfig {
 
-    // 聊天终端
-    ChatClientConfig chatClient;
     // 词嵌入终端
     EmbeddingClientConfig embeddingClient;
 
@@ -187,8 +148,6 @@ struct OpenAiConfig : RestConfig {
  */
 struct OllamaConfig : RestConfig {
 
-    // 聊天终端
-    ChatClientConfig chatClient;
     // 词嵌入终端
     EmbeddingClientConfig embeddingClient;
 
@@ -277,10 +236,8 @@ struct ElasticSearchConfig : RestConfig {
 class Config {
 
 public:
-    lifuren::config::ChatConfig   chat  {};
     lifuren::config::ImageConfig  image {};
     lifuren::config::PoetryConfig poetry{};
-    lifuren::config::OpenAiConfig openai{};
     lifuren::config::OllamaConfig ollama{};
     std::list<lifuren::config::ImageMarkConfig>    imageMark   {};
     std::list<lifuren::config::PoetryMarkConfig>   poetryMark  {};
@@ -294,20 +251,6 @@ public:
 
 public:
     std::string toYaml();
-    /**
-     * @param T    配置泛型
-     * @param name 配置名称
-     * 
-     * @return 配置指针
-     */
-    template<typename T>
-    T* getConfig(const std::string& name) {
-        if(CONFIG_CHAT == name) {
-            return &this->chat;
-        } else {
-            return nullptr;
-        }
-    }
 
 };
 

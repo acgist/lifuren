@@ -37,10 +37,11 @@ const int& lifuren::CommandClient::execute() {
     char buffer[128];
     while(fgets(buffer, 128, this->pipe)) {
         if(this->callback) {
-            this->callback(buffer);
+            this->callback(false, buffer);
         }
         this->result += buffer;
     }
+    this->callback(true, "");
     this->code = fclose(this->pipe);
     return this->code;
 }

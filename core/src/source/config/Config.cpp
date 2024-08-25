@@ -61,7 +61,6 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Activation)
 LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 
 const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
-const std::string lifuren::config::CONFIG_CHAT          = "chat";
 const std::string lifuren::config::CONFIG_IMAGE         = "image";
 const std::string lifuren::config::CONFIG_OPENAI        = "openai";
 const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
@@ -110,15 +109,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(port) {
             lifuren::config::httpServerPort = port.as<int>();
         }
-    } else if(lifuren::config::CONFIG_CHAT == name) {
-        LFR_CONFIG_YAML_GETTER(config.chat, yaml, client,   client,  std::string);
-        LFR_CONFIG_YAML_GETTER(config.chat, yaml, rag-size, ragSize, int);
-        const YAML::Node& clients = yaml["clients"];
-        if(clients) {
-            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
-                config.chat.clients.emplace(client.template as<std::string>());
-            });
-        }
     } else if(lifuren::config::CONFIG_IMAGE == name) {
         LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
         LFR_CONFIG_YAML_GETTER(config.image, yaml, output, output, std::string);
@@ -134,19 +124,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, auth-type, authType, std::string);
-        const YAML::Node& chatClientNode = yaml["chat"];
-        if(chatClientNode) {
-            lifuren::config::ChatClientConfig chatClient{};
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, path,        path,        std::string);
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, model,       model,       std::string);
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, top-p,       topP,        double);
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, top-k,       topK,        size_t);
-            LFR_CONFIG_YAML_GETTER(chatClient, chatClientNode, temperature, temperature, double);
-            std::map<std::string, std::string> map;
-            LFR_CONFIG_YAML_MAP_GETTER(map, chatClientNode, options, options, std::string);
-            chatClient.options.insert(map.begin(), map.end());
-            config.ollama.chatClient = chatClient;
-        }
         const YAML::Node& embeddingClientNode = yaml["embedding"];
         if(embeddingClientNode) {
             lifuren::config::EmbeddingClientConfig embeddingClient{};
@@ -205,17 +182,6 @@ YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_HTTP_SERVER] = http;
     }
     {
-        YAML::Node chat;
-        LFR_CONFIG_YAML_SETTER(chat, config.chat, client,  client);
-        LFR_CONFIG_YAML_SETTER(chat, config.chat, ragSize, rag-size);
-        YAML::Node clients;
-        std::for_each(config.chat.clients.begin(), config.chat.clients.end(), [&clients](auto& v) {
-            clients.push_back(v);
-        });
-        chat["clients"] = clients;
-        yaml[lifuren::config::CONFIG_CHAT] = chat;
-    }
-    {
         YAML::Node image;
         LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
         LFR_CONFIG_YAML_SETTER(image, config.image, output, output);
@@ -232,15 +198,6 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);
-        YAML::Node chatClientNode;
-        const lifuren::config::ChatClientConfig& chatClient = config.ollama.chatClient;
-        chatClientNode["path"]  = chatClient.path;
-        chatClientNode["model"] = chatClient.model;
-        chatClientNode["top-p"] = chatClient.topP;
-        chatClientNode["top-k"] = chatClient.topK;
-        chatClientNode["temperature"] = chatClient.temperature;
-        chatClientNode["options"] = chatClient.options;
-        ollama["chat"] = chatClientNode;
         YAML::Node embeddingClientNode;
         const lifuren::config::EmbeddingClientConfig& embeddingClient = config.ollama.embeddingClient;
         embeddingClientNode["path"]    = embeddingClient.path;

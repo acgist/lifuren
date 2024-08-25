@@ -20,7 +20,6 @@ static void restGetShutdown();
 void lifuren::initHttpServer() {
     restHandler();
     lifuren::restAPI();
-    lifuren::restChatAPI();
     lifuren::restImageAPI();
     lifuren::restPoetryAPI();
     SPDLOG_INFO("启动REST服务：{}", lifuren::config::httpServerPort);

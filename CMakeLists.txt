@@ -67,7 +67,6 @@ set(
 )
 
 include_directories(
-    deps/minidocx/src
     deps/libtorch/include
     deps/libtorch/include/torch/csrc/api/include
 )
@@ -85,7 +84,6 @@ if(CMAKE_HOST_WIN32)
         ${CMAKE_PREFIX_PATH}
         deps/fltk
         deps/opencv
-        deps/podofo
         deps/spdlog
         deps/yaml-cpp
         deps/cpp-httplib
@@ -94,7 +92,6 @@ if(CMAKE_HOST_WIN32)
     include_directories(
         deps/fltk/include
         deps/opencv/include
-        deps/podofo/include
         deps/spdlog/include
         deps/yaml-cpp/include
         deps/cpp-httplib/include
@@ -106,7 +103,6 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
         file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/debug/bin/*.dll")
-        file(GLOB PODOFO_DLLS "deps/podofo/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
@@ -118,7 +114,6 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
         file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
         file(GLOB HTTP_DLLS   "deps/cpp-httplib/bin/*.dll")
-        file(GLOB PODOFO_DLLS "deps/podofo/bin/*.dll")
         file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
@@ -136,7 +131,6 @@ endif()
 find_package(FLTK     REQUIRED)
 find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
-find_package(podofo   REQUIRED)
 find_package(spdlog   REQUIRED)
 find_package(yaml-cpp REQUIRED)
 

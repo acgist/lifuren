@@ -44,8 +44,8 @@ std::vector<double> lifuren::ElasticSearchRAGClient::index(const std::string& co
 }
 
 std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::string& prompt) {
-    const auto& chatConfig = lifuren::config::CONFIG.chat;
-    return textSearch(this->id, prompt, chatConfig.ragSize, this->restClient);
+    // TODO: rag配置读取
+    return textSearch(this->id, prompt, 4, this->restClient);
 }
 
 bool lifuren::ElasticSearchRAGClient::deleteRAG() {

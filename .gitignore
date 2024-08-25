@@ -15,9 +15,7 @@ target
 deps/fltk
 deps/json
 deps/opencv
-deps/podofo
 deps/spdlog
-deps/minidocx
 deps/libtorch
 deps/yaml-cpp
 deps/cpp-httplib

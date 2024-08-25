@@ -14,7 +14,6 @@
 #include <functional>
 
 #include "lifuren/Client.hpp"
-#include "lifuren/DocumentChunk.hpp"
 
 namespace lifuren {
 
@@ -147,8 +146,6 @@ protected:
     std::unique_ptr<std::thread> thread{ nullptr };
     // RAG终端
     std::unique_ptr<lifuren::RAGClient> ragClient{ nullptr };
-    // 分段服务
-    std::unique_ptr<lifuren::ChunkService> chunkService{ nullptr };
     // 进度回调
     std::function<void(float, bool)> percentCallback{ nullptr };
 

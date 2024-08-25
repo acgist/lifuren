@@ -304,6 +304,7 @@ ADMA + L2
 * 多分类：softmax
 
 #### 梯度爆炸
+#### 检索增强生成（RAG）
 #### prompt
 #### Tokenizer
 #### Embedding

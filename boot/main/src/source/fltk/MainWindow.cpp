@@ -11,10 +11,8 @@
 
 static Fl_Button* imageMarkButtonPtr    { nullptr };
 static Fl_Button* poetryMarkButtonPtr   { nullptr };
-static Fl_Button* documentMarkButtonPtr { nullptr };
 static Fl_Button* finetuneButtonPtr     { nullptr };
 static Fl_Button* quantizationButtonPtr { nullptr };
-static Fl_Button* chatButtonPtr  { nullptr };
 static Fl_Button* imageButtonPtr { nullptr };
 static Fl_Button* poetryButtonPtr{ nullptr };
 static Fl_Button* aboutButtonPtr { nullptr };
@@ -64,14 +62,10 @@ lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_THIS_PTR(imageMarkWindowPtr);
     LFR_DELETE_PTR(poetryMarkButtonPtr);
     LFR_DELETE_THIS_PTR(poetryMarkWindowPtr);
-    LFR_DELETE_PTR(documentMarkButtonPtr);
-    LFR_DELETE_THIS_PTR(documentMarkWindowPtr);
     LFR_DELETE_PTR(finetuneButtonPtr);
     LFR_DELETE_THIS_PTR(finetuneWindowPtr);
     LFR_DELETE_PTR(quantizationButtonPtr);
     LFR_DELETE_THIS_PTR(quantizationWindowPtr);
-    LFR_DELETE_PTR(chatButtonPtr);
-    LFR_DELETE_THIS_PTR(chatWindowPtr);
     LFR_DELETE_PTR(imageButtonPtr);
     LFR_DELETE_THIS_PTR(imageWindowPtr);
     LFR_DELETE_PTR(poetryButtonPtr);
@@ -86,14 +80,12 @@ void lifuren::MainWindow::drawElement() {
     // 数据标记
     imageMarkButtonPtr    = new Fl_Button(20,                      10, LFR_HALF_WIDTH(60), 30, "图片标记");
     poetryMarkButtonPtr   = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10, LFR_HALF_WIDTH(60), 30, "诗词标记");
-    documentMarkButtonPtr = new Fl_Button(20,                      50, LFR_HALF_WIDTH(60), 30, "文档标记");
     // 模型优化
-    finetuneButtonPtr     = new Fl_Button(20,                      90, LFR_HALF_WIDTH(60), 30, "模型微调");
-    quantizationButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "模型量化");
+    finetuneButtonPtr     = new Fl_Button(20,                      50, LFR_HALF_WIDTH(60), 30, "模型微调");
+    quantizationButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 50, LFR_HALF_WIDTH(60), 30, "模型量化");
     // 模型功能
-    chatButtonPtr   = new Fl_Button(20,                      130, LFR_HALF_WIDTH(60), 30, "聊天");
-    imageButtonPtr  = new Fl_Button(20,                      170, LFR_HALF_WIDTH(60), 30, "图片生成");
-    poetryButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 170, LFR_HALF_WIDTH(60), 30, "诗词生成");
+    imageButtonPtr  = new Fl_Button(20,                      90, LFR_HALF_WIDTH(60), 30, "图片生成");
+    poetryButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "诗词生成");
     // 关于
     aboutButtonPtr  = new Fl_Button(this->w() - 100, this->h() - 40, 80,  30, "关于");
     // 重新加载配置
@@ -104,10 +96,8 @@ void lifuren::MainWindow::drawElement() {
     // 绑定事件
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageMarkButtonPtr,    imageMark);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryMarkButtonPtr,   poetryMark);
-    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(documentMarkButtonPtr, documentMark);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(finetuneButtonPtr,     finetune);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(quantizationButtonPtr, quantization);
-    LFR_BUTTON_CALLBACK_FUNCTION_BINDER(chatButtonPtr,         chat);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(imageButtonPtr,        image);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(poetryButtonPtr,       poetry);
     LFR_BUTTON_CALLBACK_FUNCTION_BINDER(aboutButtonPtr,        about);
@@ -120,10 +110,8 @@ void lifuren::MainWindow::drawElement() {
 // 定义窗口
 LFR_BUTTON_CALLBACK_FUNCTION(imageMark,    ImageMarkWindow,    imageMarkWindowPtr,    LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(poetryMark,   PoetryMarkWindow,   poetryMarkWindowPtr,   LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(documentMark, DocumentMarkWindow, documentMarkWindowPtr, LFR_WINDOW_WIDTH_CONFIG, LFR_WINDOW_HEIGHT_CONFIG);
 LFR_BUTTON_CALLBACK_FUNCTION(finetune,     FinetuneWindow,     finetuneWindowPtr,     LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(quantization, QuantizationWindow, quantizationWindowPtr, LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(chat,         ChatWindow,         chatWindowPtr,         LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(image,        ImageWindow,        imageWindowPtr,        LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(poetry,       PoetryWindow,       poetryWindowPtr,       LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(about,        AboutWindow,        aboutWindowPtr,        512,  256);

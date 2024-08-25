@@ -55,8 +55,6 @@ extern nlohmann::json buildResponse(const char* code, const char* message);
 
 // 公共接口
 extern void restAPI();
-// 聊天
-extern void restChatAPI();
 // 图片
 extern void restImageAPI();
 // 诗词

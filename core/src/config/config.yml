@@ -2,13 +2,6 @@
 http-server:
   host: 0.0.0.0
   port: 8080
-# 聊天页面配置
-chat:
-  client: ollama
-  rag-size: 4
-  clients:
-    - ollama
-    - openai
 # 图片页面配置
 image:
   client: stable-diffusion-cpp
@@ -23,12 +16,13 @@ image-mark:
 # 诗词标记页面配置
 poetry-mark:
   - path: /data/mark/poetry
-# 文档标记页面配置
-document-mark:
-  - rag: elasticsearch
-    path: /data/mark/document
-    chunk: LINE
-    embedding: ollama
+# RAG
+rag:
+  type: elasticsearch
+  size: 4
+# Embedding
+embedding:
+  type: ollama
 # OpenAI配置
 openai:
   api:
@@ -36,10 +30,10 @@ openai:
   password:
   # NONE|Basic|Token
   auth-type: NONE
-  chat:
-    path: /v1/chat/completions
   embedding:
     path: /v1/embeddings
+    model: 
+    options: {}
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
@@ -48,29 +42,24 @@ ollama:
   password: 
   # NONE|Basic|Token
   auth-type: NONE
-  chat:
-    path: /api/chat
-    model: glm4
-    top-p: 
-    top-k:
-    temperature: 
-    options: {}
   embedding:
     path: /api/embed
     model: quentinz/bge-large-zh-v1.5
     options: {}
-# stable-diffusion-cpp配置
-stable-diffusion-cpp:
-  model: /data/stable-diffusion-cpp/model.ckpt
-  command: /data/stable-diffusion-cpp/sd
-  options: {}
 # ElasticSearch配置
 elasticsearch:
-  api: http://192.168.8.183:9200
+  api: http://localhost:9200
   username: elastic
   password: elastic
   # NONE|Basic|Token
   auth-type: Basic
   # RAG|TEXT
   embedding: TEXT
+# Chinese-Word-Vectors配置
+Chinese-Word-Vectors:
+# stable-diffusion-cpp配置
+stable-diffusion-cpp:
+  model: /data/stable-diffusion-cpp/model.ckpt
+  command: /data/stable-diffusion-cpp/sd
+  options: {}
   

@@ -7,7 +7,6 @@
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
     this->ragClient = lifuren::RAGClient::getRAGClient(task.rag, task.path, task.embedding);
     this->ragClient->loadIndex();
-    this->chunkService = std::make_unique<lifuren::ChunkService>(this->task.chunk);
     this->thread = std::make_unique<std::thread>([this]() {
         try {
             if(this->execute()) {
@@ -36,7 +35,7 @@ bool lifuren::RAGTaskRunner::execute() {
         SPDLOG_WARN("RAG任务目录无效：{}", this->task.path);
         return false;
     }
-    if(!this->ragClient || !this->chunkService) {
+    if(!this->ragClient) {
         SPDLOG_WARN("RAG任务没有就绪：{}", this->task.path);
         return false;
     }
@@ -61,13 +60,14 @@ bool lifuren::RAGTaskRunner::execute() {
         }
         this->ragClient->doneFileEmplace(path);
         SPDLOG_DEBUG("RAG任务处理文件：{}", path);
-        auto&& chunks = this->chunkService->chunk(path);
-        for(auto& chunk : chunks) {
-            if(chunk.empty()) {
-                continue;
-            }
-            this->ragClient->index(chunk);
-        }
+        // TODO: 诗词解析
+        // auto&& chunks = this->chunkService->chunk(path);
+        // for(auto& chunk : chunks) {
+        //     if(chunk.empty()) {
+        //         continue;
+        //     }
+        //     this->ragClient->index(chunk);
+        // }
         ++this->doneFileCount;
         if(this->percentCallback) {
             this->percentCallback(this->percent(), false);
