@@ -36,7 +36,7 @@ struct RAGTask {
 /**
  * RAG终端
  */
-class RAGClient : public RAGSearchEngine {
+class RAGClient : public RAGSearchClient {
 
 protected:
     // 唯一标识

@@ -10,6 +10,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     lifurenmodel
     lifurenclient
+    stable-diffusion
 )
 
 target_include_directories(

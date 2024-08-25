@@ -13,9 +13,16 @@ build
 target
 
 deps/fltk
+deps/stable-diffusion.cpp
+
 deps/json
 deps/opencv
 deps/spdlog
-deps/libtorch
 deps/yaml-cpp
 deps/cpp-httplib
+
+deps/libtorch
+deps/libtorch-cpu-debug
+deps/libtorch-cpu-release
+deps/libtorch-cuda-debug
+deps/libtorch-cuda-release

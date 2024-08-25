@@ -40,7 +40,7 @@ public:
 /**
  * RAG查询器
  */
-class RAGSearchEngine {
+class RAGSearchClient {
 
 public:
     /**

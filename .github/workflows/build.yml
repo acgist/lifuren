@@ -63,6 +63,10 @@ jobs:
           make -j 8
           sudo make install
           cd ../../
+          ################################ stable-diffusion.cpp
+          cd ./stable-diffusion.cpp
+          git switch -c master-c837c5d
+          cd ../
       - name: Deploy lifuren
         run: |
           pwd
