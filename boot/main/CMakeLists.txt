@@ -41,7 +41,7 @@ else()
         ${PROJECT_NAME}
         png
         jpeg
-        cpp-httplib
+        $<IF:$<TARGET_EXISTS:cpp-httplib>,cpp-httplib,httplib::httplib>
         lifurencv
         lifurennlp
         ${FLTK_LIBRARIES}
