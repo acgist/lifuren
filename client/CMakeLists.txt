@@ -8,8 +8,8 @@ add_library(
     src/source/paint/PaintClient.cpp
     src/source/paint/StableDiffusionCPPPaintClient.cpp
     src/source/embedding/EmbeddingClient.cpp
-    src/source/embedding/CWVEmbeddingClient.cpp
     src/source/embedding/OllamaEmbeddingClient.cpp
+    src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )
 
 target_link_libraries(

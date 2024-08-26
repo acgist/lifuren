@@ -377,7 +377,7 @@ protected:
 /**
  * 诗词内容生成
  */
-class PoetryWindow : public ModelWindow {
+class PoetryWindow : public ModelWindow, public Configuration {
 
 public:
     /**
@@ -388,6 +388,10 @@ public:
     PoetryWindow(int width, int height, const char* title = "诗词内容生成");
     // 析构函数
     virtual ~PoetryWindow();
+
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
 
 protected:
     virtual void drawElement() override;

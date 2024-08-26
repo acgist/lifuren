@@ -65,14 +65,11 @@ bool lifuren::RAGTaskRunner::execute() {
         SPDLOG_WARN("RAG任务没有就绪：{}", this->task.path);
         return false;
     }
-    auto iterator = std::filesystem::directory_iterator(this->task.path);
-    std::list<std::string> list;
-    for(const auto& entry : iterator) {
-        list.push_back(entry.path().string());
-    }
-    this->fileCount = list.size();
+    std::vector<std::string> vector;
+    lifuren::files::listFiles(vector, this->task.path, { ".json" });
+    this->fileCount = vector.size();
     SPDLOG_DEBUG("RAG任务文件总量：{}", this->fileCount);
-    for(auto& path : list) {
+    for(auto& path : vector) {
         if(this->stop) {
             break;
         }

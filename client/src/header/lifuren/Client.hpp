@@ -265,15 +265,16 @@ public:
 };
 
 /**
- * CWV词嵌入终端
+ * Chinese-Word-Vectors词嵌入终端
  * 
  * 项目地址：https://github.com/Embedding/Chinese-Word-Vectors
  */
-class CWVEmbeddingClient : public EmbeddingClient {
+class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
 
 };
 
 class OllamaEmbeddingClient : public EmbeddingClient {
+
 };
 
 /**

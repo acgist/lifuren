@@ -10,6 +10,7 @@ image:
     - stable-diffusion-cpp
 # 诗词页面配置
 poetry:
+  model: /data/model/poetry.model
 # 图片标记页面配置
 image-mark:
   - path: /data/mark/image
@@ -22,6 +23,8 @@ rag:
   # elasticsearch
   type: elasticsearch
   size: 8
+  # text|ollama|chinese-word-vectors
+  embedding: text
 # Embedding
 embedding:
   # text|ollama|chinese-word-vectors
