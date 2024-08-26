@@ -23,10 +23,11 @@ extern int         httpServerPort;
 
 extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_IMAGE;
+extern const std::string CONFIG_POETRY;
 extern const std::string CONFIG_IMAGE_MARK;
 extern const std::string CONFIG_POETRY_MARK;
-extern const std::string CONFIG_DOCUMENT_MARK;
-extern const std::string CONFIG_OPENAI;
+extern const std::string CONFIG_RAG;
+extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
@@ -72,27 +73,6 @@ enum class Regularization {
 };
 
 /**
- * 图片生成页面配置
- */
-struct ImageConfig {
-
-    // 终端名称
-    std::string client;
-    // 输出目录
-    std::string output;
-    // 终端列表
-    std::set<std::string> clients;
-
-};
-
-/**
- * 诗词生成页面配置
- */
-struct PoetryConfig {
-
-};
-
-/**
  * REST配置
  */
 struct RestConfig {
@@ -123,23 +103,86 @@ struct CommandConfig {
 };
 
 /**
- * 词嵌入终端
+ * 词嵌入终端配置
  */
 struct EmbeddingClientConfig {
 
+    // 请求地址
     std::string path;
+    // 词嵌入模型
     std::string model;
+    // 其他配置
     std::map<std::string, std::string> options{};
 
 };
 
 /**
- * OpenAi配置
+ * 图片生成页面配置
  */
-struct OpenAiConfig : RestConfig {
+struct ImageConfig {
 
-    // 词嵌入终端
-    EmbeddingClientConfig embeddingClient;
+    // 终端名称
+    std::string client;
+    // 输出目录
+    std::string output;
+    // 终端列表
+    std::set<std::string> clients;
+
+};
+
+/**
+ * 诗词生成页面配置
+ */
+struct PoetryConfig {
+
+};
+
+/**
+ * 标记配置
+ */
+struct MarkConfig {
+
+    // 目录
+    std::string path;
+
+    // 路径相同即为相等
+    bool operator==(const std::string& path) const;
+
+};
+
+/**
+ * 图片标记页面配置
+ */
+struct ImageMarkConfig : MarkConfig {
+};
+
+/**
+ * 诗词标记页面配置
+ */
+struct PoetryMarkConfig : MarkConfig {
+};
+
+/**
+ * RAG配置
+ */
+struct RAGConfig {
+
+    // 最后索引
+    size_t id;
+    // RAG类型
+    std::string type;
+    // 返回数量
+    size_t size;
+
+};
+
+/**
+ * 词嵌入配置
+ */
+struct EmbeddingConfig {
+
+    // 词嵌入类型
+    std::string type;
 
 };
 
@@ -150,6 +193,22 @@ struct OllamaConfig : RestConfig {
 
     // 词嵌入终端
     EmbeddingClientConfig embeddingClient;
+
+};
+
+/**
+ * ElasticSearch配置
+ */
+struct ElasticSearchConfig : RestConfig {
+
+};
+
+/**
+ * chinese-word-vectors配置
+ */
+struct ChineseWordVectorsConfig {
+
+    std::string path;
 
 };
 
@@ -182,55 +241,6 @@ struct ModelConfig {
 };
 
 /**
- * 标记配置
- */
-struct MarkConfig {
-
-    // 目录
-    std::string path;
-
-    // 路径相同即为相等
-    bool operator==(const std::string& path) const;
-
-};
-
-/**
- * 图片标记页面配置
- */
-struct ImageMarkConfig : MarkConfig {
-};
-
-/**
- * 诗词标记页面配置
- */
-struct PoetryMarkConfig : MarkConfig {
-};
-
-/**
- * 文档标记页面配置
- */
-struct DocumentMarkConfig : MarkConfig {
-
-    // RAG
-    std::string rag;
-    // 分段模型
-    std::string chunk;
-    // 词嵌入
-    std::string embedding;
-
-};
-
-/**
- * ElasticSearch配置
- */
-struct ElasticSearchConfig : RestConfig {
-
-    // 词嵌入类型
-    std::string embedding;
-
-};
-
-/**
  * 通用设置
  */
 class Config {
@@ -239,9 +249,10 @@ public:
     lifuren::config::ImageConfig  image {};
     lifuren::config::PoetryConfig poetry{};
     lifuren::config::OllamaConfig ollama{};
-    std::list<lifuren::config::ImageMarkConfig>    imageMark   {};
-    std::list<lifuren::config::PoetryMarkConfig>   poetryMark  {};
-    std::list<lifuren::config::DocumentMarkConfig> documentMark{};
+    std::list<lifuren::config::ImageMarkConfig>  imageMark {};
+    std::list<lifuren::config::PoetryMarkConfig> poetryMark{};
+    lifuren::config::RAGConfig       rag{};
+    lifuren::config::EmbeddingConfig embedding{};
     lifuren::config::ElasticSearchConfig      elasticsearch{};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 

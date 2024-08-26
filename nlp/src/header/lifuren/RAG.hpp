@@ -22,12 +22,10 @@ namespace lifuren {
  */
 struct RAGTask {
     
-    // 文档路径
-    std::string path;
     // RAG方式
     std::string rag;
-    // 分段方式
-    std::string chunk;
+    // 文档路径
+    std::string path;
     // 词嵌入方式
     std::string embedding;
 
@@ -38,9 +36,10 @@ struct RAGTask {
  */
 class RAGClient : public RAGSearchClient {
 
-protected:
+public:
     // 唯一标识
     size_t id = 0L;
+protected:
     // 处理文件列表
     std::set<std::string> doneFile;
     // 文档路径
@@ -130,6 +129,8 @@ public:
 class RAGTaskRunner {
 
 public:
+    // 索引
+    size_t id = 0L;
     // 是否停止
     bool stop = false;
     // 是否完成
@@ -207,11 +208,11 @@ public:
     /**
      * 添加任务
      * 
-     * @param task RAG任务
+     * @param path 任务路径
      * 
      * @return 是否成功
      */
-    std::shared_ptr<RAGTaskRunner> buildRAGTask(RAGTask task);
+    std::shared_ptr<RAGTaskRunner> buildRAGTask(const std::string& path);
     /**
      * 结束任务
      * 

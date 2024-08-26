@@ -70,18 +70,6 @@ bool lifuren::RestClient::auth(const lifuren::config::RestConfig& config) {
     return this->auth(authType, config.username, config.password, config.authPath);
 }
 
-bool lifuren::RestClient::auth(const lifuren::options::RestOptions& options) {
-    lifuren::RestClient::AuthType authType = lifuren::RestClient::AuthType::NONE;
-    if(options.authType == "Basic") {
-        authType = lifuren::RestClient::AuthType::BASIC;
-    } else if(options.authType == "Token") {
-        authType = lifuren::RestClient::AuthType::TOKEN;
-    } else {
-
-    }
-    return this->auth(authType, options.username, options.password, options.authPath);
-}
-
 bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, const std::string& username, const std::string& password, const std::string& path) {
     this->authType = authType;
     this->username = username;

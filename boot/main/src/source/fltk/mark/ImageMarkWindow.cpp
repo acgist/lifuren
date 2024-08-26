@@ -15,6 +15,7 @@
 
 #include "FL/fl_ask.H"
 #include "FL/Fl_Box.H"
+#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 #include "FL/Fl_Text_Buffer.H"
@@ -88,6 +89,8 @@ static Fl_Button* markPtr  { nullptr };
 static Fl_Button* resetPtr { nullptr };
 static Fl_Box*    previewBoxPtr  { nullptr };
 static Fl_Image*  previewImagePtr{ nullptr };
+static Fl_Input*  poetryPromptPtr{ nullptr };
+static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* moreBufferPtr{ nullptr };
 static Fl_Text_Editor* moreEditorPtr{ nullptr };
 
@@ -133,6 +136,8 @@ lifuren::ImageMarkWindow::~ImageMarkWindow() {
     LFR_DELETE_PTR(resetPtr);
     LFR_DELETE_PTR(previewBoxPtr);
     LFR_DELETE_PTR(previewImagePtr);
+    LFR_DELETE_PTR(poetryPromptPtr);
+    LFR_DELETE_PTR(poetrySearchPtr);
     LFR_DELETE_PTR(moreEditorPtr);
     LFR_DELETE_PTR(moreBufferPtr);
 }
@@ -146,13 +151,13 @@ void lifuren::ImageMarkWindow::redrawConfigElement() {
 
 void lifuren::ImageMarkWindow::drawElement() {
     // 绘制界面
-    pathPtr   = new Fl_Choice(80,  10, 200, 30, "图片目录");
-    newPtr    = new Fl_Button(280, 10, 100, 30, "新增目录");
-    deletePtr = new Fl_Button(380, 10, 100, 30, "删除目录");
-    prevPtr   = new Fl_Button(80,  50, 100, 30, "上张图片");
-    nextPtr   = new Fl_Button(190, 50, 100, 30, "下张图片");
-    markPtr   = new Fl_Button(300, 50, 100, 30, "标记图片");
-    resetPtr  = new Fl_Button(410, 50, 100, 30, "重置选项");
+    pathPtr   = new Fl_Choice(10,  10, 300, 30);
+    newPtr    = new Fl_Button(310, 10, 100, 30, "新增目录");
+    deletePtr = new Fl_Button(410, 10, 100, 30, "删除目录");
+    prevPtr   = new Fl_Button(10,  50, 100, 30, "上张图片");
+    nextPtr   = new Fl_Button(110, 50, 100, 30, "下张图片");
+    markPtr   = new Fl_Button(210, 50, 100, 30, "标记图片");
+    resetPtr  = new Fl_Button(310, 50, 100, 30, "重置选项");
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);
@@ -210,7 +215,10 @@ void lifuren::ImageMarkWindow::drawElement() {
     LFR_CHOICE_ADD_LIST_PROXY(280, yPos, LABEL_IMAGE, beijingPtr , "环境", "背景", "默认");
     // 更多设置
     yPos += 40;
-    moreEditorPtr = new Fl_Text_Editor(10, yPos, 720, 100);
+    poetryPromptPtr = new Fl_Input( 10,  yPos, 300, 30);
+    poetrySearchPtr = new Fl_Button(310, yPos, 100, 30, "搜索诗词");
+    yPos += 50;
+    moreEditorPtr = new Fl_Text_Editor(10, yPos, 720, 100, "描述内容");
     moreBufferPtr = new Fl_Text_Buffer();
     moreEditorPtr->buffer(moreBufferPtr);
     moreEditorPtr->wrap_mode(moreEditorPtr->WRAP_AT_COLUMN, moreEditorPtr->textfont());
@@ -378,7 +386,9 @@ static void remarkConfig() {
     nlohmann::json mark = nlohmann::json::parse(json);
     for(auto ptr : choiceList) {
         auto iterator = mark.find(ptr->label());
-        if(iterator != mark.end()) {
+        if(iterator == mark.end()) {
+            ptr->value(0);
+        } else {
             ptr->value(ptr->find_index(iterator->get<std::string>().c_str()));
         }
     }

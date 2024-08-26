@@ -23,6 +23,7 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
+#include "lifuren/RAG.hpp"
 #include "lifuren/Jsons.hpp"
 #include "lifuren/Strings.hpp"
 #include "lifuren/model/Poetry.hpp"
@@ -39,6 +40,9 @@ static Fl_Button* deletePtr  { nullptr };
 static Fl_Button* prevPtr    { nullptr };
 static Fl_Button* nextPtr    { nullptr };
 static Fl_Button* autoMarkPtr{ nullptr };
+static Fl_Button* modelPtr   { nullptr };
+static Fl_Button* ragPtr     { nullptr };
+
 static Fl_Text_Buffer*  sourceBufferPtr   { nullptr };
 static Fl_Text_Display* sourceDisplayPtr  { nullptr };
 static Fl_Text_Buffer*  rhythmicBufferPtr { nullptr };
@@ -56,6 +60,9 @@ static void autoMark  (Fl_Widget*, void*);
 static void loadFileVector(const std::string& path);
 static void loadPoetryJson();
 static void matchPoetryRhythmic();
+static void resetPoetryRhythmic();
+static void ragCallback(Fl_Widget*, void*);
+static void modelCallback(Fl_Widget*, void*);
 
 lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
 }
@@ -75,6 +82,8 @@ lifuren::PoetryMarkWindow::~PoetryMarkWindow() {
     LFR_DELETE_PTR(prevPtr);
     LFR_DELETE_PTR(nextPtr);
     LFR_DELETE_PTR(autoMarkPtr);
+    LFR_DELETE_PTR(modelPtr);
+    LFR_DELETE_PTR(ragPtr);
     LFR_DELETE_PTR(sourceDisplayPtr);
     LFR_DELETE_PTR(sourceBufferPtr);
     LFR_DELETE_PTR(rhythmicDisplayPtr);
@@ -92,12 +101,14 @@ void lifuren::PoetryMarkWindow::redrawConfigElement() {
 
 void lifuren::PoetryMarkWindow::drawElement() {
     // 绘制界面
-    pathPtr     = new Fl_Choice(80,  10, 200, 30, "诗词目录");
-    newPtr      = new Fl_Button(280, 10, 100, 30, "新增目录");
-    deletePtr   = new Fl_Button(380, 10, 100, 30, "删除目录");
-    prevPtr     = new Fl_Button(80,  50, 100, 30, "上首诗词");
-    nextPtr     = new Fl_Button(190, 50, 100, 30, "下首诗词");
-    autoMarkPtr = new Fl_Button(300, 50, 100, 30, "自动匹配");
+    pathPtr     = new Fl_Choice(10,  10, 300, 30);
+    newPtr      = new Fl_Button(310, 10, 100, 30, "新增目录");
+    deletePtr   = new Fl_Button(410, 10, 100, 30, "删除目录");
+    prevPtr     = new Fl_Button(10,  50, 100, 30, "上首诗词");
+    nextPtr     = new Fl_Button(110, 50, 100, 30, "下首诗词");
+    autoMarkPtr = new Fl_Button(210, 50, 100, 30, "自动匹配");
+    ragPtr      = new Fl_Button(310, 50, 100, 30, "建立索引");
+    modelPtr    = new Fl_Button(410, 50, 100, 30, "训练模型");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
@@ -138,6 +149,10 @@ void lifuren::PoetryMarkWindow::drawElement() {
     nextPtr->callback(nextPoetry, this);
     // 自动匹配
     autoMarkPtr->callback(autoMark, this);
+    // 建立索引
+    ragPtr->callback(ragCallback, this);
+    // 训练模型
+    modelPtr->callback(modelCallback, this);
 }
 
 static void newCallback(Fl_Widget*, void* voidPtr) {
@@ -173,6 +188,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     }
     pathPtr->remove(index);
     ::poetryMarkConfig = nullptr;
+    resetPoetryRhythmic();
     if(poetryMarkConfig.size() > 0) {
         pathPtr->value(pathPtr->find_index(poetryMarkConfig.begin()->path.c_str()));
         pathPtr->redraw();
@@ -205,6 +221,7 @@ static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
         return;
     }
     if(fileVector.empty()) {
+        resetPoetryRhythmic();
         SPDLOG_DEBUG("没有诗词文件：{}", poetryMarkConfig->path);
         return;
     }
@@ -225,6 +242,7 @@ static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
         return;
     }
     if(fileVector.empty()) {
+        resetPoetryRhythmic();
         SPDLOG_DEBUG("没有诗词文件：{}", poetryMarkConfig->path);
         return;
     }
@@ -275,6 +293,7 @@ static void loadFileVector(const std::string& path) {
         return;
     }
     if(path.empty()) {
+        resetPoetryRhythmic();
         SPDLOG_DEBUG("忽略诗词目录加载：{}", path);
         return;
     }
@@ -288,6 +307,7 @@ static void loadFileVector(const std::string& path) {
 
 static void loadPoetryJson() {
     if(fileIterator == fileVector.end()) {
+        resetPoetryRhythmic();
         SPDLOG_WARN("没有可用诗词目录");
         return;
     }
@@ -299,10 +319,12 @@ static void loadPoetryJson() {
 
 static void matchPoetryRhythmic() {
     if(fileIterator == fileVector.end()) {
+        resetPoetryRhythmic();
         SPDLOG_WARN("没有可用诗词目录");
         return;
     }
     if(poetryIterator == poetryJson.end()) {
+        resetPoetryRhythmic();
         SPDLOG_WARN("没有可用诗词");
         return;
     }
@@ -344,4 +366,22 @@ static void matchPoetryRhythmic() {
         targetBufferPtr->text("没有匹配规则");
     }
     targetDisplayPtr->redraw();
+}
+
+static void resetPoetryRhythmic() {
+    sourceBufferPtr->text("");
+    rhythmicBufferPtr->text("");
+    targetBufferPtr->text("");
+}
+
+static void ragCallback(Fl_Widget*, void*) {
+    const char* path = pathPtr->text();
+    if(!path || std::strlen(path) <= 0) {
+        return;
+    }
+    auto& ragService = lifuren::RAGService::getInstance();
+    ragService.buildRAGTask(path);
+}
+
+static void modelCallback(Fl_Widget*, void*) {
 }

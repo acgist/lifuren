@@ -4,9 +4,19 @@
 
 #include "spdlog/spdlog.h"
 
+#include "nlohmann/json.hpp"
+
+#include "lifuren/Files.hpp"
+
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
     this->ragClient = lifuren::RAGClient::getRAGClient(task.rag, task.path, task.embedding);
+    if(!this->ragClient) {
+        this->stop   = true;
+        this->finish = true;
+        return;
+    }
     this->ragClient->loadIndex();
+    this->id = this->ragClient->id;
     this->thread = std::make_unique<std::thread>([this]() {
         try {
             if(this->execute()) {
@@ -60,14 +70,34 @@ bool lifuren::RAGTaskRunner::execute() {
         }
         this->ragClient->doneFileEmplace(path);
         SPDLOG_DEBUG("RAG任务处理文件：{}", path);
-        // TODO: 诗词解析
-        // auto&& chunks = this->chunkService->chunk(path);
-        // for(auto& chunk : chunks) {
-        //     if(chunk.empty()) {
-        //         continue;
-        //     }
-        //     this->ragClient->index(chunk);
-        // }
+        std::string&& content = lifuren::files::loadFile(path);
+        if(content.empty()) {
+            continue;
+        }
+        nlohmann::json json = nlohmann::json::parse(content);
+        for(auto& poetry : json) {
+            if(poetry.empty()) {
+                continue;
+            }
+            auto title      = poetry.find("title");
+            auto rhythmic   = poetry.find("rhythmic");
+            auto paragraphs = poetry.find("paragraphs");
+            std::string chunk;
+            if(title != poetry.end()) {
+                chunk += title->get<std::string>();
+                chunk += '\n';
+            }
+            if(rhythmic != poetry.end()) {
+                chunk += rhythmic->get<std::string>();
+                chunk += '\n';
+            }
+            if(paragraphs != poetry.end()) {
+                std::for_each(paragraphs->begin(), paragraphs->end(), [&chunk](const auto& paragraph) {
+                    chunk += paragraph;
+                });
+            }
+            this->ragClient->index(chunk);
+        }
         ++this->doneFileCount;
         if(this->percentCallback) {
             this->percentCallback(this->percent(), false);

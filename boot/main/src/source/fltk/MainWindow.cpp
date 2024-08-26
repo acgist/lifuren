@@ -87,9 +87,9 @@ void lifuren::MainWindow::drawElement() {
     imageButtonPtr  = new Fl_Button(20,                      90, LFR_HALF_WIDTH(60), 30, "图片生成");
     poetryButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 90, LFR_HALF_WIDTH(60), 30, "诗词生成");
     // 关于
-    aboutButtonPtr  = new Fl_Button(this->w() - 100, this->h() - 40, 80,  30, "关于");
+    aboutButtonPtr  = new Fl_Button(this->w() - 140, this->h() - 40, 120, 30, "关于项目");
     // 重新加载配置
-    reloadButtonPtr = new Fl_Button(this->w() - 260, this->h() - 40, 140, 30, "重新加载配置");
+    reloadButtonPtr = new Fl_Button(this->w() - 260, this->h() - 40, 120, 30, "加载配置");
     // 大小修改
     this->resizable(this);
     // 绑定事件

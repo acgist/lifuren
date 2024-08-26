@@ -17,7 +17,7 @@ lifuren::RAGClient::~RAGClient() {
 
 void lifuren::RAGClient::loadIndex() {
     std::filesystem::path path = this->path;
-    path = path / "index" / "lifuren.index";
+    path = path / "index" / "lifuren.mark";
     if(std::filesystem::exists(path)) {
         std::ifstream stream;
         stream.open(path, std::ios_base::in);
@@ -45,7 +45,7 @@ void lifuren::RAGClient::loadIndex() {
 
 void lifuren::RAGClient::saveIndex() {
     std::filesystem::path path = this->path;
-    path = path / "index" / "lifuren.index";
+    path = path / "index" / "lifuren.mark";
     lifuren::files::createParent(path.string());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc);

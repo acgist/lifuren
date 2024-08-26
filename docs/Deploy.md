@@ -130,10 +130,6 @@ cmake --install .
 
 [模型量化](./optimize/Quantization.md)
 
-#### 模型部署
-
-[模型部署](./model)
-
 #### 服务部署
 
 [模型部署](./tutorial)

@@ -16,7 +16,7 @@
 #include <memory>
 #include <functional>
 
-#include "ClientOptions.hpp"
+#include "lifuren/config/Config.hpp"
 
 namespace httplib {
 
@@ -128,15 +128,6 @@ public:
      * @return 是否成功
      */
     bool auth(const lifuren::config::RestConfig& config);
-
-    /**
-     * 授权
-     * 
-     * @param options 配置
-     * 
-     * @return 是否成功
-     */
-    bool auth(const lifuren::options::RestOptions& options);
 
     /**
      * 授权

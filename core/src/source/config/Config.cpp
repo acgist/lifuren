@@ -62,11 +62,12 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 
 const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
 const std::string lifuren::config::CONFIG_IMAGE         = "image";
-const std::string lifuren::config::CONFIG_OPENAI        = "openai";
-const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
+const std::string lifuren::config::CONFIG_POETRY        = "poetry";
 const std::string lifuren::config::CONFIG_IMAGE_MARK    = "image-mark";
 const std::string lifuren::config::CONFIG_POETRY_MARK   = "poetry-mark";
-const std::string lifuren::config::CONFIG_DOCUMENT_MARK = "document-mark";
+const std::string lifuren::config::CONFIG_RAG           = "rag";
+const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
+const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
 const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
 
@@ -118,7 +119,25 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
                 config.image.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(lifuren::config::CONFIG_OPENAI == name) {
+    } else if(lifuren::config::CONFIG_POETRY == name) {
+    } else if(lifuren::config::CONFIG_IMAGE_MARK == name) {
+        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
+            lifuren::config::ImageMarkConfig imageMarkConfig{};
+            LFR_CONFIG_YAML_GETTER(imageMarkConfig, value, path, path, std::string);
+            config.imageMark.push_back(imageMarkConfig);
+        });
+    } else if(lifuren::config::CONFIG_POETRY_MARK == name) {
+        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
+            lifuren::config::PoetryMarkConfig poetryMarkConfig{};
+            LFR_CONFIG_YAML_GETTER(poetryMarkConfig, value, path, path, std::string);
+            config.poetryMark.push_back(poetryMarkConfig);
+        });
+    } else if(lifuren::config::CONFIG_RAG == name) {
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, id,   id,   size_t);
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
+    } else if(lifuren::config::CONFIG_EMBEDDING == name) {
+        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type, type, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
@@ -134,33 +153,11 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             embeddingClient.options.insert(map.begin(), map.end());
             config.ollama.embeddingClient = embeddingClient;
         }
-    } else if(lifuren::config::CONFIG_IMAGE_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::ImageMarkConfig imageMarkConfig{};
-            LFR_CONFIG_YAML_GETTER(imageMarkConfig, value, path, path, std::string);
-            config.imageMark.push_back(imageMarkConfig);
-        });
-    } else if(lifuren::config::CONFIG_POETRY_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::PoetryMarkConfig poetryMarkConfig{};
-            LFR_CONFIG_YAML_GETTER(poetryMarkConfig, value, path, path, std::string);
-            config.poetryMark.push_back(poetryMarkConfig);
-        });
-    } else if(lifuren::config::CONFIG_DOCUMENT_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::DocumentMarkConfig documentMarkConfig{};
-            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, rag,       rag,       std::string);
-            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, path,      path,      std::string);
-            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, chunk,     chunk,     std::string);
-            LFR_CONFIG_YAML_GETTER(documentMarkConfig, value, embedding, embedding, std::string);
-            config.documentMark.push_back(documentMarkConfig);
-        });
     } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
-        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, embedding, embedding, std::string);
     } else if(lifuren::config::CONFIG_STABLE_DIFFUSION_CPP == name) {
         LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model,   model,   std::string);
         LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, command, command, std::string);
@@ -193,20 +190,6 @@ YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_IMAGE] = image;
     }
     {
-        YAML::Node ollama;
-        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, api,      api);
-        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
-        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
-        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);
-        YAML::Node embeddingClientNode;
-        const lifuren::config::EmbeddingClientConfig& embeddingClient = config.ollama.embeddingClient;
-        embeddingClientNode["path"]    = embeddingClient.path;
-        embeddingClientNode["model"]   = embeddingClient.model;
-        embeddingClientNode["options"] = embeddingClient.options;
-        ollama["embedding"] = embeddingClientNode;
-        yaml[lifuren::config::CONFIG_OLLAMA] = ollama;
-    }
-    {
         YAML::Node imageMark;
         for(const auto& value : config.imageMark) {
             YAML::Node mark;
@@ -225,16 +208,30 @@ YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_POETRY_MARK] = poetryMark;
     }
     {
-        YAML::Node documentMark;
-        for(const auto& value : config.documentMark) {
-            YAML::Node mark;
-            mark["rag"]       = value.rag;
-            mark["path"]      = value.path;
-            mark["chunk"]     = value.chunk;
-            mark["embedding"] = value.embedding;
-            documentMark.push_back(mark);
-        }
-        yaml[lifuren::config::CONFIG_DOCUMENT_MARK] = documentMark;
+        YAML::Node rag;
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, id,   id);
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, type, type);
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, size, size);
+        yaml[lifuren::config::CONFIG_RAG] = rag;
+    }
+    {
+        YAML::Node embedding;
+        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, type, type);
+        yaml[lifuren::config::CONFIG_EMBEDDING] = embedding;
+    }
+    {
+        YAML::Node ollama;
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, api,      api);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);
+        YAML::Node embeddingClientNode;
+        const lifuren::config::EmbeddingClientConfig& embeddingClient = config.ollama.embeddingClient;
+        embeddingClientNode["path"]    = embeddingClient.path;
+        embeddingClientNode["model"]   = embeddingClient.model;
+        embeddingClientNode["options"] = embeddingClient.options;
+        ollama["embedding"] = embeddingClientNode;
+        yaml[lifuren::config::CONFIG_OLLAMA] = ollama;
     }
     {
         YAML::Node elasticsearch;
@@ -242,7 +239,6 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, username,  username);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, embedding, embedding);
         yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
     }
     {

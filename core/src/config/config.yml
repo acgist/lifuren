@@ -18,22 +18,14 @@ poetry-mark:
   - path: /data/mark/poetry
 # RAG
 rag:
+  id: 0
+  # elasticsearch
   type: elasticsearch
-  size: 4
+  size: 8
 # Embedding
 embedding:
+  # text|ollama|chinese-word-vectors
   type: ollama
-# OpenAI配置
-openai:
-  api:
-  username:
-  password:
-  # NONE|Basic|Token
-  auth-type: NONE
-  embedding:
-    path: /v1/embeddings
-    model: 
-    options: {}
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
@@ -53,10 +45,9 @@ elasticsearch:
   password: elastic
   # NONE|Basic|Token
   auth-type: Basic
-  # RAG|TEXT
-  embedding: TEXT
-# Chinese-Word-Vectors配置
-Chinese-Word-Vectors:
+# chinese-word-vectors配置
+chinese-word-vectors:
+  path:
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
   model: /data/stable-diffusion-cpp/model.ckpt

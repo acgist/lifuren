@@ -26,7 +26,14 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const st
     return iterator->second;
 }
 
-std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(RAGTask task) {
+std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(const std::string& path) {
+    const auto& rag       = lifuren::config::CONFIG.rag;
+    const auto& embedding = lifuren::config::CONFIG.embedding;
+    RAGTask task{
+        .rag       = rag.type,
+        .path      = path,
+        .embedding = embedding.type,
+    };
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto iterator = this->tasks.find(task.path);
     if(iterator != this->tasks.end()) {
@@ -34,8 +41,13 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(RAGTas
         return iterator->second;
     }
     SPDLOG_DEBUG("添加RAG任务：{}", task.path);
-    auto pair = this->tasks.emplace(task.path, std::make_shared<lifuren::RAGTaskRunner>(task));
-    return pair.first->second;
+    const auto runner = std::make_shared<lifuren::RAGTaskRunner>(task);
+    if(runner->id <= 0L) {
+        return nullptr;
+    } else {
+        auto pair = this->tasks.emplace(task.path, runner);
+        return pair.first->second;
+    }
 }
 
 bool lifuren::RAGService::stopRAGTask(const std::string& path) {

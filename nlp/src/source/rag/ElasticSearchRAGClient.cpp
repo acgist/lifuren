@@ -34,11 +34,11 @@ std::vector<double> lifuren::ElasticSearchRAGClient::index(const std::string& co
             this->exists = indexCreate(this->id, this->restClient);
         }
     }
-    const auto& elasticsearchConfig = lifuren::config::CONFIG.elasticsearch;
-    if(elasticsearchConfig.embedding == "TEXT") {
+    const auto& embeddingConfig = lifuren::config::CONFIG.embedding;
+    if(embeddingConfig.type == "text" || embeddingConfig.type == "TEXT") {
         textIndex(this->id, content, this->restClient);
     } else {
-
+        SPDLOG_WARN("ElasticSearch不支持的词嵌入模式：{}", embeddingConfig.type);
     }
     return {};
 }
