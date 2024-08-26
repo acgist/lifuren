@@ -4,6 +4,8 @@
 #include "lifuren/FLTK.hpp"
 #endif
 
+#include "httplib.h"
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/config/Config.hpp"
@@ -13,8 +15,11 @@ httplib::Server lifuren::httpServer;
 // 是否关闭
 static bool restClose = false;
 
+// 全局代理
 static void restHandler();
+// 项目首页
 static void restGetIndex();
+// 关闭服务
 static void restGetShutdown();
 
 void lifuren::initHttpServer() {
@@ -22,12 +27,12 @@ void lifuren::initHttpServer() {
     lifuren::restAPI();
     lifuren::restImageAPI();
     lifuren::restPoetryAPI();
-    SPDLOG_INFO("启动REST服务：{}", lifuren::config::httpServerPort);
-    bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
+    SPDLOG_INFO("启动REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
+    const bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     // httpServer.set_read_timeout(60);
     // httpServer.set_write_timeout(60);
     // httpServer.set_keep_alive_timeout(60);
-    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerPort, success);
+    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     #if LFR_ENABLE_FLTK
     lifuren::shutdownFltkWindow();
     #endif
@@ -35,8 +40,10 @@ void lifuren::initHttpServer() {
 
 void lifuren::shutdownHttpServer() {
     if(restClose) {
+        SPDLOG_INFO("REST服务已经结束");
         return;
     }
+    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);;
     restClose = true;
     httpServer.stop();
 }

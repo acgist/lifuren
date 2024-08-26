@@ -7,48 +7,53 @@
 	},
 	"item": [
 		{
-			"name": "chat",
+			"name": "image",
 			"item": [
 				{
-					"name": "PostChat",
+					"name": "生成图片",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"prompt\": \"你好，李夫人！\"\r\n}",
+							"raw": "{\r\n    \"prompt\": \"雨天\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "http://localhost:8080/chat"
-					},
-					"response": []
-				},
-				{
-					"name": "PostChatStream",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"prompt\": \"你好，李夫人！\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "http://localhost:8080/chat/stream"
+						"url": "http://localhost:8080/image/generate"
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "GetIndex",
+			"name": "poetry",
+			"item": [
+				{
+					"name": "生成诗词",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prompt\": \"雨天\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/poetry/generate"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "首页",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -57,7 +62,7 @@
 			"response": []
 		},
 		{
-			"name": "GetShutdown",
+			"name": "关闭",
 			"request": {
 				"method": "GET",
 				"header": [],

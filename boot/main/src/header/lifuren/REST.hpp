@@ -12,19 +12,23 @@
 #endif
 #endif
 
-#include "httplib.h"
-
 #include "nlohmann/json.hpp"
+
+namespace httplib {
+    class Server;
+    class Response;
+}
 
 namespace lifuren {
 
 namespace content::type {
 
-    const char* const HTML  = "text/html";
-    const char* const JSON  = "application/json";
-    const char* const EVENT = "text/event-stream";
+    // HTML
+    const char* const HTML = "text/html";
+    // JSON
+    const char* const JSON = "application/json";
 
-};
+}; // END OF content::type
 
 // HTTP Server
 extern httplib::Server httpServer;
@@ -33,21 +37,30 @@ extern httplib::Server httpServer;
 extern void initHttpServer();
 // 关闭HTTP服务
 extern void shutdownHttpServer();
-// 响应
-extern void response(httplib::Response& response, const char* body);
-// 响应
-extern void response(httplib::Response& response, const char* code, const char* message);
-
 /**
- * @param message 响应消息
+ * 成功响应
  * 
- * @return 响应
+ * @param response 响应
+ * @param body     内容
+ */
+extern void response(httplib::Response& response, const char* body);
+/**
+ * 响应
+ * 
+ * @param response 响应
+ * @param code     响应编码
+ * @param message  响应描述
+ */
+extern void response(httplib::Response& response, const char* code, const char* message);
+/**
+ * @param body 内容
+ * 
+ * @return 成功响应
  */
 extern nlohmann::json buildResponse(const char* body);
-
 /**
  * @param code    响应编码
- * @param message 响应消息
+ * @param message 响应描述
  * 
  * @return 响应
  */
@@ -55,9 +68,9 @@ extern nlohmann::json buildResponse(const char* code, const char* message);
 
 // 公共接口
 extern void restAPI();
-// 图片
+// 图片接口
 extern void restImageAPI();
-// 诗词
+// 诗词接口
 extern void restPoetryAPI();
 
 } // END lifuren
