@@ -60,6 +60,8 @@ public:
     void loadIndex();
     // 保存索引
     void saveIndex();
+    // 清空索引
+    void truncateIndex();
     // 添加已经处理文件
     void doneFileEmplace(const std::string& file);
     // 文件是否已经处理
@@ -159,6 +161,10 @@ private:
     bool execute();
 
 public:
+    // 开始任务
+    bool startExecute();
+    // 删除任务
+    bool deleteRAG();
     // 任务进度
     float percent();
     /**
@@ -229,6 +235,14 @@ public:
      * @return 是否成功
      */
     bool deleteRAGTask(const std::string& path);
+    /**
+     * 移除任务
+     * 
+     * @param path 任务路径
+     * 
+     * @return 是否成功
+     */
+    bool removeRAGTask(const std::string& path);
     /**
      * @return 当前任务总量（执行中和待执行的总量）
      */

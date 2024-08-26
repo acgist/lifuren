@@ -40,8 +40,8 @@ static Fl_Button* deletePtr  { nullptr };
 static Fl_Button* prevPtr    { nullptr };
 static Fl_Button* nextPtr    { nullptr };
 static Fl_Button* autoMarkPtr{ nullptr };
-static Fl_Button* modelPtr   { nullptr };
 static Fl_Button* ragPtr     { nullptr };
+static Fl_Button* modelPtr   { nullptr };
 
 static Fl_Text_Buffer*  sourceBufferPtr   { nullptr };
 static Fl_Text_Display* sourceDisplayPtr  { nullptr };
@@ -61,7 +61,7 @@ static void loadFileVector(const std::string& path);
 static void loadPoetryJson();
 static void matchPoetryRhythmic();
 static void resetPoetryRhythmic();
-static void ragCallback(Fl_Widget*, void*);
+static void ragCallback  (Fl_Widget*, void*);
 static void modelCallback(Fl_Widget*, void*);
 
 lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
@@ -186,6 +186,8 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     if(iterator != poetryMarkConfig.end()) {
         poetryMarkConfig.erase(iterator);
     }
+    auto& ragService = lifuren::RAGService::getInstance();
+    ragService.deleteRAGTask(pathPtr->text());
     pathPtr->remove(index);
     ::poetryMarkConfig = nullptr;
     resetPoetryRhythmic();
@@ -375,12 +377,16 @@ static void resetPoetryRhythmic() {
 }
 
 static void ragCallback(Fl_Widget*, void*) {
-    const char* path = pathPtr->text();
-    if(!path || std::strlen(path) <= 0) {
+    const int index = pathPtr->value();
+    if(index < 0) {
         return;
     }
     auto& ragService = lifuren::RAGService::getInstance();
-    ragService.buildRAGTask(path);
+    if(ragService.getRAGTask(pathPtr->text())) {
+        ragService.stopRAGTask(pathPtr->text());
+    } else {
+        ragService.buildRAGTask(pathPtr->text());
+    }
 }
 
 static void modelCallback(Fl_Widget*, void*) {

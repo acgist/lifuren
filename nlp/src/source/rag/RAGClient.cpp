@@ -60,6 +60,11 @@ void lifuren::RAGClient::saveIndex() {
     stream.close();
 }
 
+void lifuren::RAGClient::truncateIndex() {
+    this->doneFile.clear();
+    this->saveIndex();
+}
+
 void lifuren::RAGClient::doneFileEmplace(const std::string& file) {
     this->doneFile.emplace(file);
 }

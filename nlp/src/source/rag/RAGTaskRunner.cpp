@@ -4,9 +4,9 @@
 
 #include "spdlog/spdlog.h"
 
-#include "nlohmann/json.hpp"
-
 #include "lifuren/Files.hpp"
+
+#include "nlohmann/json.hpp"
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
     this->ragClient = lifuren::RAGClient::getRAGClient(task.rag, task.path, task.embedding);
@@ -17,6 +17,16 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
     }
     this->ragClient->loadIndex();
     this->id = this->ragClient->id;
+}
+
+lifuren::RAGTaskRunner::~RAGTaskRunner() {
+    SPDLOG_DEBUG("RAG任务析构：{}", this->task.path);
+}
+
+bool lifuren::RAGTaskRunner::startExecute() {
+    if(!this->ragClient) {
+        return false;
+    }
     this->thread = std::make_unique<std::thread>([this]() {
         try {
             if(this->execute()) {
@@ -32,12 +42,18 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
         } catch(...) {
             SPDLOG_ERROR("执行RAG任务异常：{}", this->task.path);
         }
+        auto& ragService = lifuren::RAGService::getInstance();
+        ragService.removeRAGTask(this->task.path);
     });
     this->thread->detach();
+    return true;
 }
 
-lifuren::RAGTaskRunner::~RAGTaskRunner() {
-    SPDLOG_DEBUG("RAG任务析构：{}", this->task.path);
+bool lifuren::RAGTaskRunner::deleteRAG() {
+    if(!this->ragClient) {
+        return false;
+    }
+    return this->ragClient->deleteRAG();
 }
 
 bool lifuren::RAGTaskRunner::execute() {
@@ -76,6 +92,9 @@ bool lifuren::RAGTaskRunner::execute() {
         }
         nlohmann::json json = nlohmann::json::parse(content);
         for(auto& poetry : json) {
+            if(this->stop) {
+                break;
+            }
             if(poetry.empty()) {
                 continue;
             }
@@ -94,6 +113,7 @@ bool lifuren::RAGTaskRunner::execute() {
             if(paragraphs != poetry.end()) {
                 std::for_each(paragraphs->begin(), paragraphs->end(), [&chunk](const auto& paragraph) {
                     chunk += paragraph;
+                    chunk += '\n';
                 });
             }
             this->ragClient->index(chunk);

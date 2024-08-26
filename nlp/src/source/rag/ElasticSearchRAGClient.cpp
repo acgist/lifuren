@@ -50,6 +50,7 @@ std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::stri
 
 bool lifuren::ElasticSearchRAGClient::deleteRAG() {
     SPDLOG_INFO("删除ElasticSearch索引：{}", this->id);
+    this->truncateIndex();
     return indexDelete(this->id, this->restClient);
 }
 

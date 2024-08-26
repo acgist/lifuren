@@ -8,14 +8,8 @@
 #include "lifuren/Logger.hpp"
 
 [[maybe_unused]] static void testRAGService() {
-    lifuren::RAGTask task {
-        "D:/tmp/docs",
-        "elasticsearch",
-        "LINE",
-        "elasticsearch"
-    };
     auto& service = lifuren::RAGService::getInstance();
-    auto ptr = service.buildRAGTask(task);
+    auto ptr = service.buildRAGTask("D:/tmp/docs");
     while(!ptr->finish) {
         SPDLOG_DEBUG("当前进度：{}", ptr->percent());
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -25,10 +19,9 @@
 
 [[maybe_unused]] static void testRAGTaskRunner() {
     lifuren::RAGTask task {
-        "D:/tmp/docs",
-        "elasticsearch",
-        "LINE",
-        "elasticsearch"
+        .rag       = "elasticsearch",
+        .path      = "D:/tmp/docs",
+        .embedding = "text",
     };
     lifuren::RAGTaskRunner runner{ task };
     std::this_thread::sleep_for(std::chrono::seconds(16));
@@ -37,7 +30,7 @@
 [[maybe_unused]] static void testElasticSearchRAGClient() {
     lifuren::ElasticSearchRAGClient client{ "D:/tmp/docs", "" };
     // client.index("李夫人");
-    client.search("李");
+    client.search("李夫人");
     // client.deleteRAG();
 }
 
