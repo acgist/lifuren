@@ -8,18 +8,12 @@
 #include "spdlog/fmt/chrono.h"
 #include "spdlog/fmt/ranges.h"
 
-LFR_LOG_FORMAT_STREAM(at::Tensor);
-
 static void testLoadImageFileDataset() {
     std::map<std::string, int> mapping = {
         { "man"  , 1 },
         { "woman", 0 }
     };
     auto data_loader = lifuren::datasets::loadImageFileDataset(200, 200, 20, "D:\\tmp\\gender\\train", ".jpg", mapping);
-    auto data = data_loader.get();
-    for(auto iterator = data->begin(); iterator != data->end(); ++iterator) {
-        SPDLOG_DEBUG("数据：{}", iterator->target);
-    }
 }
 
 static void testDatasetSharding() {

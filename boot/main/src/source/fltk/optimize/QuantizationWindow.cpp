@@ -6,7 +6,6 @@ lifuren::QuantizationWindow::QuantizationWindow(int width, int height, const cha
 }
 
 lifuren::QuantizationWindow::~QuantizationWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
 }
 
 void lifuren::QuantizationWindow::drawElement() {

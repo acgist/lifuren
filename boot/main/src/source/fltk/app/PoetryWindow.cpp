@@ -19,7 +19,6 @@ lifuren::PoetryWindow::PoetryWindow(int width, int height, const char* title) :M
 }
 
 lifuren::PoetryWindow::~PoetryWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     // 保存配置
     this->saveConfig();
     // 释放资源

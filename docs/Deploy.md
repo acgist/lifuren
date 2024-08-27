@@ -35,8 +35,6 @@ cmake ..
 cmake --build . -j
 cmake --build . --parallel 8
 cmake --install .
-
-export LD_LIBRARY_PATH=/data/dev/lifuren/install/lib/:/data/dev/lifuren/deps/libtorch/lib/:$LD_LIBRARY_PATH
 ```
 
 #### Windows
@@ -55,7 +53,6 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 vcpkg install fltk:x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
-vcpkg install libtorch:x64-windows
 vcpkg install yaml-cpp:x64-windows
 vcpkg install cpp-httplib:x64-windows
 
@@ -63,15 +60,11 @@ vcpkg install cpp-httplib:x64-windows
 vcpkg export fltk        --zip
 vcpkg export opencv      --zip
 vcpkg export spdlog      --zip
-vcpkg export libtorch    --zip
 vcpkg export yaml-cpp    --zip
 vcpkg export cpp-httplib --zip
 ```
 
-> `Windows`开发`OpenCV`和`LibTorch`直接官网下载
-
-* https://opencv.org/releases/
-* https://pytorch.org/get-started/locally/
+> `OpenCV`可以直接官网下载
 
 ###### 编译命令
 
@@ -98,10 +91,6 @@ cmake --install .
 #### NVIDIA
 
 [Nvidia](./tutorial/Nvidia.md)
-
-#### LibTorch
-
-[Nvidia](./tutorial/LibTorch.md)
 
 ## 模型
 

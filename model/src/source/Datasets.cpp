@@ -1,14 +1,29 @@
 #include "lifuren/Datasets.hpp"
 
-#include "lifuren/Files.hpp"
+#include "ggml.h"
 
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Files.hpp"
+
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+
+ggml_tensor* lifuren::datasets::readImage(const std::string& path, int width, int height, const std::function<void(const cv::Mat&)> imageTransform) {
+    cv::Mat image = cv::imread(path);
+    cv::resize(image, image, cv::Size(width, height));
+    if(imageTransform != nullptr) {
+        imageTransform(image);
+    }
+    image.release();
+    return nullptr;
+}
 
 lifuren::datasets::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,
     const std::map<std::string, int>& mapping,
-    const std::function<torch::Tensor(const std::string&)> fileTransform
+    const std::function<ggml_tensor*(const std::string&)> fileTransform
 ) : fileTransform(fileTransform) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
@@ -31,35 +46,27 @@ lifuren::datasets::FileDataset::FileDataset(
     }
 }
 
-torch::optional<size_t> lifuren::datasets::FileDataset::size() const {
+size_t lifuren::datasets::FileDataset::size() const {
     return this->paths.size();
 }
 
-torch::data::Example<> lifuren::datasets::FileDataset::get(size_t index) {
+ggml_tensor* lifuren::datasets::FileDataset::get(size_t index) {
     const std::string& path = this->paths.at(index);
-    torch::Tensor data = this->fileTransform(path);
-    const int label = this->labels.at(index);
-    torch::Tensor target = torch::full({1}, label);
-    return { 
-        data,
-        target
-    };
+    // TODO
+    return nullptr;
 }
 
 lifuren::datasets::TensorDataset::TensorDataset(
-    torch::Tensor& features,
-    torch::Tensor& labels
+    ggml_tensor* features,
+    ggml_tensor* labels
 ) : features(features), labels(labels) {
 }
 
-torch::optional<size_t> lifuren::datasets::TensorDataset::size() const {
-    return this->features.sizes()[0];
-    // return this->labels.sizes[0];
+size_t lifuren::datasets::TensorDataset::size() const {
+    // TODO
+    return 0;
 }
 
-torch::data::Example<> lifuren::datasets::TensorDataset::get(size_t index) {
-    return {
-        this->features[index],
-        this->labels[index]
-    };
+ggml_tensor* lifuren::datasets::TensorDataset::get(size_t index) {
+    return nullptr;
 }

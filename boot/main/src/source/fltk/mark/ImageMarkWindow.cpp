@@ -116,7 +116,6 @@ lifuren::ImageMarkWindow::ImageMarkWindow(int width, int height, const char* tit
 }
 
 lifuren::ImageMarkWindow::~ImageMarkWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     // 保存配置
     this->saveConfig();
     // 清理数据

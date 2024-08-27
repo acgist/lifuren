@@ -34,7 +34,6 @@ lifuren::ImageWindow::ImageWindow(int width, int height, const char* title) : Mo
 }
 
 lifuren::ImageWindow::~ImageWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     // 保存配置
     this->saveConfig();
     // 释放资源

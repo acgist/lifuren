@@ -1,18 +1,6 @@
 /**
  * 模型
  * 
- * # onnx
- * model = ...
- * torch.onnx.export(model.eval(), torch.randn(1, 3, 256, 256), "model.onnx")
- * 
- * # trace
- * model = torch.jit.trace(model.eval(), torch.randn(1, 3, 256, 256))
- * model.save("trace.pt")
- * 
- * # script
- * model = torch.jit.script(model.eval())
- * model.save("script.pt")
- * 
  * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
@@ -104,33 +92,6 @@ void lifuren::Model<M, I, R>::load() {
 
 template<typename M, typename I, typename R>
 void lifuren::Model<M, I, R>::trainAndVal() {
-    //     SPDLOG_DEBUG("是否使用CUDA：{}", this->device.is_cuda());
-    // std::filesystem::path data_path = data_dir;
-    // std::string path_val   = (data_path / "val").string();
-    // std::string path_train = (data_path / "train").string();
-    // std::map<std::string, int> mapping = {
-    //     { "man"  , 1 },
-    //     { "woman", 0 }
-    // };
-    // this->model->to(this->device);
-    // auto data_loader_val   = lifuren::datasets::loadImageFileDataset(200, 200, batch_size, path_val,   image_type, mapping);
-    // auto data_loader_train = lifuren::datasets::loadImageFileDataset(200, 200, batch_size, path_train, image_type, mapping);
-    // for (size_t epoch = 1; epoch <= num_epochs; ++epoch) {
-    //     if (epoch == num_epochs / 4) {
-    //         learning_rate /= 10;
-    //     }
-    //     try {
-    //         torch::optim::Adam optimizer(this->model->parameters(), learning_rate);
-    //         auto a = std::chrono::system_clock::now();
-    //         this->trian(epoch, batch_size, optimizer, data_loader_train);
-    //         auto z = std::chrono::system_clock::now();
-    //         SPDLOG_DEBUG("训练耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
-    //         this->val(epoch, batch_size, data_loader_val);
-    //     } catch(const std::exception& e) {
-    //         SPDLOG_ERROR("训练异常：{}", e.what());
-    //     }
-    // }
-    // torch::save(this->model, save_path);
 }
 
 }

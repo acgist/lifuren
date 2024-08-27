@@ -68,7 +68,6 @@ lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* t
 }
 
 lifuren::PoetryMarkWindow::~PoetryMarkWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     // 保存配置
     this->saveConfig();
     // 清理数据

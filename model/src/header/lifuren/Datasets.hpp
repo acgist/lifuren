@@ -11,13 +11,21 @@
 #include <vector>
 #include <functional>
 
-#include "torch/torch.h"
+#include <assert.h>
 
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 
+namespace cv {
+    class Mat;
+};
+
+struct ggml_tensor;
+
 namespace lifuren  {
 namespace datasets {
+
+extern ggml_tensor* readImage(const std::string& path, int width, int height, const std::function<void(const cv::Mat&)> imageTransform = nullptr);
 
 /**
  * 数据集类型
@@ -112,13 +120,24 @@ inline size_t DatasetSharding::getIndex(size_t totalSize, size_t index) {
 }
 
 /**
+ * 数据集
+ */
+class Dataset {
+
+public:
+    virtual size_t size() const = 0;
+    virtual ggml_tensor* get(size_t index) = 0;
+
+};
+
+/**
  * 文件数据集
  * 
  * ./类型1/文件列表
  * ./类型2/文件列表
  * ...
  */
-class FileDataset : public torch::data::Dataset<FileDataset> {
+class FileDataset : public Dataset {
 
 private:
     // 文件标签
@@ -126,7 +145,7 @@ private:
     // 文件路径
     std::vector<std::string> paths;
     // 文件转换
-    std::function<torch::Tensor(const std::string&)> fileTransform = nullptr;
+    std::function<ggml_tensor*(const std::string&)> fileTransform = nullptr;
 
 public:
     /**
@@ -139,12 +158,12 @@ public:
         const std::string& path,
         const std::vector<std::string>& exts,
         const std::map<std::string, int>& mapping,
-        const std::function<torch::Tensor(const std::string&)> fileTransform = nullptr
+        const std::function<ggml_tensor*(const std::string&)> fileTransform = nullptr
     );
 
 public:
-    torch::optional<size_t> size() const override;
-    torch::data::Example<> get(size_t index) override;
+    size_t size() const override;
+    ggml_tensor* get(size_t index) override;
 
 };
 
@@ -174,17 +193,10 @@ inline auto loadImageFileDataset(
         width,
         height,
         imageTransform
-    ](const std::string& path) -> torch::Tensor {
-        cv::Mat image = cv::imread(path);
-        cv::resize(image, image, cv::Size(width, height));
-        if(imageTransform != nullptr) {
-            imageTransform(image);
-        }
-        torch::Tensor data_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1});
-        image.release();
-        return data_tensor;
-    }).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+    ](const std::string& path) -> ggml_tensor* {
+        return readImage(path, width, height, imageTransform);
+    });
+    return dataset;
 }
 
 using ImageFileDatasetLoader = std::invoke_result<
@@ -201,20 +213,20 @@ using ImageFileDatasetLoader = std::invoke_result<
 /**
  * Tensor数据集
  */
-class TensorDataset : public torch::data::Dataset<TensorDataset> {
+class TensorDataset : public Dataset {
 
 public:
     // 特征
-    torch::Tensor features;
+    ggml_tensor* features;
     // 标签
-    torch::Tensor labels;
+    ggml_tensor* labels;
 
 public:
-    TensorDataset(torch::Tensor& features, torch::Tensor& labels);
+    TensorDataset(ggml_tensor* features, ggml_tensor* labels);
 
 public:
-    torch::optional<size_t> size() const override;
-    torch::data::Example<> get(size_t index) override;
+    size_t size() const override;
+    ggml_tensor* get(size_t index) override;
 
 };
 

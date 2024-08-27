@@ -85,9 +85,11 @@ void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, co
 }
 
 lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {
+    SPDLOG_DEBUG("打开窗口");
 }
 
 lifuren::Window::~Window() {
+    SPDLOG_DEBUG("关闭窗口");
     if(this->iconImagePtr != nullptr) {
         delete this->iconImagePtr;
         this->iconImagePtr = nullptr;
@@ -126,14 +128,12 @@ lifuren::ConfigWindow::ConfigWindow(int width, int height, const char* title) : 
 }
 
 lifuren::ConfigWindow::~ConfigWindow() {
-    SPDLOG_DEBUG("关闭窗口");
 }
 
 lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::MarkWindow::~MarkWindow() {
-    SPDLOG_DEBUG("关闭窗口");
 }
 
 void lifuren::MarkWindow::prevMark() {
@@ -146,5 +146,4 @@ lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Wi
 }
 
 lifuren::ModelWindow::~ModelWindow() {
-    SPDLOG_DEBUG("关闭窗口");
 }

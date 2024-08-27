@@ -12,8 +12,8 @@ add_library(
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore
+    ggml
     ${OpenCV_LIBS}
-    ${TORCH_LIBRARIES}
 )
 
 target_include_directories(

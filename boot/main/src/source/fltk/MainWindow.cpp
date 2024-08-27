@@ -57,7 +57,6 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Wind
 }
 
 lifuren::MainWindow::~MainWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     LFR_DELETE_PTR(imageMarkButtonPtr);
     LFR_DELETE_THIS_PTR(imageMarkWindowPtr);
     LFR_DELETE_PTR(poetryMarkButtonPtr);

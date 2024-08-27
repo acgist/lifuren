@@ -15,7 +15,6 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : Wi
 }
 
 lifuren::AboutWindow::~AboutWindow() {
-    SPDLOG_DEBUG("关闭窗口：{}", __FILE__);
     LFR_DELETE_PTR(homePagePtr);
     LFR_DELETE_PTR(aboutDisplayPtr);
     LFR_DELETE_PTR(aboutBufferPtr);

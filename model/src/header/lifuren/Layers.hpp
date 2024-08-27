@@ -6,7 +6,9 @@
 #ifndef LFR_HEADER_MODEL_LAYERS_HPP
 #define LFR_HEADER_MODEL_LAYERS_HPP
 
-#include "torch/torch.h"
+#include <vector>
+
+#include "ggml.h"
 
 namespace lifuren {
 namespace layers  {
@@ -17,8 +19,8 @@ namespace layers  {
  * 
  * @return Linear
  */
-inline torch::nn::Linear linear(int64_t in_features, int64_t out_features) {
-    return torch::nn::Linear(torch::nn::LinearOptions(in_features, out_features));
+inline void linear(int64_t in_features, int64_t out_features) {
+    // TODO
 }
 
 /**
@@ -26,8 +28,8 @@ inline torch::nn::Linear linear(int64_t in_features, int64_t out_features) {
  * 
  * @return BatchNorm1d
  */
-inline torch::nn::BatchNorm1d batchNorm1d(int64_t num_features) {
-    return torch::nn::BatchNorm1d(torch::nn::BatchNorm1dOptions(num_features));
+inline void batchNorm1d(int64_t num_features) {
+    // TODO
 }
 
 /**
@@ -35,8 +37,8 @@ inline torch::nn::BatchNorm1d batchNorm1d(int64_t num_features) {
  * 
  * @return BatchNorm2d
  */
-inline torch::nn::BatchNorm2d batchNorm2d(int64_t num_features) {
-    return torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(num_features));
+inline void batchNorm2d(int64_t num_features) {
+    // TODO
 }
 
 /**
@@ -44,8 +46,8 @@ inline torch::nn::BatchNorm2d batchNorm2d(int64_t num_features) {
  * 
  * @return LayerNorm
  */
-inline torch::nn::LayerNorm layerNorm(std::vector<int64_t> normalized_shape) {
-    return torch::nn::LayerNorm(torch::nn::LayerNormOptions(normalized_shape));
+inline void layerNorm(std::vector<int64_t> normalized_shape) {
+    // TODO
 }
 
 /**
@@ -53,8 +55,8 @@ inline torch::nn::LayerNorm layerNorm(std::vector<int64_t> normalized_shape) {
  * 
  * @return InstanceNorm2d
  */
-inline torch::nn::InstanceNorm2d instanceNorm2d(int64_t num_features) {
-    return torch::nn::InstanceNorm2d(torch::nn::InstanceNorm2dOptions(num_features));
+inline void instanceNorm2d(int64_t num_features) {
+    // TODO
 }
 
 /**
@@ -63,8 +65,8 @@ inline torch::nn::InstanceNorm2d instanceNorm2d(int64_t num_features) {
  * 
  * @return GroupNorm
  */
-inline torch::nn::GroupNorm groupNorm(int64_t num_groups, int64_t num_channels) {
-    return torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, num_channels));
+inline void groupNorm(int64_t num_groups, int64_t num_channels) {
+    // TODO
 }
 
 /**
@@ -78,7 +80,7 @@ inline torch::nn::GroupNorm groupNorm(int64_t num_groups, int64_t num_channels) 
  * 
  * @return Conv2d
  */
-inline torch::nn::Conv2d conv2d(
+inline void conv2d(
     int64_t in_channels,
     int64_t out_channels,
     int64_t kernel_size,
@@ -87,12 +89,7 @@ inline torch::nn::Conv2d conv2d(
     int64_t dilation = 1,
     bool    bias     = true
 ) {
-    torch::nn::Conv2dOptions options(in_channels, out_channels, kernel_size);
-    options.stride(stride);
-    options.padding(padding);
-    options.dilation(dilation);
-    options.bias(bias);
-    return torch::nn::Conv2d(options);
+    // TODO
 }
 
 /**
@@ -103,17 +100,13 @@ inline torch::nn::Conv2d conv2d(
  * 
  * @return MaxPool2d
  */
-inline torch::nn::MaxPool2d maxPool2d(
+inline void maxPool2d(
     int64_t kernel_size,
     int64_t stride   = -1,
     int64_t padding  = 0,
     int64_t dilation = 1
 ) {
-    torch::nn::MaxPool2dOptions options(kernel_size);
-    options.stride(stride < 0 ? kernel_size : stride);
-    options.padding(padding);
-    options.dilation(dilation);
-    return torch::nn::MaxPool2d(options);
+    // TODO
 }
 
 /**
@@ -123,15 +116,12 @@ inline torch::nn::MaxPool2d maxPool2d(
  * 
  * @return MaxPool2d
  */
-inline torch::nn::AvgPool2d avgPool2d(
+inline void avgPool2d(
     int64_t kernel_size,
     int64_t stride  = -1,
     int64_t padding = 0
 ) {
-    torch::nn::AvgPool2dOptions options(kernel_size);
-    options.stride(stride < 0 ? kernel_size : stride);
-    options.padding(padding);
-    return torch::nn::AvgPool2d(options);
+    // TODO
 }
 
 /**
@@ -139,8 +129,8 @@ inline torch::nn::AvgPool2d avgPool2d(
  * 
  * @return AdaptiveAvgPool2d
  */
-inline torch::nn::AdaptiveAvgPool2d adaptiveAvgPool2d(int64_t output_size) {
-    return torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(output_size));
+inline void adaptiveAvgPool2d(int64_t output_size) {
+    // TODO
 }
 
 /**
@@ -148,8 +138,8 @@ inline torch::nn::AdaptiveAvgPool2d adaptiveAvgPool2d(int64_t output_size) {
  * 
  * @return Dropout
  */
-inline torch::nn::Dropout dropout(double dropout = 0.5) {
-    return torch::nn::Dropout(torch::nn::DropoutOptions(dropout));
+inline void dropout(double dropout = 0.5) {
+    // TODO
 }
 
 /**
@@ -157,39 +147,8 @@ inline torch::nn::Dropout dropout(double dropout = 0.5) {
  * 
  * @return ReLU
  */
-inline torch::nn::ReLU relu(bool inplace = false) {
-    return torch::nn::ReLU(torch::nn::ReLUOptions(inplace));
-}
-
-// /**
-//  * @return torch::nn::Upsample
-//  */
-// inline torch::nn::Upsample upsample() {
-//     torch::nn::UpsampleOptions options();
-//     return torch::nn::Upsample(options);
-// }
-
-/**
- * @param input_size  ?
- * @param hidden_size ?
- * @param num_layers  ?
- * @param bias        ?
- * @param dropout     ?
- * 
- * @return torch::nn::LSTM
- */
-inline torch::nn::GRU gru(
-    int64_t input_size,
-    int64_t hidden_size,
-    int64_t num_layers = 1,
-    bool    bias       = true,
-    double  dropout    = 0.0
-) {
-    torch::nn::GRUOptions options(input_size, hidden_size);
-    options.num_layers(num_layers);
-    options.bias(bias);
-    options.dropout(dropout);
-    return torch::nn::GRU(options);
+inline void relu(bool inplace = false) {
+    // TODO
 }
 
 /**
@@ -199,20 +158,35 @@ inline torch::nn::GRU gru(
  * @param bias        ?
  * @param dropout     ?
  * 
- * @return torch::nn::LSTM
+ * @return GRU
  */
-inline torch::nn::LSTM lstm(
+inline void gru(
     int64_t input_size,
     int64_t hidden_size,
     int64_t num_layers = 1,
     bool    bias       = true,
     double  dropout    = 0.0
 ) {
-    torch::nn::LSTMOptions options(input_size, hidden_size);
-    options.num_layers(num_layers);
-    options.bias(bias);
-    options.dropout(dropout);
-    return torch::nn::LSTM(options);
+    // TODO
+}
+
+/**
+ * @param input_size  ?
+ * @param hidden_size ?
+ * @param num_layers  ?
+ * @param bias        ?
+ * @param dropout     ?
+ * 
+ * @return LSTM
+ */
+inline void lstm(
+    int64_t input_size,
+    int64_t hidden_size,
+    int64_t num_layers = 1,
+    bool    bias       = true,
+    double  dropout    = 0.0
+) {
+    // TODO
 }
 
 } // END layers

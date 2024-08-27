@@ -61,15 +61,8 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
-set(
-    CMAKE_PREFIX_PATH
-    ${CMAKE_PREFIX_PATH}
-    deps/libtorch
-)
-
 include_directories(
-    deps/libtorch/include
-    deps/libtorch/include/torch/csrc/api/include
+    deps/stable-diffusion.cpp
 )
 
 if(CMAKE_HOST_UNIX)
@@ -122,14 +115,11 @@ if(CMAKE_HOST_WIN32)
         )
     endif()
 
-    file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
-
     find_package(libpng        REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
     
 find_package(FLTK     REQUIRED)
-find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(spdlog   REQUIRED)
 find_package(httplib  REQUIRED)
