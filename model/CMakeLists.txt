@@ -4,7 +4,6 @@ add_library(
     ${PROJECT_NAME}
     src/source/Model.cpp
     src/source/Layers.cpp
-    src/source/Models.cpp
     src/source/Datasets.cpp
     src/source/model/poetry/Poetry.cpp
 )

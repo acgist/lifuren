@@ -1,3 +1,10 @@
+add_executable(testModel TestModel.cpp)
+add_test(NAME testModel COMMAND testModel)
+target_link_libraries(
+    testModel
+    lifurenmodel
+)
+
 add_executable(testLayers TestLayers.cpp)
 add_test(NAME testLayers COMMAND testLayers)
 target_link_libraries(
