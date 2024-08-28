@@ -125,8 +125,6 @@ class PoetryConfigWindow;
 class AboutWindow;
 class ImageMarkWindow;
 class PoetryMarkWindow;
-class FinetuneWindow;
-class QuantizationWindow;
 
 /**
  * 配置管理
@@ -172,10 +170,6 @@ private:
     ImageMarkWindow*    imageMarkWindowPtr    = nullptr;
     // 诗词标记窗口
     PoetryMarkWindow*   poetryMarkWindowPtr   = nullptr;
-    // 模型微调窗口
-    FinetuneWindow*     finetuneWindowPtr     = nullptr;
-    // 模型量化窗口
-    QuantizationWindow* quantizationWindowPtr = nullptr;
     // 图片生成窗口
     ImageWindow* imageWindowPtr = nullptr;
     // 诗词生成窗口
@@ -284,50 +278,6 @@ public:
     virtual void saveConfig() override;
     virtual void redrawConfigElement() override;
     
-protected:
-    virtual void drawElement() override;
-
-};
-
-/**
- * 模型微调窗口
- */
-class FinetuneWindow : public Window {
-
-private:
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    FinetuneWindow(int width, int height, const char* title = "模型微调");
-    // 析构函数
-    virtual ~FinetuneWindow();
-
-protected:
-    virtual void drawElement() override;
-
-};
-
-/**
- * 模型量化窗口
- */
-class QuantizationWindow : public Window {
-
-private:
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    QuantizationWindow(int width, int height, const char* title = "模型量化");
-    // 析构函数
-    virtual ~QuantizationWindow();
-
 protected:
     virtual void drawElement() override;
 

@@ -88,10 +88,6 @@ cmake --install .
 
 * https://code.visualstudio.com/
 
-#### NVIDIA
-
-[Nvidia](./tutorial/Nvidia.md)
-
 ## 模型
 
 * https://hf-mirror.com/models
@@ -104,29 +100,18 @@ cmake --install .
 * https://github.com/chinese-poetry/chinese-poetry
 * https://github.com/chinese-poetry/chinese-poetry-zhCN
 
-## 模型
+## 服务部署
 
-#### 模型下载
+[服务部署](./service)
 
-* https://hf-mirror.com/models
-* https://huggingface.co/models
+## 模型优化
 
-#### 模型微调
-
-[模型微调](./optimize/Finetune.md)
-
-#### 模型量化
-
-[模型量化](./optimize/Quantization.md)
-
-#### 服务部署
-
-[模型部署](./tutorial)
+[模型微调](./optimize)
 
 ## 线上部署
 
 一般来说如果租用线上`GPU`服务器非常贵，所以建议应用服务放到线上，`AI`相关服务本地部署使用`frp`/`autossh`内网穿透软件为线上应用提供服务。
 
-## 更多下载
+## 资源下载
 
 * https://pan.baidu.com/s/1mNAXgaBV6lTQ1qkeFtnOtA?pwd=33p1
