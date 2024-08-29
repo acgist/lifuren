@@ -5,8 +5,18 @@ cmake_minimum_required(VERSION 3.20.0)
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
+
+option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
+
+option(SD_CUBLAS         "是否编译CUDA依赖" OFF)
+option(GGML_CUDA         "是否编译CUDA依赖" OFF)
+option(JSON_BuildTests   "是否编译JSON测试" OFF)
+
+option(ENABLE_TEST       "打开测试"     ON)
+option(ENABLE_FLTK       "开启FLTK界面" ON)
+option(ENABLE_REST       "开启REST接口" ON)
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 

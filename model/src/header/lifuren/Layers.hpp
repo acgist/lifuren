@@ -13,6 +13,19 @@
 namespace lifuren {
 namespace layers  {
 
+class Layer {
+
+public:
+    Layer();
+    virtual ~Layer();
+
+public:
+    virtual ggml_tensor* forward(ggml_tensor* input);
+    virtual ggml_tensor* operator()(ggml_tensor* input);
+
+
+};
+
 /**
  * @param in_features  输入特征大小
  * @param out_features 输出特征大小

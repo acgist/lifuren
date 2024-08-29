@@ -157,6 +157,8 @@ void lifuren::ImageMarkWindow::drawElement() {
     nextPtr   = new Fl_Button(110, 50, 100, 30, "下张图片");
     markPtr   = new Fl_Button(210, 50, 100, 30, "标记图片");
     resetPtr  = new Fl_Button(310, 50, 100, 30, "重置选项");
+    resetPtr  = new Fl_Button(410, 50, 100, 30, "训练生成模型");
+    resetPtr  = new Fl_Button(510, 50, 100, 30, "训练迁移模型");
     // 图片预览
     previewBoxPtr = new Fl_Box(this->w() / 2 + 200, this->h() / 2 - 150, 400, 300, "预览图片");
     previewBoxPtr->box(FL_FLAT_BOX);

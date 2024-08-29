@@ -4,9 +4,9 @@
 
 #### 常见选项
 
-* --config Debug|Release
-* -DBUILD_SHARED_LIBS=ON|OFF
-* -DCMAKE_BUILD_TYPE=Debug|Release
+* `--config Debug|Release`
+* `-DBUILD_SHARED_LIBS=ON|OFF`
+* `-DCMAKE_BUILD_TYPE=Debug|Release`
 
 #### Linux
 

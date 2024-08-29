@@ -124,9 +124,20 @@ inline size_t DatasetSharding::getIndex(size_t totalSize, size_t index) {
  */
 class Dataset {
 
+protected:
+    size_t count;
+    size_t batchSize;
+
 public:
-    virtual size_t size() const = 0;
-    virtual ggml_tensor* get(size_t index) = 0;
+    Dataset(size_t batchSize);
+    Dataset(size_t count, size_t batchSize);
+    virtual ~Dataset();
+
+public:
+    virtual size_t getCount() const;
+    virtual size_t getBatchSize() const;
+    virtual size_t getBatchCount() const;
+    virtual size_t batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const = 0;
 
 };
 
@@ -155,6 +166,7 @@ public:
      * @param fileTransform 文件转换
      */
     FileDataset(
+        size_t batchSize,
         const std::string& path,
         const std::vector<std::string>& exts,
         const std::map<std::string, int>& mapping,
@@ -162,8 +174,7 @@ public:
     );
 
 public:
-    size_t size() const override;
-    ggml_tensor* get(size_t index) override;
+    virtual size_t batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const override;
 
 };
 
@@ -187,7 +198,7 @@ inline auto loadImageFileDataset(
     const std::map<std::string, int>& mapping,
     const std::function<void(const cv::Mat&)> imageTransform = nullptr
 ) -> decltype(auto) {
-    auto dataset = lifuren::datasets::FileDataset(path, {
+    auto dataset = lifuren::datasets::FileDataset(batch_size, path, {
         image_type
     }, mapping, [
         width,
@@ -217,16 +228,17 @@ class TensorDataset : public Dataset {
 
 public:
     // 特征
-    ggml_tensor* features;
+    float* features;
+    size_t feature_size;
     // 标签
-    ggml_tensor* labels;
+    float* labels;
+    size_t label_size;
 
 public:
-    TensorDataset(ggml_tensor* features, ggml_tensor* labels);
+    TensorDataset(size_t count, size_t batchSize, float* features, size_t feature_size, float* labels, size_t label_size);
 
 public:
-    size_t size() const override;
-    ggml_tensor* get(size_t index) override;
+    virtual size_t batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const override;
 
 };
 

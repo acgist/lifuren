@@ -107,7 +107,7 @@ void lifuren::PoetryMarkWindow::drawElement() {
     nextPtr     = new Fl_Button(110, 50, 100, 30, "下首诗词");
     autoMarkPtr = new Fl_Button(210, 50, 100, 30, "自动匹配");
     ragPtr      = new Fl_Button(310, 50, 100, 30, "建立索引");
-    modelPtr    = new Fl_Button(410, 50, 100, 30, "训练模型");
+    modelPtr    = new Fl_Button(410, 50, 100, 30, "训练生成模型");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());

@@ -19,12 +19,35 @@ ggml_tensor* lifuren::datasets::readImage(const std::string& path, int width, in
     return nullptr;
 }
 
+lifuren::datasets::Dataset::Dataset(size_t count, size_t batchSize) : count(count), batchSize(batchSize) {
+}
+
+lifuren::datasets::Dataset::~Dataset() {
+}
+
+size_t lifuren::datasets::Dataset::getCount() const {
+    return this->count;
+}
+
+size_t lifuren::datasets::Dataset::getBatchSize() const {
+    return this->batchSize;
+}
+
+size_t lifuren::datasets::Dataset::getBatchCount() const {
+    if(this->count % this->batchSize == 0) {
+        return this->count / this->batchSize;
+    } else {
+        return (this->count / this->batchSize) + 1;
+    }
+}
+
 lifuren::datasets::FileDataset::FileDataset(
+    size_t batchSize,
     const std::string& path,
     const std::vector<std::string>& exts,
     const std::map<std::string, int>& mapping,
     const std::function<ggml_tensor*(const std::string&)> fileTransform
-) : fileTransform(fileTransform) {
+) : lifuren::datasets::Dataset(batchSize), fileTransform(fileTransform) {
     if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
@@ -46,27 +69,31 @@ lifuren::datasets::FileDataset::FileDataset(
     }
 }
 
-size_t lifuren::datasets::FileDataset::size() const {
-    return this->paths.size();
-}
-
-ggml_tensor* lifuren::datasets::FileDataset::get(size_t index) {
-    const std::string& path = this->paths.at(index);
-    // TODO
-    return nullptr;
-}
-
-lifuren::datasets::TensorDataset::TensorDataset(
-    ggml_tensor* features,
-    ggml_tensor* labels
-) : features(features), labels(labels) {
-}
-
-size_t lifuren::datasets::TensorDataset::size() const {
-    // TODO
+size_t lifuren::datasets::FileDataset::batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const {
+    // memcpy(model.images->data, images + iex0*MNIST_NINPUT,   ggml_nbytes(model.images));
+    // memcpy(model.labels->data, labels + iex0*MNIST_NCLASSES, ggml_nbytes(model.labels));
     return 0;
 }
 
-ggml_tensor* lifuren::datasets::TensorDataset::get(size_t index) {
-    return nullptr;
+lifuren::datasets::TensorDataset::TensorDataset(
+    size_t count,
+    size_t batchSize,
+    float* features,
+    size_t feature_size,
+    float* labels,
+    size_t label_size
+) : lifuren::datasets::Dataset(count, batchSize), features(features), feature_size(feature_size), labels(labels), label_size(label_size) {
+}
+
+size_t lifuren::datasets::TensorDataset::batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const {
+    const size_t remaining = this->count - this->batchSize * index;
+    if(remaining >= this->batchSize) {
+        memcpy(datas,  this->features + index * this->batchSize * feature_size, maxDataSize);
+        memcpy(labels, this->labels   + index * this->batchSize * label_size,   maxLabelSize);
+        return this->batchSize;
+    } else {
+        memcpy(datas,  this->features + index * this->batchSize * feature_size, sizeof(float) * remaining * feature_size);
+        memcpy(labels, this->labels   + index * this->batchSize * label_size,   sizeof(float) * remaining * label_size);
+        return remaining;
+    }
 }

@@ -320,8 +320,24 @@ ADMA + L2
 ## 训练框架
 
 #### PyTorch
+
+https://github.com/pytorch/pytorch
+
 #### TensorFlow
+
+https://github.com/tensorflow/tensorflow
+
+#### MindSpore
+
+https://github.com/mindspore-ai/mindspore
+
 #### PaddlePaddle
+
+https://github.com/PaddlePaddle/PaddleHub
+
+#### scikit-learn
+
+https://github.com/scikit-learn/scikit-learn
 
 ## 模型工具
 

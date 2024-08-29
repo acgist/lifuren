@@ -1,7 +1,5 @@
 add_subdirectory(main)
 
-option(ENABLE_TEST "打开测试" ON)
-
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     if(ENABLE_TEST)
         message(STATUS "编译测试代码")

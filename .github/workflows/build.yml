@@ -21,6 +21,9 @@ jobs:
           cd ./json
           git switch -c v3.11.2
           cd ../
+          ################################ ggml
+          cd ./ggml
+          cd ../
           ################################ spdlog
           # sudo apt  install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
@@ -58,9 +61,8 @@ jobs:
           sudo make install
           cd ../../
           ################################ stable-diffusion.cpp
-          cd ./stable-diffusion.cpp
-          git switch -c master
-          cd ../
+          # cd ./stable-diffusion.cpp
+          # cd ../
       - name: Deploy lifuren
         run: |
           pwd

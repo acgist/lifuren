@@ -1,6 +1,6 @@
-set(JSON_BuildTests OFF)
+# set(JSON_BuildTests ON)
 add_subdirectory(json)
-unset(JSON_BuildTests)
+# unset(JSON_BuildTests)
 
 # set(GGML_CUDA ON)
 # add_subdirectory(ggml)

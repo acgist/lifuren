@@ -1,8 +1,5 @@
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
-option(ENABLE_FLTK "开启FLTK界面" ON)
-option(ENABLE_REST "开启REST接口" ON)
-
 if(ENABLE_FLTK)
     message(STATUS "开启FLTK界面")
     add_definitions(-DLFR_ENABLE_FLTK=true)

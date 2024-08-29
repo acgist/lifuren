@@ -10,9 +10,23 @@
 #include <vector>
 #include <filesystem>
 #include <functional>
+#include <initializer_list>
 
 namespace lifuren {
 namespace files   {
+
+inline std::filesystem::path join(std::initializer_list<std::string> list) {
+    if(list.size() <= 0) {
+        return {};
+    }
+    auto iterator = list.begin();
+    std::filesystem::path path{ *iterator };
+    ++iterator;
+    for(; iterator != list.end(); ++iterator) {
+        path /= *iterator;
+    }
+    return path;
+}
 
 /**
  * 遍历文件列表
