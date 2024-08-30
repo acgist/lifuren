@@ -15,14 +15,12 @@ public:
         this->names.reserve(2);
         this->names.push_back("fc1.weight");
         this->names.push_back("fc1.bias");
-        this->datas  = ggml_new_tensor_1d(this->ctx_compute, GGML_TYPE_F32, 100);
-        this->labels = ggml_new_tensor_1d(this->ctx_compute, GGML_TYPE_F32, 1);
     }
     ~SimpleModel() {
     }
 
 public:
-    Model& bind() override {
+    Model& bindWeight() override {
         if(this->weights.empty()) {
             SPDLOG_WARN("绑定权重失败：权重为空");
             return *this;
@@ -32,22 +30,29 @@ public:
         return *this;
     };
     // 初始化模型
-    Model& init() override {
-        this->fc1_weight = ggml_new_tensor_1d(this->ctx_weight, this->type, 100);
-        this->fc1_bias   = ggml_new_tensor_1d(this->ctx_weight, this->type, 1);
+    Model& defineWeight() override {
+        this->fc1_weight = ggml_new_tensor_1d(this->ctx_weight, this->params.data_type, 100);
+        this->fc1_bias   = ggml_new_tensor_1d(this->ctx_weight, this->params.data_type, 1);
         this->weights.emplace("fc1.weight", this->fc1_weight);
         this->weights.emplace("fc1.bias",   this->fc1_bias);
         return *this;
     };
     ggml_tensor* buildLoss() override {
-        // return ggml_cross_entropy_loss(this->ctx_compute, this->logits, this->labels);
-        ggml_tensor* result = ggml_new_tensor_1d(this->ctx_compute, this->type, this->batch_size);
+        return ggml_cross_entropy_loss(this->ctx_compute, this->logits, this->labels);
+        ggml_tensor* result = ggml_new_tensor_1d(this->ctx_compute, this->params.data_type, this->params.batch_size);
         float* preds  = ggml_get_data_f32(this->logits);
         float* labels = ggml_get_data_f32(this->labels);
         float* data   = ggml_get_data_f32(result);
-        for(int index = 0; index < this->batch_size; ++index) {
+        for(int index = 0; index < this->params.batch_size; ++index) {
             data[index] = preds[index] - labels[index];
         }
+        bool is_node = false;
+        if (this->logits->grad || this->labels->grad) {
+            is_node = true;
+        }
+        result->grad = is_node ? ggml_dup_tensor(this->ctx_compute, result) : NULL;
+        result->src[0] = this->logits;
+        result->src[1] = this->labels;
         return result;
     };
     // 创建计算图
@@ -64,16 +69,11 @@ public:
 
 static void testSaveLoad() {
     SimpleModel save{};
-    save.init().rand().build().print().save("D:/tmp");
+    // save.define().print().save("D:/tmp");
+    save.define().print().saveEval("D:/tmp");
     SimpleModel load{};
-    load.load("D:/tmp").bind().build().print();
-}
-
-static void testSaveLoadWeight() {
-    SimpleModel save{};
-    save.init().rand().build().print().saveWeight("D:/tmp");
-    SimpleModel load{};
-    load.loadWeight("D:/tmp").print();
+    // load.load("D:/tmp").print();
+    load.loadEval("D:/tmp").print();
 }
 
 static void testLine() {
@@ -96,7 +96,7 @@ static void testLine() {
         1
     };
     SimpleModel save{};
-    save.init().rand().build().print();
+    save.define().print();
     save.trainDataset.reset(&dataset);
     save.trainAndVal();
     float data[] { 3.2 };
@@ -106,8 +106,8 @@ static void testLine() {
 int main() {
     lifuren::logger::init();
     SPDLOG_DEBUG("测试");
-    // testSaveLoad();
-    testSaveLoadWeight();
+    // testLine();
+    testSaveLoad();
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();
     return 0;

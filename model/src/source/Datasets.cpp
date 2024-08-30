@@ -19,6 +19,9 @@ ggml_tensor* lifuren::datasets::readImage(const std::string& path, int width, in
     return nullptr;
 }
 
+lifuren::datasets::Dataset::Dataset(size_t batchSize) : batchSize(batchSize) {
+}
+
 lifuren::datasets::Dataset::Dataset(size_t count, size_t batchSize) : count(count), batchSize(batchSize) {
 }
 
