@@ -236,7 +236,7 @@ public:
 
 public:
     TensorDataset(size_t count, size_t batchSize, float* features, size_t feature_size, float* labels, size_t label_size);
-
+    
 public:
     virtual size_t batchGet(size_t index, void* datas, size_t maxDataSize, void* labels, size_t maxLabelSize) const override;
 
