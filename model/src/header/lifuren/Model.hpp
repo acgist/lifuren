@@ -50,6 +50,12 @@ enum class InitType {
 
 };
 
+struct OptimizerParams {
+
+    size_t n_iter = 8;
+
+};
+
 struct ModelParams {
 
     // 学习率
@@ -70,6 +76,8 @@ struct ModelParams {
     size_t size_weight  = 128LL * 1024 * 1024;
     // 计算大小
     size_t size_compute = 256LL * 1024 * 1024;
+    // 优化函数参数
+    OptimizerParams optimizerParams;
 
 };
 
@@ -148,7 +156,7 @@ public:
     virtual Model& bindWeight() = 0;
     // 打印模型
     virtual Model& print();
-    virtual Model& print(ggml_cgraph* cgraph);
+    virtual Model& print(const char* name, const ggml_cgraph* cgraph);
     virtual Model& print(const char* from, const ggml_tensor* tensor);
     // 训练模型
     virtual void train(size_t epoch, ggml_opt_context* opt_ctx);
@@ -157,7 +165,7 @@ public:
     // 测试模型
     virtual void test();
     // 模型预测
-    virtual float* eval(const float* input, size_t size_data);
+    virtual float* eval(const float* input, float* output, size_t size_data);
     // 模型预测
     virtual std::vector<size_t> evalClassify(const float* input, size_t size_data);
     // 训练验证

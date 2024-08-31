@@ -1,5 +1,6 @@
 #include "lifuren/Model.hpp"
 
+#include <array>
 #include <random>
 #include <numeric>
 #include <algorithm>
@@ -260,7 +261,7 @@ lifuren::Model& lifuren::Model::defineCgraph() {
 }
 
 lifuren::Model& lifuren::Model::print() {
-    SPDLOG_DEBUG("==================== model.ctx_weight ====================");
+    printf("\n");
     printf(
         "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
         "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
@@ -271,7 +272,6 @@ lifuren::Model& lifuren::Model::print() {
         weightTensor = ggml_get_next_tensor(this->ctx_weight, weightTensor);
     }
     printf("\n");
-    SPDLOG_DEBUG("==================== model.ctx_compute ====================");
     printf(
         "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
         "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
@@ -282,19 +282,16 @@ lifuren::Model& lifuren::Model::print() {
         computeTensor = ggml_get_next_tensor(this->ctx_compute, computeTensor);
     }
     printf("\n");
-    SPDLOG_DEBUG("==================== model.cgraph.train ====================");
-    this->print(this->train_gf);
-    this->print(this->train_gb);
-    SPDLOG_DEBUG("==================== model.cgraph.val ====================");
-    this->print(this->val_gf);
-    SPDLOG_DEBUG("==================== model.cgraph.test ====================");
-    this->print(this->test_gf);
-    SPDLOG_DEBUG("==================== model.cgraph.eval ====================");
-    this->print(this->eval_gf);
+    this->print("train_gf", this->train_gf);
+    this->print("train_gb", this->train_gb);
+    this->print("val_gf",   this->val_gf);
+    this->print("test_gf",  this->test_gf);
+    this->print("eval_gf",  this->eval_gf);
+    printf("\n");
     return *this;
 }
 
-lifuren::Model& lifuren::Model::print(ggml_cgraph* cgraph) {
+lifuren::Model& lifuren::Model::print(const char* name, const ggml_cgraph* cgraph) {
     if(cgraph == nullptr) {
         return *this;
     }
@@ -304,6 +301,7 @@ lifuren::Model& lifuren::Model::print(ggml_cgraph* cgraph) {
     }
     {
         printf("\n");
+        printf("%-16s %8s\n",   "name",    name);
         printf("%-16s %8x\n",   "magic",   GGML_FILE_MAGIC);
         printf("%-16s %8d\n",   "version", GGML_FILE_VERSION);
         printf("%-16s %8d\n",   "leafs",   cgraph->n_leafs);
@@ -459,23 +457,27 @@ void lifuren::Model::test() {
     }
 }
 
-float* lifuren::Model::eval(const float* input, size_t size_data) {
+float* lifuren::Model::eval(const float* input, float* output, size_t size_data) {
     if(!this->eval_gf) {
         return nullptr;
     }
-    memcpy(this->datas->data, &input, std::min(sizeof(float) * size_data, ggml_nbytes(this->datas)));
+    memcpy(this->datas->data, input, std::min(sizeof(float) * size_data, ggml_nbytes(this->datas)));
     ggml_graph_compute_with_ctx(this->ctx_compute, this->eval_gf, this->params.thread_size);
-    return ggml_get_data_f32(this->logits);
+    const float* source = ggml_get_data_f32(this->logits);
+    memcpy(output, source, sizeof(float) * size_data);
+    return output;
 }
 
 std::vector<size_t> lifuren::Model::evalClassify(const float* input, size_t size_data) {
     std::vector<size_t> vector{};
     vector.reserve(this->params.size_classify);
-    float* data = this->eval(input, size_data);
+    float *target = new float[size_data];
+    float* data = this->eval(input, target, size_data);
     for (int index = 0; index < size_data; ++index) {
         const float* pos = data + index * this->params.size_classify;
         vector.push_back(std::distance(std::max_element(pos, pos + this->params.size_classify), pos));
     }
+    delete target;
     return vector;
 }
 
@@ -504,7 +506,7 @@ void lifuren::Model::buildOptimizer(ggml_opt_context* opt_ctx) {
     opt_pars.print_forward_graph  = false;
     opt_pars.print_backward_graph = false;
     opt_pars.n_threads   = this->params.thread_size;
-    opt_pars.adam.n_iter = 1;
+    opt_pars.adam.n_iter = this->params.optimizerParams.n_iter;
     ggml_opt_init(this->ctx_compute, opt_ctx, opt_pars, 0);
 }
 
