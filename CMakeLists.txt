@@ -20,6 +20,8 @@ option(ENABLE_REST       "开启REST接口" ON)
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
 if(CMAKE_HOST_UNIX)

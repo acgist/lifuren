@@ -1,5 +1,6 @@
 add_executable(testModel TestModel.cpp)
 add_test(NAME testModel COMMAND testModel)
+set_target_properties(testModel PROPERTIES FOLDER "test")
 target_link_libraries(
     testModel
     lifurenmodel
@@ -7,6 +8,7 @@ target_link_libraries(
 
 add_executable(testLayers TestLayers.cpp)
 add_test(NAME testLayers COMMAND testLayers)
+set_target_properties(testLayers PROPERTIES FOLDER "test")
 target_link_libraries(
     testLayers
     lifurenmodel
@@ -14,6 +16,7 @@ target_link_libraries(
 
 add_executable(testDatasets TestDatasets.cpp)
 add_test(NAME testDatasets COMMAND testDatasets)
+set_target_properties(testDatasets PROPERTIES FOLDER "test")
 target_link_libraries(
     testDatasets
     lifurenmodel

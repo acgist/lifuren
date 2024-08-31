@@ -112,7 +112,7 @@ public:
     std::unique_ptr<lifuren::datasets::Dataset> testDataset { nullptr };
 
 public:
-    Model(ModelParams params = {});
+    Model(ModelParams params);
     virtual ~Model();
 
 protected:

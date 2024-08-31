@@ -9,6 +9,8 @@ add_library(
     src/source/rag/ElasticSearchRAGClient.cpp
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+
 target_link_libraries(
     ${PROJECT_NAME}
     lifurenmodel

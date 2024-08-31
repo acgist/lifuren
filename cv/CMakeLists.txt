@@ -6,6 +6,8 @@ add_library(
     src/source/image/ImageReader.cpp
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+
 target_link_libraries(
     ${PROJECT_NAME}
     lifurenmodel

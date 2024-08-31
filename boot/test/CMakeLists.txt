@@ -1,7 +1,8 @@
 project(lifurentest VERSION 1.0.0 LANGUAGES C CXX)
 
 add_executable(${PROJECT_NAME} src/Main.cpp)
-
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "test")
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore

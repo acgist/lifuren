@@ -51,6 +51,7 @@ public:
     }
     ggml_tensor* buildLoss() override {
         return ggml_cross_entropy_loss(this->ctx_compute, this->logits, this->labels);
+        return ggml_sub(this->ctx_compute, this->logits, this->labels);
         // auto result = ggml_sub(this->ctx_compute, this->logits, this->labels);
         // bool is_node = false;
         // if (this->logits->grad || this->labels->grad) {

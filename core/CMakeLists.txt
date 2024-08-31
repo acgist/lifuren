@@ -20,6 +20,8 @@ add_library(
     src/source/config/MarkText.cpp
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+
 if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}

@@ -12,6 +12,8 @@ add_library(
     src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore
