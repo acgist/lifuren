@@ -26,6 +26,13 @@ public:
     }
 
 public:
+    Model& defineWeight() override {
+        this->fc1_weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
+        this->fc1_bias   = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
+        this->weights.emplace("fc1.weight", this->fc1_weight);
+        this->weights.emplace("fc1.bias",   this->fc1_bias);
+        return *this;
+    };
     Model& bindWeight() override {
         if(this->weights.empty()) {
             SPDLOG_WARN("绑定权重失败：权重为空");
@@ -35,41 +42,18 @@ public:
         this->fc1_bias   = this->weights["fc1.bias"];
         return *this;
     };
-    // 初始化模型
-    Model& defineWeight() override {
-        this->fc1_weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
-        this->fc1_bias   = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
-        this->weights.emplace("fc1.weight", this->fc1_weight);
-        this->weights.emplace("fc1.bias",   this->fc1_bias);
-        return *this;
-    };
     ggml_tensor* buildDatas() override {
-        return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, 1);
+        return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
     }
     ggml_tensor* buildLabels() override {
-        return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, 1);
+        return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
     }
     ggml_tensor* buildLoss() override {
-        // return ggml_cross_entropy_loss(this->ctx_compute, this->logits, this->labels);
-        // return ggml_sub(this->ctx_compute, this->logits, this->labels);
-        auto result = ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
-        // bool is_node = false;
-        // if (this->logits->grad || this->labels->grad) {
-        //     is_node = true;
-        // }
-        // result->ne[1] = 1;
-        // result->ne[2] = 1;
-        // result->ne[3] = 1;
-        // result->grad = is_node ? ggml_dup_tensor(this->ctx_compute, result) : NULL;
-        // result->src[0] = this->logits;
-        // result->src[1] = this->labels;
-        return result;
+        return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
     };
-    // 创建计算图
     ggml_tensor* buildLogits() override {
-        return 
-            ggml_add(this->ctx_compute,
-                ggml_mul(this->ctx_compute, this->fc1_weight, this->datas),
+        return ggml_add(this->ctx_compute,
+                ggml_mul_mat(this->ctx_compute, this->fc1_weight, this->datas),
                 this->fc1_bias
             );
     };

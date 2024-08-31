@@ -140,6 +140,8 @@ public:
     virtual Model& defineWeight() = 0;
     // 初始化权重
     virtual Model& initWeight(InitType type = InitType::RAND, double mean = 0.0, double sigma = 1e-2, float value = 0.0F);
+    // 绑定权重
+    virtual Model& bindWeight() = 0;
     // 初始化输入
     virtual Model&       defineInput();
     virtual ggml_tensor* buildDatas()  = 0;
@@ -152,8 +154,6 @@ public:
     virtual ggml_tensor* buildLoss()   = 0;
     // 定义计算图
     virtual Model& defineCgraph();
-    // 绑定模型
-    virtual Model& bindWeight() = 0;
     // 打印模型
     virtual Model& print();
     virtual Model& print(const char* name, const ggml_cgraph* cgraph);
