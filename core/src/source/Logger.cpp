@@ -2,10 +2,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "spdlog/fmt/ostr.h"
-#include "spdlog/fmt/chrono.h"
-#include "spdlog/fmt/ranges.h"
-
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -13,12 +9,12 @@ void lifuren::logger::init() {
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
     #if defined(_DEBUG) || !defined(NDEBUG)
-    // sinks.reserve(2);
+    sinks.reserve(2);
     auto stdoutColorSinkSPtr = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     sinks.push_back(stdoutColorSinkSPtr);
     #endif
     // 文件日志
-    auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/lifuren.log", 0, 0);
+    auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/lifuren.log", 0, 0, false, 7);
     sinks.push_back(dailyFileSinkSPtr);
     // 默认日志
     auto logger = std::make_shared<spdlog::logger>("lifurenLogger", sinks.begin(), sinks.end());
@@ -39,7 +35,11 @@ void lifuren::logger::init() {
 }
 
 void lifuren::logger::shutdown() {
-    SPDLOG_DEBUG("关闭日志");
+    SPDLOG_DEBUG(R"(
+        
+        南有乔木，不可休思。汉有游女，不可求思。
+        汉之广矣，不可泳思。江之永矣，不可方思。    
+    )");
     spdlog::drop_all();
     spdlog::shutdown();
 }

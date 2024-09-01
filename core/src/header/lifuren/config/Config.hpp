@@ -220,10 +220,12 @@ struct ChineseWordVectorsConfig {
 /**
  * stable-diffusion-cpp配置
  */
-struct StableDiffusionCPPConfig : CommandConfig {
+struct StableDiffusionCPPConfig {
 
     // 模型路径
     std::string model;
+    // 默认参数
+    std::map<std::string, std::string> options{};
 
 };
 

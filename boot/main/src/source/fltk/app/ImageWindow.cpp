@@ -17,8 +17,6 @@ static Fl_Input*  imagePathPtr    { nullptr };
 static Fl_Button* imageChoosePtr  { nullptr };
 static Fl_Input*  outputPathPtr   { nullptr };
 static Fl_Button* outputChoosePtr { nullptr };
-static Fl_Input*  commandPathPtr  { nullptr };
-static Fl_Button* commandChoosePtr{ nullptr };
 static Fl_Button* generatePtr     { nullptr };
 static Fl_Input*  poetryPromptPtr { nullptr };
 static Fl_Button* poetrySearchPtr { nullptr };
@@ -44,8 +42,6 @@ lifuren::ImageWindow::~ImageWindow() {
     LFR_DELETE_PTR(imageChoosePtr);
     LFR_DELETE_PTR(outputPathPtr);
     LFR_DELETE_PTR(outputChoosePtr);
-    LFR_DELETE_PTR(commandPathPtr);
-    LFR_DELETE_PTR(commandChoosePtr);
     LFR_DELETE_PTR(generatePtr);
     LFR_DELETE_PTR(poetryPromptPtr);
     LFR_DELETE_PTR(poetrySearchPtr);
@@ -59,7 +55,6 @@ void lifuren::ImageWindow::saveConfig() {
     if(imageConfig.client == "stable-diffusion-cpp") {
         auto& stableDiffusionCPP   = lifuren::config::CONFIG.stableDiffusionCPP;
         stableDiffusionCPP.model   = modelPathPtr->value();
-        stableDiffusionCPP.command = commandPathPtr->value();
     } else {
     }
     lifuren::Configuration::saveConfig();
@@ -71,7 +66,6 @@ void lifuren::ImageWindow::redrawConfigElement() {
     if(imageConfig.client == "stable-diffusion-cpp") {
         auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
         modelPathPtr->value(stableDiffusionCPP.model.c_str());
-        commandPathPtr->value(stableDiffusionCPP.command.c_str());
     } else {
     }
 }
@@ -88,13 +82,11 @@ void lifuren::ImageWindow::drawElement() {
     imagePathPtr     = new Fl_Input( 70,  160, 400, 30, "图片路径");
     imageChoosePtr   = new Fl_Button(470, 160, 100, 30, "选择图片");
     clientPtr        = new Fl_Choice(70,  200, 200, 30, "终端名称");
-    commandPathPtr   = new Fl_Input( 70,  240, 400, 30, "命令路径");
-    commandChoosePtr = new Fl_Button(470, 240, 100, 30, "选择命令");
-    modelPathPtr     = new Fl_Input( 70,  280, 400, 30, "模型路径");
-    modelChoosePtr   = new Fl_Button(470, 280, 100, 30, "选择模型");
-    outputPathPtr    = new Fl_Input( 70,  320, 400, 30, "输出路径");
-    outputChoosePtr  = new Fl_Button(470, 320, 100, 30, "选择输出");
-    generatePtr      = new Fl_Button(70,  360, 100, 30, "生成图片");
+    modelPathPtr     = new Fl_Input( 70,  240, 400, 30, "模型路径");
+    modelChoosePtr   = new Fl_Button(470, 240, 100, 30, "选择模型");
+    outputPathPtr    = new Fl_Input( 70,  280, 400, 30, "输出路径");
+    outputChoosePtr  = new Fl_Button(470, 280, 100, 30, "选择输出");
+    generatePtr      = new Fl_Button(70,  320, 100, 30, "生成图片");
     // 绑定事件
     // 终端名称
     const auto& imageConfig = lifuren::config::CONFIG.image;
@@ -106,8 +98,6 @@ void lifuren::ImageWindow::drawElement() {
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
     // 选择输出
     outputChoosePtr->callback(chooseDirectoryCallback, outputPathPtr);
-    // 选择命令
-    commandChoosePtr->callback(chooseFileCallback, commandPathPtr);
     // 生成图片
     generatePtr->callback(generate, this);
     // 重绘配置

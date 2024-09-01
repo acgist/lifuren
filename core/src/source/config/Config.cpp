@@ -161,8 +161,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
     } else if(lifuren::config::CONFIG_STABLE_DIFFUSION_CPP == name) {
-        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model,   model,   std::string);
-        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, command, command, std::string);
+        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model, model, std::string);
         std::map<std::string, std::string> map;
         LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
         config.stableDiffusionCPP.options.insert(map.begin(), map.end());
@@ -252,7 +251,6 @@ YAML::Node toYaml() {
     {
         YAML::Node stableDiffusionCPP;
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, model,   model);
-        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, command, command);
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, options, options);
         yaml[lifuren::config::CONFIG_STABLE_DIFFUSION_CPP] = stableDiffusionCPP;
     }

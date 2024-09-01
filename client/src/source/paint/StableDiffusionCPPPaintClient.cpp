@@ -3,16 +3,73 @@
  */
 #include "lifuren/Client.hpp"
 
+#include <thread>
+#include <random>
+
 #include "spdlog/spdlog.h"
 
 #include "stable-diffusion.h"
 
-const char* rng_type_to_str[] = {
+#include "lifuren/Files.hpp"
+#include "lifuren/Lifuren.hpp"
+
+const char* options_rng[] = {
     "std_default",
     "cuda",
 };
 
-const char* sample_method_str[] = {
+const char* options_mode[] = {
+    "txt2img",
+    "img2img",
+    "img2vid",
+    "convert",
+};
+
+const char* options_wtype[] {
+    "f32",
+    "f16",
+    "q4_0",
+    "q4_1",
+    "q4_2",
+    "q4_3",
+    "q5_0",
+    "q5_1",
+    "q8_0",
+    "q8_1",
+    "q2_k",
+    "q3_k",
+    "q4_k",
+    "q5_k",
+    "q6_k",
+    "q8_k",
+    "iq2_xxs",
+    "iq2_xs",
+    "iq3_xxs",
+    "iq1_s",
+    "iq4_nl",
+    "iq3_s",
+    "iq2_s",
+    "iq4_xs",
+    "i8",
+    "i16",
+    "i32",
+    "i64",
+    "f64",
+    "iq1_m",
+    "bf16",
+    "q4_0_4_4",
+    "q4_0_4_8",
+    "q4_0_8_8"
+};
+
+const char* options_schedule[] = {
+    "default",
+    "discrete",
+    "karras",
+    "ays",
+};
+
+const char* options_sample_method[] = {
     "euler_a",
     "euler",
     "heun",
@@ -23,81 +80,79 @@ const char* sample_method_str[] = {
     "lcm",
 };
 
-const char* schedule_str[] = {
-    "default",
-    "discrete",
-    "karras",
-    "ays",
-};
-
-const char* modes_str[] = {
-    "txt2img",
-    "img2img",
-    "img2vid",
-    "convert",
-};
-
 enum class SDMode {
     TXT2IMG,
     IMG2IMG,
     IMG2VID,
     CONVERT,
-    MODE_COUNT
 };
 
 struct SDParams {
-    int n_threads = -1;
-    SDMode mode   = SDMode::TXT2IMG;
-    std::string model_path;
-    std::string clip_l_path;
-    std::string t5xxl_path;
-    std::string diffusion_model_path;
-    std::string vae_path;
-    std::string taesd_path;
-    std::string esrgan_path;
-    std::string controlnet_path;
-    std::string embeddings_path;
-    std::string stacked_id_embeddings_path;
-    std::string input_id_images_path;
-    sd_type_t   wtype = SD_TYPE_COUNT;
-    std::string lora_model_dir;
-    std::string output_path = "output.png";
-    std::string input_path;
-    std::string control_image_path;
-    std::string prompt;
-    std::string negative_prompt;
+    SDMode          mode          = SDMode::TXT2IMG; // -M, --mode [MODEL]
+    sd_type_t       wtype         = SD_TYPE_COUNT;   // --type [TYPE]
+    rng_type_t      rng_type      = STD_DEFAULT_RNG; // --rng
+    schedule_t      schedule      = DEFAULT;         // --schedule
+    sample_method_t sample_method = EULER_A;         // --sampling-method
 
-    float min_cfg     = 1.0f;
-    float cfg_scale   = 7.0f;
-    float guidance    = 3.5f;
-    float style_ratio = 20.f;
-    int clip_skip     = -1;  // <= 0 represents unspecified
-    int width         = 512;
-    int height        = 512;
-    int batch_count   = 1;
+    std::string prompt;                     // -p, --prompt [PROMPT]
+    std::string vae_path;                   // --vae [VAE]
+    std::string model_path;                 // -m, --model [MODEL]
+    std::string input_path;                 // -i, --init-img [IMAGE]
+    std::string t5xxl_path;                 // --t5xxl
+    std::string taesd_path;                 // --taesd [TAESD_PATH]
+    std::string clip_l_path;                // --clip_l
+    std::string esrgan_path;                // --upscale-model [ESRGAN_PATH]
+    std::string output_path = "output.png"; // -o, --output OUTPUT
+    std::string lora_model_dir;             // --lora-model-dir [DIR]
+    std::string controlnet_path;            // --control-net [CONTROL_PATH]
+    std::string embeddings_path;            // --embd-dir [EMBEDDING_PATH]
+    std::string negative_prompt;            // -n, --negative-prompt PROMPT
+    std::string control_image_path;         // --control-image [IMAGE]
+    std::string input_id_images_path;       // --input-id-images-dir [DIR]
+    std::string diffusion_model_path;       // --diffusion-model
+    std::string stacked_id_embeddings_path; // --stacked-id-embd-dir [DIR]
 
-    int video_frames         = 6;
-    int motion_bucket_id     = 127;
-    int fps                  = 6;
-    float augmentation_level = 0.f;
+    int fps              = 6;   // -
+    int width            = 512; // -W, --width W
+    int height           = 512; // -H, --height H
+    int n_threads        = -1;  // -t, --threads N
+    int clip_skip        = -1;  // --clip-skip N
+    int batch_count      = 1;   // -b, --batch-count COUNT
+    int video_frames     = 6;   // -
+    int sample_steps     = 20;  // --steps STEPS
+    int upscale_repeats  = 1;   // --upscale-repeats
+    int motion_bucket_id = 127; // 
 
-    sample_method_t sample_method = EULER_A;
-    schedule_t schedule           = DEFAULT;
-    int sample_steps              = 20;
-    float strength                = 0.75f;
-    float control_strength        = 0.9f;
-    rng_type_t rng_type           = CUDA_RNG;
-    int64_t seed                  = 42;
-    bool verbose                  = false;
-    bool vae_tiling               = false;
-    bool control_net_cpu          = false;
-    bool normalize_input          = false;
-    bool clip_on_cpu              = false;
-    bool vae_on_cpu               = false;
-    bool canny_preprocess         = false;
-    bool color                    = false;
-    int upscale_repeats           = 1;
+    int64_t seed = 42; // -s SEED, --seed SEED
+
+    float min_cfg            = 1.0F;  // -
+    float strength           = 0.75F; // --strength STRENGTH
+    float guidance           = 3.5F;  // --guidance
+    float cfg_scale          = 7.0F;  // --cfg-scale SCALE
+    float style_ratio        = 20.0F; // --style-ratio STYLE-RATIO
+    float control_strength   = 0.9F;  // --control-strength STRENGTH
+    float augmentation_level = 0.0F;
+
+    bool color            = false; // --color
+    bool verbose          = false; // -v, --verbose
+    bool vae_tiling       = false; // --vae-tiling
+    bool vae_on_cpu       = false; // --vae-on-cpu
+    bool clip_on_cpu      = false; // --clip-on-cpu
+    bool normalize_input  = false; // --normalize-input
+    bool control_net_cpu  = false; // --control-net-cpu
+    bool canny_preprocess = false; // --canny
 };
+
+static void logCallback(sd_log_level_t level, const char* log, void* data);
+static void initSDParams(SDParams&  params, const lifuren::PaintClient::PaintOptions& options);
+static void printSDParams(SDParams& params);
+static bool checkSDParams(SDParams& params);
+static void setOptions(int&         target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(bool&        target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(float&       target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(int64_t&     target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(std::string& target, const std::map<std::string, std::string>& options, const std::string& key);
+static int  getOptions(int count, const char** mapping, const std::map<std::string, std::string>& options, const std::string& key, const int defaultValue = 0);
 
 lifuren::StableDiffusionCPPPaintClient::StableDiffusionCPPPaintClient() {
 }
@@ -105,11 +160,304 @@ lifuren::StableDiffusionCPPPaintClient::StableDiffusionCPPPaintClient() {
 lifuren::StableDiffusionCPPPaintClient::~StableDiffusionCPPPaintClient() {
 }
 
-bool lifuren::StableDiffusionCPPPaintClient::paint(const std::string& prompt, lifuren::PaintClient::PaintCallback callback, const std::string& image) {
-    if(this->commandClient) {
-        SPDLOG_WARN("加载StableDiffusionCPP任务失败：已经存在任务");
+bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, lifuren::PaintClient::PaintCallback callback) {
+    SDParams params{};
+    initSDParams(params, options);
+    printSDParams(params);
+    if(!checkSDParams(params)) {
         return false;
     }
-    this->commandClient = std::make_unique<lifuren::CommandClient>("");
+    if(params.mode == SDMode::CONVERT) {
+        convert(params.model_path.c_str(), params.vae_path.c_str(), params.output_path.c_str(), params.wtype);
+    } else if(params.mode == SDMode::TXT2IMG) {
+    } else if(params.mode == SDMode::IMG2IMG) {
+        int c      = 0;
+        int width  = 0;
+        int height = 0;
+        uint8_t* input_image_buffer = stbi_load(params.input_path.c_str(), &width, &height, &c, 3);
+        if (input_image_buffer == NULL) {
+            return false;
+        }
+        if (c < 3) {
+            return false;
+        }
+        if (width <= 0) {
+            return false;
+        }
+        if (height <= 0) {
+            return false;
+        }
+    } else if(params.mode == SDMode::IMG2VID) {
+    } else {
+    }
+    bool vae_decode_only          = true;
+    sd_ctx_t* sd_ctx = new_sd_ctx(params.model_path.c_str(),
+                                  params.clip_l_path.c_str(),
+                                  params.t5xxl_path.c_str(),
+                                  params.diffusion_model_path.c_str(),
+                                  params.vae_path.c_str(),
+                                  params.taesd_path.c_str(),
+                                  params.controlnet_path.c_str(),
+                                  params.lora_model_dir.c_str(),
+                                  params.embeddings_path.c_str(),
+                                  params.stacked_id_embeddings_path.c_str(),
+                                  vae_decode_only,
+                                  params.vae_tiling,
+                                  true,
+                                  params.n_threads,
+                                  params.wtype,
+                                  params.rng_type,
+                                  params.schedule,
+                                  params.clip_on_cpu,
+                                  params.control_net_cpu,
+                                  params.vae_on_cpu);
+    if (sd_ctx == NULL) {
+        return false;
+    }
+    sd_image_t* results;
+    sd_image_t* control_image = NULL;
+    if (params.mode == SDMode::TXT2IMG) {
+        results = txt2img(sd_ctx,
+                          params.prompt.c_str(),
+                          params.negative_prompt.c_str(),
+                          params.clip_skip,
+                          params.cfg_scale,
+                          params.guidance,
+                          params.width,
+                          params.height,
+                          params.sample_method,
+                          params.sample_steps,
+                          params.seed,
+                          params.batch_count,
+                          control_image,
+                          params.control_strength,
+                          params.style_ratio,
+                          params.normalize_input,
+                          params.input_id_images_path.c_str());
+    }
     return true;
+}
+
+static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOptions& paintOptions) {
+    const auto& config      = lifuren::config::CONFIG.stableDiffusionCPP;
+    const auto& options     = config.options;
+    const auto& imageConfig = lifuren::config::CONFIG.image;
+    params.mode          = !paintOptions.model.empty() ? SDMode::CONVERT :
+                           !paintOptions.video.empty() ? SDMode::IMG2VID :
+                           !paintOptions.image.empty() ? SDMode::IMG2IMG : SDMode::TXT2IMG;
+    params.wtype         = static_cast<sd_type_t>(      getOptions(sd_type_t::SD_TYPE_COUNT,          options_wtype,         options, "wtype",         sd_type_t::SD_TYPE_F32));
+    params.rng_type      = static_cast<rng_type_t>(     getOptions(rng_type_t::CUDA_RNG + 1,          options_rng,           options, "rng",           rng_type_t::STD_DEFAULT_RNG));
+    params.schedule      = static_cast<schedule_t>(     getOptions(schedule_t::N_SCHEDULES,           options_schedule,      options, "schedule",      schedule_t::DEFAULT));
+    params.sample_method = static_cast<sample_method_t>(getOptions(sample_method_t::N_SAMPLE_METHODS, options_sample_method, options, "sample_method", sample_method_t::EULER_A));
+    
+    params.prompt      = paintOptions.prompt;
+    params.model_path  = config.model;
+    params.input_path  = paintOptions.image;
+    params.output_path = lifuren::files::join({imageConfig.output, std::to_string(lifuren::uuid()) + ".png"}).string();
+    setOptions(params.vae_path,                   options, "vae_path");
+    setOptions(params.t5xxl_path,                 options, "t5xxl_path");
+    setOptions(params.taesd_path,                 options, "taesd_path");
+    setOptions(params.clip_l_path,                options, "clip_l_path");
+    setOptions(params.esrgan_path,                options, "esrgan_path");
+    setOptions(params.lora_model_dir,             options, "lora_model_dir");
+    setOptions(params.controlnet_path,            options, "controlnet_path");
+    setOptions(params.embeddings_path,            options, "embeddings_path");
+    setOptions(params.negative_prompt,            options, "negative_prompt");
+    setOptions(params.control_image_path,         options, "control_image_path");
+    setOptions(params.input_id_images_path,       options, "input_id_images_path");
+    setOptions(params.diffusion_model_path,       options, "diffusion_model_path");
+    setOptions(params.stacked_id_embeddings_path, options, "stacked_id_embeddings_path");
+
+    setOptions(params.fps,              options, "fps");
+    setOptions(params.width,            options, "width");
+    setOptions(params.height,           options, "height");
+    setOptions(params.n_threads,        options, "n_threads");
+    setOptions(params.clip_skip,        options, "clip_skip");
+    setOptions(params.batch_count,      options, "batch_count");
+    setOptions(params.video_frames,     options, "video_frames");
+    setOptions(params.sample_steps,     options, "sample_steps");
+    setOptions(params.upscale_repeats,  options, "upscale_repeats");
+    setOptions(params.motion_bucket_id, options, "motion_bucket_id");
+
+    setOptions(params.seed, options, "seed");
+
+    setOptions(params.min_cfg,            options, "min_cfg");
+    setOptions(params.strength,           options, "strength");
+    setOptions(params.guidance,           options, "guidance");
+    setOptions(params.cfg_scale,          options, "cfg_scale");
+    setOptions(params.style_ratio,        options, "style_ratio");
+    setOptions(params.control_strength,   options, "control_strength");
+    setOptions(params.augmentation_level, options, "augmentation_level");
+
+    setOptions(params.color,            options, "color");
+    setOptions(params.verbose,          options, "verbose");
+    setOptions(params.vae_tiling,       options, "vae_tiling");
+    setOptions(params.vae_on_cpu,       options, "vae_on_cpu");
+    setOptions(params.clip_on_cpu,      options, "clip_on_cpu");
+    setOptions(params.normalize_input,  options, "normalize_input");
+    setOptions(params.control_net_cpu,  options, "control_net_cpu");
+    setOptions(params.canny_preprocess, options, "canny_preprocess");
+
+    if (params.seed < 0) {
+        std::random_device device{};
+        std::mt19937 random{device()};
+        params.seed = random();
+    }
+    if (params.n_threads <= 0) {
+        params.n_threads = get_num_physical_cores();
+        // params.n_threads = std::thread::hardware_concurrency()
+    }
+    if (params.mode == SDMode::CONVERT) {
+        if (params.output_path == "output.png") {
+            params.output_path = "output.gguf";
+        }
+    }
+}
+
+static void printSDParams(SDParams& params) {
+    printf("SD Params: \n");
+    printf("    mode                      :    %s\n", options_mode[static_cast<int>(params.mode)]);
+    printf("    wtype                     :    %s\n", options_wtype[params.wtype]);
+    printf("    rng_type                  :    %s\n", options_rng[params.rng_type]);
+    printf("    schedule                  :    %s\n", options_schedule[params.schedule]);
+    printf("    sample_method             :    %s\n", options_sample_method[params.sample_method]);
+
+    printf("    prompt                    :    %s\n", params.prompt.c_str());
+    printf("    vae_path                  :    %s\n", params.vae_path.c_str());
+    printf("    model_path                :    %s\n", params.model_path.c_str());
+    printf("    input_path                :    %s\n", params.input_path.c_str());
+    printf("    t5xxl_path                :    %s\n", params.t5xxl_path.c_str());
+    printf("    taesd_path                :    %s\n", params.taesd_path.c_str());
+    printf("    clip_l_path               :    %s\n", params.clip_l_path.c_str());
+    printf("    esrgan_path               :    %s\n", params.esrgan_path.c_str());
+    printf("    output_path               :    %s\n", params.output_path.c_str());
+    printf("    lora_model_dir            :    %s\n", params.lora_model_dir.c_str());
+    printf("    controlnet_path           :    %s\n", params.controlnet_path.c_str());
+    printf("    embeddings_path           :    %s\n", params.embeddings_path.c_str());
+    printf("    negative_prompt           :    %s\n", params.negative_prompt.c_str());
+    printf("    control_image_path        :    %s\n", params.control_image_path.c_str());
+    printf("    input_id_images_path      :    %s\n", params.input_id_images_path.c_str());
+    printf("    diffusion_model_path      :    %s\n", params.diffusion_model_path.c_str());
+    printf("    stacked_id_embeddings_path:    %s\n", params.stacked_id_embeddings_path.c_str());
+
+    printf("    fps                       :    %d\n", params.fps);
+    printf("    width                     :    %d\n", params.width);
+    printf("    height                    :    %d\n", params.height);
+    printf("    n_threads                 :    %d\n", params.n_threads);
+    printf("    clip_skip                 :    %d\n", params.clip_skip);
+    printf("    batch_count               :    %d\n", params.batch_count);
+    printf("    video_frames              :    %d\n", params.video_frames);
+    printf("    sample_steps              :    %d\n", params.sample_steps);
+    printf("    upscale_repeats           :    %d\n", params.upscale_repeats);
+    printf("    motion_bucket_id          :    %d\n", params.motion_bucket_id);
+
+    printf("    seed                      :   %lld\n", params.seed);
+
+    printf("    min_cfg                   :   %.2f\n", params.min_cfg);
+    printf("    strength                  :   %.2f\n", params.strength);
+    printf("    guidance                  :   %.2f\n", params.guidance);
+    printf("    cfg_scale                 :   %.2f\n", params.cfg_scale);
+    printf("    style ratio               :   %.2f\n", params.style_ratio);
+    printf("    control_strength          :   %.2f\n", params.control_strength);
+    printf("    augmentation_level        :   %.2f\n", params.augmentation_level);
+
+    printf("    color                     :   %s\n", params.color            ? "true" : "false");
+    printf("    verbose                   :   %s\n", params.verbose          ? "true" : "false");
+    printf("    vae_tiling                :   %s\n", params.vae_tiling       ? "true" : "false");
+    printf("    vae_on_cpu                :   %s\n", params.vae_on_cpu       ? "true" : "false");
+    printf("    clip_on_cpu               :   %s\n", params.clip_on_cpu      ? "true" : "false");
+    printf("    normalize_input           :   %s\n", params.normalize_input  ? "true" : "false");
+    printf("    control_net_cpu           :   %s\n", params.control_net_cpu  ? "true" : "false");
+    printf("    canny_preprocess          :   %s\n", params.canny_preprocess ? "true" : "false");
+}
+
+static bool checkSDParams(SDParams& params) {
+    if (params.mode != SDMode::CONVERT && params.mode != SDMode::IMG2VID && params.prompt.empty()) {
+        SPDLOG_WARN("提示内容为空（prompt）");
+        return false;
+    }
+    if (params.model_path.empty() && params.diffusion_model_path.empty()) {
+        SPDLOG_WARN("模型路径为空（diffusion_model_path）");
+        return false;
+    }
+    if ((params.mode == SDMode::IMG2IMG || params.mode == SDMode::IMG2VID) && params.input_path.empty()) {
+        SPDLOG_WARN("文件内容为空（input_path）");
+        return false;
+    }
+    if (params.output_path.empty()) {
+        SPDLOG_WARN("输出目录为空（output_path）");
+        return false;
+    }
+    if (params.width <= 0 || params.width % 64 != 0) {
+        SPDLOG_WARN("参数错误（width） = {}", params.width);
+        return false;
+    }
+    if (params.height <= 0 || params.height % 64 != 0) {
+        SPDLOG_WARN("参数错误（height） = {}", params.height);
+        return false;
+    }
+    if (params.sample_steps <= 0) {
+        SPDLOG_WARN("参数错误（sample_steps） = {}", params.sample_steps);
+        return false;
+    }
+    if (params.strength < 0.0F || params.strength > 1.0F) {
+        SPDLOG_WARN("参数错误（strength） = {}", params.strength);
+        return false;
+    }
+    return true;
+}
+
+static void setOptions(int& target, const std::map<std::string, std::string>& options, const std::string& key) {
+    auto value = options.find(key);
+    if(value == options.end()) {
+        return;
+    }
+    target = std::stoi(value->second);
+}
+
+static void setOptions(bool& target, const std::map<std::string, std::string>& options, const std::string& key) {
+    auto value = options.find(key);
+    if(value == options.end()) {
+        return;
+    }
+    target = !strcmp(value->second.c_str(), "true");
+}
+
+static void setOptions(float& target, const std::map<std::string, std::string>& options, const std::string& key) {
+    auto value = options.find(key);
+    if(value == options.end()) {
+        return;
+    }
+    target = std::stof(value->second);
+}
+
+static void setOptions(int64_t& target, const std::map<std::string, std::string>& options, const std::string& key) {
+    auto value = options.find(key);
+    if(value == options.end()) {
+        return;
+    }
+    target = std::stoll(value->second);
+}
+
+static void setOptions(std::string& target, const std::map<std::string, std::string>& options, const std::string& key) {
+    auto value = options.find(key);
+    if(value == options.end()) {
+        return;
+    }
+    target = value->second;
+}
+
+static int getOptions(int count, const char** mapping, const std::map<std::string, std::string>& options, const std::string& key, const int defaultValue) {
+    std::string value;
+    setOptions(value, options, key);
+    if(value.empty()) {
+        return defaultValue;
+    }
+    const char* selected = value.c_str();
+    for (int index = 0; index < count; ++index) {
+        if (!strcmp(selected, mapping[index])) {
+            return index;
+        }
+    }
+    return defaultValue;
 }

@@ -54,6 +54,6 @@ chinese-word-vectors:
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
   model: /data/stable-diffusion-cpp/model.ckpt
-  command: /data/stable-diffusion-cpp/sd
+  # https://github.com/leejet/stable-diffusion.cpp/blob/master/examples/cli/main.cpp
   options: {}
   

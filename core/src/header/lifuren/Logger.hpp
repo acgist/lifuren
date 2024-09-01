@@ -38,7 +38,7 @@ extern void init();
  */
 extern void shutdown();
 
-}
-}
+} // END OF logger
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_LOGGER_HPP

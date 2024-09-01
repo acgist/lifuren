@@ -283,6 +283,14 @@ class OllamaEmbeddingClient : public EmbeddingClient {
 class PaintClient : public Client {
 
 public:
+struct PaintOptions {
+    std::string prompt;
+    std::string image;
+    std::string video;
+    std::string model;
+};
+
+public:
 /**
  * 绘画回调
  * 
@@ -303,13 +311,12 @@ public:
 
 public:
     /**
-     * @param prompt   提示内容
+     * @param options  提示内容
      * @param callback 消息回调
-     * @param image    提示图片
      * 
      * @return 是否成功
      */
-    virtual bool paint(const std::string& prompt, PaintCallback callback = nullptr, const std::string& image = "") = 0;
+    virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
 
 };
 
@@ -321,14 +328,13 @@ public:
 class StableDiffusionCPPPaintClient : public PaintClient {
 
 private:
-    std::unique_ptr<lifuren::CommandClient> commandClient{ nullptr };
 
 public:
     StableDiffusionCPPPaintClient();
     ~StableDiffusionCPPPaintClient();
 
 public:
-    bool paint(const std::string& prompt, PaintClient::PaintCallback callback = nullptr, const std::string& image = "") override;
+    bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
 
 };
 
