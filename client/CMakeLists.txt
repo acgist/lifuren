@@ -6,7 +6,6 @@ add_library(
     src/source/RestClient.cpp
     src/source/CommandClient.cpp
     src/source/paint/PaintClient.cpp
-    src/source/paint/StableDiffusionCPPPaintClient.cpp
     src/source/embedding/EmbeddingClient.cpp
     src/source/embedding/OllamaEmbeddingClient.cpp
     src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp

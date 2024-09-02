@@ -10,15 +10,17 @@
 
 #include "stable-diffusion.h"
 
+#include "opencv2/opencv.hpp"
+
 #include "lifuren/Files.hpp"
 #include "lifuren/Lifuren.hpp"
 
-const char* options_rng[] = {
+const char* options_rng[] {
     "std_default",
     "cuda",
 };
 
-const char* options_mode[] = {
+const char* options_mode[] {
     "txt2img",
     "img2img",
     "img2vid",
@@ -62,14 +64,14 @@ const char* options_wtype[] {
     "q4_0_8_8"
 };
 
-const char* options_schedule[] = {
+const char* options_schedule[] {
     "default",
     "discrete",
     "karras",
     "ays",
 };
 
-const char* options_sample_method[] = {
+const char* options_sample_method[] {
     "euler_a",
     "euler",
     "heun",
@@ -131,7 +133,7 @@ struct SDParams {
     float cfg_scale          = 7.0F;  // --cfg-scale SCALE
     float style_ratio        = 20.0F; // --style-ratio STYLE-RATIO
     float control_strength   = 0.9F;  // --control-strength STRENGTH
-    float augmentation_level = 0.0F;
+    float augmentation_level = 0.0F;  // -
 
     bool color            = false; // --color
     bool verbose          = false; // -v, --verbose
@@ -153,6 +155,9 @@ static void setOptions(float&       target, const std::map<std::string, std::str
 static void setOptions(int64_t&     target, const std::map<std::string, std::string>& options, const std::string& key);
 static void setOptions(std::string& target, const std::map<std::string, std::string>& options, const std::string& key);
 static int  getOptions(int count, const char** mapping, const std::map<std::string, std::string>& options, const std::string& key, const int defaultValue = 0);
+static bool paintTxt2Img(SDParams& params, sd_ctx_t* sd_ctx);
+static bool paintImg2Img(SDParams& params, sd_ctx_t* sd_ctx);
+static bool paintImg2Vid(SDParams& params, sd_ctx_t* sd_ctx);
 
 lifuren::StableDiffusionCPPPaintClient::StableDiffusionCPPPaintClient() {
 }
@@ -164,89 +169,73 @@ bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, 
     SDParams params{};
     initSDParams(params, options);
     printSDParams(params);
+    sd_set_log_callback(logCallback, static_cast<void*>(&params));
     if(!checkSDParams(params)) {
         return false;
     }
     if(params.mode == SDMode::CONVERT) {
-        convert(params.model_path.c_str(), params.vae_path.c_str(), params.output_path.c_str(), params.wtype);
-    } else if(params.mode == SDMode::TXT2IMG) {
-    } else if(params.mode == SDMode::IMG2IMG) {
-        int c      = 0;
-        int width  = 0;
-        int height = 0;
-        uint8_t* input_image_buffer = stbi_load(params.input_path.c_str(), &width, &height, &c, 3);
-        if (input_image_buffer == NULL) {
-            return false;
-        }
-        if (c < 3) {
-            return false;
-        }
-        if (width <= 0) {
-            return false;
-        }
-        if (height <= 0) {
-            return false;
-        }
-    } else if(params.mode == SDMode::IMG2VID) {
+        SPDLOG_INFO("模型转换：{} - {}", params.model_path, params.output_path);
+        return convert(params.model_path.c_str(), params.vae_path.c_str(), params.output_path.c_str(), params.wtype);
     } else {
+        bool vae_decode_only = true;
+        if (params.mode == SDMode::IMG2IMG || params.mode == SDMode::IMG2VID) {
+            vae_decode_only = false;
+        }
+        sd_ctx_t* sd_ctx = new_sd_ctx(
+            params.model_path.c_str(),
+            params.clip_l_path.c_str(),
+            params.t5xxl_path.c_str(),
+            params.diffusion_model_path.c_str(),
+            params.vae_path.c_str(),
+            params.taesd_path.c_str(),
+            params.controlnet_path.c_str(),
+            params.lora_model_dir.c_str(),
+            params.embeddings_path.c_str(),
+            params.stacked_id_embeddings_path.c_str(),
+            vae_decode_only,
+            params.vae_tiling,
+            true,
+            params.n_threads,
+            params.wtype,
+            params.rng_type,
+            params.schedule,
+            params.clip_on_cpu,
+            params.control_net_cpu,
+            params.vae_on_cpu
+        );
+        if (sd_ctx == NULL) {
+            SPDLOG_WARN("创建sd_ctx_t失败");
+            return false;
+        }
+        bool success = false;
+        if(params.mode == SDMode::TXT2IMG) {
+            success = paintTxt2Img(params, sd_ctx);
+        } else if(params.mode == SDMode::IMG2IMG) {
+            success = paintImg2Img(params, sd_ctx);
+        } else if(params.mode == SDMode::IMG2VID) {
+            success = paintImg2Vid(params, sd_ctx);
+        } else {
+            SPDLOG_WARN("不支持的类型");
+        }
+        free_sd_ctx(sd_ctx);
+        return success;
     }
-    bool vae_decode_only          = true;
-    sd_ctx_t* sd_ctx = new_sd_ctx(params.model_path.c_str(),
-                                  params.clip_l_path.c_str(),
-                                  params.t5xxl_path.c_str(),
-                                  params.diffusion_model_path.c_str(),
-                                  params.vae_path.c_str(),
-                                  params.taesd_path.c_str(),
-                                  params.controlnet_path.c_str(),
-                                  params.lora_model_dir.c_str(),
-                                  params.embeddings_path.c_str(),
-                                  params.stacked_id_embeddings_path.c_str(),
-                                  vae_decode_only,
-                                  params.vae_tiling,
-                                  true,
-                                  params.n_threads,
-                                  params.wtype,
-                                  params.rng_type,
-                                  params.schedule,
-                                  params.clip_on_cpu,
-                                  params.control_net_cpu,
-                                  params.vae_on_cpu);
-    if (sd_ctx == NULL) {
-        return false;
-    }
-    sd_image_t* results;
-    sd_image_t* control_image = NULL;
-    if (params.mode == SDMode::TXT2IMG) {
-        results = txt2img(sd_ctx,
-                          params.prompt.c_str(),
-                          params.negative_prompt.c_str(),
-                          params.clip_skip,
-                          params.cfg_scale,
-                          params.guidance,
-                          params.width,
-                          params.height,
-                          params.sample_method,
-                          params.sample_steps,
-                          params.seed,
-                          params.batch_count,
-                          control_image,
-                          params.control_strength,
-                          params.style_ratio,
-                          params.normalize_input,
-                          params.input_id_images_path.c_str());
-    }
-    return true;
+}
+
+static void logCallback(sd_log_level_t level, const char* log, void* data) {
+    SPDLOG_DEBUG("SD : {}", log);
 }
 
 static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOptions& paintOptions) {
     const auto& config      = lifuren::config::CONFIG.stableDiffusionCPP;
     const auto& options     = config.options;
     const auto& imageConfig = lifuren::config::CONFIG.image;
+
     params.mode          = !paintOptions.model.empty() ? SDMode::CONVERT :
                            !paintOptions.video.empty() ? SDMode::IMG2VID :
                            !paintOptions.image.empty() ? SDMode::IMG2IMG : SDMode::TXT2IMG;
     params.wtype         = static_cast<sd_type_t>(      getOptions(sd_type_t::SD_TYPE_COUNT,          options_wtype,         options, "wtype",         sd_type_t::SD_TYPE_F32));
-    params.rng_type      = static_cast<rng_type_t>(     getOptions(rng_type_t::CUDA_RNG + 1,          options_rng,           options, "rng",           rng_type_t::STD_DEFAULT_RNG));
+    params.rng_type      = static_cast<rng_type_t>(     getOptions(rng_type_t::CUDA_RNG + 1,          options_rng,           options, "rng_type",      rng_type_t::STD_DEFAULT_RNG));
     params.schedule      = static_cast<schedule_t>(     getOptions(schedule_t::N_SCHEDULES,           options_schedule,      options, "schedule",      schedule_t::DEFAULT));
     params.sample_method = static_cast<sample_method_t>(getOptions(sample_method_t::N_SAMPLE_METHODS, options_sample_method, options, "sample_method", sample_method_t::EULER_A));
     
@@ -298,7 +287,7 @@ static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOpti
     setOptions(params.control_net_cpu,  options, "control_net_cpu");
     setOptions(params.canny_preprocess, options, "canny_preprocess");
 
-    if (params.seed < 0) {
+    if (params.seed < 0 || params.seed == 42) {
         std::random_device device{};
         std::mt19937 random{device()};
         params.seed = random();
@@ -351,41 +340,37 @@ static void printSDParams(SDParams& params) {
     printf("    upscale_repeats           :    %d\n", params.upscale_repeats);
     printf("    motion_bucket_id          :    %d\n", params.motion_bucket_id);
 
-    printf("    seed                      :   %lld\n", params.seed);
+    printf("    seed                      :    %lld\n", params.seed);
 
-    printf("    min_cfg                   :   %.2f\n", params.min_cfg);
-    printf("    strength                  :   %.2f\n", params.strength);
-    printf("    guidance                  :   %.2f\n", params.guidance);
-    printf("    cfg_scale                 :   %.2f\n", params.cfg_scale);
-    printf("    style ratio               :   %.2f\n", params.style_ratio);
-    printf("    control_strength          :   %.2f\n", params.control_strength);
-    printf("    augmentation_level        :   %.2f\n", params.augmentation_level);
+    printf("    min_cfg                   :    %.2f\n", params.min_cfg);
+    printf("    strength                  :    %.2f\n", params.strength);
+    printf("    guidance                  :    %.2f\n", params.guidance);
+    printf("    cfg_scale                 :    %.2f\n", params.cfg_scale);
+    printf("    style ratio               :    %.2f\n", params.style_ratio);
+    printf("    control_strength          :    %.2f\n", params.control_strength);
+    printf("    augmentation_level        :    %.2f\n", params.augmentation_level);
 
-    printf("    color                     :   %s\n", params.color            ? "true" : "false");
-    printf("    verbose                   :   %s\n", params.verbose          ? "true" : "false");
-    printf("    vae_tiling                :   %s\n", params.vae_tiling       ? "true" : "false");
-    printf("    vae_on_cpu                :   %s\n", params.vae_on_cpu       ? "true" : "false");
-    printf("    clip_on_cpu               :   %s\n", params.clip_on_cpu      ? "true" : "false");
-    printf("    normalize_input           :   %s\n", params.normalize_input  ? "true" : "false");
-    printf("    control_net_cpu           :   %s\n", params.control_net_cpu  ? "true" : "false");
-    printf("    canny_preprocess          :   %s\n", params.canny_preprocess ? "true" : "false");
+    printf("    color                     :    %s\n", params.color            ? "true" : "false");
+    printf("    verbose                   :    %s\n", params.verbose          ? "true" : "false");
+    printf("    vae_tiling                :    %s\n", params.vae_tiling       ? "true" : "false");
+    printf("    vae_on_cpu                :    %s\n", params.vae_on_cpu       ? "true" : "false");
+    printf("    clip_on_cpu               :    %s\n", params.clip_on_cpu      ? "true" : "false");
+    printf("    normalize_input           :    %s\n", params.normalize_input  ? "true" : "false");
+    printf("    control_net_cpu           :    %s\n", params.control_net_cpu  ? "true" : "false");
+    printf("    canny_preprocess          :    %s\n", params.canny_preprocess ? "true" : "false");
 }
 
 static bool checkSDParams(SDParams& params) {
-    if (params.mode != SDMode::CONVERT && params.mode != SDMode::IMG2VID && params.prompt.empty()) {
+    if (params.mode == SDMode::TXT2IMG && params.prompt.empty()) {
         SPDLOG_WARN("提示内容为空（prompt）");
         return false;
     }
-    if (params.model_path.empty() && params.diffusion_model_path.empty()) {
-        SPDLOG_WARN("模型路径为空（diffusion_model_path）");
-        return false;
-    }
-    if ((params.mode == SDMode::IMG2IMG || params.mode == SDMode::IMG2VID) && params.input_path.empty()) {
+    if (params.mode == SDMode::IMG2IMG && params.input_path.empty()) {
         SPDLOG_WARN("文件内容为空（input_path）");
         return false;
     }
-    if (params.output_path.empty()) {
-        SPDLOG_WARN("输出目录为空（output_path）");
+    if (params.mode == SDMode::IMG2VID && params.input_path.empty()) {
+        SPDLOG_WARN("文件内容为空（input_path）");
         return false;
     }
     if (params.width <= 0 || params.width % 64 != 0) {
@@ -396,12 +381,20 @@ static bool checkSDParams(SDParams& params) {
         SPDLOG_WARN("参数错误（height） = {}", params.height);
         return false;
     }
-    if (params.sample_steps <= 0) {
-        SPDLOG_WARN("参数错误（sample_steps） = {}", params.sample_steps);
-        return false;
-    }
     if (params.strength < 0.0F || params.strength > 1.0F) {
         SPDLOG_WARN("参数错误（strength） = {}", params.strength);
+        return false;
+    }
+    if (params.model_path.empty() && params.diffusion_model_path.empty()) {
+        SPDLOG_WARN("模型路径为空（diffusion_model_path）");
+        return false;
+    }
+    if (params.output_path.empty()) {
+        SPDLOG_WARN("输出目录为空（output_path）");
+        return false;
+    }
+    if (params.sample_steps <= 0) {
+        SPDLOG_WARN("参数错误（sample_steps） = {}", params.sample_steps);
         return false;
     }
     return true;
@@ -460,4 +453,76 @@ static int getOptions(int count, const char** mapping, const std::map<std::strin
         }
     }
     return defaultValue;
+}
+
+static bool paintTxt2Img(SDParams& params, sd_ctx_t* sd_ctx) {
+    sd_image_t* control_image = NULL;
+    if (params.controlnet_path.size() > 0 && params.control_image_path.size() > 0) {
+        // int c                = 0;
+        // control_image_buffer = stbi_load(params.control_image_path.c_str(), &params.width, &params.height, &c, 3);
+        // if (control_image_buffer == NULL) {
+        //     fprintf(stderr, "load image from '%s' failed\n", params.control_image_path.c_str());
+        //     return 1;
+        // }
+        // control_image = new sd_image_t{(uint32_t)params.width,
+        //                                (uint32_t)params.height,
+        //                                3,
+        //                                control_image_buffer};
+        // if (params.canny_preprocess) {  // apply preprocessor
+            // control_image->data = preprocess_canny(control_image->data,
+        //                                            control_image->width,
+        //                                            control_image->height,
+        //                                            0.08f,
+        //                                            0.08f,
+        //                                            0.8f,
+        //                                            1.0f,
+        //                                            false);
+        // }
+    }
+    sd_image_t* result = txt2img(
+        sd_ctx,
+        params.prompt.c_str(),
+        params.negative_prompt.c_str(),
+        params.clip_skip,
+        params.cfg_scale,
+        params.guidance,
+        params.width,
+        params.height,
+        params.sample_method,
+        params.sample_steps,
+        params.seed,
+        params.batch_count,
+        control_image,
+        params.control_strength,
+        params.style_ratio,
+        params.normalize_input,
+        params.input_id_images_path.c_str()
+    );
+    if(result == NULL) {
+        return false;
+    }
+    size_t last            = params.output_path.find_last_of(".");
+    std::string dummy_name = last != std::string::npos ? params.output_path.substr(0, last) : params.output_path;
+    for (int i = 0; i < params.batch_count; i++) {
+        if (result[i].data == NULL) {
+            continue;
+        }
+        std::string final_image_path = i > 0 ? dummy_name + "_" + std::to_string(i + 1) + ".png" : dummy_name + ".png";
+        // TODO: writer
+        cv::Mat mat(cv::Size(params.width, params.height), CV_8UC1);
+        memcpy(mat.data, result[i].data, params.width * params.height);
+        cv::imwrite(final_image_path, mat);
+        free(result[i].data);
+        result[i].data = NULL;
+    }
+    free(result);
+    return true;
+}
+
+static bool paintImg2Img(SDParams& params, sd_ctx_t* sd_ctx) {
+    return false;
+}
+
+static bool paintImg2Vid(SDParams& params, sd_ctx_t* sd_ctx) {
+    return false;
 }

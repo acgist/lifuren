@@ -4,6 +4,7 @@ add_library(
     ${PROJECT_NAME}
     src/source/CV.cpp
     src/source/image/ImageReader.cpp
+    src/source/paint/StableDiffusionCPPPaintClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
@@ -13,6 +14,7 @@ target_link_libraries(
     lifurenmodel
     lifurenclient
     stable-diffusion
+    ${OpenCV_LIBS}
 )
 
 target_include_directories(

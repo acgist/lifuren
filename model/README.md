@@ -9,4 +9,3 @@
 * https://github.com/mindspore-ai/mindspore
 * https://github.com/PaddlePaddle/PaddleHub
 * https://github.com/scikit-learn/scikit-learn
-* https://github.com/pytorch/pytorch/blob/main/torch/csrc/

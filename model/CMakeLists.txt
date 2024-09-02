@@ -7,6 +7,7 @@ add_library(
     src/source/Tensors.cpp
     src/source/Datasets.cpp
     src/source/model/Poetry.cpp
+    src/source/layers/Linear.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

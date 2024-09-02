@@ -1,37 +1,36 @@
 #include "lifuren/Model.hpp"
 
 #include <random>
+#include <memory>
 
 #include "ggml.h"
 
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Logger.hpp"
+#include "lifuren/Layers.hpp"
 #include "lifuren/Datasets.hpp"
 
-class SimpleModel : public lifuren::Model {
+class LayerModel : public lifuren::Model {
 
 public:
-    ggml_tensor* fc1_weight{ nullptr };
-    ggml_tensor* fc1_bias  { nullptr };
+    std::unique_ptr<lifuren::layers::Linear> linear{ nullptr };
 
 public:
-    SimpleModel(lifuren::Model::ModelParams params = {}) : Model(params) {
+    LayerModel(lifuren::Model::ModelParams params = {}) : Model(params) {
     }
-    ~SimpleModel() {
+    ~LayerModel() {
     }
 
 public:
     Model& defineWeight() override {
-        this->fc1_weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
-        this->fc1_bias   = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, 1);
-        this->weights.emplace("fc1.weight", this->fc1_weight);
-        this->weights.emplace("fc1.bias",   this->fc1_bias);
+        this->linear = std::make_unique<lifuren::layers::Linear>(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear->defineWeight(this->weights);
         return *this;
     };
     Model& bindWeight() override {
-        this->fc1_weight = this->weights["fc1.weight"];
-        this->fc1_bias   = this->weights["fc1.bias"];
+        this->linear = std::make_unique<lifuren::layers::Linear>(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear->bindWeight(this->weights);
         return *this;
     };
     ggml_tensor* buildDatas() override {
@@ -44,10 +43,7 @@ public:
         return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
     };
     ggml_tensor* buildLogits() override {
-        return ggml_add(this->ctx_compute,
-                ggml_mul_mat(this->ctx_compute, this->fc1_weight, this->datas),
-                this->fc1_bias
-            );
+        return this->linear->forward(this->datas);
     };
 
 };
@@ -57,10 +53,10 @@ static void testSaveLoad() {
         .batch_size  = 1,
         .epoch_count = 64,
     };
-    SimpleModel save{params};
+    LayerModel save{params};
     save.define().print().save("D:/tmp");
     // save.define().print().saveEval("D:/tmp");
-    SimpleModel load{params};
+    LayerModel load{params};
     load.load("D:/tmp").print();
     // load.loadEval("D:/tmp").print();
 }
@@ -100,7 +96,7 @@ static void testLine() {
         .epoch_count = 64,
         .optimizerParams = optParams
     };
-    SimpleModel save{ params };
+    LayerModel save{params};
     save.define();
     // save.print();
     save.trainDataset.reset(dataset);
@@ -110,10 +106,7 @@ static void testLine() {
     // w * 15.4 + 4 + rand
     float* pred = save.eval(data, target, 1);
     SPDLOG_DEBUG("当前预测：{}", *pred);
-    float* w = ggml_get_data_f32(save.fc1_weight);
-    SPDLOG_DEBUG("当前权重：{}", *w);
-    float* b = ggml_get_data_f32(save.fc1_bias);
-    SPDLOG_DEBUG("当前偏置：{}", *b);
+    SPDLOG_DEBUG("当前权重：{}", save.linear->info());
 }
 
 int main() {

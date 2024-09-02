@@ -1,28 +1,63 @@
 /**
- * layer工具
+ * Layer工具
  * 
  * @author acgist
+ * 
+ * https://github.com/pytorch/pytorch/blob/main/torch/csrc/
  */
 #ifndef LFR_HEADER_MODEL_LAYERS_HPP
 #define LFR_HEADER_MODEL_LAYERS_HPP
 
+#include <map>
 #include <vector>
+#include <string>
 
-#include "ggml.h"
+struct ggml_tensor;
+struct ggml_context;
 
 namespace lifuren {
 namespace layers  {
 
 class Layer {
 
+protected:
+    std::string name;
+    ggml_context* ctx_weight { nullptr };
+    ggml_context* ctx_compute{ nullptr };
+
 public:
-    Layer();
+    Layer(ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "");
     virtual ~Layer();
 
 public:
-    virtual ggml_tensor* forward(ggml_tensor* input);
+    virtual std::string info();
+    virtual ggml_tensor* forward   (ggml_tensor* input) = 0;
     virtual ggml_tensor* operator()(ggml_tensor* input);
+    virtual void defineWeight(std::map<std::string, ggml_tensor*>& weights) = 0;
+    virtual void bindWeight  (std::map<std::string, ggml_tensor*>& weights) = 0;
+    virtual void bindWeight  (std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor);
 
+};
+
+class Linear : public Layer {
+
+private:
+    ggml_tensor* weight{ nullptr };
+    ggml_tensor* bias  { nullptr };
+    size_t in_features { 0 };
+    size_t out_features{ 0 };
+
+public:
+    Linear(size_t in_features, size_t out_features, ggml_context* ctx, const std::string& name = "linear");
+    Linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear");
+    ~Linear();
+
+public:
+    using Layer::bindWeight;
+    std::string info() override;
+    ggml_tensor* forward(ggml_tensor* input) override;
+    void defineWeight(std::map<std::string, ggml_tensor*>& weights) override;
+    void bindWeight  (std::map<std::string, ggml_tensor*>& weights) override;
 
 };
 
@@ -33,52 +68,6 @@ public:
  * @return Linear
  */
 inline void linear(int64_t in_features, int64_t out_features) {
-    // TODO
-}
-
-/**
- * @param num_features 特征大小
- * 
- * @return BatchNorm1d
- */
-inline void batchNorm1d(int64_t num_features) {
-    // TODO
-}
-
-/**
- * @param num_features 特征大小
- * 
- * @return BatchNorm2d
- */
-inline void batchNorm2d(int64_t num_features) {
-    // TODO
-}
-
-/**
- * @param normalized_shape TODO: 学习
- * 
- * @return LayerNorm
- */
-inline void layerNorm(std::vector<int64_t> normalized_shape) {
-    // TODO
-}
-
-/**
- * @param num_features TODO: 学习
- * 
- * @return InstanceNorm2d
- */
-inline void instanceNorm2d(int64_t num_features) {
-    // TODO
-}
-
-/**
- * @param num_groups   TODO: 学习
- * @param num_channels TODO: 学习
- * 
- * @return GroupNorm
- */
-inline void groupNorm(int64_t num_groups, int64_t num_channels) {
     // TODO
 }
 
@@ -134,33 +123,6 @@ inline void avgPool2d(
     int64_t stride  = -1,
     int64_t padding = 0
 ) {
-    // TODO
-}
-
-/**
- * @param output_size 输出尺寸
- * 
- * @return AdaptiveAvgPool2d
- */
-inline void adaptiveAvgPool2d(int64_t output_size) {
-    // TODO
-}
-
-/**
- * @param dropout 丢弃概率
- * 
- * @return Dropout
- */
-inline void dropout(double dropout = 0.5) {
-    // TODO
-}
-
-/**
- * @param inplace 是否使用旧的内存
- * 
- * @return ReLU
- */
-inline void relu(bool inplace = false) {
     // TODO
 }
 

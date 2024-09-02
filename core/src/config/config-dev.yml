@@ -55,5 +55,5 @@ chinese-word-vectors:
 stable-diffusion-cpp:
   model: D:\tmp\sdc\v1-5-pruned-emaonly.ckpt
   command: D:\tmp\sdc\sd.exe
-  options: {}
+  options: {"sample_steps":2}
   

@@ -77,8 +77,8 @@ cmake --build . --parallel 8
 cmake --install .
 ```
 
-* cmake -A x64 ..
-* cmake -G "Visual Studio 17 2022 Win64" ..
+* `cmake -A x64 ..`
+* `cmake -G "Visual Studio 17 2022 Win64" ..`
 
 #### 注意事项
 

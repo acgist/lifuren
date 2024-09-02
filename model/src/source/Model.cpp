@@ -1,7 +1,6 @@
 #include "lifuren/Model.hpp"
 
 #include <array>
-#include <random>
 #include <numeric>
 #include <algorithm>
 #include <filesystem>
@@ -11,6 +10,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"
+#include "lifuren/Tensors.hpp"
 #include "lifuren/Datasets.hpp"
 #include "lifuren/config/Config.hpp"
 
@@ -57,11 +57,13 @@ bool lifuren::Model::save(const std::string& path, const std::string& filename) 
     const std::string fullpath = lifuren::files::join({ path, filename }).string();
     SPDLOG_DEBUG("保存模型：{}", fullpath);
     gguf_context* gguf_ctx = gguf_init_empty();
-    gguf_set_val_str(gguf_ctx, "lifuren.version", "1.0.0");
+    std::vector<const char*> wnames;
     for(const auto& pair : this->weights) {
         SPDLOG_DEBUG("保存模型权重：{}", pair.first);
+        wnames.push_back(pair.second->name);
         gguf_add_tensor(gguf_ctx, pair.second);
     }
+    gguf_set_arr_str(gguf_ctx, "lifuren.wnames", wnames.data(), wnames.size());
     gguf_write_to_file(gguf_ctx, fullpath.c_str(), false);
     gguf_free(gguf_ctx);
     return true;
@@ -81,13 +83,14 @@ lifuren::Model& lifuren::Model::load(const std::string& path, const std::string&
         gguf_free(gguf_ctx);
         return *this;
     }
-    const char* version = gguf_get_val_str(gguf_ctx, gguf_find_key(gguf_ctx, "lifuren.version"));
-    SPDLOG_DEBUG("加载模型版本：{} - {}", fullpath, version);
-    for(const auto& name : this->names) {
-        SPDLOG_DEBUG("加载模型权重：{}", name);
-        ggml_tensor* weight = ggml_get_tensor(this->ctx_weight, name.c_str());
-        this->weights[name] = weight;
+    const int wnames_index = gguf_find_key(gguf_ctx, "lifuren.wnames");
+    const int wnames_size  = gguf_get_arr_n(gguf_ctx, wnames_index);
+    for(int i = 0; i < wnames_size; ++i) {
+        const char * name   = gguf_get_arr_str(gguf_ctx, wnames_index, i);
+        ggml_tensor* weight = ggml_get_tensor(this->ctx_weight, name);
         ggml_set_param(this->ctx_compute, weight);
+        this->weights[name] = weight;
+        SPDLOG_DEBUG("加载模型权重：{}", name);
     }
     this->bindWeight();
     this->defineInput();
@@ -117,10 +120,11 @@ lifuren::Model& lifuren::Model::loadEval(const std::string& path, const std::str
         SPDLOG_WARN("加载模型失败：{}", fullpath);
         return *this;
     }
-    for(auto& name : this->names) {
-        SPDLOG_DEBUG("加载模型权重：{}", name);
-        ggml_tensor* weight = ggml_graph_get_tensor(this->eval_gf, name.c_str());
+    for (int index = 0; index < this->eval_gf->n_leafs; ++index) {
+        ggml_tensor* weight = this->eval_gf->leafs[index];
+        const char * name   = weight->name;
         this->weights[name] = weight;
+        SPDLOG_DEBUG("加载模型权重：{}", name);
     }
     this->bindWeight();
     this->datas  = ggml_graph_get_tensor(this->eval_gf, "global.datas");
@@ -130,7 +134,7 @@ lifuren::Model& lifuren::Model::loadEval(const std::string& path, const std::str
     return *this;
 }
 
-lifuren::Model& lifuren::Model::define(const InitType type, double mean, double sigma, float value) {
+lifuren::Model& lifuren::Model::define(const InitType type, float mean, float sigma, float value) {
     this->initContext();
     this->defineWeight();
     for(const auto& pair : this->weights) {
@@ -145,36 +149,18 @@ lifuren::Model& lifuren::Model::define(const InitType type, double mean, double 
     return *this;
 }
 
-lifuren::Model& lifuren::Model::initWeight(InitType type, double mean, double sigma, float value) {
+lifuren::Model& lifuren::Model::initWeight(InitType type, float mean, float sigma, float value) {
     if(this->weights.empty()) {
         SPDLOG_WARN("初始化权重失败：权重为空");
         return *this;
     }
     if(type == InitType::RAND) {
-        std::random_device device{};
-        std::mt19937 random{device()};
-        std::normal_distribution<float> normal(mean, sigma);
         for(const auto& pair : this->weights) {
-            auto tensor = pair.second;
-            GGML_ASSERT(tensor->type == GGML_TYPE_F32);
-            float*  data = ggml_get_data_f32(tensor);
-            int64_t ne   = ggml_nelements(tensor);
-            for (int64_t i = 0; i < ne; ++i) {
-                data[i] = normal(random);
-            }
+            lifuren::tensors::fillRand(pair.second, mean, sigma);
         }
     } else {
-        if(type == InitType::ZERO) {
-            value = 0.0F;
-        }
         for(const auto& pair : this->weights) {
-            auto tensor = pair.second;
-            GGML_ASSERT(tensor->type == GGML_TYPE_F32);
-            float*  data = ggml_get_data_f32(tensor);
-            int64_t ne   = ggml_nelements(tensor);
-            for (int64_t i = 0; i < ne; ++i) {
-                data[i] = value;
-            }
+            lifuren::tensors::fill(pair.second, type == InitType::ZERO ? 0.0F : value);
         }
     }
     return *this;

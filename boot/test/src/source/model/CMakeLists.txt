@@ -21,3 +21,11 @@ target_link_libraries(
     testDatasets
     lifurenmodel
 )
+
+add_executable(testLayerModel TestLayerModel.cpp)
+add_test(NAME testLayerModel COMMAND testLayerModel)
+set_target_properties(testLayerModel PROPERTIES FOLDER "test-model")
+target_link_libraries(
+    testLayerModel
+    lifurenmodel
+)

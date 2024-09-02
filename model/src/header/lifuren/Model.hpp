@@ -106,9 +106,6 @@ protected:
     ggml_cgraph* val_gf  { nullptr };
     ggml_cgraph* test_gf { nullptr };
     ggml_cgraph* eval_gf { nullptr };
-    // 模型权重名称
-    std::vector<std::string> names{};
-    // 模型权重映射
     std::map<std::string, ggml_tensor*> weights{};
 
 public:
@@ -135,11 +132,11 @@ public:
     virtual bool   saveEval(const std::string& path = "./", const std::string& filename = "lifuren.ggml");
     virtual Model& loadEval(const std::string& path = "./", const std::string& filename = "lifuren.ggml");
     // 定义模型
-    virtual Model& define(InitType type = InitType::RAND, double mean = 0.0, double sigma = 1e-2, float value = 0.0F);
+    virtual Model& define(InitType type = InitType::RAND, float mean = 0.0F, float sigma = 0.001F, float value = 0.0F);
     // 定义权重
     virtual Model& defineWeight() = 0;
     // 初始化权重
-    virtual Model& initWeight(InitType type = InitType::RAND, double mean = 0.0, double sigma = 1e-2, float value = 0.0F);
+    virtual Model& initWeight(InitType type = InitType::RAND, float mean = 0.0F, float sigma = 0.001F, float value = 0.0F);
     // 绑定权重
     virtual Model& bindWeight() = 0;
     // 初始化输入
