@@ -264,16 +264,16 @@ public:
 
 };
 
+class OllamaEmbeddingClient : public EmbeddingClient {
+
+};
+
 /**
  * Chinese-Word-Vectors词嵌入终端
  * 
  * 项目地址：https://github.com/Embedding/Chinese-Word-Vectors
  */
 class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
-
-};
-
-class OllamaEmbeddingClient : public EmbeddingClient {
 
 };
 
@@ -320,6 +320,14 @@ public:
 
 };
 
+class CycleGANPaintClient {
+    // TODO
+};
+
+class StyleGANPaintClient {
+    // TODO
+};
+
 /**
  * StableDiffusionCPP终端
  * 
@@ -335,6 +343,17 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
+
+};
+
+/**
+ * 诗词终端
+ */
+class PoetizeClient : public Client {
+
+};
+
+class RNNPoetizeClient : public PoetizeClient {
 
 };
 

@@ -8,15 +8,15 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
+option(ENABLE_TEST       "打开测试"     ON)
+option(ENABLE_FLTK       "开启FLTK界面" ON)
+option(ENABLE_REST       "开启REST接口" ON)
 
 option(SD_CUBLAS         "是否编译CUDA依赖" OFF)
 option(GGML_CUDA         "是否编译CUDA依赖" OFF)
 option(JSON_BuildTests   "是否编译JSON测试" OFF)
 
-option(ENABLE_TEST       "打开测试"     ON)
-option(ENABLE_FLTK       "开启FLTK界面" ON)
-option(ENABLE_REST       "开启REST接口" ON)
+option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 

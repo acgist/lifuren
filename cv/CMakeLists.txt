@@ -3,8 +3,10 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/source/CV.cpp
-    src/source/image/ImageReader.cpp
-    src/source/paint/StableDiffusionCPPPaintClient.cpp
+    src/source/Images.cpp
+    src/source/client/CycleGANPaintClient.cpp
+    src/source/client/StyleGANPaintClient.cpp
+    src/source/client/StableDiffusionCPPPaintClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

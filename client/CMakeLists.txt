@@ -4,9 +4,9 @@ add_library(
     ${PROJECT_NAME}
     src/source/Client.cpp
     src/source/RestClient.cpp
+    src/source/PaintClient.cpp
     src/source/CommandClient.cpp
-    src/source/paint/PaintClient.cpp
-    src/source/embedding/EmbeddingClient.cpp
+    src/source/EmbeddingClient.cpp
     src/source/embedding/OllamaEmbeddingClient.cpp
     src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )

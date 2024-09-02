@@ -7,6 +7,7 @@ add_library(
     src/source/rag/RAGService.cpp
     src/source/rag/RAGTaskRunner.cpp
     src/source/rag/ElasticSearchRAGClient.cpp
+    src/source/client/RNNPoetizeClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
