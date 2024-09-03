@@ -229,9 +229,7 @@ static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOpti
     const auto& options     = config.options;
     const auto& imageConfig = lifuren::config::CONFIG.image;
 
-    params.mode          = !paintOptions.model.empty() ? SDMode::CONVERT :
-                           !paintOptions.video.empty() ? SDMode::IMG2VID :
-                           !paintOptions.image.empty() ? SDMode::IMG2IMG : SDMode::TXT2IMG;
+    params.mode          = static_cast<SDMode>(static_cast<int>(paintOptions.mode));
     params.wtype         = static_cast<sd_type_t>(      getOptions(sd_type_t::SD_TYPE_COUNT,          options_wtype,         options, "wtype",         sd_type_t::SD_TYPE_F32));
     params.rng_type      = static_cast<rng_type_t>(     getOptions(rng_type_t::CUDA_RNG + 1,          options_rng,           options, "rng_type",      rng_type_t::STD_DEFAULT_RNG));
     params.schedule      = static_cast<schedule_t>(     getOptions(schedule_t::N_SCHEDULES,           options_schedule,      options, "schedule",      schedule_t::DEFAULT));
@@ -286,7 +284,7 @@ static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOpti
     setOptions(params.canny_preprocess, options, "canny_preprocess");
 
     if(!config.model.empty()) {
-        params.model_path  = config.model;
+        params.model_path = config.model;
     }
     if(!imageConfig.output.empty()) {
         params.output_path = imageConfig.output;

@@ -283,7 +283,15 @@ class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
 class PaintClient : public Client {
 
 public:
+enum class Mode {
+    TXT2IMG,
+    IMG2IMG,
+    IMG2VID,
+    CONVERT,
+};
 struct PaintOptions {
+    Mode mode = Mode::TXT2IMG;
+
     std::string image;
     std::string video;
     std::string model;

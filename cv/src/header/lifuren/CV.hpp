@@ -7,6 +7,7 @@
 #define LFR_HEADER_CV_CV_HPP
 
 #include <cstdint>
+#include <cstdlib>
 
 namespace lifuren {
 namespace cv      {
