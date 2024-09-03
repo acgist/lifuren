@@ -16,7 +16,6 @@ target_link_libraries(
     lifurenmodel
     lifurenclient
     stable-diffusion
-    ${OpenCV_LIBS}
 )
 
 target_include_directories(

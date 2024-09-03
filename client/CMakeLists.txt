@@ -13,10 +13,19 @@ add_library(
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
-target_link_libraries(
-    ${PROJECT_NAME}
-    lifurencore
-)
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurencore
+        httplib::httplib
+    )
+else()
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurencore
+        $<IF:$<TARGET_EXISTS:cpp-httplib>,cpp-httplib,httplib::httplib>
+    )
+endif()
 
 target_include_directories(
     ${PROJECT_NAME}

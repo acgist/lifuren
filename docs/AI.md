@@ -304,6 +304,11 @@ ADMA + L2
 * 多分类：softmax
 
 #### 梯度爆炸
+
+#### 计划采样（Scheduled Sampling）
+
+不要总是训练对的数据，给一些错误的噪声。
+
 #### 检索增强生成（RAG）
 #### prompt
 #### Tokenizer

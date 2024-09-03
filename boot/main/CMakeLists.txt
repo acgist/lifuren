@@ -27,7 +27,6 @@ if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
         $<IF:$<TARGET_EXISTS:png>,png,png_shared>
-        httplib::httplib
         libjpeg-turbo::jpeg
         lifurencv
         lifurennlp
@@ -38,7 +37,6 @@ else()
         ${PROJECT_NAME}
         png
         jpeg
-        $<IF:$<TARGET_EXISTS:cpp-httplib>,cpp-httplib,httplib::httplib>
         lifurencv
         lifurennlp
         ${FLTK_LIBRARIES}
