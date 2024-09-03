@@ -302,16 +302,19 @@ static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOpti
     if(!paintOptions.output.empty()) {
         params.output_path = paintOptions.output;
     }
-    if(paintOptions.seed <= 0) {
+    if(paintOptions.seed > 0) {
         params.seed = paintOptions.seed;
     }
-    if(paintOptions.steps <= 0) {
+    if(paintOptions.count > 0) {
+        params.batch_count = paintOptions.count;
+    }
+    if(paintOptions.steps > 0) {
         params.sample_steps = paintOptions.steps;
     }
-    if(paintOptions.width <= 0) {
+    if(paintOptions.width > 0) {
         params.width = paintOptions.width;
     }
-    if(paintOptions.height <= 0) {
+    if(paintOptions.height > 0) {
         params.height = paintOptions.height;
     }
     params.color = paintOptions.color;
@@ -633,6 +636,7 @@ static bool writeImg(SDParams& params, size_t count, sd_image_t* result) {
             continue;
         }
         std::string output_file = lifuren::files::join({params.output_path, std::to_string(lifuren::uuid()) + "_" + std::to_string(i) + ".png"}).string();
+        SPDLOG_DEBUG("生成图片：{}", output_file);
         lifuren::images::write(output_file, result[i].data, params.width, params.height);
         free(result[i].data);
         result[i].data = NULL;

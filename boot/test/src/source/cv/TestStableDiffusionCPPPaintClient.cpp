@@ -7,7 +7,7 @@
 static void testSD(const std::string& prompt, const std::string& image, const std::string& output, const std::string& model) {
     lifuren::StableDiffusionCPPPaintClient client{};
     client.paint({
-        .mode   = image.empty() ? lifuren::PaintClient::Mode::IMG2IMG : lifuren::PaintClient::Mode::TXT2IMG,
+        .mode   = image.empty() ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG,
         .image  = image,
         .model  = model,
         .prompt = prompt,
