@@ -23,9 +23,9 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
-#include "lifuren/RAG.hpp"
 #include "lifuren/Jsons.hpp"
 #include "lifuren/Strings.hpp"
+#include "lifuren/RAGClient.hpp"
 #include "lifuren/model/Poetry.hpp"
 
 static nlohmann::json           poetryJson    {};

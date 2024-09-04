@@ -1,4 +1,4 @@
-#include "lifuren/Client.hpp"
+#include "lifuren/PaintClient.hpp"
 
 lifuren::PaintClient::PaintClient(lifuren::PaintClient::PaintCallback callback) : callback(callback) {
 }

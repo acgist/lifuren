@@ -1,7 +1,7 @@
 /**
  * https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
  */
-#include "lifuren/RAG.hpp"
+#include "lifuren/RAGClient.hpp"
 
 #include "spdlog/spdlog.h"
 

@@ -1,11 +1,8 @@
 /**
  * 服务终端
  * 
- * 提供各种服务终端
- * 
  * @author acgist
  */
-
 #ifndef LFR_HEADER_CLIENT_CLIENT_HPP
 #define LFR_HEADER_CLIENT_CLIENT_HPP
 
@@ -251,126 +248,6 @@ public:
     void shutdown() const;
     const int& getCode() const;
     const std::string& getResult() const;
-
-};
-
-/**
- * 词嵌入终端
- */
-class EmbeddingClient : public Client {
-
-public:
-    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
-
-};
-
-class OllamaEmbeddingClient : public EmbeddingClient {
-
-};
-
-/**
- * Chinese-Word-Vectors词嵌入终端
- * 
- * 项目地址：https://github.com/Embedding/Chinese-Word-Vectors
- */
-class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
-
-};
-
-/**
- * 绘画终端
- */
-class PaintClient : public Client {
-
-public:
-enum class Mode {
-    TXT2IMG,
-    IMG2IMG,
-    IMG2VID,
-    CONVERT,
-};
-struct PaintOptions {
-    Mode mode = Mode::TXT2IMG;
-
-    std::string image;
-    std::string video;
-    std::string model;
-    std::string prompt;
-    std::string output;
-    
-    size_t seed   = 42;
-    size_t count  = 1;
-    size_t steps  = 30;
-    size_t width  = 512;
-    size_t height = 512;
-
-    bool color = true;
-};
-
-public:
-/**
- * 绘画回调
- * 
- * @param finish  是否完成
- * @param percent 进度
- * @param message 没有完成=提示内容、任务完成=图片路径
- * 
- * @return 是否结束
- */
-using PaintCallback = std::function<bool(bool finish, float percent, const std::string& message)>;
-
-protected:
-    PaintCallback callback{ nullptr };
-
-public:
-    PaintClient(PaintCallback callback = nullptr);
-    ~PaintClient();
-
-public:
-    /**
-     * @param options  提示内容
-     * @param callback 消息回调
-     * 
-     * @return 是否成功
-     */
-    virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
-
-};
-
-class CycleGANPaintClient {
-    // TODO: 实现算法
-};
-
-class StyleGANPaintClient {
-    // TODO: 实现算法
-};
-
-/**
- * StableDiffusionCPP终端
- * 
- * https://github.com/leejet/stable-diffusion.cpp
- */
-class StableDiffusionCPPPaintClient : public PaintClient {
-
-private:
-
-public:
-    StableDiffusionCPPPaintClient();
-    ~StableDiffusionCPPPaintClient();
-
-public:
-    bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-
-};
-
-/**
- * 诗词终端
- */
-class PoetizeClient : public Client {
-
-};
-
-class RNNPoetizeClient : public PoetizeClient {
 
 };
 

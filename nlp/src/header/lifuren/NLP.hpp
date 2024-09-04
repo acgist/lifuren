@@ -6,7 +6,7 @@
 #ifndef LIFUREN_HEADER_NLP_NLP_HPP
 #define LIFUREN_HEADER_NLP_NLP_HPP
 
-#include "lifuren/RAG.hpp"
+#include "lifuren/RAGClient.hpp"
 
 namespace lifuren {
 

@@ -1,7 +1,7 @@
 /**
  * https://github.com/leejet/stable-diffusion.cpp/blob/master/examples/cli/main.cpp
  */
-#include "lifuren/Client.hpp"
+#include "lifuren/PaintClient.hpp"
 
 #include <thread>
 #include <random>

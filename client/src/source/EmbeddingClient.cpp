@@ -1,4 +1,4 @@
-#include "lifuren/Client.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(const std::string& embedding) {
     if(embedding == "ollama") {

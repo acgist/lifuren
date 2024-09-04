@@ -13,7 +13,7 @@
 #include <vector>
 #include <functional>
 
-#include "lifuren/Client.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 namespace lifuren {
 
@@ -93,18 +93,6 @@ public:
  * https://github.com/facebookresearch/faiss
  */
 class FaissRAGClient : public RAGClient {
-};
-
-/**
- * https://github.com/milvus-io/milvus
- */
-class MilvusRAGClient : public RAGClient {
-};
-
-/**
- * https://github.com/typesense/typesense
- */
-class TypesenseRAGClient : public RAGClient {
 };
 
 /**
