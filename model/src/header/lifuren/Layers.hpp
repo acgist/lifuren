@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
 
 struct ggml_tensor;
 struct ggml_context;
@@ -19,6 +20,9 @@ struct ggml_context;
 namespace lifuren {
 namespace layers  {
 
+/**
+ * 层
+ */
 class Layer {
 
 protected:
@@ -31,7 +35,7 @@ public:
     virtual ~Layer();
 
 public:
-    virtual std::string info();
+    virtual std::string  info();
     virtual ggml_tensor* forward   (ggml_tensor* input) = 0;
     virtual ggml_tensor* operator()(ggml_tensor* input);
     virtual void defineWeight(std::map<std::string, ggml_tensor*>& weights) = 0;
@@ -40,6 +44,9 @@ public:
 
 };
 
+/**
+ * 线性层
+ */
 class Linear : public Layer {
 
 private:
@@ -47,10 +54,11 @@ private:
     ggml_tensor* bias  { nullptr };
     size_t in_features { 0 };
     size_t out_features{ 0 };
+    bool   bias_       { true };
 
 public:
-    Linear(size_t in_features, size_t out_features, ggml_context* ctx, const std::string& name = "linear");
-    Linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear");
+    Linear(size_t in_features, size_t out_features, ggml_context* ctx, const std::string& name = "linear", bool bias = true);
+    Linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear", bool bias = true);
     ~Linear();
 
 public:
@@ -65,12 +73,45 @@ public:
 /**
  * @param in_features  输入特征大小
  * @param out_features 输出特征大小
+ * @param ctx_weight   权重上下文
+ * @param ctx_compute  计算上下文
+ * @param name         层的名称
+ * @param bias         是否偏置
  * 
  * @return Linear
  */
-inline void linear(int64_t in_features, int64_t out_features) {
-    // TODO
+inline std::unique_ptr<Linear> linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear", bool bias = true) {
+    return std::make_unique<Linear>(in_features, out_features, ctx_weight, ctx_compute, name, bias);
 }
+
+/**
+ * 卷积层
+ */
+class Conv2d : public Layer {
+
+private:
+    ggml_tensor* weight{ nullptr };
+    ggml_tensor* bias  { nullptr };
+    size_t in_channels { 0 };
+    size_t out_channels{ 0 };
+    size_t kernel_size { 0 };
+    size_t stride      { 0 };
+    size_t padding     { 0 };
+    size_t dilation    { 0 };
+
+public:
+    Conv2d(size_t in_channels, size_t out_channels, ggml_context* ctx, const std::string& name = "conv2d");
+    Conv2d(size_t in_channels, size_t out_channels, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "conv2d");
+    ~Conv2d();
+
+public:
+    using Layer::bindWeight;
+    std::string info() override;
+    ggml_tensor* forward(ggml_tensor* input) override;
+    void defineWeight(std::map<std::string, ggml_tensor*>& weights) override;
+    void bindWeight  (std::map<std::string, ggml_tensor*>& weights) override;
+
+};
 
 /**
  * @param in_channels  输入通道大小

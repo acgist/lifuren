@@ -73,20 +73,6 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
-if(CMAKE_HOST_UNIX)
-    set(
-        CMAKE_PREFIX_PATH
-        ${CMAKE_PREFIX_PATH}
-        /usr/lib
-        /usr/local/lib
-    )
-
-    include_directories(
-        /usr/include
-        /usr/local/include
-    )
-endif()
-
 if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
@@ -112,22 +98,16 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/debug/bin/*.dll")
+        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100d.dll")
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/debug/bin/*.dll")
-        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
-                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
-                               "deps/opencv/x64/vc16/bin/opencv_world4100d.dll"
-        )
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
         file(GLOB FLTK_DLLS    "deps/fltk/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/bin/*.dll")
+        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100.dll")
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/bin/*.dll")
-        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
-                               "deps/opencv/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
-                               "deps/opencv/x64/vc16/bin/opencv_world4100.dll"
-        )
     endif()
 
     find_package(libpng        REQUIRED)

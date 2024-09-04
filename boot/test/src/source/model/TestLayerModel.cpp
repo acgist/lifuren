@@ -24,21 +24,21 @@ public:
 
 public:
     Model& defineWeight() override {
-        this->linear = std::make_unique<lifuren::layers::Linear>(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear = lifuren::layers::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
         this->linear->defineWeight(this->weights);
         return *this;
     };
     Model& bindWeight() override {
-        this->linear = std::make_unique<lifuren::layers::Linear>(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear = lifuren::layers::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
         this->linear->bindWeight(this->weights);
         return *this;
     };
     ggml_tensor* buildDatas() override {
         return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
-    }
+    };
     ggml_tensor* buildLabels() override {
         return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
-    }
+    };
     ggml_tensor* buildLoss() override {
         return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
     };
@@ -80,14 +80,14 @@ static void testLine() {
         auto v = labels[i];
         SPDLOG_DEBUG("l = {}", v);
     }
-    lifuren::datasets::TensorDataset* dataset = new lifuren::datasets::TensorDataset{
+    lifuren::datasets::TensorDataset* dataset = new lifuren::datasets::TensorDataset(
         210,
         10,
         features,
         1,
         labels,
         1
-    };
+    );
     lifuren::Model::OptimizerParams optParams {
         .n_iter = 20
     };
