@@ -506,7 +506,7 @@ static sd_image_t* loadInputImage(SDParams& params) {
             STBIR_FILTER_BOX, STBIR_FILTER_BOX,
             STBIR_COLORSPACE_SRGB, nullptr
         );
-        delete input_image_data;
+        delete[] input_image_data;
         input_image_data = nullptr;
         input_image = new sd_image_t{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), 3, resized_image_data};
     } else {
@@ -648,7 +648,7 @@ static void releaseImg(sd_image_t** image) {
     if(image == nullptr || *image == nullptr) {
         return;
     }
-    delete (*image)->data;
+    delete[] (*image)->data;
     (*image)->data = nullptr;
     delete *image;
     *image = nullptr;
