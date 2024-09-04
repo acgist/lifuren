@@ -10,8 +10,10 @@ static void testMul() {
         .mem_buffer = NULL,
     };
     ggml_context* ctx = ggml_init(params);
-    ggml_tensor * a   = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
-    ggml_tensor * b   = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 1, 10);
+    // ggml_tensor * a   = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 4);
+    ggml_tensor * a   = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 2);
+    // ggml_tensor * b   = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 10);
+    ggml_tensor * b   = ggml_new_tensor_3d(ctx, GGML_TYPE_F32, 4, 10, 4);
     ggml_tensor * c   = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
     // ggml_tensor * c   = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 1, 10);
     ggml_set_param(ctx, a);
@@ -21,7 +23,8 @@ static void testMul() {
     lifuren::tensors::fill(b, 1.0F);
     lifuren::tensors::fill(c, 1.0F);
     ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
-    ggml_tensor* r  = ggml_add(ctx, ggml_mul_mat(ctx, a, b), c);
+    ggml_tensor* r  = ggml_mul_mat(ctx, a, b);
+    // ggml_tensor* r  = ggml_add(ctx, ggml_mul_mat(ctx, a, b), c);
     ggml_build_forward_expand(gf, r);
     ggml_graph_compute_with_ctx(ctx, gf, 4);
     float* rr = ggml_get_data_f32(r);

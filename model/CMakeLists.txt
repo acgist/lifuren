@@ -7,6 +7,7 @@ add_library(
     src/source/Tensors.cpp
     src/source/Datasets.cpp
     src/source/model/Poetry.cpp
+    src/source/layers/Conv2d.cpp
     src/source/layers/Linear.cpp
 )
 

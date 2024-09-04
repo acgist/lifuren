@@ -3,6 +3,10 @@
  * 
  * @author acgist
  * 
+ * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.h
+ * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.cpp
+ * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-train.cpp
+ * 
  * https://github.com/pytorch/pytorch/blob/main/torch/csrc/
  * https://github.com/pytorch/pytorch/tree/main/torch/csrc/api/include/torch/nn/functional/
  */
@@ -57,8 +61,21 @@ private:
     bool   bias_       { true };
 
 public:
-    Linear(size_t in_features, size_t out_features, ggml_context* ctx, const std::string& name = "linear", bool bias = true);
-    Linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear", bool bias = true);
+    Linear(
+        size_t in_features,
+        size_t out_features,
+        ggml_context* ctx,
+        const std::string& name = "linear",
+        bool bias = true
+    );
+    Linear(
+        size_t in_features,
+        size_t out_features,
+        ggml_context* ctx_weight,
+        ggml_context* ctx_compute,
+        const std::string& name = "linear",
+        bool bias = true
+    );
     ~Linear();
 
 public:
@@ -75,12 +92,19 @@ public:
  * @param out_features 输出特征大小
  * @param ctx_weight   权重上下文
  * @param ctx_compute  计算上下文
- * @param name         层的名称
- * @param bias         是否偏置
+ * @param name         名称
+ * @param bias         偏置
  * 
  * @return Linear
  */
-inline std::unique_ptr<Linear> linear(size_t in_features, size_t out_features, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "linear", bool bias = true) {
+inline std::unique_ptr<Linear> linear(
+    size_t in_features,
+    size_t out_features,
+    ggml_context* ctx_weight,
+    ggml_context* ctx_compute,
+    const std::string& name = "linear",
+    bool bias = true
+) {
     return std::make_unique<Linear>(in_features, out_features, ctx_weight, ctx_compute, name, bias);
 }
 
@@ -90,7 +114,7 @@ inline std::unique_ptr<Linear> linear(size_t in_features, size_t out_features, g
 class Conv2d : public Layer {
 
 private:
-    ggml_tensor* weight{ nullptr };
+    ggml_tensor* kernel{ nullptr };
     ggml_tensor* bias  { nullptr };
     size_t in_channels { 0 };
     size_t out_channels{ 0 };
@@ -98,10 +122,32 @@ private:
     size_t stride      { 0 };
     size_t padding     { 0 };
     size_t dilation    { 0 };
+    bool   bias_       { true };
 
 public:
-    Conv2d(size_t in_channels, size_t out_channels, ggml_context* ctx, const std::string& name = "conv2d");
-    Conv2d(size_t in_channels, size_t out_channels, ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "conv2d");
+    Conv2d(
+        size_t in_channels,
+        size_t out_channels,
+        size_t kernel_size,
+        ggml_context* ctx,
+        const std::string& name = "conv2d",
+        size_t stride   = 1,
+        size_t padding  = 0,
+        size_t dilation = 1,
+        bool   bias     = true
+    );
+    Conv2d(
+        size_t in_channels,
+        size_t out_channels,
+        size_t kernel_size,
+        ggml_context* ctx_weight,
+        ggml_context* ctx_compute,
+        const std::string& name = "conv2d",
+        size_t stride   = 1,
+        size_t padding  = 0,
+        size_t dilation = 1,
+        bool   bias     = true
+    );
     ~Conv2d();
 
 public:
@@ -117,6 +163,9 @@ public:
  * @param in_channels  输入通道大小
  * @param out_channels 输出通道大小
  * @param kernel_size  卷积核大小
+ * @param ctx_weight   权重上下文
+ * @param ctx_compute  计算上下文
+ * @param name         名称
  * @param stride       步长
  * @param padding      填充
  * @param dilation     间隔
@@ -124,16 +173,19 @@ public:
  * 
  * @return Conv2d
  */
-inline void conv2d(
-    int64_t in_channels,
-    int64_t out_channels,
-    int64_t kernel_size,
-    int64_t stride   = 1,
-    int64_t padding  = 0,
-    int64_t dilation = 1,
-    bool    bias     = true
+inline std::unique_ptr<Conv2d> conv2d(
+    size_t in_channels,
+    size_t out_channels,
+    size_t kernel_size,
+    ggml_context* ctx_weight,
+    ggml_context* ctx_compute,
+    const std::string& name = "conv2d",
+    size_t stride   = 1,
+    size_t padding  = 0,
+    size_t dilation = 1,
+    bool   bias     = true
 ) {
-    // TODO
+    return std::make_unique<Conv2d>(in_channels, out_channels, kernel_size, ctx_weight, ctx_compute, name, stride, padding, dilation, bias);
 }
 
 /**
