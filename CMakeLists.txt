@@ -73,11 +73,14 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 set(HEADER_DIR src/header/)
 set(SOURCE_DIR src/source/)
 
-include_directories(
-    deps/stable-diffusion.cpp
-)
-
 if(CMAKE_HOST_UNIX)
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        /usr/lib
+        /usr/local/lib
+    )
+
     include_directories(
         /usr/include
         /usr/local/include
@@ -130,7 +133,7 @@ if(CMAKE_HOST_WIN32)
     find_package(libpng        REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
-    
+
 find_package(FLTK     REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(spdlog   REQUIRED)

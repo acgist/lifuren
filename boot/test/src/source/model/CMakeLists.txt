@@ -14,6 +14,14 @@ target_link_libraries(
     lifurenmodel
 )
 
+add_executable(testTensors TestTensors.cpp)
+add_test(NAME testTensors COMMAND testTensors)
+set_target_properties(testTensors PROPERTIES FOLDER "test-model")
+target_link_libraries(
+    testTensors
+    lifurenmodel
+)
+
 add_executable(testDatasets TestDatasets.cpp)
 add_test(NAME testDatasets COMMAND testDatasets)
 set_target_properties(testDatasets PROPERTIES FOLDER "test-model")

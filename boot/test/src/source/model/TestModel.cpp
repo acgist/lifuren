@@ -41,7 +41,9 @@ public:
         return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
     }
     ggml_tensor* buildLoss() override {
-        return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        // return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        return ggml_sum(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        // return ggml_argmax(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
     };
     ggml_tensor* buildLogits() override {
         return ggml_add(this->ctx_compute,

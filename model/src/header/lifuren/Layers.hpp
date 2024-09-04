@@ -4,6 +4,7 @@
  * @author acgist
  * 
  * https://github.com/pytorch/pytorch/blob/main/torch/csrc/
+ * https://github.com/pytorch/pytorch/tree/main/torch/csrc/api/include/torch/nn/functional/
  */
 #ifndef LFR_HEADER_MODEL_LAYERS_HPP
 #define LFR_HEADER_MODEL_LAYERS_HPP
