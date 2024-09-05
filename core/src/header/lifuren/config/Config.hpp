@@ -31,6 +31,7 @@ extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
+extern const std::string CONFIG_CHINESE_WORD_VECTORS;
 
 extern lifuren::config::Config CONFIG;
 
@@ -261,6 +262,7 @@ public:
     lifuren::config::RAGConfig       rag{};
     lifuren::config::EmbeddingConfig embedding{};
     lifuren::config::ElasticSearchConfig      elasticsearch{};
+    lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:

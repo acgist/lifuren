@@ -1,5 +1,7 @@
 # stable-diffusion.cpp
 
+调用扩散模型生成图片
+
 ## 部署
 
 ```
@@ -10,12 +12,12 @@ mkdir -p /data/stable-diffusion.cpp ; cd $_
 git clone https://github.com/leejet/stable-diffusion.cpp.git
 cd stable-diffusion.cpp
 
-# Linux安装
+# Linux
 mkdir build ; cd $_
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j
 
-# Window安装
+# Window
 mkdir build ; cd $_
 cmake ..
 cmake --build . -j --config Release

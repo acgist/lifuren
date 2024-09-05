@@ -50,7 +50,7 @@ elasticsearch:
   auth-type: Basic
 # chinese-word-vectors配置
 chinese-word-vectors:
-  path:
+  path: D:\tmp\Chinese-Word-Vectors\sgns.sikuquanshu.word
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
   model: D:\tmp\sdc\v1-5-pruned-emaonly.ckpt

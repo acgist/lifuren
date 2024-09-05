@@ -70,6 +70,7 @@ const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
 const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
 const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
+const std::string lifuren::config::CONFIG_CHINESE_WORD_VECTORS = "chinese-word-vectors";
 
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
@@ -165,6 +166,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         std::map<std::string, std::string> map;
         LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
         config.stableDiffusionCPP.options.insert(map.begin(), map.end());
+    } else if(lifuren::config::CONFIG_CHINESE_WORD_VECTORS == name) {
+        LFR_CONFIG_YAML_GETTER(config.chineseWordVectors, yaml, path, path, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -253,6 +256,11 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, model,   model);
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, options, options);
         yaml[lifuren::config::CONFIG_STABLE_DIFFUSION_CPP] = stableDiffusionCPP;
+    }
+    {
+        YAML::Node chineseWordVectors;
+        LFR_CONFIG_YAML_SETTER(chineseWordVectors, config.chineseWordVectors, path, path);
+        yaml[lifuren::config::CONFIG_CHINESE_WORD_VECTORS] = chineseWordVectors;
     }
     return yaml;
 }

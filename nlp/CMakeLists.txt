@@ -3,13 +3,22 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/source/NLP.cpp
+    src/source/RAGClient.cpp
+    src/source/RAGService.cpp
+    src/source/RAGTaskRunner.cpp
+    src/source/EmbeddingClient.cpp
+    src/source/rag/FaissRAGClient.cpp
+    src/source/rag/ElasticSearchRAGClient.cpp
     src/source/poetize/RNNPoetizeClient.cpp
+    src/source/embedding/OllamaEmbeddingClient.cpp
+    src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
 target_link_libraries(
     ${PROJECT_NAME}
+    faiss
     lifurenmodel
     lifurenclient
 )

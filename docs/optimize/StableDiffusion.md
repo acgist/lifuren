@@ -1,4 +1,4 @@
-# ChatGLM
+# StableDiffusion
 
 ## 模型微调
 
