@@ -1,4 +1,4 @@
-#include "lifuren/Client.hpp"
+#include "lifuren/PaintClient.hpp"
 
 #include "lifuren/Logger.hpp"
 

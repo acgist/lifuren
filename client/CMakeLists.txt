@@ -4,10 +4,14 @@ add_library(
     ${PROJECT_NAME}
     src/source/Client.cpp
     src/source/RAGClient.cpp
+    src/source/RAGService.cpp
     src/source/RestClient.cpp
     src/source/PaintClient.cpp
     src/source/CommandClient.cpp
+    src/source/RAGTaskRunner.cpp
     src/source/EmbeddingClient.cpp
+    src/source/rag/FaissRAGClient.cpp
+    src/source/rag/ElasticSearchRAGClient.cpp
     src/source/embedding/OllamaEmbeddingClient.cpp
     src/source/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )

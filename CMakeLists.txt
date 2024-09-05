@@ -118,9 +118,11 @@ if(CMAKE_HOST_WIN32)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
+
 find_package(FLTK     REQUIRED)
 find_package(faiss    REQUIRED)
 find_package(OpenCV   REQUIRED)
+find_package(OpenMP   REQUIRED)
 find_package(spdlog   REQUIRED)
 find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
