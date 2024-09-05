@@ -3,8 +3,8 @@
  * 
  * 提供文档索引建立、文档内容搜索
  */
-#ifndef LIFUREN_HEADER_NLP_RAG_HPP
-#define LIFUREN_HEADER_NLP_RAG_HPP
+#ifndef LIFUREN_HEADER_CLIENT_RAG_HPP
+#define LIFUREN_HEADER_CLIENT_RAG_HPP
 
 #include <map>
 #include <set>
@@ -246,4 +246,4 @@ public:
 
 } // END OF lifuren
 
-#endif // END OF LIFUREN_HEADER_NLP_RAG_HPP
+#endif // END OF LIFUREN_HEADER_CLIENT_RAG_HPP

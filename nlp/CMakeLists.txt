@@ -3,11 +3,11 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/source/NLP.cpp
-    src/source/rag/RAGClient.cpp
     src/source/rag/RAGService.cpp
     src/source/rag/RAGTaskRunner.cpp
+    src/source/rag/FaissRAGClient.cpp
     src/source/rag/ElasticSearchRAGClient.cpp
-    src/source/client/RNNPoetizeClient.cpp
+    src/source/poetize/RNNPoetizeClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

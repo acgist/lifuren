@@ -13,10 +13,7 @@ build
 target
 
 deps/fltk
-deps/ggml
-deps/stable-diffusion.cpp
-
-deps/json
+deps/faiss
 deps/opencv
 deps/spdlog
 deps/yaml-cpp

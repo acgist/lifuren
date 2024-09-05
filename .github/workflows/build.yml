@@ -24,6 +24,9 @@ jobs:
           ################################ ggml
           cd ./ggml
           cd ../
+          ################################ faiss
+          sudo apt  install libfaiss-dev -y
+          apt-cache madison libfaiss-dev
           ################################ spdlog
           # sudo apt  install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
@@ -62,6 +65,9 @@ jobs:
           cd ../../
           ################################ stable-diffusion.cpp
           # cd ./stable-diffusion.cpp
+          # cd ../
+          ################################ Chinese-Word-Vectors
+          # cd ./Chinese-Word-Vectors
           # cd ../
       - name: Deploy lifuren
         run: |

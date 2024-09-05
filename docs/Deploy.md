@@ -51,6 +51,7 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # 安装依赖
 vcpkg install fltk:x64-windows
+vcpkg install faiss:x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
 vcpkg install yaml-cpp:x64-windows
@@ -58,13 +59,15 @@ vcpkg install cpp-httplib:x64-windows
 
 # 导出依赖
 vcpkg export fltk        --zip
+vcpkg export faiss       --zip
 vcpkg export opencv      --zip
 vcpkg export spdlog      --zip
 vcpkg export yaml-cpp    --zip
 vcpkg export cpp-httplib --zip
 ```
 
-> `OpenCV`可以直接官网下载
+* `OpenCV`可以直接官网下载
+* `faiss[gpu]`支持`GPU`计算
 
 ###### 编译命令
 
