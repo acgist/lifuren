@@ -1,10 +1,10 @@
 /**
- * 服务终端
+ * 词嵌入终端
  * 
  * @author acgist
  */
-#ifndef LFR_HEADER_CLIENT_EMBEDDING_CLIENT_HPP
-#define LFR_HEADER_CLIENT_EMBEDDING_CLIENT_HPP
+#ifndef LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
+#define LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 
 #include <vector>
 #include <string>
@@ -61,4 +61,4 @@ public:
 
 } // END OF lifuren
 
-#endif // END OF LFR_HEADER_CLIENT_EMBEDDING_CLIENT_HPP
+#endif // END OF LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP

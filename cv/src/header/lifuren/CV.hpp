@@ -1,5 +1,5 @@
 /**
- * CV工具
+ * CV
  * 
  * @author acgist
  */

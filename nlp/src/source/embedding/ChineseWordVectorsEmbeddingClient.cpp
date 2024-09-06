@@ -11,7 +11,7 @@
 #include "spdlog/spdlog.h"
 
 static std::mutex mutex;
-static std::map<std::string, std::vector<float>> vectors;
+static std::unordered_map<std::string, std::vector<float>> vectors;
 
 static void initVectors(const std::string& path);
 
@@ -35,7 +35,6 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     if(iterator == vectors.end()) {
         return {};
     }
-    // 返回拷贝
     return iterator->second;
 }
 
@@ -47,13 +46,15 @@ static void initVectors(const std::string& path) {
         return;
     }
     SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
-    size_t dims{ 0 };
+    size_t dims { 0 };
+    size_t index{ 0 };
     std::string line;
     if(std::getline(input, line)) {
-        size_t index = line.find_first_of(" ");
-        auto x = line.substr(index);
+        index = line.find_first_of(" ");
         dims = std::atoi(line.substr(index + 1).c_str());
     }
+    char *pos{ nullptr };
+    char *old{ nullptr };
     while(std::getline(input, line)) {
         if(line.empty()) {
             break;
@@ -61,14 +62,17 @@ static void initVectors(const std::string& path) {
         std::string word;
         std::vector<float> vector;
         vector.reserve(dims);
-        size_t pos   = 0;
-        size_t index = line.find_first_of(" ", pos);
-        word = line.substr(pos, index);
-        pos = index;
-        while((index = line.find_first_of(" ", ++pos)) != std::string::npos) {
-            auto x = line.substr(pos, index - pos);
-            vector.emplace_back(std::atof(line.substr(pos, index - pos).c_str()));
-            pos = index;
+        index = line.find_first_of(" ");
+        word  = line.substr(0, index);
+        pos   = &line.at(index + 1);
+        while(*pos) {
+            old = pos;
+            vector.emplace_back(std::strtof(pos, &pos));
+            if(pos == old) {
+                break;
+            } else {
+                ++pos;
+            }
         }
         vectors.emplace(word, std::move(vector));
     }

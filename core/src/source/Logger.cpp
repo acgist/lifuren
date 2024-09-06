@@ -1,11 +1,16 @@
 #include "lifuren/Logger.hpp"
 
+#include <chrono>
+
 #include "spdlog/spdlog.h"
 
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
+static size_t duration{ 0LL };
+
 void lifuren::logger::init() {
+    ::duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
     #if defined(_DEBUG) || !defined(NDEBUG)
@@ -35,10 +40,12 @@ void lifuren::logger::init() {
 }
 
 void lifuren::logger::shutdown() {
+    const size_t duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    SPDLOG_INFO("持续时间：{}", (duration - ::duration));
     SPDLOG_DEBUG(R"(
         
         南有乔木，不可休思。汉有游女，不可求思。
-        汉之广矣，不可泳思。江之永矣，不可方思。    
+        汉之广矣，不可泳思。江之永矣，不可方思。
     )");
     spdlog::drop_all();
     spdlog::shutdown();

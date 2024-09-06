@@ -1,10 +1,10 @@
 /**
- * 服务终端
+ * 绘画终端
  * 
  * @author acgist
  */
-#ifndef LFR_HEADER_CLIENT_PAINT_CLIENT_HPP
-#define LFR_HEADER_CLIENT_PAINT_CLIENT_HPP
+#ifndef LFR_HEADER_CV_PAINT_CLIENT_HPP
+#define LFR_HEADER_CV_PAINT_CLIENT_HPP
 
 #include "lifuren/Client.hpp"
 
@@ -16,12 +16,14 @@ namespace lifuren {
 class PaintClient : public Client {
 
 public:
+
 enum class Mode {
     TXT2IMG,
     IMG2IMG,
     IMG2VID,
     CONVERT,
 };
+
 struct PaintOptions {
     Mode mode = Mode::TXT2IMG;
 
@@ -98,4 +100,4 @@ public:
 
 } // END OF lifuren
 
-#endif // END OF LFR_HEADER_CLIENT_PAINT_CLIENT_HPP
+#endif // END OF LFR_HEADER_CV_PAINT_CLIENT_HPP
