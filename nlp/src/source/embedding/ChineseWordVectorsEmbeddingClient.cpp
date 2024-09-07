@@ -45,13 +45,21 @@ static void initVectors(const std::string& path) {
         SPDLOG_WARN("加载ChineseWordVectors失败（文件打开失败）：{}", path);
         return;
     }
+    // TODO: 优化读取
+    // std::ifstream input("input.txt", std::ios::binary | std::ios::ate);
+    // std::streamsize file_size = input.tellg();
+    // input.seekg(0, std::ios::beg);
+    // std::vector<char> buffer(file_size);
+    // input.read(buffer.data(), file_size);
+    // std::cout.write(buffer.data(), file_size);
+    // input.close();
     SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
     size_t dims { 0 };
     size_t index{ 0 };
     std::string line;
     if(std::getline(input, line)) {
         index = line.find_first_of(" ");
-        dims = std::atoi(line.substr(index + 1).c_str());
+        dims  = std::atoi(line.substr(index + 1).c_str());
     }
     char *pos{ nullptr };
     char *old{ nullptr };
@@ -76,4 +84,6 @@ static void initVectors(const std::string& path) {
         }
         vectors.emplace(word, std::move(vector));
     }
+    SPDLOG_DEBUG("加载ChineseWordVectors完成：{} - {}", vectors.size(), dims);
+    input.close();
 }

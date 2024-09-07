@@ -6,6 +6,7 @@
 #ifndef LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 #define LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -22,9 +23,9 @@ public:
     static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
 
 public:
-    virtual std::vector<std::vector<float>> getVector(const std::vector<std::string>& segment);
-    virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment);
     virtual std::vector<float> getVector(const std::string& word) = 0;
+    virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment);
+    virtual std::map<std::string, std::vector<float>> getVector(const std::vector<std::string>& segment);
 
 public:
     EmbeddingClient();
@@ -32,7 +33,13 @@ public:
 
 };
 
+/**
+ * https://github.com/ollama/ollama
+ */
 class OllamaEmbeddingClient : public EmbeddingClient {
+
+private:
+    std::unique_ptr<lifuren::RestClient> restClient{ nullptr };
 
 public:
     OllamaEmbeddingClient();
