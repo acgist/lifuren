@@ -26,7 +26,7 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
 }
 
-std::vector<double> lifuren::ElasticSearchRAGClient::index(const std::string& content) {
+std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& content) {
     if(!this->exists) {
         this->exists = indexExists(this->id, this->restClient);
         if(!this->exists) {

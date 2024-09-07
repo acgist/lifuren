@@ -56,3 +56,7 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<
     }
     return data;
 }
+
+bool lifuren::EmbeddingClient::release() {
+    return true;
+}

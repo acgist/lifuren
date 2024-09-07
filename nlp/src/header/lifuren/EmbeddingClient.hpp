@@ -26,6 +26,7 @@ public:
     virtual std::vector<float> getVector(const std::string& word) = 0;
     virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment);
     virtual std::map<std::string, std::vector<float>> getVector(const std::vector<std::string>& segment);
+    virtual bool release();
 
 public:
     EmbeddingClient();
@@ -63,6 +64,7 @@ public:
 
 public:
     std::vector<float> getVector(const std::string& word) override;
+    bool release() override;
 
 };
 

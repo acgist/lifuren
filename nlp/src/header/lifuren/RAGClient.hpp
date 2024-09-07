@@ -73,7 +73,7 @@ public:
      * 
      * @return 索引内容
      */
-    virtual std::vector<double> index(const std::string& content) = 0;
+    virtual std::vector<float> index(const std::string& content) = 0;
     /**
      * 删除索引
      */
@@ -93,6 +93,18 @@ public:
  * https://github.com/facebookresearch/faiss
  */
 class FaissRAGClient : public RAGClient {
+
+public:
+
+public:
+    FaissRAGClient(const std::string& path, const std::string& embedding);
+    ~FaissRAGClient();
+
+public:
+    std::vector<float> index(const std::string& content) override;
+    std::vector<std::string> search(const std::string& prompt) override;
+    bool deleteRAG() override;
+
 };
 
 /**
@@ -113,7 +125,7 @@ public:
     ~ElasticSearchRAGClient();
 
 public:
-    std::vector<double> index(const std::string& content) override;
+    std::vector<float> index(const std::string& content) override;
     std::vector<std::string> search(const std::string& prompt) override;
     bool deleteRAG() override;
 

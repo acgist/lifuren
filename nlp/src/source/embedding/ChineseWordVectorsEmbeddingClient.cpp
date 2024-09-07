@@ -38,6 +38,12 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     return iterator->second;
 }
 
+bool lifuren::ChineseWordVectorsEmbeddingClient::release() {
+    std::lock_guard<std::mutex> lock(mutex);
+    vectors.clear();
+    return true;
+}
+
 static void initVectors(const std::string& path) {
     std::ifstream input;
     input.open(path);
