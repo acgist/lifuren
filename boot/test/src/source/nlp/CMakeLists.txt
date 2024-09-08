@@ -22,11 +22,27 @@ target_link_libraries(
     lifurennlp
 )
 
+add_executable(testFaissRAGClient TestFaissRAGClient.cpp)
+add_test(NAME testFaissRAGClient COMMAND testFaissRAGClient)
+set_target_properties(testFaissRAGClient PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testFaissRAGClient
+    lifurennlp
+)
+
 add_executable(testOllamaEmbeddingClient TestOllamaEmbeddingClient.cpp)
 add_test(NAME testOllamaEmbeddingClient COMMAND testOllamaEmbeddingClient)
 set_target_properties(testOllamaEmbeddingClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testOllamaEmbeddingClient
+    lifurennlp
+)
+
+add_executable(testElasticSearchRAGClient TestElasticSearchRAGClient.cpp)
+add_test(NAME testElasticSearchRAGClient COMMAND testElasticSearchRAGClient)
+set_target_properties(testElasticSearchRAGClient PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testElasticSearchRAGClient
     lifurennlp
 )
 

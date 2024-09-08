@@ -15,6 +15,10 @@
 
 #include "lifuren/EmbeddingClient.hpp"
 
+namespace faiss {
+    class Index;
+}
+
 namespace lifuren {
 
 /**
@@ -95,6 +99,8 @@ public:
 class FaissRAGClient : public RAGClient {
 
 public:
+    std::unique_ptr<faiss::Index> indexBasicDB{ nullptr };
+    std::unique_ptr<faiss::Index> indexIdMapDB{ nullptr };
 
 public:
     FaissRAGClient(const std::string& path, const std::string& embedding);

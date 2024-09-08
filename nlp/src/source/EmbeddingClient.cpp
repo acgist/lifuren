@@ -21,15 +21,15 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
     }
 }
 
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment) {
-    if(this->type == lifuren::EmbeddingClient::SegmentType::CHAR) {
+std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment, lifuren::EmbeddingClient::SegmentType type) {
+    if(type == lifuren::EmbeddingClient::SegmentType::CHAR) {
         return this->getSegmentVector(lifuren::poetrys::toChars(segment));
-    } else if(this->type == lifuren::EmbeddingClient::SegmentType::WORD) {
+    } else if(type == lifuren::EmbeddingClient::SegmentType::WORD) {
         return this->getSegmentVector(lifuren::poetrys::toWords(segment));
-    } else if(this->type == lifuren::EmbeddingClient::SegmentType::SEGMENT) {
+    } else if(type == lifuren::EmbeddingClient::SegmentType::SEGMENT) {
         return this->getSegmentVector(std::vector<std::string>{ lifuren::poetrys::replaceSymbol(segment) });
     } else {
-        // -
+        return {};
     }
 }
 

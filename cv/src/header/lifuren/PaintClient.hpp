@@ -58,6 +58,9 @@ protected:
     PaintCallback callback{ nullptr };
 
 public:
+    static std::unique_ptr<lifuren::PaintClient> getClient(const std::string& client);
+
+public:
     PaintClient(PaintCallback callback = nullptr);
     ~PaintClient();
 

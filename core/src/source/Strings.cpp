@@ -5,6 +5,77 @@
 #include <cstring>
 #include <algorithm>
 
+std::vector<std::string> lifuren::strings::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
+    std::vector<std::string> vector;
+    size_t pos   = 0;
+    size_t index = 0;
+    std::string substr;
+    while(true) {
+        pos = content.find(delim, index);
+        if(pos == std::string::npos) {
+            break;
+        }
+        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        if(filter) {
+            substr = lifuren::strings::trim(substr);
+        }
+        if(!filter || !substr.empty()) {
+            vector.push_back(substr);
+        }
+        index = pos + delim.length();
+    }
+    if(pos != index && index <= content.length()) {
+        substr = content.substr(index, content.length() - index);
+        if(filter) {
+            substr = lifuren::strings::trim(substr);
+        }
+        if(!filter || !substr.empty()) {
+            vector.push_back(substr);
+        }
+    }
+    return vector;
+}
+
+std::vector<std::string> lifuren::strings::split(const std::string& content, const std::vector<std::string>& multi, bool retain, bool filter) {
+    std::vector<std::string> vector;
+    size_t pos   = 0;
+    size_t index = 0;
+    std::string delim;
+    std::string substr;
+    while(true) {
+        size_t min = std::string::npos;
+        for(const auto& value : multi) {
+            pos = content.find(value, index);
+            if(pos != std::string::npos && pos < min) {
+                min   = pos;
+                delim = value;
+            }
+        }
+        pos = min;
+        if(pos == std::string::npos) {
+            break;
+        }
+        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        if(filter) {
+            substr = lifuren::strings::trim(substr);
+        }
+        if(!filter || !substr.empty()) {
+            vector.push_back(substr);
+        }
+        index = pos + delim.length();
+    }
+    if(pos != index && index <= content.length()) {
+        substr = content.substr(index, content.length() - index);
+        if(filter) {
+            substr = lifuren::strings::trim(substr);
+        }
+        if(!filter || !substr.empty()) {
+            vector.push_back(substr);
+        }
+    }
+    return vector;
+}
+
 void lifuren::strings::toLower(std::string& value) {
     #if _WIN32
     std::transform(value.begin(), value.end(), value.begin(), ::tolower);
@@ -84,7 +155,7 @@ std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uin
     return ret;
 }
 
-std::vector<std::string> lifuren::strings::toChars(const std::string& segment) {
+std::vector<std::string> lifuren::strings::toChars(const std::string& segment, bool filter) {
     const size_t length = lifuren::strings::length(segment);
     std::string ret;
     uint32_t pos   = 0;
@@ -98,7 +169,14 @@ std::vector<std::string> lifuren::strings::toChars(const std::string& segment) {
         };
         ++pos;
         if((value[pos] & 0xC0) != 0x80) {
-            vector.push_back(ret);
+            if(filter) {
+                ret = trim(ret);
+                if(!ret.empty()) {
+                    vector.push_back(trim(ret));
+                }
+            } else {
+                vector.push_back(ret);
+            }
             ret.clear();
         };
     }

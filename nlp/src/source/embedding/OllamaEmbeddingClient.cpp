@@ -36,3 +36,7 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
     }
     return ret;
 }
+
+size_t lifuren::OllamaEmbeddingClient::getDims() {
+    return 300;
+}

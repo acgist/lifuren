@@ -8,9 +8,13 @@ image:
   output: /data/image
   clients:
     - stable-diffusion-cpp
+    - paint-cycle-gan
+    - paint-style-gan
 # 诗词页面配置
 poetry:
-  model: /data/model/poetry.model
+  client: poetize-rnn
+  clients:
+    - poetize-rnn
 # 图片标记页面配置
 image-mark:
   - path: /data/mark/image
@@ -51,6 +55,15 @@ elasticsearch:
 # chinese-word-vectors配置
 chinese-word-vectors:
   path: /data/Chinese-Word-Vectors/sgns.sikuquanshu.word
+# poetize-rnn配置
+poetize-rnn:
+  model: /data/model/poetry-rnn.model
+# paint-cycle-gan配置
+paint-cycle-gan:
+  model: /data/model/paint-cycle-gan.model
+# paint-style-gan配置
+paint-style-gan:
+  model: /data/model/paint-style-gan.model
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
   model: /data/stable-diffusion-cpp/model.ckpt

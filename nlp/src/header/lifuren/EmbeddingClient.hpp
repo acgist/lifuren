@@ -31,16 +31,14 @@ enum class SegmentType {
 };
 
 public:
-    SegmentType type;
-
-public:
     static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
 
 public:
-    virtual std::vector<float> getSegmentVector(const std::string& segment);
+    virtual std::vector<float> getSegmentVector(const std::string& segment, SegmentType type);
     virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment);
     virtual std::vector<float> getVector(const std::string& word) = 0;
     virtual std::map<std::string, std::vector<float>> getVector(const std::vector<std::string>& segment);
+    virtual size_t getDims() = 0;
     virtual bool release();
 
 public:
@@ -63,6 +61,7 @@ public:
 
 public:
     std::vector<float> getVector(const std::string& word) override;
+    size_t getDims() override;
 
 };
 
@@ -79,6 +78,7 @@ public:
 
 public:
     std::vector<float> getVector(const std::string& word) override;
+    size_t getDims() override;
     bool release() override;
 
 };

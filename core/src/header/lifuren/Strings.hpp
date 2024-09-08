@@ -8,12 +8,57 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace lifuren {
 namespace strings {
 
 // 空白符号
-const char* const EMPTY_CHARS = " \t\r\n ";
+const char* const EMPTY_CHARS = " \t\r\n";
+
+/**
+ * @param collection 拼接集合
+ * @param delim      分隔符号
+ * 
+ * @return 拼接内容
+ */
+template<typename T>
+std::string join(T& collection, const std::string& delim = "") {
+    std::stringstream ret;
+    if(collection.empty()) {
+        return ret.str();
+    }
+    typename T::iterator iterator = collection.begin();
+    const typename T::const_iterator end  = collection.end();
+    const typename T::const_iterator last = collection.end() - 1;
+    for (; iterator != end; ++iterator) {
+        ret << *iterator;
+        if (iterator != last) {
+            ret << delim;
+        }
+    }
+    return ret.str();
+}
+
+/**
+ * @param content 文本内容
+ * @param delim   分隔符号
+ * @param retain  保留分割符号
+ * @param filter  是否过滤空白字符
+ * 
+ * @return 分割列表
+ */
+extern std::vector<std::string> split(const std::string& content, const std::string& delim, bool retain = false, bool filter = true);
+
+/**
+ * @param content 文本内容
+ * @param multi   分隔符号列表
+ * @param retain  保留分割符号
+ * @param filter  是否过滤空白字符
+ * 
+ * @return 分割列表
+ */
+extern std::vector<std::string> split(const std::string& content, const std::vector<std::string>& multi, bool retain = false, bool filter = true);
 
 /**
  * 转为小写
@@ -85,7 +130,11 @@ inline std::string substr(const char* value, const uint32_t& pos, const uint32_t
     return substr(value, copy, length);
 }
 
-extern std::vector<std::string> toChars(const std::string& segment);
+/**
+ * @param segment 字符串
+ * @param filter  是否过滤空白字符
+ */
+extern std::vector<std::string> toChars(const std::string& segment, bool filter = true);
 
 /**
  * @param value    字符串

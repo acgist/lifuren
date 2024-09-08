@@ -69,11 +69,3 @@ target_link_libraries(
     testException
     lifurencore
 )
-
-add_executable(testCollections TestCollections.cpp)
-add_test(NAME testCollections COMMAND testCollections)
-set_target_properties(testCollections PROPERTIES FOLDER "test-core")
-target_link_libraries(
-    testCollections
-    lifurencore
-)

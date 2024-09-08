@@ -6,7 +6,6 @@
 
 #include "lifuren/Logger.hpp"
 #include "lifuren/Strings.hpp"
-#include "lifuren/Collections.hpp"
 
 #include "spdlog/spdlog.h"
 
@@ -20,7 +19,7 @@ static void testPoetry() {
     int segmentSize = 0;
     std::vector<int> segmentRule;
     nlohmann::json json;
-    std::vector<std::string> vector = lifuren::collections::split(content, std::vector<std::string>{ "，", "。", "？", "！" });
+    std::vector<std::string> vector = lifuren::strings::split(content, std::vector<std::string>{ "，", "。", "？", "！" });
     std::for_each(vector.begin(), vector.end(), [&fontSize, &segmentSize, &segmentRule](auto& segment) {
         segment = lifuren::strings::trim(segment);
         if(segment.empty()) {
@@ -34,7 +33,7 @@ static void testPoetry() {
     });
     SPDLOG_DEBUG("诗句字数：{}", fontSize);
     SPDLOG_DEBUG("诗句段数：{}", segmentSize);
-    SPDLOG_DEBUG("逐句字数：{}", lifuren::collections::join(segmentRule, ","));
+    SPDLOG_DEBUG("逐句字数：{}", lifuren::strings::join(segmentRule, ","));
     json["example"]  = content;
     json["fontSize"] = fontSize;
     json["segmentSize"] = segmentSize;

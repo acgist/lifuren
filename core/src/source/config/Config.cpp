@@ -69,6 +69,9 @@ const std::string lifuren::config::CONFIG_RAG           = "rag";
 const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
 const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
+const std::string lifuren::config::CONFIG_POETIZE_RNN = "poetize-rnn";
+const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN = "paint-cycle-gan";
+const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN = "paint-style-gan";
 const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
 const std::string lifuren::config::CONFIG_CHINESE_WORD_VECTORS = "chinese-word-vectors";
 
@@ -121,7 +124,13 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, model, model, std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client, client, std::string);
+        const YAML::Node& clients = yaml["clients"];
+        if(clients) {
+            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
+                config.poetry.clients.emplace(client.template as<std::string>());
+            });
+        }
     } else if(lifuren::config::CONFIG_IMAGE_MARK == name) {
         std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
             lifuren::config::ImageMarkConfig imageMarkConfig{};
@@ -161,6 +170,12 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_PAINT_CYCLE_GAN == name) {
+        LFR_CONFIG_YAML_GETTER(config.paintCycleGAN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_PAINT_STYLE_GAN == name) {
+        LFR_CONFIG_YAML_GETTER(config.paintSytleGAN, yaml, model, model, std::string);
     } else if(lifuren::config::CONFIG_STABLE_DIFFUSION_CPP == name) {
         LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model, model, std::string);
         std::map<std::string, std::string> map;
@@ -195,7 +210,12 @@ YAML::Node toYaml() {
     }
     {
         YAML::Node poetry;
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, model, model);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client, client);
+        YAML::Node clients;
+        std::for_each(config.poetry.clients.begin(), config.poetry.clients.end(), [&clients](auto& v) {
+            clients.push_back(v);
+        });
+        poetry["clients"] = clients;
         yaml[lifuren::config::CONFIG_POETRY] = poetry;
     }
     {
@@ -250,6 +270,21 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
         yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
+    }
+    {
+        YAML::Node poetizeRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeRNN, config.poetizeRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_RNN] = poetizeRNN;
+    }
+    {
+        YAML::Node paintCycleGAN;
+        LFR_CONFIG_YAML_SETTER(paintCycleGAN, config.paintCycleGAN, model, model);
+        yaml[lifuren::config::CONFIG_PAINT_CYCLE_GAN] = paintCycleGAN;
+    }
+    {
+        YAML::Node paintSytleGAN;
+        LFR_CONFIG_YAML_SETTER(paintSytleGAN, config.paintSytleGAN, model, model);
+        yaml[lifuren::config::CONFIG_PAINT_STYLE_GAN] = paintSytleGAN;
     }
     {
         YAML::Node stableDiffusionCPP;

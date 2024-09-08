@@ -53,8 +53,8 @@ void lifuren::ImageWindow::saveConfig() {
     auto& imageConfig = lifuren::config::CONFIG.image;
     imageConfig.output = outputPathPtr->value();
     if(imageConfig.client == "stable-diffusion-cpp") {
-        auto& stableDiffusionCPP   = lifuren::config::CONFIG.stableDiffusionCPP;
-        stableDiffusionCPP.model   = modelPathPtr->value();
+        auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
+        stableDiffusionCPP.model = modelPathPtr->value();
     } else {
     }
     lifuren::Configuration::saveConfig();

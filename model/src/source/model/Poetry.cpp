@@ -4,14 +4,13 @@
 #include <algorithm>
 
 #include "lifuren/Strings.hpp"
-#include "lifuren/Collections.hpp"
 
 std::string lifuren::poetry::beautify(const std::string& segment) {
     std::string ret;
     if(segment.empty()) {
         return ret;
     }
-    std::vector<std::string> vector = lifuren::collections::split(segment, lifuren::poetry::POETRY_BEAUTIFY_DELIM, true);
+    std::vector<std::string> vector = lifuren::strings::split(segment, lifuren::poetry::POETRY_BEAUTIFY_DELIM, true);
     for(
         auto iterator = vector.begin();
         iterator != vector.end();
@@ -34,18 +33,18 @@ lifuren::Poetry& lifuren::Poetry::preproccess() {
     } else {
         //
     }
-    std::string content = lifuren::collections::join(this->paragraphs, "");
-    this->paragraphs = lifuren::collections::split(
+    std::string content = lifuren::strings::join(this->paragraphs, "");
+    this->paragraphs = lifuren::strings::split(
         content,
         lifuren::poetry::POETRY_BEAUTIFY_DELIM,
         true
     );
-    this->simpleParagraphs = lifuren::collections::split(
+    this->simpleParagraphs = lifuren::strings::split(
         content,
         lifuren::poetry::POETRY_SEGMENT_DELIM
     );
-    this->segment = lifuren::collections::join(this->paragraphs, "\n");
-    this->simpleSegment = lifuren::collections::join(this->simpleParagraphs, "\n");
+    this->segment = lifuren::strings::join(this->paragraphs, "\n");
+    this->simpleSegment = lifuren::strings::join(this->simpleParagraphs, "\n");
     return *this;
 }
 

@@ -38,6 +38,10 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     return iterator->second;
 }
 
+size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() {
+    return 300;
+}
+
 bool lifuren::ChineseWordVectorsEmbeddingClient::release() {
     std::lock_guard<std::mutex> lock(mutex);
     vectors.clear();

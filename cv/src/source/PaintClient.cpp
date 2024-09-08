@@ -5,3 +5,11 @@ lifuren::PaintClient::PaintClient(lifuren::PaintClient::PaintCallback callback) 
 
 lifuren::PaintClient::~PaintClient() {
 }
+
+std::unique_ptr<lifuren::PaintClient> lifuren::PaintClient::getClient(const std::string& client) {
+    if(client == "stable-diffusion-cpp") {
+        return std::make_unique<lifuren::StableDiffusionCPPPaintClient>();
+    } else {
+        return nullptr;
+    }
+}

@@ -97,6 +97,13 @@ public:
 
 };
 
+/**
+ * TODO: 模型定义
+ */
+class PoetryModel {
+
+};
+
 }
 
 #endif // LFR_HEADER_MODEL_POETRY_HPP

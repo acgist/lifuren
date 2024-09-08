@@ -19,9 +19,20 @@ namespace lifuren {
  */
 class PoetizeClient : public Client {
 
+public:
+    PoetizeClient();
+    virtual ~PoetizeClient();
+
+public:
+    static std::unique_ptr<lifuren::PoetizeClient> getClient(const std::string& client);
+
 };
 
 class RNNPoetizeClient : public PoetizeClient {
+
+public:
+    RNNPoetizeClient();
+    virtual ~RNNPoetizeClient();
 
 };
 

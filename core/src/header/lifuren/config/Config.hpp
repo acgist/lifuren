@@ -30,6 +30,9 @@ extern const std::string CONFIG_RAG;
 extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
+extern const std::string CONFIG_POETIZE_RNN;
+extern const std::string CONFIG_PAINT_CYCLE_GAN;
+extern const std::string CONFIG_PAINT_STYLE_GAN;
 extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
 extern const std::string CONFIG_CHINESE_WORD_VECTORS;
 
@@ -136,8 +139,10 @@ struct ImageConfig {
  */
 struct PoetryConfig {
 
-    // 模型位置
-    std::string model;
+    // 终端名称
+    std::string client;
+    // 终端列表
+    std::set<std::string> clients;
 
 };
 
@@ -219,6 +224,36 @@ struct ChineseWordVectorsConfig {
 };
 
 /**
+ * poetize-rnn配置
+ */
+struct PoetizeRNNConfig {
+    
+    // 模型路径
+    std::string model;
+
+};
+
+/**
+ * paint-cycle-gan配置
+ */
+struct PaintCycleGANConfig {
+    
+    // 模型路径
+    std::string model;
+
+};
+
+/**
+ * paint-style-gan配置
+ */
+struct PaintStyleGANConfig {
+    
+    // 模型路径
+    std::string model;
+
+};
+
+/**
  * stable-diffusion-cpp配置
  */
 struct StableDiffusionCPPConfig {
@@ -263,6 +298,9 @@ public:
     lifuren::config::EmbeddingConfig embedding{};
     lifuren::config::ElasticSearchConfig      elasticsearch{};
     lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
+    lifuren::config::PoetizeRNNConfig         poetizeRNN{};
+    lifuren::config::PaintCycleGANConfig      paintCycleGAN{};
+    lifuren::config::PaintStyleGANConfig      paintSytleGAN{};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:
