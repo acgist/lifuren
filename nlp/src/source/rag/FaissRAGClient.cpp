@@ -4,7 +4,8 @@
 #include "lifuren/RAGClient.hpp"
 
 #include "faiss/IndexFlat.h"
-#include "faiss/IndexIDMap.h"
+#include "faiss/MetaIndexes.h"
+// #include "faiss/IndexIDMap.h"
 
 lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
     this->indexBasicDB = std::make_unique<faiss::IndexFlatL2>(this->embeddingClient->getDims());
