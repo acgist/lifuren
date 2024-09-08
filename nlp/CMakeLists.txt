@@ -3,6 +3,7 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/source/NLP.cpp
+    src/source/Poetrys.cpp
     src/source/RAGClient.cpp
     src/source/RAGService.cpp
     src/source/RAGTaskRunner.cpp

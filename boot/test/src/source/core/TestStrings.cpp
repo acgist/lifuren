@@ -64,15 +64,23 @@ static void testReplace() {
     assert("1234" == value);
 }
 
+static void testToChars() {
+    auto&& vector = lifuren::strings::toChars("你好啊！abc测试1234 1234李夫人?!好吧");
+    for(const auto& v : vector) {
+        SPDLOG_DEBUG("char = {}", v);
+    }
+}
+
 int main() {
     lifuren::logger::init();
     SPDLOG_DEBUG("测试");
-    testLowerUpper();
-    testStringTrim();
-    testConstCharTrim();
-    testLength();
-    testSubstr();
-    testReplace();
+    // testLowerUpper();
+    // testStringTrim();
+    // testConstCharTrim();
+    // testLength();
+    // testSubstr();
+    // testReplace();
+    testToChars();
     SPDLOG_DEBUG("完成");
     lifuren::logger::shutdown();
     return 0;

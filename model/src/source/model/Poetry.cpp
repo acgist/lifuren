@@ -31,6 +31,8 @@ lifuren::Poetry& lifuren::Poetry::preproccess() {
         this->title = this->rhythmic;
     } else if(!this->title.empty() && this->rhythmic.empty()) {
         this->rhythmic = this->title;
+    } else {
+        //
     }
     std::string content = lifuren::collections::join(this->paragraphs, "");
     this->paragraphs = lifuren::collections::split(
@@ -64,6 +66,13 @@ bool lifuren::Poetry::matchLabel() {
             labelRef.segmentRule == segmentRule
         ) {
             this->label = &labelRef;
+            // 不全词牌名称
+            if(this->title.empty()) {
+                this->title = labelRef.name;
+            }
+            if(this->rhythmic.empty()) {
+                this->rhythmic = labelRef.rhythmic;
+            }
             break;
         }
     }

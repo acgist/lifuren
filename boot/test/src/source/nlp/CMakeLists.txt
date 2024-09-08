@@ -6,6 +6,14 @@ target_link_libraries(
     lifurennlp
 )
 
+add_executable(testPoetrys TestPoetrys.cpp)
+add_test(NAME testPoetrys COMMAND testPoetrys)
+set_target_properties(testPoetrys PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testPoetrys
+    lifurennlp
+)
+
 add_executable(testRAGClient TestRAGClient.cpp)
 add_test(NAME testRAGClient COMMAND testRAGClient)
 set_target_properties(testRAGClient PROPERTIES FOLDER "test-nlp")

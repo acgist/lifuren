@@ -19,6 +19,10 @@ namespace lifuren {
 namespace poetry  {
 
 /**
+ * 符号
+ */
+const std::vector<std::string> POETRY_SYMBOL_DELIM = { "\r", "\n", "\t", " ", "?", ".", "、", "；", "，", "。", "？", "！" };
+/**
  * 段落分隔符
  */
 const std::vector<std::string> POETRY_SEGMENT_DELIM = { "、", "，", "。", "？", "！", "；" };

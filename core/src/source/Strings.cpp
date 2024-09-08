@@ -84,6 +84,27 @@ std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uin
     return ret;
 }
 
+std::vector<std::string> lifuren::strings::toChars(const std::string& segment) {
+    const size_t length = lifuren::strings::length(segment);
+    std::string ret;
+    uint32_t pos   = 0;
+    uint32_t index = 0;
+    std::vector<std::string> vector;
+    const char* value = segment.c_str();
+    while(value[pos]) {
+        ret.push_back(value[pos]);
+        if((value[pos] & 0xC0) != 0x80) {
+            ++index;
+        };
+        ++pos;
+        if((value[pos] & 0xC0) != 0x80) {
+            vector.push_back(ret);
+            ret.clear();
+        };
+    }
+    return vector;
+}
+
 void lifuren::strings::replace(std::string& value, const std::string& oldValue, const std::string& newValue) {
     std::string::size_type index = 0;
     std::string::size_type oldValueLength = oldValue.length();

@@ -1,5 +1,7 @@
 #include "lifuren/Collections.hpp"
 
+#include "lifuren/Strings.hpp"
+
 std::vector<std::string> lifuren::collections::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
     std::vector<std::string> vector;
     size_t pos   = 0;
@@ -10,14 +12,14 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
         if(pos == std::string::npos) {
             break;
         }
-        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        substr = lifuren::strings::trim(content.substr(index, retain ? pos - index + delim.length() : pos - index));
         if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {
-        substr = content.substr(index, content.length() - index);
+        substr = lifuren::strings::trim(content.substr(index, content.length() - index));
         if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
@@ -44,14 +46,14 @@ std::vector<std::string> lifuren::collections::split(const std::string& content,
         if(pos == std::string::npos) {
             break;
         }
-        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        substr = lifuren::strings::trim(content.substr(index, retain ? pos - index + delim.length() : pos - index));
         if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
     if(pos != index && index <= content.length()) {
-        substr = content.substr(index, content.length() - index);
+        substr = lifuren::strings::trim(content.substr(index, content.length() - index));
         if(!filter || !substr.empty()) {
             vector.push_back(substr);
         }

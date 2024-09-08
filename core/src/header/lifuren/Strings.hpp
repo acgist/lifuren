@@ -13,7 +13,7 @@ namespace lifuren {
 namespace strings {
 
 // 空白符号
-const char* const EMPTY_CHARS = " \t\r\n";
+const char* const EMPTY_CHARS = " \t\r\n ";
 
 /**
  * 转为小写
@@ -84,6 +84,8 @@ inline std::string substr(const char* value, const uint32_t& pos, const uint32_t
     uint32_t copy = pos;
     return substr(value, copy, length);
 }
+
+extern std::vector<std::string> toChars(const std::string& segment);
 
 /**
  * @param value    字符串
