@@ -18,7 +18,7 @@ static void testSearch() {
         3.0, 2.0, 3.0,
         1.0, 2.0, 3.0
     };
-    faiss::idx_t i[]{1, 2, 3, 4};
+    int64_t i[]{1, 2, 3, 4};
     // db.add(4, a);
     map.add_with_ids(4, a, i);
     std::random_device device;
@@ -34,8 +34,8 @@ static void testSearch() {
     int n = 2;
     float e[] { 1.0, 2.0, 3.0 };
     // float e[] { 0.0, 2.0, 3.0 };
-    faiss::idx_t* I = new faiss::idx_t[k * n];
-    float* D = new float[k * n];
+    int64_t* I = new int64_t[k * n];
+    float  * D = new float[k * n];
     // db.search(n, e, k, D, I);
     map.search(n, e, k, D, I);
     std::string is = "\n";
