@@ -6,7 +6,24 @@
 
 static void testRAGClient() {
     lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };
-    client.index("1234");
+    // lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ChineseWordVectors" };
+    client.loadIndex();
+    // client.deleteRAG();
+    // client.index("猪");
+    // client.index("牛");
+    // client.index("马");
+    // client.index("桃子");
+    // client.index("苹果");
+    // client.index("李子");
+    auto a = client.search("狗");
+    for(const auto& v : a) {
+        SPDLOG_DEBUG("狗 = {}", v);
+    }
+    auto b = client.search("草莓");
+    for(const auto& v : b) {
+        SPDLOG_DEBUG("草莓 = {}", v);
+    }
+    client.saveIndex();
 }
 
 int main() {

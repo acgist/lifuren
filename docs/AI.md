@@ -133,6 +133,10 @@
 
 情感分析、词性标注、自然语言推理、基于提取的回答
 
+#### GLUE
+
+通用语言理解评估（GLUE）基准
+
 #### gemma
 
 * https://github.com/google/gemma.cpp
@@ -163,6 +167,10 @@
 * https://github.com/monatis/clip.cpp
 
 #### Embedding
+
+* Token Embeddings
+* Segment Embeddings
+* Position Embeddings
 
 ###### GloVe
 ###### Word2Vec
@@ -319,6 +327,7 @@ ADMA + L2
 #### Tokenizer
 #### Embedding
 #### Normalization（归一化）
+### 自然语言推理（NLI）
 
 1. (x - min(x))  / (max(x) - min(x)) [ 0, 1]
 2. (x - mean(x)) / (max(x) - min(x)) [-1, 1]

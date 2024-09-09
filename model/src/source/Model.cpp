@@ -489,10 +489,12 @@ void lifuren::Model::trainAndVal() {
 
 void lifuren::Model::buildOptimizer(ggml_opt_context* opt_ctx) {
     ggml_opt_params opt_pars = ggml_opt_default_params(GGML_OPT_TYPE_ADAM);
+    // ggml_opt_params opt_pars = ggml_opt_default_params(GGML_OPT_TYPE_LBFGS);
     opt_pars.print_forward_graph  = false;
     opt_pars.print_backward_graph = false;
     opt_pars.n_threads   = this->params.thread_size;
     opt_pars.adam.n_iter = this->params.optimizerParams.n_iter;
+    // opt_pars.lbfgs.n_iter = this->params.optimizerParams.n_iter;
     ggml_opt_init(this->ctx_compute, opt_ctx, opt_pars, 0);
 }
 

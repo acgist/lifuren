@@ -59,14 +59,14 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
         {{
             "mappings": {{
                 "properties": {{
-                    "content": {{
-                        "type": "text"
-                    }},
                     "vector": {{
                         "type": "dense_vector",
                         "dims": {:d},
                         "index": true,
                         "similarity": "l2_norm"
+                    }},
+                    "content": {{
+                        "type": "text"
                     }}
                 }}
             }}
@@ -81,6 +81,7 @@ static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float> vector, std::shared_ptr<lifuren::RestClient> client) {
     nlohmann::json body = {
+        { "vector",  vector  },
         { "content", content }
     };
     return client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
@@ -88,27 +89,17 @@ static bool index(const size_t& id, const std::string& content, const std::vecto
 
 static std::vector<std::string> search(const size_t& id, const std::vector<float> vector, const int& size, std::shared_ptr<lifuren::RestClient> client) {
     nlohmann::json body = {
-        { "size", size },
-        { "query", {
-            { "match",  {
-                { "content", "prompt" }
-            } }
-        } }
+        { "knn", {
+            { "k", size },
+            { "field", "vector" },
+            { "query_vector", vector },
+            { "num_candidates", 100 },
+        } },
+        {
+            "fields", { "content" }
+            // "fields", { "vector", "content" }
+        }
     };
-
-// GET my-approx-knn-index/_knn_search
-// {
-//   "knn": {
-//     "field": "my-image-vector",
-//     "query_vector": [-0.5, 90.0, -10, 14.8, -156.0],
-//     "k": 10,
-//     "num_candidates": 100
-//   },
-//   "fields": [
-//     "my-image-vector",
-//     "my-tag"
-//   ]
-// }
     auto response = client->postJson("/" + std::to_string(id) + "/_search", body.dump());
     if(!response) {
         return {};
@@ -117,13 +108,12 @@ static std::vector<std::string> search(const size_t& id, const std::vector<float
     if(data.find("hits") == data.end()) {
         return {};
     }
-    // nlohmann::json& hits = data["hits"];
-    // std::vector<std::string> vector;
-    // vector.reserve(hits["total"]["value"].get<int>());
-    // nlohmann::json& docs = hits["hits"];
-    // for(auto& doc : docs) {
-    //     vector.push_back(doc["_source"]["content"].get<std::string>());
-    // }
-    // return vector;
-    return {};
+    nlohmann::json& hits = data["hits"];
+    std::vector<std::string> ret;
+    ret.reserve(hits["total"]["value"].get<int>());
+    nlohmann::json& docs = hits["hits"];
+    for(auto& doc : docs) {
+        ret.push_back(doc["_source"]["content"].get<std::string>());
+    }
+    return ret;
 }

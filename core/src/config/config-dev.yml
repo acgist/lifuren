@@ -15,9 +15,6 @@ poetry:
   client: poetize-rnn
   clients:
     - poetize-rnn
-# 图片标记页面配置
-image-mark:
-  - path: D:\tmp\data\mark\image
 # 诗词标记页面配置
 poetry-mark:
   - path: D:\tmp\data\mark\poetry
@@ -26,7 +23,7 @@ rag:
   id: 0
   # elasticsearch
   type: elasticsearch
-  size: 8
+  size: 4
   # ollama|chinese-word-vectors
   embedding: ollama
 # Embedding

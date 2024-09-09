@@ -63,7 +63,6 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
 const std::string lifuren::config::CONFIG_IMAGE         = "image";
 const std::string lifuren::config::CONFIG_POETRY        = "poetry";
-const std::string lifuren::config::CONFIG_IMAGE_MARK    = "image-mark";
 const std::string lifuren::config::CONFIG_POETRY_MARK   = "poetry-mark";
 const std::string lifuren::config::CONFIG_RAG           = "rag";
 const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
@@ -131,12 +130,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
                 config.poetry.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(lifuren::config::CONFIG_IMAGE_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::ImageMarkConfig imageMarkConfig{};
-            LFR_CONFIG_YAML_GETTER(imageMarkConfig, value, path, path, std::string);
-            config.imageMark.push_back(imageMarkConfig);
-        });
     } else if(lifuren::config::CONFIG_POETRY_MARK == name) {
         std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
             lifuren::config::PoetryMarkConfig poetryMarkConfig{};
@@ -216,15 +209,6 @@ YAML::Node toYaml() {
         });
         poetry["clients"] = clients;
         yaml[lifuren::config::CONFIG_POETRY] = poetry;
-    }
-    {
-        YAML::Node imageMark;
-        for(const auto& value : config.imageMark) {
-            YAML::Node mark;
-            mark["path"] = value.path;
-            imageMark.push_back(mark);
-        }
-        yaml[lifuren::config::CONFIG_IMAGE_MARK] = imageMark;
     }
     {
         YAML::Node poetryMark;

@@ -32,38 +32,6 @@
 #define LFR_WINDOW_HEIGHT_CONFIG 820
 #endif
 
-#ifndef LFR_CHOICE_SET_DEFAULT
-#define LFR_CHOICE_SET_DEFAULT(widget, defaultValue) \
-widget->value(widget->find_index(defaultValue.c_str()));
-#endif
-
-#ifndef LFR_CHOICE_GET_DEFAULT
-#define LFR_CHOICE_GET_DEFAULT(target, source) \
-target = source->value() >= 0 ? source->text() : ""
-#endif
-
-// 下拉选择
-#ifndef LFR_CHOICE_ADD_LIST
-#define LFR_CHOICE_ADD_LIST(x, y, map, choicePtr, groupName, labelName, defaultValue)         \
-{                                                                                             \
-    choicePtr = new Fl_Choice(x, y, 80, 30, labelName);                                       \
-    choicePtr->add(defaultValue);                                                             \
-    auto iterator = lifuren::map.find(groupName);                                             \
-    if(iterator != lifuren::map.end()) {                                                      \
-        std::vector<LabelFile>& vector = iterator->second;                                    \
-        std::for_each(vector.begin(), vector.end(), [this](auto& label) {                     \
-            if(label.name == labelName) {                                                     \
-                std::for_each(label.labels.begin(), label.labels.end(), [this](auto& value) { \
-                    choicePtr->add(value.c_str());                                            \
-                });                                                                           \
-            }                                                                                 \
-        });                                                                                   \
-    }                                                                                         \
-    auto defaultIndex = choicePtr->find_index(defaultValue);                                  \
-    choicePtr->value(defaultIndex);                                                           \
-}
-#endif
-
 #ifndef LFR_CHOICE_TRANSFER
 #if _WIN32
 #define LFR_CHOICE_TRANSFER(path) \
@@ -123,7 +91,6 @@ class ImageConfigWindow;
 class PoetryWindow;
 class PoetryConfigWindow;
 class AboutWindow;
-class ImageMarkWindow;
 class PoetryMarkWindow;
 
 /**
@@ -166,10 +133,8 @@ public:
 class MainWindow : public Window {
 
 private:
-    // 图片标记窗口
-    ImageMarkWindow*    imageMarkWindowPtr    = nullptr;
     // 诗词标记窗口
-    PoetryMarkWindow*   poetryMarkWindowPtr   = nullptr;
+    PoetryMarkWindow* poetryMarkWindowPtr = nullptr;
     // 图片生成窗口
     ImageWindow* imageWindowPtr = nullptr;
     // 诗词生成窗口
@@ -232,30 +197,6 @@ protected:
      * 上一个标记
      */
     virtual void nextMark();
-
-};
-
-/**
- * 图片标记窗口
- */
-class ImageMarkWindow : public MarkWindow, public Configuration {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ImageMarkWindow(int width, int height, const char* title = "图片标记");
-    // 析构函数
-    virtual ~ImageMarkWindow();
-
-public:
-    virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
-
-protected:
-    virtual void drawElement() override;
 
 };
 

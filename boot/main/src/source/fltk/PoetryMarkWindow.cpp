@@ -42,6 +42,7 @@ static Fl_Button* nextPtr    { nullptr };
 static Fl_Button* autoMarkPtr{ nullptr };
 static Fl_Button* ragPtr     { nullptr };
 static Fl_Button* modelPtr   { nullptr };
+static Fl_Button* sdModelPtr { nullptr };
 
 static Fl_Text_Buffer*  sourceBufferPtr   { nullptr };
 static Fl_Text_Display* sourceDisplayPtr  { nullptr };
@@ -82,6 +83,7 @@ lifuren::PoetryMarkWindow::~PoetryMarkWindow() {
     LFR_DELETE_PTR(nextPtr);
     LFR_DELETE_PTR(autoMarkPtr);
     LFR_DELETE_PTR(modelPtr);
+    LFR_DELETE_PTR(sdModelPtr);
     LFR_DELETE_PTR(ragPtr);
     LFR_DELETE_PTR(sourceDisplayPtr);
     LFR_DELETE_PTR(sourceBufferPtr);
@@ -105,9 +107,11 @@ void lifuren::PoetryMarkWindow::drawElement() {
     deletePtr   = new Fl_Button(410, 10, 100, 30, "删除目录");
     prevPtr     = new Fl_Button(10,  50, 100, 30, "上首诗词");
     nextPtr     = new Fl_Button(110, 50, 100, 30, "下首诗词");
-    autoMarkPtr = new Fl_Button(210, 50, 100, 30, "自动匹配");
-    ragPtr      = new Fl_Button(310, 50, 100, 30, "建立索引");
-    modelPtr    = new Fl_Button(410, 50, 100, 30, "训练生成模型");
+    autoMarkPtr = new Fl_Button(210, 50, 100, 30, "匹配格律");
+    autoMarkPtr = new Fl_Button(310, 50, 100, 30, "匹配图片");
+    ragPtr      = new Fl_Button(410, 50, 100, 30, "建立索引");
+    modelPtr    = new Fl_Button(510, 50, 100, 30, "训练诗词模型");
+    sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调图片模型");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
@@ -390,3 +394,28 @@ static void ragCallback(Fl_Widget*, void*) {
 
 static void modelCallback(Fl_Widget*, void*) {
 }
+
+    // SPDLOG_DEBUG("预览图片：{}", *imageIterator);
+    // LFR_DELETE_PTR(previewImagePtr);
+    // Fl_Shared_Image* previewSharedPtr = Fl_Shared_Image::get((*imageIterator).c_str());
+    // if(previewSharedPtr->num_images() <= 0) {
+    //     fl_message("图片读取失败");
+    //     resetImage();
+    //     SPDLOG_WARN("图片加载失败：{}", *imageIterator);
+    //     // previewSharedPtr->release();
+    //     return;
+    // }
+    // const int boxWidth    = previewBoxPtr->w();
+    // const int boxHeight   = previewBoxPtr->h();
+    // const int imageWidth  = previewSharedPtr->w();
+    // const int imageHeight = previewSharedPtr->h();
+    // double scale;
+    // if(imageWidth * boxHeight > imageHeight * boxWidth) {
+    //     scale = LFR_IMAGE_PREVIEW_SCALE * imageWidth / boxWidth;
+    // } else {
+    //     scale = LFR_IMAGE_PREVIEW_SCALE * imageHeight / boxHeight;
+    // }
+    // previewImagePtr = previewSharedPtr->copy((int) (imageWidth / scale), (int) (imageHeight / scale));
+    // previewSharedPtr->release();
+    // previewBoxPtr->image(previewImagePtr);
+    // previewBoxPtr->redraw();

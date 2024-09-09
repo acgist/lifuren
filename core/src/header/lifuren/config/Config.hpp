@@ -24,7 +24,6 @@ extern int         httpServerPort;
 extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_POETRY;
-extern const std::string CONFIG_IMAGE_MARK;
 extern const std::string CONFIG_POETRY_MARK;
 extern const std::string CONFIG_RAG;
 extern const std::string CONFIG_EMBEDDING;
