@@ -2,7 +2,7 @@
 
 #include "lifuren/Poetrys.hpp"
 
-lifuren::EmbeddingClient::EmbeddingClient() {
+lifuren::EmbeddingClient::EmbeddingClient(lifuren::EmbeddingClient::SegmentType type) : type(type) {
 }
 
 lifuren::EmbeddingClient::~EmbeddingClient() {
@@ -21,12 +21,12 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
     }
 }
 
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment, lifuren::EmbeddingClient::SegmentType type) {
-    if(type == lifuren::EmbeddingClient::SegmentType::CHAR) {
+std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment) {
+    if(this->type == lifuren::EmbeddingClient::SegmentType::CHAR) {
         return this->getSegmentVector(lifuren::poetrys::toChars(segment));
-    } else if(type == lifuren::EmbeddingClient::SegmentType::WORD) {
+    } else if(this->type == lifuren::EmbeddingClient::SegmentType::WORD) {
         return this->getSegmentVector(lifuren::poetrys::toWords(segment));
-    } else if(type == lifuren::EmbeddingClient::SegmentType::SEGMENT) {
+    } else if(this->type == lifuren::EmbeddingClient::SegmentType::SEGMENT) {
         return this->getSegmentVector(std::vector<std::string>{ lifuren::poetrys::replaceSymbol(segment) });
     } else {
         return {};
@@ -48,7 +48,7 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<
     const size_t rows = ret.size();
     const size_t size = head.size();
     std::vector<float> data;
-    data.reserve(size);
+    data.resize(size);
     for(const auto& [key, value] : ret) {
         for(size_t i = 0; i < size; ++i) {
             data[i] += value[i];

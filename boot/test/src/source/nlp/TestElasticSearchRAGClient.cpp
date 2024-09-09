@@ -5,8 +5,8 @@
 #include "lifuren/Logger.hpp"
 
 static void testRAGClient() {
-    lifuren::ElasticSearchRAGClient client{ "", "ollama" };
-    // TODO: 测试
+    lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };
+    client.index("1234");
 }
 
 int main() {

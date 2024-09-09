@@ -144,10 +144,9 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             config.poetryMark.push_back(poetryMarkConfig);
         });
     } else if(lifuren::config::CONFIG_RAG == name) {
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, id,        id,        size_t);
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, type,      type,      std::string);
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, size,      size,      size_t);
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, embedding, embedding, std::string);
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, id,   id,   size_t);
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
+        LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
     } else if(lifuren::config::CONFIG_EMBEDDING == name) {
         LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type, type, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
@@ -238,10 +237,9 @@ YAML::Node toYaml() {
     }
     {
         YAML::Node rag;
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, id,        id);
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, type,      type);
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, size,      size);
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, embedding, embedding);
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, id,   id);
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, type, type);
+        LFR_CONFIG_YAML_SETTER(rag, config.rag, size, size);
         yaml[lifuren::config::CONFIG_RAG] = rag;
     }
     {

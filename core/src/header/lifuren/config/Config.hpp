@@ -182,8 +182,6 @@ struct RAGConfig {
     std::string type;
     // 返回数量
     size_t size;
-    // 词嵌入类型
-    std::string embedding;
 
 };
 

@@ -5,7 +5,7 @@
 
 #include "nlohmann/json.hpp"
 
-lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() {
+lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::SEGMENT) {
     const auto& ollamaConfig = lifuren::config::CONFIG.ollama;
     this->restClient = std::make_unique<lifuren::RestClient>(ollamaConfig.api);
     this->restClient->auth(ollamaConfig);
@@ -38,5 +38,5 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
 }
 
 size_t lifuren::OllamaEmbeddingClient::getDims() {
-    return 300;
+    return 1024;
 }

@@ -27,11 +27,11 @@ rag:
   # elasticsearch
   type: elasticsearch
   size: 8
-  # text|ollama|chinese-word-vectors
-  embedding: text
+  # ollama|chinese-word-vectors
+  embedding: ollama
 # Embedding
 embedding:
-  # text|ollama|chinese-word-vectors
+  # ollama|chinese-word-vectors
   type: ollama
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md

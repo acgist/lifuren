@@ -15,8 +15,13 @@ static std::unordered_map<std::string, std::vector<float>> vectors;
 
 static void initVectors(const std::string& path);
 
-lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() {
+#ifdef LFR_CHINESE_WORD_VECTORS_WORD
+lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::WORD) {
 }
+#else
+lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::CHAR) {
+}
+#endif
 
 lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
 }
