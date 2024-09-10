@@ -20,7 +20,7 @@ static Fl_Text_Editor* promptEditorPtr{ nullptr };
 static void generate(Fl_Widget*, void*);
 static void clientCallback(Fl_Widget*, void*);
 
-lifuren::PoetryWindow::PoetryWindow(int width, int height, const char* title) :ModelWindow(width, height, title) {
+lifuren::PoetryWindow::PoetryWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::PoetryWindow::~PoetryWindow() {

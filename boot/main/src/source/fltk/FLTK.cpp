@@ -123,27 +123,3 @@ void lifuren::Window::center() {
 void lifuren::Configuration::saveConfig() {
     lifuren::config::saveFile();
 }
-
-lifuren::ConfigWindow::ConfigWindow(int width, int height, const char* title) : Window(width, height, title) {
-}
-
-lifuren::ConfigWindow::~ConfigWindow() {
-}
-
-lifuren::MarkWindow::MarkWindow(int width, int height, const char* title) : Window(width, height, title) {
-}
-
-lifuren::MarkWindow::~MarkWindow() {
-}
-
-void lifuren::MarkWindow::prevMark() {
-}
-
-void lifuren::MarkWindow::nextMark() {
-}
-
-lifuren::ModelWindow::ModelWindow(int width, int height, const char* title) : Window(width, height, title) {
-}
-
-lifuren::ModelWindow::~ModelWindow() {
-}

@@ -65,7 +65,7 @@ static void resetPoetryRhythmic();
 static void ragCallback  (Fl_Widget*, void*);
 static void modelCallback(Fl_Widget*, void*);
 
-lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* title) : MarkWindow(width, height, title) {
+lifuren::PoetryMarkWindow::PoetryMarkWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::PoetryMarkWindow::~PoetryMarkWindow() {

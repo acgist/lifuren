@@ -28,7 +28,7 @@ static void clientCallback(Fl_Widget*, void*);
 static void chooseFileCallback(Fl_Widget*, void*);
 static void chooseDirectoryCallback(Fl_Widget*, void*);
 
-lifuren::ImageWindow::ImageWindow(int width, int height, const char* title) : ModelWindow(width, height, title) {
+lifuren::ImageWindow::ImageWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
 lifuren::ImageWindow::~ImageWindow() {

@@ -14,6 +14,15 @@
 
 ```
 sudo apt install build-essential
+
+sudo apt install gcc-11 g++-11
+sudo apt install gcc-12 g++-12
+
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
+
+sudo update-alternatives --config  gcc
+sudo update-alternatives --display gcc
 ```
 
 ###### 依赖下载

@@ -87,9 +87,7 @@ protected:
 
 class MainWindow;
 class ImageWindow;
-class ImageConfigWindow;
 class PoetryWindow;
-class PoetryConfigWindow;
 class AboutWindow;
 class PoetryMarkWindow;
 
@@ -107,23 +105,6 @@ protected:
      * 重新绘制配置元素
      */
     virtual void redrawConfigElement() = 0;
-
-};
-
-/**
- * 配置窗口
- */
-class ConfigWindow : public Window, public Configuration {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ConfigWindow(int width, int height, const char* title = "配置");
-    // 析构函数
-    virtual ~ConfigWindow();
 
 };
 
@@ -174,36 +155,9 @@ protected:
 };
 
 /**
- * 标记窗口
- */
-class MarkWindow : public Window {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    MarkWindow(int width, int height, const char* title = "标记");
-    // 析构函数
-    virtual ~MarkWindow();
-
-protected:
-    /**
-     * 下一个标记
-     */
-    virtual void prevMark();
-    /**
-     * 上一个标记
-     */
-    virtual void nextMark();
-
-};
-
-/**
  * 诗词标记窗口
  */
-class PoetryMarkWindow : public MarkWindow, public Configuration {
+class PoetryMarkWindow : public Window, public Configuration {
 
 public:
     /**
@@ -225,26 +179,9 @@ protected:
 };
 
 /**
- * 模型窗口
- */
-class ModelWindow : public Window {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ModelWindow(int width, int height, const char* title);
-    // 析构函数
-    virtual ~ModelWindow();
-
-};
-
-/**
  * 图片内容生成
  */
-class ImageWindow : public ModelWindow, public Configuration {
+class ImageWindow : public Window, public Configuration {
 
 public:
     /**
@@ -268,7 +205,7 @@ protected:
 /**
  * 诗词内容生成
  */
-class PoetryWindow : public ModelWindow, public Configuration {
+class PoetryWindow : public Window, public Configuration {
 
 public:
     /**

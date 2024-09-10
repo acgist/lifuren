@@ -3,7 +3,8 @@
  */
 #include "lifuren/RAGClient.hpp"
 
-#include <format>
+// TODO: GCC/G++ 13+
+// #include <format>
 
 #include "spdlog/spdlog.h"
 
@@ -55,24 +56,22 @@ static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 }
 
 static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client, size_t dims) {
-    auto response = client->putJson("/" + std::to_string(id), std::format(R"(
-        {{
-            "mappings": {{
-                "properties": {{
-                    "vector": {{
-                        "type": "dense_vector",
-                        "dims": {:d},
-                        "index": true,
-                        "similarity": "l2_norm"
-                    }},
-                    "content": {{
-                        "type": "text"
-                    }}
-                }}
-            }}
-        }}
-    )", dims));
-    return response;
+    nlohmann::json body = {
+        { "mappings", {
+            { "properties", {
+                { "vector", {
+                    { "type"      , "dense_vector" },
+                    { "dims"      , dims           },
+                    { "index"     , true           },
+                    { "similarity", "l2_norm"      }
+                } },
+                { "content", {
+                    { "type", "text" }
+                } }
+            } }
+        } }
+    };
+    return client->putJson("/" + std::to_string(id), body.dump());
 }
 
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
@@ -81,7 +80,7 @@ static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float> vector, std::shared_ptr<lifuren::RestClient> client) {
     nlohmann::json body = {
-        { "vector",  vector  },
+        { "vector" , vector  },
         { "content", content }
     };
     return client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
@@ -90,13 +89,14 @@ static bool index(const size_t& id, const std::string& content, const std::vecto
 static std::vector<std::string> search(const size_t& id, const std::vector<float> vector, const int& size, std::shared_ptr<lifuren::RestClient> client) {
     nlohmann::json body = {
         { "knn", {
-            { "k", size },
-            { "field", "vector" },
-            { "query_vector", vector },
-            { "num_candidates", 100 },
+            { "k"             , size     },
+            { "field"         , "vector" },
+            { "query_vector"  , vector   },
+            { "num_candidates", 199      },
         } },
         {
             "fields", { "content" }
+            // 不用返回向量
             // "fields", { "vector", "content" }
         }
     };

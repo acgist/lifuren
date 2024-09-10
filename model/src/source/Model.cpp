@@ -207,35 +207,47 @@ lifuren::Model& lifuren::Model::defineLoss() {
 }
 
 lifuren::Model& lifuren::Model::defineCgraph() {
-    // 计算图
-    if(this->train_gf == nullptr) {
-        SPDLOG_DEBUG("定义训练前向传播计算图");
-        this->train_gf = ggml_new_graph_custom(this->ctx_compute, this->params.size_cgraph, true);
-        ggml_build_forward_expand(this->train_gf, this->loss);
+    if(this->trainDataset) {
+        if(this->train_gf == nullptr) {
+            SPDLOG_DEBUG("定义训练前向传播计算图");
+            this->train_gf = ggml_new_graph_custom(this->ctx_compute, this->params.size_cgraph, true);
+            ggml_build_forward_expand(this->train_gf, this->loss);
+        } else {
+            SPDLOG_DEBUG("重复定义训练前向传播计算图");
+        }
+        if(this->train_gb == nullptr) {
+            SPDLOG_DEBUG("定义训练反向传播计算图");
+            this->train_gb = ggml_graph_dup(this->ctx_compute, this->train_gf);
+            ggml_build_backward_expand(this->ctx_compute, this->train_gf, this->train_gb, true);
+        } else {
+            SPDLOG_DEBUG("重复定义训练反向传播计算图");
+        }
     } else {
-        SPDLOG_DEBUG("重复定义训练前向传播计算图");
+        SPDLOG_DEBUG("没有训练数据集忽略定义训练反向传播计算图");
     }
-    if(this->train_gb == nullptr) {
-        SPDLOG_DEBUG("定义训练反向传播计算图");
-        this->train_gb = ggml_graph_dup(this->ctx_compute, this->train_gf);
-        ggml_build_backward_expand(this->ctx_compute, this->train_gf, this->train_gb, true);
+    if(this->valDataset) {
+        if(this->val_gf == nullptr) {
+            SPDLOG_DEBUG("定义验证前向传播计算图");
+            this->val_gf = ggml_new_graph(this->ctx_compute);
+            ggml_build_forward_expand(this->val_gf, this->loss);
+        } else {
+            SPDLOG_DEBUG("重复定义验证前向传播计算图");
+        }
     } else {
-        SPDLOG_DEBUG("重复定义训练反向传播计算图");
+        SPDLOG_DEBUG("没有验证数据集忽略定义验证前向传播计算图");
     }
-    if(this->valDataset && this->val_gf == nullptr) {
-        SPDLOG_DEBUG("定义验证计算图");
-        this->val_gf = ggml_new_graph(this->ctx_compute);
-        ggml_build_forward_expand(this->val_gf, this->loss);
+    if(this->testDataset) {
+        if(this->test_gf == nullptr) {
+            SPDLOG_DEBUG("定义测试前向传播计算图");
+            this->test_gf = ggml_new_graph(this->ctx_compute);
+            ggml_build_forward_expand(this->test_gf, this->loss);
+        } else {
+            SPDLOG_DEBUG("重复定义测试前向传播计算图");
+        }
     } else {
-        SPDLOG_DEBUG("重复定义验证计算图");
+        SPDLOG_DEBUG("没有测试数据集忽略定义测试前向传播计算图");
     }
-    if(this->testDataset && this->test_gf == nullptr) {
-        SPDLOG_DEBUG("定义测试前向传播计算图");
-        this->test_gf = ggml_new_graph(this->ctx_compute);
-        ggml_build_forward_expand(this->test_gf, this->loss);
-    } else {
-        SPDLOG_DEBUG("重复定义测试前向传播计算图");
-    }
+    // 必须生成推理计算图
     if(this->eval_gf == nullptr) {
         SPDLOG_DEBUG("定义推理前向传播计算图");
         this->eval_gf = ggml_new_graph(this->ctx_compute);
