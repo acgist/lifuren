@@ -56,10 +56,10 @@ bool lifuren::RAGService::stopRAGTask(const std::string& path) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto iterator = this->tasks.find(path);
     if(iterator == this->tasks.end()) {
-        SPDLOG_DEBUG("RAG任务已经删除：{}", path);
+        SPDLOG_DEBUG("RAG任务已经结束：{}", path);
         return true;
     }
-    SPDLOG_DEBUG("删除RAG任务：{}", path);
+    SPDLOG_DEBUG("结束RAG任务：{}", path);
     iterator->second->stop = true;
     return true;
 }
@@ -71,13 +71,8 @@ bool lifuren::RAGService::deleteRAGTask(const std::string& path) {
     if(iterator == this->tasks.end()) {
         const auto& rag       = lifuren::config::CONFIG.rag;
         const auto& embedding = lifuren::config::CONFIG.embedding;
-        RAGTask task{
-            .type      = rag.type,
-            .path      = path,
-            .embedding = embedding.type,
-        };
-        const auto runner = std::make_shared<lifuren::RAGTaskRunner>(task);
-        return runner->deleteRAG();
+        const auto client     = lifuren::RAGClient::getRAGClient(rag.type, path, embedding.type);
+        return client->deleteRAG();
     } else {
         iterator->second->stop = true;
         return iterator->second->deleteRAG();

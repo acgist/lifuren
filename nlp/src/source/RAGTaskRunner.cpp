@@ -20,15 +20,22 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
 }
 
 lifuren::RAGTaskRunner::~RAGTaskRunner() {
-    SPDLOG_DEBUG("RAG任务析构：{}", this->task.path);
+    SPDLOG_DEBUG("RAG任务执行器析构：{}", this->task.path);
 }
 
 bool lifuren::RAGTaskRunner::startExecute() {
+    std::lock_guard<std::mutex> lock(this->mutex);
+    if(this->thread) {
+        SPDLOG_DEBUG("RAG任务已经开始：{}", this->task.path);
+        return true;
+    }
     if(!this->ragClient) {
+        SPDLOG_WARN("RAG任务没有终端：{}", this->task.path);
         return false;
     }
     this->thread = std::make_unique<std::thread>([this]() {
         try {
+            SPDLOG_INFO("开始执行RAG任务：{}", this->task.path);
             if(this->execute()) {
                 SPDLOG_INFO("RAG任务执行完成：{}", this->task.path);
             } else {
@@ -56,29 +63,44 @@ bool lifuren::RAGTaskRunner::deleteRAG() {
     return this->ragClient->deleteRAG();
 }
 
-bool lifuren::RAGTaskRunner::execute() {
-    if(!std::filesystem::exists(this->task.path)) {
-        SPDLOG_WARN("RAG任务目录无效：{}", this->task.path);
-        return false;
+float lifuren::RAGTaskRunner::percent() {
+    if(this->fileCount <= 0) {
+        return 0.0F;
     }
+    return static_cast<float>(this->doneFileCount) / this->fileCount;
+}
+
+void lifuren::RAGTaskRunner::registerCallback(std::function<void(float, bool)> percentCallback) {
+    this->percentCallback = percentCallback;
+}
+
+void lifuren::RAGTaskRunner::unregisterCallback() {
+    this->percentCallback = nullptr;
+}
+
+bool lifuren::RAGTaskRunner::execute() {
     if(!this->ragClient) {
         SPDLOG_WARN("RAG任务没有就绪：{}", this->task.path);
+        return false;
+    }
+    if(!std::filesystem::exists(this->task.path)) {
+        SPDLOG_WARN("RAG任务目录无效：{}", this->task.path);
         return false;
     }
     std::vector<std::string> vector;
     lifuren::files::listFiles(vector, this->task.path, { ".json" });
     this->fileCount = vector.size();
-    SPDLOG_DEBUG("RAG任务文件总量：{}", this->fileCount);
-    for(auto& path : vector) {
+    SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
+    for(const auto& path : vector) {
         if(this->stop) {
             break;
         }
-        if(this->ragClient->doneFileContains(path)) {
-            SPDLOG_DEBUG("RAG任务跳过已经处理过的任务：{}", path);
-            continue;
-        }
         if(!std::filesystem::is_regular_file(path)) {
             SPDLOG_DEBUG("RAG任务跳过其他文件：{}", path);
+            continue;
+        }
+        if(this->ragClient->doneFileContains(path)) {
+            SPDLOG_DEBUG("RAG任务跳过已经处理过的文件：{}", path);
             continue;
         }
         this->ragClient->doneFileEmplace(path);
@@ -88,7 +110,7 @@ bool lifuren::RAGTaskRunner::execute() {
             continue;
         }
         nlohmann::json json = nlohmann::json::parse(content);
-        for(auto& poetry : json) {
+        for(const auto& poetry : json) {
             if(this->stop) {
                 break;
             }
@@ -124,19 +146,4 @@ bool lifuren::RAGTaskRunner::execute() {
         this->percentCallback(this->percent(), true);
     }
     return true;
-}
-
-float lifuren::RAGTaskRunner::percent() {
-    if(this->fileCount <= 0) {
-        return 0.0F;
-    }
-    return static_cast<float>(this->doneFileCount) / this->fileCount;
-}
-
-void lifuren::RAGTaskRunner::registerCallback(std::function<void(float, bool)> percentCallback) {
-    this->percentCallback = percentCallback;
-}
-
-void lifuren::RAGTaskRunner::unregisterCallback() {
-    this->percentCallback = nullptr;
 }

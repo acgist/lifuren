@@ -35,7 +35,7 @@ std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& con
     }
     auto&& vector = this->embeddingClient->getSegmentVector(content);
     ::index(this->id, content, vector, this->restClient);
-    return {};
+    return vector;
 }
 
 std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::string& prompt, const int size) {

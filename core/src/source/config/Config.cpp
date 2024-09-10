@@ -213,9 +213,9 @@ YAML::Node toYaml() {
     {
         YAML::Node mark;
         for(const auto& value : config.mark) {
-            YAML::Node mark;
-            mark["path"] = value.path;
-            mark.push_back(mark);
+            YAML::Node item;
+            item["path"] = value.path;
+            mark.push_back(item);
         }
         yaml[lifuren::config::CONFIG_MARK] = mark;
     }

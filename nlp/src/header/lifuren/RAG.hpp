@@ -6,16 +6,13 @@
 
 #include <map>
 #include <set>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
 #include <functional>
 
 #include "lifuren/EmbeddingClient.hpp"
-
-namespace faiss {
-    class Index;
-}
 
 namespace lifuren {
 
@@ -107,12 +104,6 @@ public:
 class FaissRAGClient : public RAGClient {
 
 public:
-    // 真实索引
-    std::unique_ptr<faiss::Index> indexBasicDB{ nullptr };
-    // 映射索引
-    std::unique_ptr<faiss::Index> indexIdMapDB{ nullptr };
-
-public:
     /**
      * @param path      文档路径
      * @param embedding 词嵌入方式
@@ -161,14 +152,16 @@ public:
 class RAGTaskRunner {
 
 public:
-    // 索引
+    // 索引标识
     size_t id = 0LL;
     // 是否停止
     bool stop = false;
     // 是否完成
     bool finish = false;
 
-protected:
+private:
+    // 加锁
+    std::mutex mutex;
     // 文件总数
     uint32_t fileCount = 0;
     // 处理文件总数
@@ -191,14 +184,26 @@ private:
     bool execute();
 
 public:
-    // 开始任务
+    /**
+     * 开始任务
+     * 
+     * @return 是否成功
+     */
     bool startExecute();
-    // 删除任务
+    /**
+     * 删除任务
+     * 
+     * @return 是否成功
+     */
     bool deleteRAG();
-    // 任务进度
+    /**
+     * @return 任务进度
+     */
     float percent();
     /**
      * 注册进度回调
+     * 
+     * @param percentCallback 进度回调
      */
     void registerCallback(std::function<void(float, bool)> percentCallback);
     /**

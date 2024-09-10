@@ -30,8 +30,12 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
 }
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate) {
-    if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+    if(!std::filesystem::exists(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
+        return;
+    }
+    if(!std::filesystem::is_directory(path)) {
+        SPDLOG_DEBUG("不是目录：{}", path);
         return;
     }
     auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));

@@ -9,14 +9,18 @@
 #include "faiss/MetaIndexes.h"
 // #include "faiss/IndexIDMap.h"
 
-// 查询索引数量
-static const int faiss_n = 1;
 // 使用内存地址作为内容ID
 static std::set<std::string*> ids{};
+// 真实索引
+static std::unique_ptr<faiss::Index> indexBasicDB{ nullptr };
+// 映射索引
+static std::unique_ptr<faiss::Index> indexIdMapDB{ nullptr };
 
 lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
-    this->indexBasicDB = std::make_unique<faiss::IndexFlatL2>(this->embeddingClient->getDims());
-    this->indexIdMapDB = std::make_unique<faiss::IndexIDMap>(this->indexBasicDB.get());
+    if(!indexBasicDB && !indexIdMapDB) {
+        indexBasicDB = std::make_unique<faiss::IndexFlatL2>(this->embeddingClient->getDims());
+        indexIdMapDB = std::make_unique<faiss::IndexIDMap>(indexBasicDB.get());
+    }
 }
 
 lifuren::FaissRAGClient::~FaissRAGClient() {
@@ -27,11 +31,12 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& content) {
     std::string* ptr = new std::string(content);
     ids.insert(ptr);
     int64_t id = reinterpret_cast<size_t>(ptr);
-    this->indexIdMapDB->add_with_ids(faiss_n, vector.data(), &id);
+    indexIdMapDB->add_with_ids(1, vector.data(), &id);
     return vector;
 }
 
 std::vector<std::string> lifuren::FaissRAGClient::search(const std::string& prompt, const int size) {
+    const int faiss_n = 1;
     std::vector<float>&& vector = this->embeddingClient->getSegmentVector(prompt);
     // 数据
     std::vector<float> data;
@@ -39,7 +44,7 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::string& prom
     // 索引
     std::vector<int64_t> idx;
     idx.resize(faiss_n * size);
-    this->indexIdMapDB->search(faiss_n, vector.data(), size, data.data(), idx.data());
+    indexIdMapDB->search(faiss_n, vector.data(), size, data.data(), idx.data());
     // 结果
     std::vector<std::string> ret;
     ret.reserve(size);
@@ -59,5 +64,6 @@ bool lifuren::FaissRAGClient::deleteRAG() {
         delete ptr;
     }
     ids.clear();
+    indexIdMapDB->reset();
     return true;
 }
