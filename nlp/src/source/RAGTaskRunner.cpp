@@ -1,4 +1,4 @@
-#include "lifuren/RAGClient.hpp"
+#include "lifuren/RAG.hpp"
 
 #include <filesystem>
 
@@ -9,7 +9,7 @@
 #include "nlohmann/json.hpp"
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
-    this->ragClient = lifuren::RAGClient::getRAGClient(task.rag, task.path, task.embedding);
+    this->ragClient = lifuren::RAGClient::getRAGClient(task.type, task.path, task.embedding);
     if(!this->ragClient) {
         this->stop   = true;
         this->finish = true;

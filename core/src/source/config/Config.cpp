@@ -63,12 +63,12 @@ LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
 const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
 const std::string lifuren::config::CONFIG_IMAGE         = "image";
 const std::string lifuren::config::CONFIG_POETRY        = "poetry";
-const std::string lifuren::config::CONFIG_POETRY_MARK   = "poetry-mark";
+const std::string lifuren::config::CONFIG_MARK          = "mark";
 const std::string lifuren::config::CONFIG_RAG           = "rag";
 const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
 const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
-const std::string lifuren::config::CONFIG_POETIZE_RNN = "poetize-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_RNN     = "poetize-rnn";
 const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN = "paint-cycle-gan";
 const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN = "paint-style-gan";
 const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
@@ -130,11 +130,11 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
                 config.poetry.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(lifuren::config::CONFIG_POETRY_MARK == name) {
+    } else if(lifuren::config::CONFIG_MARK == name) {
         std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::PoetryMarkConfig poetryMarkConfig{};
-            LFR_CONFIG_YAML_GETTER(poetryMarkConfig, value, path, path, std::string);
-            config.poetryMark.push_back(poetryMarkConfig);
+            lifuren::config::MarkConfig markConfig{};
+            LFR_CONFIG_YAML_GETTER(markConfig, value, path, path, std::string);
+            config.mark.push_back(markConfig);
         });
     } else if(lifuren::config::CONFIG_RAG == name) {
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, id,   id,   size_t);
@@ -211,13 +211,13 @@ YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_POETRY] = poetry;
     }
     {
-        YAML::Node poetryMark;
-        for(const auto& value : config.poetryMark) {
+        YAML::Node mark;
+        for(const auto& value : config.mark) {
             YAML::Node mark;
             mark["path"] = value.path;
-            poetryMark.push_back(mark);
+            mark.push_back(mark);
         }
-        yaml[lifuren::config::CONFIG_POETRY_MARK] = poetryMark;
+        yaml[lifuren::config::CONFIG_MARK] = mark;
     }
     {
         YAML::Node rag;

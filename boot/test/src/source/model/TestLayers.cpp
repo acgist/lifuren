@@ -1,10 +1,8 @@
+#include "Test.hpp"
 #include "lifuren/Layers.hpp"
 
 #include "ggml.h"
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 #include "lifuren/Tensors.hpp"
 
 static void testLinear() {
@@ -72,12 +70,7 @@ static void testConv2d() {
     }
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     // testLinear();
     testConv2d();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

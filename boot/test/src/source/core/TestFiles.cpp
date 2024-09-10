@@ -1,10 +1,7 @@
+#include "Test.hpp"
 #include "lifuren/Files.hpp"
 
 #include <algorithm>
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 static void testListFiles() {
     std::vector<std::string> vector;
@@ -25,13 +22,8 @@ static void testSaveFile() {
     SPDLOG_DEBUG("文件内容写出：{}", success);
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testListFiles();
     testLoadFile();
     testSaveFile();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

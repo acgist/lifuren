@@ -1,13 +1,12 @@
+#include "Test.hpp"
+
 #include <string>
 #include <vector>
 #include <algorithm>
 
 #include "nlohmann/json.hpp"
 
-#include "lifuren/Logger.hpp"
 #include "lifuren/Strings.hpp"
-
-#include "spdlog/spdlog.h"
 
 static void testPoetry() {
     using namespace std::literals;
@@ -42,11 +41,6 @@ static void testPoetry() {
     SPDLOG_DEBUG("配置规则：{}", json.dump(2));
 }
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testPoetry();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

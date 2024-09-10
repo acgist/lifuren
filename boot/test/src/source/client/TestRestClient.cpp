@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/Client.hpp"
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 #include <thread>
 #include <chrono>
@@ -31,15 +28,10 @@
     SPDLOG_DEBUG("POST Stream : {}", response);
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     // testGet();
     // testPostStream();
     std::thread thread{ testPostStream };
     thread.detach();
     std::this_thread::sleep_for(std::chrono::seconds(30));
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

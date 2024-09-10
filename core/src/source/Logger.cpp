@@ -44,8 +44,8 @@ void lifuren::logger::shutdown() {
     SPDLOG_INFO("持续时间：{}", (duration - ::duration));
     SPDLOG_DEBUG(R"(
         
-        南有乔木，不可休思。汉有游女，不可求思。
-        汉之广矣，不可泳思。江之永矣，不可方思。
+        中庭地白树栖鸦，冷露无声湿桂花。
+        今夜月明人尽望，不知秋思落谁家。
     )");
     spdlog::drop_all();
     spdlog::shutdown();

@@ -86,10 +86,10 @@ protected:
 };
 
 class MainWindow;
+class MarkWindow;
 class ImageWindow;
 class PoetryWindow;
 class AboutWindow;
-class PoetryMarkWindow;
 
 /**
  * 配置管理
@@ -115,7 +115,7 @@ class MainWindow : public Window {
 
 private:
     // 诗词标记窗口
-    PoetryMarkWindow* poetryMarkWindowPtr = nullptr;
+    MarkWindow* markWindowPtr = nullptr;
     // 图片生成窗口
     ImageWindow* imageWindowPtr = nullptr;
     // 诗词生成窗口
@@ -134,17 +134,11 @@ public:
     virtual ~MainWindow();
 
 public:
-    // 图片标记
-    void imageMark();
     // 诗词标记
-    void poetryMark();
-    // 模型微调
-    void finetune();
-    // 模型量化
-    void quantization();
-    // 图片内容生成
+    void mark();
+    // 图片生成
     void image();
-    // 诗词内容生成
+    // 诗词生成
     void poetry();
     // 关于
     void about();
@@ -157,7 +151,7 @@ protected:
 /**
  * 诗词标记窗口
  */
-class PoetryMarkWindow : public Window, public Configuration {
+class MarkWindow : public Window, public Configuration {
 
 public:
     /**
@@ -165,9 +159,9 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    PoetryMarkWindow(int width, int height, const char* title = "诗词标记");
+    MarkWindow(int width, int height, const char* title = "诗词标记");
     // 析构函数
-    virtual ~PoetryMarkWindow();
+    virtual ~MarkWindow();
 
 public:
     virtual void saveConfig() override;

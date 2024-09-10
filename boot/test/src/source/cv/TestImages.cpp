@@ -1,9 +1,7 @@
+#include "Test.hpp"
 #include "lifuren/Images.hpp"
 
-#include "spdlog/spdlog.h"
-
 #include "lifuren/CV.hpp"
-#include "lifuren/Logger.hpp"
 
 static void testRead() {
     uint8_t* data{nullptr};
@@ -30,12 +28,7 @@ static void testWrite() {
     data = nullptr;
 }
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testRead();
     // testWrite();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

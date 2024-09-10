@@ -1,8 +1,8 @@
-#include "lifuren/RAGClient.hpp"
+#include "Test.hpp"
+#include "lifuren/RAG.hpp"
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
+#include <chrono>
+#include <thread>
 
 static void testRAGClient() {
     lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };
@@ -15,6 +15,8 @@ static void testRAGClient() {
     client.index("桃子");
     client.index("苹果");
     client.index("李子");
+    // 这里需要等待索引建立
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto a = client.search("狗");
     for(const auto& v : a) {
         SPDLOG_DEBUG("狗 = {}", v);
@@ -28,11 +30,6 @@ static void testRAGClient() {
     client.saveIndex();
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testRAGClient();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

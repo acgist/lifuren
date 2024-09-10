@@ -1,3 +1,4 @@
+#include "Test.hpp"
 #include "lifuren/Model.hpp"
 
 #include <random>
@@ -5,9 +6,6 @@
 
 #include "ggml.h"
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 #include "lifuren/Layers.hpp"
 #include "lifuren/Datasets.hpp"
 
@@ -110,12 +108,7 @@ static void testLine() {
     SPDLOG_DEBUG("当前权重：{}", save.linear->info());
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testLine();
     // testSaveLoad();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

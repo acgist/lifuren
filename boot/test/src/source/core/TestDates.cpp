@@ -1,8 +1,6 @@
+#include "Test.hpp"
 #include "lifuren/Dates.hpp"
 
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 #include "spdlog/fmt/chrono.h"
 
 static void testFormat() {
@@ -49,14 +47,9 @@ static void testCost() {
     SPDLOG_DEBUG("耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testFormat();
     testParse();
     testMillis();
     testCost();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

@@ -24,7 +24,7 @@ extern int         httpServerPort;
 extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_POETRY;
-extern const std::string CONFIG_POETRY_MARK;
+extern const std::string CONFIG_MARK;
 extern const std::string CONFIG_RAG;
 extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
@@ -159,18 +159,6 @@ struct MarkConfig {
 };
 
 /**
- * 图片标记页面配置
- */
-struct ImageMarkConfig : MarkConfig {
-};
-
-/**
- * 诗词标记页面配置
- */
-struct PoetryMarkConfig : MarkConfig {
-};
-
-/**
  * RAG配置
  */
 struct RAGConfig {
@@ -288,14 +276,13 @@ class Config {
 public:
     lifuren::config::ImageConfig  image {};
     lifuren::config::PoetryConfig poetry{};
-    lifuren::config::OllamaConfig ollama{};
-    std::list<lifuren::config::ImageMarkConfig>  imageMark {};
-    std::list<lifuren::config::PoetryMarkConfig> poetryMark{};
-    lifuren::config::RAGConfig       rag{};
-    lifuren::config::EmbeddingConfig embedding{};
+    std::list<lifuren::config::MarkConfig> mark{};
+    lifuren::config::RAGConfig       rag       {};
+    lifuren::config::EmbeddingConfig embedding {};
+    lifuren::config::OllamaConfig    ollama    {};
     lifuren::config::ElasticSearchConfig      elasticsearch{};
     lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
-    lifuren::config::PoetizeRNNConfig         poetizeRNN{};
+    lifuren::config::PoetizeRNNConfig         poetizeRNN   {};
     lifuren::config::PaintCycleGANConfig      paintCycleGAN{};
     lifuren::config::PaintStyleGANConfig      paintSytleGAN{};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};

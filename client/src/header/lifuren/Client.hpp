@@ -35,19 +35,18 @@ public:
 };
 
 /**
- * RAG查询器
+ * RAG搜索终端
  */
 class RAGSearchClient {
 
 public:
     /**
-     * 索引搜索
-     * 
-     * @param prompt 索引内容
+     * @param prompt 搜索内容
+     * @param size   结果数量
      * 
      * @return 文档内容
      */
-    virtual std::vector<std::string> search(const std::string& prompt) = 0;
+    virtual std::vector<std::string> search(const std::string& prompt, const int size = 4) = 0;
 
 };
 

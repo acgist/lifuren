@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/Strings.hpp"
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 static void testLowerUpper() {
     std::string value = "LIfuREN";
@@ -132,9 +129,7 @@ static void testSplitMulti() {
     assert(split.size() == 3);
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     // testLowerUpper();
     // testStringTrim();
     // testConstCharTrim();
@@ -145,7 +140,4 @@ int main() {
     testJoin();
     testSplit();
     testSplitMulti();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

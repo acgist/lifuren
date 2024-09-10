@@ -8,6 +8,8 @@ target_link_libraries(
     lifurencore
 )
 
+include_directories(src/header)
+
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC ${HEADER_DIR}

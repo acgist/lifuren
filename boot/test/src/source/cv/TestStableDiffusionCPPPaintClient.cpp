@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/PaintClient.hpp"
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 static void testSD(const std::string& prompt, const std::string& image, const std::string& output, const std::string& model) {
     lifuren::StableDiffusionCPPPaintClient client{};
@@ -17,15 +14,10 @@ static void testSD(const std::string& prompt, const std::string& image, const st
     });
 }
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     std::string model  = argc > 4 ? argv[4] : "";
     std::string output = argc > 3 ? argv[3] : "";
     std::string image  = argc > 2 ? argv[2] : "";
     std::string prompt = argc > 1 ? argv[1] : "flower";
     testSD(prompt, image, output, model);
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

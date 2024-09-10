@@ -23,3 +23,10 @@
 |ElasticSearch|8.7.1|https://www.elastic.co|○|
 
 *√=必选、○-可选*
+
+## 数据
+
+|名称|官网|
+|:--|:--:|
+|chinese-poetry|https://github.com/chinese-poetry/chinese-poetry|
+|chinese-poetry-zhCN|https://github.com/chinese-poetry/chinese-poetry-zhCN|

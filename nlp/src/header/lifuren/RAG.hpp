@@ -1,10 +1,8 @@
 /**
- * RAG（检索增强生成）终端
- * 
- * 提供文档索引建立、文档内容搜索
+ * RAG（检索增强生成）
  */
-#ifndef LIFUREN_HEADER_NLP_RAG_CLIENT_HPP
-#define LIFUREN_HEADER_NLP_RAG_CLIENT_HPP
+#ifndef LIFUREN_HEADER_NLP_RAG_HPP
+#define LIFUREN_HEADER_NLP_RAG_HPP
 
 #include <map>
 #include <set>
@@ -27,7 +25,7 @@ namespace lifuren {
 struct RAGTask {
     
     // RAG方式
-    std::string rag;
+    std::string type;
     // 文档路径
     std::string path;
     // 词嵌入方式
@@ -42,13 +40,13 @@ class RAGClient : public RAGSearchClient {
 
 public:
     // 唯一标识
-    size_t id = 0L;
+    size_t id = 0LL;
 protected:
-    // 处理文件列表
-    std::set<std::string> doneFile;
     // 文档路径
     std::string path;
-    // 词嵌入服务
+    // 处理完成文件列表
+    std::set<std::string> doneFile;
+    // 词嵌入终端
     std::unique_ptr<lifuren::EmbeddingClient> embeddingClient{ nullptr };
 
 public:
@@ -66,22 +64,30 @@ public:
     void saveIndex();
     // 清空索引
     void truncateIndex();
-    // 添加已经处理文件
+    /**
+     * 添加已经处理文件
+     * 
+     * @param file 处理文件路径
+     */
     void doneFileEmplace(const std::string& file);
-    // 文件是否已经处理
+    /**
+     * @param file 处理文件路径
+     * 
+     * @return 是否以及处理
+     */
     bool doneFileContains(const std::string& file);
     /**
-     * 索引建立
-     * 
      * @param content 文档内容
      * 
-     * @return 索引内容
+     * @return 索引向量
      */
     virtual std::vector<float> index(const std::string& content) = 0;
     /**
-     * 删除索引
+     * @return 是否删除成功
      */
     virtual bool deleteRAG() = 0;
+
+public:
     /**
      * @param type      RAG终端类型
      * @param path      文档路径
@@ -94,21 +100,29 @@ public:
 };
 
 /**
+ * FaissRAG终端
+ * 
  * https://github.com/facebookresearch/faiss
  */
 class FaissRAGClient : public RAGClient {
 
 public:
+    // 真实索引
     std::unique_ptr<faiss::Index> indexBasicDB{ nullptr };
+    // 映射索引
     std::unique_ptr<faiss::Index> indexIdMapDB{ nullptr };
 
 public:
+    /**
+     * @param path      文档路径
+     * @param embedding 词嵌入方式
+     */
     FaissRAGClient(const std::string& path, const std::string& embedding);
     ~FaissRAGClient();
 
 public:
     std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::string& prompt) override;
+    std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
     bool deleteRAG() override;
 
 };
@@ -121,18 +135,22 @@ public:
 class ElasticSearchRAGClient : public RAGClient {
 
 public:
-    // 索引是否存在
+    // 是否存在索引
     bool exists = false;
     // REST终端
     std::shared_ptr<lifuren::RestClient> restClient{ nullptr };
 
 public:
+    /**
+     * @param path      文档路径
+     * @param embedding 词嵌入方式
+     */
     ElasticSearchRAGClient(const std::string& path, const std::string& embedding);
     ~ElasticSearchRAGClient();
 
 public:
     std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::string& prompt) override;
+    std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
     bool deleteRAG() override;
 
 };
@@ -144,7 +162,7 @@ class RAGTaskRunner {
 
 public:
     // 索引
-    size_t id = 0L;
+    size_t id = 0LL;
     // 是否停止
     bool stop = false;
     // 是否完成
@@ -198,6 +216,9 @@ public:
 class RAGService {
 
 public:
+    /**
+     * @return 单例
+     */
     static RAGService& getInstance();
 
 private:
@@ -211,24 +232,23 @@ public:
     ~RAGService();
 
 private:
-    // RAG任务列表
+    /**
+     * RAG任务执行器列表
+     * 任务地址 = RAG任务执行器
+     */
     std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks;
 
 public:
     /**
-     * 添加任务
-     * 
      * @param path 任务路径
      * 
-     * @return RAG任务
+     * @return RAG任务执行器
      */
     std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path);
     /**
-     * 添加任务
-     * 
      * @param path 任务路径
      * 
-     * @return 是否成功
+     * @return RAG任务执行器
      */
     std::shared_ptr<RAGTaskRunner> buildRAGTask(const std::string& path);
     /**
@@ -264,4 +284,4 @@ public:
 
 } // END OF lifuren
 
-#endif // END OF LIFUREN_HEADER_NLP_RAG_CLIENT_HPP
+#endif // END OF LIFUREN_HEADER_NLP_RAG_HPP

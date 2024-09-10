@@ -1,12 +1,10 @@
+#include "Test.hpp"
+
 #include "faiss/IndexFlat.h"
 #include "faiss/MetaIndexes.h"
 // #include "faiss/IndexIDMap.h"
 
 #include <random>
-
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 
 static void testSearch() {
     faiss::IndexFlatL2 db(3);
@@ -31,7 +29,7 @@ static void testSearch() {
     // SPDLOG_DEBUG("总量：{}", db.ntotal);
     SPDLOG_DEBUG("总量：{}", map.ntotal);
     int k = 3;
-    int n = 2;
+    int n = 1;
     float e[] { 1.0, 2.0, 3.0 };
     // float e[] { 0.0, 2.0, 3.0 };
     int64_t* I = new int64_t[k * n];
@@ -54,11 +52,6 @@ static void testSearch() {
     delete[] D;
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testSearch();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

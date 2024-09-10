@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/Datasets.hpp"
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/fmt/chrono.h"
@@ -134,12 +131,7 @@ static void testDatasetSharding() {
     SPDLOG_DEBUG("测试数据集索引: {}", sharding.getIndex(size, 29));
 }
 
-int main(const int argc, const char * const argv[]) {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testLoadImageFileDataset();
     testDatasetSharding();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

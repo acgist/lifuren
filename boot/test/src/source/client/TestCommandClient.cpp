@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/Client.hpp"
-
-#include "lifuren/Logger.hpp"
-
-#include "spdlog/spdlog.h"
 
 [[maybe_unused]] static void testCommand() {
     // lifuren::CommandClient client{ "ls" };
@@ -12,11 +9,6 @@
     SPDLOG_DEBUG("ls = {} - {} - {}", code, client.getCode(), client.getResult());
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testCommand();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

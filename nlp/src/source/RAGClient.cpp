@@ -1,4 +1,4 @@
-#include "lifuren/RAGClient.hpp"
+#include "lifuren/RAG.hpp"
 
 #include <fstream>
 #include <filesystem>
@@ -16,12 +16,12 @@ lifuren::RAGClient::~RAGClient() {
 }
 
 void lifuren::RAGClient::loadIndex() {
-    std::filesystem::path path = this->path;
-    path = path / "index" / "lifuren.mark";
+    const std::filesystem::path path = lifuren::files::join({ this->path, "index", "lifuren.mark" });
     if(std::filesystem::exists(path)) {
         std::ifstream stream;
         stream.open(path, std::ios_base::in);
         if(!stream.is_open()) {
+            SPDLOG_WARN("RAG索引文件打开失败：{}", path.string());
             stream.close();
             this->id = lifuren::uuid();
             return;
@@ -31,7 +31,7 @@ void lifuren::RAGClient::loadIndex() {
             if(line.empty()) {
                 continue;
             }
-            if(this->id == 0L) {
+            if(this->id == 0LL) {
                 this->id = std::atoll(line.c_str());
             } else {
                 this->doneFile.emplace(line);
@@ -44,17 +44,17 @@ void lifuren::RAGClient::loadIndex() {
 }
 
 void lifuren::RAGClient::saveIndex() {
-    std::filesystem::path path = this->path;
-    path = path / "index" / "lifuren.mark";
+    const std::filesystem::path path = lifuren::files::join({ this->path, "index", "lifuren.mark" });
     lifuren::files::createParent(path.string());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!stream.is_open()) {
+        SPDLOG_WARN("RAG索引文件打开失败：{}", path.string());
         stream.close();
         return;
     }
     stream << this->id << '\n';
-    for(auto& line : this->doneFile) {
+    for(const auto& line : this->doneFile) {
         stream << line << '\n';
     }
     stream.close();
@@ -74,7 +74,9 @@ bool lifuren::RAGClient::doneFileContains(const std::string& file) {
 }
 
 std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getRAGClient(const std::string& type, const std::string& path, const std::string& embedding) {
-    if(type == "elasticsearch" || type == "ElasticSearch") {
+    if(type == "faiss" || type == "Faiss") {
+        return std::make_unique<lifuren::FaissRAGClient>(path, embedding);
+    } else if(type == "elasticsearch" || type == "ElasticSearch") {
         return std::make_unique<lifuren::ElasticSearchRAGClient>(path, embedding);
     } else {
         SPDLOG_WARN("不支持的RAGClient类型：{}", type);

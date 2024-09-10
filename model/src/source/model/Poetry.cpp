@@ -1,3 +1,12 @@
+/**
+ * 诗词处理
+ * 
+ * TODO:
+ * 1. 内容错误
+ * 2. 诗经
+ * 3. 元曲
+ * 4. 五代诗词
+ */
 #include "lifuren/model/Poetry.hpp"
 
 #include <cstdint>

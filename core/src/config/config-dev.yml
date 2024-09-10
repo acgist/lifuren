@@ -16,7 +16,7 @@ poetry:
   clients:
     - poetize-rnn
 # 诗词标记页面配置
-poetry-mark:
+mark:
   - path: D:\tmp\data\mark\poetry
 # RAG
 rag:

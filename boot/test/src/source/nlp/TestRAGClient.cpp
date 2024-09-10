@@ -1,11 +1,8 @@
-#include "lifuren/RAGClient.hpp"
+#include "Test.hpp"
+#include "lifuren/RAG.hpp"
 
 #include <thread>
 #include <chrono>
-
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 
 [[maybe_unused]] static void testRAGService() {
     auto& service = lifuren::RAGService::getInstance();
@@ -19,7 +16,7 @@
 
 [[maybe_unused]] static void testRAGTaskRunner() {
     lifuren::RAGTask task {
-        .rag       = "elasticsearch",
+        .type      = "elasticsearch",
         .path      = "D:/tmp/docs",
         .embedding = "text",
     };
@@ -34,13 +31,8 @@
     // client.deleteRAG();
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testRAGService();
     // testRAGTaskRunner();
     // testElasticSearchRAGClient();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

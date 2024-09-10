@@ -1,4 +1,4 @@
-#include "lifuren/RAGClient.hpp"
+#include "lifuren/RAG.hpp"
 
 #include <mutex>
 
@@ -19,7 +19,7 @@ lifuren::RAGService& lifuren::RAGService::getInstance() {
 
 std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const std::string& path) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    auto iterator = this->tasks.find(path);
+    const auto iterator = this->tasks.find(path);
     if(iterator == this->tasks.end()) {
         return nullptr;
     }
@@ -27,26 +27,27 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const st
 }
 
 std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(const std::string& path) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
     const auto& rag       = lifuren::config::CONFIG.rag;
     const auto& embedding = lifuren::config::CONFIG.embedding;
     RAGTask task{
-        .rag       = rag.type,
+        .type      = rag.type,
         .path      = path,
         .embedding = embedding.type,
     };
-    std::lock_guard<std::recursive_mutex> lock(mutex);
-    auto iterator = this->tasks.find(task.path);
+    const auto iterator = this->tasks.find(task.path);
     if(iterator != this->tasks.end()) {
         SPDLOG_DEBUG("RAG任务已经添加：{}", task.path);
         return iterator->second;
     }
-    SPDLOG_DEBUG("添加RAG任务：{}", task.path);
     const auto runner = std::make_shared<lifuren::RAGTaskRunner>(task);
     if(runner->id <= 0L) {
+        SPDLOG_WARN("RAG任务没有索引标识：{}", task.path);
         return nullptr;
     } else {
+        SPDLOG_DEBUG("添加RAG任务：{}", task.path);
         runner->startExecute();
-        auto pair = this->tasks.emplace(task.path, runner);
+        const auto pair = this->tasks.emplace(task.path, runner);
         return pair.first->second;
     }
 }
@@ -71,7 +72,7 @@ bool lifuren::RAGService::deleteRAGTask(const std::string& path) {
         const auto& rag       = lifuren::config::CONFIG.rag;
         const auto& embedding = lifuren::config::CONFIG.embedding;
         RAGTask task{
-            .rag       = rag.type,
+            .type      = rag.type,
             .path      = path,
             .embedding = embedding.type,
         };

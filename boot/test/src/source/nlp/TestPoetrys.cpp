@@ -1,8 +1,6 @@
+#include "Test.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 #include "lifuren/Poetrys.hpp"
 
 static void testPoetrys() {
@@ -22,11 +20,6 @@ static void testPoetrys() {
     SPDLOG_DEBUG("symbol = {}", lifuren::poetrys::replaceSymbol(poetry));
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testPoetrys();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/Tensors.hpp"
-
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 
 static void testMul() {
     struct ggml_init_params params = {
@@ -35,11 +32,6 @@ static void testMul() {
     ggml_free(ctx);
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testMul();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

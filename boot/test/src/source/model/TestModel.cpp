@@ -1,12 +1,10 @@
+#include "Test.hpp"
 #include "lifuren/Model.hpp"
 
 #include <random>
 
 #include "ggml.h"
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 #include "lifuren/Datasets.hpp"
 
 class SimpleModel : public lifuren::Model {
@@ -118,12 +116,7 @@ static void testLine() {
     SPDLOG_DEBUG("当前偏置：{}", *b);
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testLine();
     // testSaveLoad();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);

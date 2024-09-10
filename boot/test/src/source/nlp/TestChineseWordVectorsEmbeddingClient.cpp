@@ -1,8 +1,5 @@
+#include "Test.hpp"
 #include "lifuren/EmbeddingClient.hpp"
-
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Logger.hpp"
 
 static void testEmbedding() {
     lifuren::ChineseWordVectorsEmbeddingClient client{};
@@ -15,12 +12,7 @@ static void testRelease() {
     client.release();
 }
 
-int main() {
-    lifuren::logger::init();
-    SPDLOG_DEBUG("测试");
+LFR_TEST(
     testEmbedding();
     testRelease();
-    SPDLOG_DEBUG("完成");
-    lifuren::logger::shutdown();
-    return 0;
-}
+);
