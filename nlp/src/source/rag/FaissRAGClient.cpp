@@ -26,7 +26,7 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& content) {
     std::vector<float>&& vector = this->embeddingClient->getSegmentVector(content);
     std::string* ptr = new std::string(content);
     ids.insert(ptr);
-    faiss::idx_t id = reinterpret_cast<size_t>(ptr);
+    int64_t id = reinterpret_cast<size_t>(ptr);
     this->indexIdMapDB->add_with_ids(faiss_n, vector.data(), &id);
     return vector;
 }
@@ -37,7 +37,7 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::string& prom
     std::vector<float> data;
     data.resize(faiss_n * size);
     // 索引
-    std::vector<faiss::idx_t> idx;
+    std::vector<int64_t> idx;
     idx.resize(faiss_n * size);
     this->indexIdMapDB->search(faiss_n, vector.data(), size, data.data(), idx.data());
     // 结果
