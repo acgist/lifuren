@@ -13,7 +13,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include "lifuren/config/Label.hpp"
+#include "lifuren/Label.hpp"
 
 namespace lifuren {
 namespace poetry  {

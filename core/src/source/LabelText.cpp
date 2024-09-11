@@ -1,4 +1,4 @@
-#include "lifuren/config/Label.hpp"
+#include "lifuren/Label.hpp"
 
 #include <cstdint>
 #include <sstream>

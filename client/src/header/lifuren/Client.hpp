@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Config.hpp"
 
 namespace httplib {
 

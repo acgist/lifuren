@@ -6,8 +6,8 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Yamls.hpp"
-#include "lifuren/config/Label.hpp"
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Label.hpp"
+#include "lifuren/Config.hpp"
 
 static std::mutex mutex;
 

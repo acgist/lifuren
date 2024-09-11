@@ -8,7 +8,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Config.hpp"
 
 httplib::Server lifuren::httpServer;
 

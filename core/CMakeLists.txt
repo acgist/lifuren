@@ -6,17 +6,14 @@ add_library(
     src/source/Files.cpp
     src/source/Jsons.cpp
     src/source/Yamls.cpp
+    src/source/Label.cpp
     src/source/Logger.cpp
-    src/source/Strings.cpp
+    src/source/Config.cpp
     src/source/Lifuren.cpp
+    src/source/Strings.cpp
+    src/source/LabelFile.cpp
+    src/source/LabelText.cpp
     src/source/Exception.cpp
-    src/source/config/Config.cpp
-    src/source/config/Label.cpp
-    src/source/config/LabelFile.cpp
-    src/source/config/LabelText.cpp
-    src/source/config/Mark.cpp
-    src/source/config/MarkFile.cpp
-    src/source/config/MarkText.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

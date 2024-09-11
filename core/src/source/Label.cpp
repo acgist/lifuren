@@ -1,4 +1,4 @@
-#include "lifuren/config/Label.hpp"
+#include "lifuren/Label.hpp"
 
 std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LABEL_AUDIO = lifuren::LabelFile::loadFile(lifuren::LABEL_AUDIO_PATH);
 std::map<std::string, std::vector<lifuren::LabelFile>> lifuren::LABEL_IMAGE = lifuren::LabelFile::loadFile(lifuren::LABEL_IMAGE_PATH);

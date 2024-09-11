@@ -22,7 +22,7 @@
 #include "FL/Fl_PNG_Image.H"
 
 #include "lifuren/Ptr.hpp"
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Config.hpp"
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT

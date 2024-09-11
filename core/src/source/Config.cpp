@@ -1,4 +1,4 @@
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Config.hpp"
 
 #include <algorithm>
 

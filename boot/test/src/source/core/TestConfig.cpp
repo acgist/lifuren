@@ -1,5 +1,5 @@
 #include "Test.hpp"
-#include "lifuren/config/Config.hpp"
+#include "lifuren/Config.hpp"
 
 #include <sstream>
 

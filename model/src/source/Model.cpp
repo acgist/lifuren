@@ -10,9 +10,9 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"
+#include "lifuren/Config.hpp"
 #include "lifuren/Tensors.hpp"
 #include "lifuren/Datasets.hpp"
-#include "lifuren/config/Config.hpp"
 
 lifuren::Model::Model(ModelParams params) : params(params) {
 }
