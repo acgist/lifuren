@@ -377,7 +377,7 @@ static void printSDParams(SDParams& params) {
     printf("    upscale_repeats           :    %d\n", params.upscale_repeats);
     printf("    motion_bucket_id          :    %d\n", params.motion_bucket_id);
 
-    printf("    seed                      :    %lld\n", params.seed);
+    printf("    seed                      :    %ld\n", params.seed);
 
     printf("    min_cfg                   :    %.2f\n", params.min_cfg);
     printf("    strength                  :    %.2f\n", params.strength);

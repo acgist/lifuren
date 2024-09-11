@@ -6,6 +6,10 @@ lifuren::PoetizeClient::PoetizeClient() {
 lifuren::PoetizeClient::~PoetizeClient() {
 }
 
+bool lifuren::PoetizeClient::stop() {
+    this->changeState(false);
+}
+
 std::unique_ptr<lifuren::PoetizeClient> lifuren::PoetizeClient::getClient(const std::string& client) {
     if(client == "poetize-shifo-rnn") {
         return std::make_unique<lifuren::ShifoRNNPoetizeClient>();

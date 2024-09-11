@@ -5,6 +5,7 @@ add_library(
     src/source/NLP.cpp
     src/source/RAGClient.cpp
     src/source/RAGService.cpp
+    src/source/PoetizeClient.cpp
     src/source/RAGTaskRunner.cpp
     src/source/EmbeddingClient.cpp
     src/source/rag/FaissRAGClient.cpp
