@@ -72,10 +72,6 @@ public:
      * @return 是否成功
      */
     virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
-    /**
-     * @return 是否成功
-     */
-    virtual bool stop();
 
 };
 
