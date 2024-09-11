@@ -17,7 +17,7 @@ namespace lifuren {
 /**
  * 诗词终端
  */
-class PoetizeClient : public Client {
+class PoetizeClient : public StatefulClient {
 
 public:
     PoetizeClient();
@@ -28,11 +28,67 @@ public:
 
 };
 
-class RNNPoetizeClient : public PoetizeClient {
+class ShifoRNNPoetizeClient : public PoetizeClient {
 
 public:
-    RNNPoetizeClient();
-    virtual ~RNNPoetizeClient();
+    ShifoRNNPoetizeClient();
+    virtual ~ShifoRNNPoetizeClient();
+
+};
+
+class ShimoRNNPoetizeClient : public PoetizeClient {
+
+public:
+    ShimoRNNPoetizeClient();
+    virtual ~ShimoRNNPoetizeClient();
+
+};
+
+class ShiguiRNNPoetizeClient : public PoetizeClient {
+
+public:
+    ShiguiRNNPoetizeClient();
+    virtual ~ShiguiRNNPoetizeClient();
+
+};
+
+class ShixianRNNPoetizeClient : public PoetizeClient {
+
+public:
+    ShixianRNNPoetizeClient();
+    virtual ~ShixianRNNPoetizeClient();
+
+};
+
+class ShishengRNNPoetizeClient : public PoetizeClient {
+
+public:
+    ShishengRNNPoetizeClient();
+    virtual ~ShishengRNNPoetizeClient();
+
+};
+
+class LiduRNNPoetizeClient : public PoetizeClient {
+
+public:
+    LiduRNNPoetizeClient();
+    virtual ~LiduRNNPoetizeClient();
+
+};
+
+class SuxinRNNPoetizeClient : public PoetizeClient {
+
+public:
+    SuxinRNNPoetizeClient();
+    virtual ~SuxinRNNPoetizeClient();
+
+};
+
+class WanyueRNNPoetizeClient : public PoetizeClient {
+
+public:
+    WanyueRNNPoetizeClient();
+    virtual ~WanyueRNNPoetizeClient();
 
 };
 

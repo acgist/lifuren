@@ -52,30 +52,31 @@ if(name && !name.IsNull() && name.IsSequence()) {                    \
 target[#key] = source.name;
 #endif
 
-LFR_YAML_ENUM(config::Loss,           NONE, CROSS_ENTROPY_LOSS, NONE)
-LFR_YAML_ENUM(config::Activation,     NONE, SOFTMAX,            NONE)
-LFR_YAML_ENUM(config::Regularization, NONE, BATCH_NORM,         NONE)
-
-LFR_LOG_FORMAT_ENUM(lifuren::config::Loss)
-LFR_LOG_FORMAT_ENUM(lifuren::config::Activation)
-LFR_LOG_FORMAT_ENUM(lifuren::config::Regularization)
-
-const std::string lifuren::config::CONFIG_HTTP_SERVER   = "http-server";
-const std::string lifuren::config::CONFIG_IMAGE         = "image";
-const std::string lifuren::config::CONFIG_POETRY        = "poetry";
-const std::string lifuren::config::CONFIG_MARK          = "mark";
-const std::string lifuren::config::CONFIG_RAG           = "rag";
-const std::string lifuren::config::CONFIG_EMBEDDING     = "embedding";
-const std::string lifuren::config::CONFIG_OLLAMA        = "ollama";
-const std::string lifuren::config::CONFIG_ELASTICSEARCH = "elasticsearch";
-const std::string lifuren::config::CONFIG_POETIZE_RNN     = "poetize-rnn";
-const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN = "paint-cycle-gan";
-const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN = "paint-style-gan";
-const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
-const std::string lifuren::config::CONFIG_CHINESE_WORD_VECTORS = "chinese-word-vectors";
-
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
+
+const std::string lifuren::config::CONFIG_HTTP_SERVER          = "http-server";
+const std::string lifuren::config::CONFIG_IMAGE                = "image";
+const std::string lifuren::config::CONFIG_POETRY               = "poetry";
+const std::string lifuren::config::CONFIG_MARK                 = "mark";
+const std::string lifuren::config::CONFIG_RAG                  = "rag";
+const std::string lifuren::config::CONFIG_EMBEDDING            = "embedding";
+const std::string lifuren::config::CONFIG_OLLAMA               = "ollama";
+const std::string lifuren::config::CONFIG_ELASTICSEARCH        = "elasticsearch";
+const std::string lifuren::config::CONFIG_CHINESE_WORD_VECTORS = "chinese-word-vectors";
+const std::string lifuren::config::CONFIG_POETIZE_SHIFO_RNN    = "poetize-shifo-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_SHIMO_RNN    = "poetize-shimo-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_SHIGUI_RNN   = "poetize-shigui-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_SHIXIAN_RNN  = "poetize-shixian-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_SHISHENG_RNN = "poetize-shisheng-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_LIDU_RNN     = "poetize-lidu-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_SUXIN_RNN    = "poetize-suxin-rnn";
+const std::string lifuren::config::CONFIG_POETIZE_WANYUE_RNN   = "poetize-wanyue-rnn";
+const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN      = "paint-cycle-gan";
+const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN      = "paint-style-gan";
+const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
+
+lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile();
 
 /**
  * @param config 配置
@@ -87,8 +88,6 @@ static void loadYaml(lifuren::config::Config& config, const std::string& name, c
  * @return YAML
  */
 static YAML::Node toYaml();
-
-lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile();
 
 lifuren::config::Config::Config() {
 }
@@ -162,8 +161,24 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
-    } else if(lifuren::config::CONFIG_POETIZE_RNN == name) {
-        LFR_CONFIG_YAML_GETTER(config.poetizeRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_CHINESE_WORD_VECTORS == name) {
+        LFR_CONFIG_YAML_GETTER(config.chineseWordVectors, yaml, path, path, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SHIFO_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeShifoRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SHIMO_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeShimoRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SHIGUI_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeShiguiRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SHIXIAN_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeShixianRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SHISHENG_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeShishengRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_LIDU_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeLiduRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_SUXIN_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeSuxinRNN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_POETIZE_WANYUE_RNN == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetizeWanyueRNN, yaml, model, model, std::string);
     } else if(lifuren::config::CONFIG_PAINT_CYCLE_GAN == name) {
         LFR_CONFIG_YAML_GETTER(config.paintCycleGAN, yaml, model, model, std::string);
     } else if(lifuren::config::CONFIG_PAINT_STYLE_GAN == name) {
@@ -173,8 +188,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         std::map<std::string, std::string> map;
         LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
         config.stableDiffusionCPP.options.insert(map.begin(), map.end());
-    } else if(lifuren::config::CONFIG_CHINESE_WORD_VECTORS == name) {
-        LFR_CONFIG_YAML_GETTER(config.chineseWordVectors, yaml, path, path, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -254,9 +267,49 @@ YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
     }
     {
-        YAML::Node poetizeRNN;
-        LFR_CONFIG_YAML_SETTER(poetizeRNN, config.poetizeRNN, model, model);
-        yaml[lifuren::config::CONFIG_POETIZE_RNN] = poetizeRNN;
+        YAML::Node chineseWordVectors;
+        LFR_CONFIG_YAML_SETTER(chineseWordVectors, config.chineseWordVectors, path, path);
+        yaml[lifuren::config::CONFIG_CHINESE_WORD_VECTORS] = chineseWordVectors;
+    }
+    {
+        YAML::Node poetizeShifoRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeShifoRNN, config.poetizeShifoRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SHIFO_RNN] = poetizeShifoRNN;
+    }
+    {
+        YAML::Node poetizeShimoRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeShimoRNN, config.poetizeShimoRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SHIMO_RNN] = poetizeShimoRNN;
+    }
+    {
+        YAML::Node poetizeShiguiRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeShiguiRNN, config.poetizeShiguiRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SHIGUI_RNN] = poetizeShiguiRNN;
+    }
+    {
+        YAML::Node poetizeShixianRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeShixianRNN, config.poetizeShixianRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SHIXIAN_RNN] = poetizeShixianRNN;
+    }
+    {
+        YAML::Node poetizeShishengRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeShishengRNN, config.poetizeShishengRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SHISHENG_RNN] = poetizeShishengRNN;
+    }
+    {
+        YAML::Node poetizeLiduRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeLiduRNN, config.poetizeLiduRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_LIDU_RNN] = poetizeLiduRNN;
+    }
+    {
+        YAML::Node poetizeSuxinRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeSuxinRNN, config.poetizeSuxinRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_SUXIN_RNN] = poetizeSuxinRNN;
+    }
+    {
+        YAML::Node poetizeWanyueRNN;
+        LFR_CONFIG_YAML_SETTER(poetizeWanyueRNN, config.poetizeWanyueRNN, model, model);
+        yaml[lifuren::config::CONFIG_POETIZE_WANYUE_RNN] = poetizeWanyueRNN;
     }
     {
         YAML::Node paintCycleGAN;
@@ -273,11 +326,6 @@ YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, model,   model);
         LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, options, options);
         yaml[lifuren::config::CONFIG_STABLE_DIFFUSION_CPP] = stableDiffusionCPP;
-    }
-    {
-        YAML::Node chineseWordVectors;
-        LFR_CONFIG_YAML_SETTER(chineseWordVectors, config.chineseWordVectors, path, path);
-        yaml[lifuren::config::CONFIG_CHINESE_WORD_VECTORS] = chineseWordVectors;
     }
     return yaml;
 }
@@ -297,7 +345,7 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
     SPDLOG_DEBUG("加载配置文件：{}", path);
     lifuren::config::Config config{};
     YAML::Node yaml = lifuren::yamls::loadFile(path);
-    if(!yaml || yaml.IsNull() || yaml.size() == 0L) {
+    if(!yaml || yaml.IsNull() || yaml.size() == 0LL) {
         return config;
     }
     for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {

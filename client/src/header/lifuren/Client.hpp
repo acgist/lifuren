@@ -8,6 +8,7 @@
 
 #include <map>
 #include <list>
+#include <mutex>
 #include <cstdio>
 #include <string>
 #include <memory>
@@ -31,6 +32,28 @@ class Client {
 public:
     Client();
     virtual ~Client();
+
+};
+
+/**
+ * 有状态的终端
+ */
+class StatefulClient {
+
+protected:
+    // 是否运行
+    bool running{ false };
+    // 状态锁
+    std::mutex mutex;
+
+public:
+    const bool& isRunning() const;
+    void changeState();
+    void changeState(bool running);
+
+public:
+    StatefulClient();
+    virtual ~StatefulClient();
 
 };
 
@@ -218,35 +241,6 @@ public:
      * @return 响应内容
      */
     Response deletePath(const std::string& path, const std::map<std::string, std::string>& headers = {});
-
-};
-
-/**
- * 命令终端
- */
-class CommandClient : public Client {
-
-public:
-    CommandClient(const std::string& command, std::function<void(bool, const std::string&)> callback = nullptr);
-    ~CommandClient();
-
-protected:
-    // 结束状态
-    int code = -1;
-    // 执行结果
-    std::string result;
-    // 执行命令
-    std::string command;
-    // 命令管道
-    FILE* pipe{ nullptr };
-    // 回调函数
-    std::function<void(bool, const std::string&)> callback{ nullptr };
-
-public:
-    const int& execute();
-    void shutdown() const;
-    const int& getCode() const;
-    const std::string& getResult() const;
 
 };
 

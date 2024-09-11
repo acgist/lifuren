@@ -13,7 +13,7 @@ namespace lifuren {
 /**
  * 绘画终端
  */
-class PaintClient : public Client {
+class PaintClient : public StatefulClient {
 
 public:
 
@@ -72,6 +72,10 @@ public:
      * @return 是否成功
      */
     virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
+    /**
+     * @return 是否成功
+     */
+    virtual bool stop();
 
 };
 
@@ -98,6 +102,7 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
+    bool stop() override;
 
 };
 

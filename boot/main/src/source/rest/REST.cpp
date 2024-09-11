@@ -43,8 +43,8 @@ void lifuren::shutdownHttpServer() {
         SPDLOG_INFO("REST服务已经结束");
         return;
     }
-    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);;
     restClose = true;
+    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);;
     httpServer.stop();
 }
 

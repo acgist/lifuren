@@ -4,7 +4,7 @@ add_library(
     ${PROJECT_NAME}
     src/source/Client.cpp
     src/source/RestClient.cpp
-    src/source/CommandClient.cpp
+    src/source/StatefulClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

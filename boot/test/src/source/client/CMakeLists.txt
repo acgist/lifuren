@@ -6,10 +6,3 @@ target_link_libraries(
     lifurenclient
 )
 
-add_executable(testCommandClient TestCommandClient.cpp)
-add_test(NAME testCommandClient COMMAND testCommandClient)
-set_target_properties(testCommandClient PROPERTIES FOLDER "test-client")
-target_link_libraries(
-    testCommandClient
-    lifurenclient
-)

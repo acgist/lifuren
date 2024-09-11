@@ -2,25 +2,43 @@
  * 系统设置
  * 
  * @author acgist
+ * 
+ * 诗词处理
+ * 
+ * TODO:
+ * 1. 内容错误
+ * 2. 诗经
+ * 3. 元曲
+ * 4. 五代诗词
  */
-#ifndef LFR_HEADER_CORE_CONFIG_CONFIG_HPP
-#define LFR_HEADER_CORE_CONFIG_CONFIG_HPP
+#ifndef LFR_HEADER_CORE_CONFIG_HPP
+#define LFR_HEADER_CORE_CONFIG_HPP
 
 #include <set>
 #include <map>
 #include <list>
 #include <string>
+#include <vector>
 
 namespace lifuren::config {
 
+// 配置路径
+#ifdef _WIN32
+const char* const CONFIG_PATH = "../config/config-win.yml";
+#else
 const char* const CONFIG_PATH = "../config/config.yml";
+#endif
+// 格律路径
+const char* const RHYTHM_PATH = "../config/rhythm.yml";
 
 // 前置声明
 class Config;
+class Rhythm;
 
 extern std::string httpServerHost;
 extern int         httpServerPort;
 
+// 全局配置名称
 extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_POETRY;
@@ -29,51 +47,23 @@ extern const std::string CONFIG_RAG;
 extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
-extern const std::string CONFIG_POETIZE_RNN;
+extern const std::string CONFIG_CHINESE_WORD_VECTORS;
+extern const std::string CONFIG_POETIZE_SHIFO_RNN;
+extern const std::string CONFIG_POETIZE_SHIMO_RNN;
+extern const std::string CONFIG_POETIZE_SHIGUI_RNN;
+extern const std::string CONFIG_POETIZE_SHIXIAN_RNN;
+extern const std::string CONFIG_POETIZE_SHISHENG_RNN;
+extern const std::string CONFIG_POETIZE_LIDU_RNN;
+extern const std::string CONFIG_POETIZE_SUXIN_RNN;
+extern const std::string CONFIG_POETIZE_WANYUE_RNN;
 extern const std::string CONFIG_PAINT_CYCLE_GAN;
 extern const std::string CONFIG_PAINT_STYLE_GAN;
 extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
-extern const std::string CONFIG_CHINESE_WORD_VECTORS;
 
+// 全局配置：config.yml
 extern lifuren::config::Config CONFIG;
-
-/**
- * 损失函数
- */
-enum class Loss {
-
-    NONE               = 0, // 没有损失函数
-    MSE_LOSS           = 1, // 均方误差损失函数
-    NLL_LOSS           = 2, // 负对数似然损失函数
-    CROSS_ENTROPY_LOSS = 3, // 交叉熵损失函数
-
-};
-
-/**
- * 激活函数
- */
-enum class Activation {
-
-    NONE    = 0, // 没有激活函数
-    RELU    = 1, // ReLU
-    TANH    = 2, // 双曲正切函数
-    SIGMOID = 3, // Sigmoid
-    SOFTMAX = 4, // Softmax
-
-};
-
-/**
- * 正则函数
- */
-enum class Regularization {
-
-    NONE       = 0, // 没有正则
-    L1         = 1, // L1
-    L2         = 2, // L2
-    DROPOUT    = 3, // Dropout
-    BATCH_NORM = 4, // BatchNorm
-
-};
+// 全局格律：rhythm.yml
+extern std::map<std::string, Rhythm> RHYTHM;
 
 /**
  * REST配置
@@ -209,36 +199,6 @@ struct ChineseWordVectorsConfig {
 };
 
 /**
- * poetize-rnn配置
- */
-struct PoetizeRNNConfig {
-    
-    // 模型路径
-    std::string model;
-
-};
-
-/**
- * paint-cycle-gan配置
- */
-struct PaintCycleGANConfig {
-    
-    // 模型路径
-    std::string model;
-
-};
-
-/**
- * paint-style-gan配置
- */
-struct PaintStyleGANConfig {
-    
-    // 模型路径
-    std::string model;
-
-};
-
-/**
  * stable-diffusion-cpp配置
  */
 struct StableDiffusionCPPConfig {
@@ -256,15 +216,7 @@ struct StableDiffusionCPPConfig {
 struct ModelConfig {
 
     // 模型目录
-    std::string modelPath;
-    // 激活函数
-    lifuren::config::Activation activation = lifuren::config::Activation::RELU;
-    // 学习速率
-    double learningRate = 0.0;
-    // 正则函数
-    lifuren::config::Regularization regularization = lifuren::config::Regularization::NONE;
-    // 正则速率
-    double regularizationRate = 0.0;
+    std::string model;
 
 };
 
@@ -282,9 +234,16 @@ public:
     lifuren::config::OllamaConfig    ollama    {};
     lifuren::config::ElasticSearchConfig      elasticsearch{};
     lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
-    lifuren::config::PoetizeRNNConfig         poetizeRNN   {};
-    lifuren::config::PaintCycleGANConfig      paintCycleGAN{};
-    lifuren::config::PaintStyleGANConfig      paintSytleGAN{};
+    lifuren::config::ModelConfig poetizeShifoRNN   {};
+    lifuren::config::ModelConfig poetizeShimoRNN   {};
+    lifuren::config::ModelConfig poetizeShiguiRNN  {};
+    lifuren::config::ModelConfig poetizeShixianRNN {};
+    lifuren::config::ModelConfig poetizeShishengRNN{};
+    lifuren::config::ModelConfig poetizeLiduRNN    {};
+    lifuren::config::ModelConfig poetizeSuxinRNN   {};
+    lifuren::config::ModelConfig poetizeWanyueRNN  {};
+    lifuren::config::ModelConfig paintCycleGAN{};
+    lifuren::config::ModelConfig paintSytleGAN{};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:
@@ -293,6 +252,48 @@ public:
 
 public:
     std::string toYaml();
+
+};
+
+/**
+ * 格律
+ */
+class Rhythm {
+
+public:
+    Rhythm();
+    Rhythm(const std::string& name, const std::string& alias);
+    virtual ~Rhythm();
+
+public:
+    // 标签名称
+    std::string name;
+    // 标签别名
+    std::string alias;
+    // 韵律：题材、词牌
+    std::string rhythm;
+    // 示例
+    std::string example;
+    // 字数
+    int fontSize = 0;
+    // 段数
+    int segmentSize = 0;
+    // 分段规则
+    std::vector<uint32_t> segmentRule;
+    // 分词规则
+    std::vector<uint32_t> participleRule;
+
+public:
+    /**
+     * @return YAML
+     */
+    virtual std::string toYaml();
+    /**
+     * @param path 文件路径
+     * 
+     * @return 映射
+     */
+    static std::map<std::string, Rhythm> loadFile(const std::string& path);
 
 };
 
@@ -324,4 +325,4 @@ extern bool saveFile(const std::string& path);
 
 } // END OF lifuren::config
 
-#endif // LFR_HEADER_CORE_CONFIG_CONFIG_HPP
+#endif // LFR_HEADER_CORE_CONFIG_HPP

@@ -118,15 +118,15 @@ bool lifuren::RAGTaskRunner::execute() {
                 continue;
             }
             auto title      = poetry.find("title");
-            auto rhythmic   = poetry.find("rhythmic");
+            auto rhythm     = poetry.find("rhythm");
             auto paragraphs = poetry.find("paragraphs");
             std::string chunk;
             if(title != poetry.end()) {
                 chunk += title->get<std::string>();
                 chunk += '\n';
             }
-            if(rhythmic != poetry.end()) {
-                chunk += rhythmic->get<std::string>();
+            if(rhythm != poetry.end()) {
+                chunk += rhythm->get<std::string>();
                 chunk += '\n';
             }
             if(paragraphs != poetry.end()) {

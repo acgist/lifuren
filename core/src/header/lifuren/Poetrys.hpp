@@ -1,22 +1,18 @@
 /**
- * 诗词
- * 
- * TODO: 诗词模型
- * 
- * @author acgist
+ * 诗词工具
  */
-#ifndef LFR_HEADER_MODEL_POETRY_HPP
-#define LFR_HEADER_MODEL_POETRY_HPP
+#ifndef LFR_HEADER_NLP_POETRYS_HPP
+#define LFR_HEADER_NLP_POETRYS_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "nlohmann/json.hpp"
 
-#include "lifuren/Label.hpp"
+#include "lifuren/Config.hpp"
 
 namespace lifuren {
-namespace poetry  {
+namespace poetrys {
 
 /**
  * 符号
@@ -38,7 +34,13 @@ const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "�
  */
 extern std::string beautify(const std::string& segment);
 
-} // END OF poetry
+extern std::vector<std::string> toChars(const std::string& poetry);
+
+extern std::vector<std::string> toWords(const std::string& poetry);
+
+extern std::vector<std::string> toSegments(const std::string& poetry);
+
+extern std::string replaceSymbol(const std::string& poetry);
 
 /**
  * 诗词
@@ -51,7 +53,7 @@ public:
     // 作者
     std::string author;
     // 格律
-    std::string rhythmic;
+    std::string rhythm;
     // 原始段落
     std::string segment;
     // 朴素段落：没有符号
@@ -65,9 +67,9 @@ public:
     // 分词段落
     std::vector<std::string> participleParagraphs;
     // 规则：不要释放资源（全局资源）
-    LabelText* label = nullptr;
+    lifuren::config::Rhythm* rhythmPtr = nullptr;
     // JSON解析
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythmic, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythm, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
 
 public:
     /**
@@ -81,7 +83,7 @@ public:
      * 
      * @return 是否匹配成功
      */
-    bool matchLabel();
+    bool matchRhythm();
     /**
      * 段落分词
      * 
@@ -97,13 +99,7 @@ public:
 
 };
 
-/**
- * TODO: 模型定义
- */
-class PoetryModel {
+} // END OF poetrys
+} // END OF lifuren
 
-};
-
-}
-
-#endif // LFR_HEADER_MODEL_POETRY_HPP
+#endif // LFR_HEADER_NLP_POETRYS_HPP

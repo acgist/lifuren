@@ -4,21 +4,25 @@
 
 #include "spdlog/spdlog.h"
 
+#include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 
+#include "lifuren/Ptr.hpp"
+#include "lifuren/Config.hpp"
+
 static Fl_Choice* clientPtr       { nullptr };
-static Fl_Input*  modelPathPtr    { nullptr };
+static Fl_Input * modelPathPtr    { nullptr };
 static Fl_Button* modelChoosePtr  { nullptr };
-static Fl_Input*  imagePathPtr    { nullptr };
+static Fl_Input * imagePathPtr    { nullptr };
 static Fl_Button* imageChoosePtr  { nullptr };
-static Fl_Input*  outputPathPtr   { nullptr };
+static Fl_Input * outputPathPtr   { nullptr };
 static Fl_Button* outputChoosePtr { nullptr };
 static Fl_Button* generatePtr     { nullptr };
-static Fl_Input*  poetryPromptPtr { nullptr };
+static Fl_Input * poetryPromptPtr { nullptr };
 static Fl_Button* poetrySearchPtr { nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
@@ -55,18 +59,27 @@ void lifuren::ImageWindow::saveConfig() {
     if(imageConfig.client == "stable-diffusion-cpp") {
         auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
         stableDiffusionCPP.model = modelPathPtr->value();
+    // 暂不支持以下模型
+    // } else if(imageConfig.client == "paint-cycle-gan") {
+    // } else if(imageConfig.client == "paint-style-gan") {
     } else {
+        // 其他终端
     }
     lifuren::Configuration::saveConfig();
 }
 
 void lifuren::ImageWindow::redrawConfigElement() {
-    auto& imageConfig = lifuren::config::CONFIG.image;
+    const auto& imageConfig = lifuren::config::CONFIG.image;
     outputPathPtr->value(imageConfig.output.c_str());
     if(imageConfig.client == "stable-diffusion-cpp") {
-        auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
+        const auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
         modelPathPtr->value(stableDiffusionCPP.model.c_str());
+    // 暂不支持以下模型
+    // } else if(imageConfig.client == "paint-cycle-gan") {
+    // } else if(imageConfig.client == "paint-style-gan") {
     } else {
+        // 其他终端
+        modelPathPtr->value("");
     }
 }
 
@@ -104,7 +117,12 @@ void lifuren::ImageWindow::drawElement() {
     this->redrawConfigElement();
 }
 
-static void generate(Fl_Widget*, void* voidPtr) {
+static void generate(Fl_Widget*, void*) {
+    if(clientPtr->value() < 0) {
+        fl_message("没有选择绘画终端");
+        return;
+    }
+    // TODO: 实现逻辑
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {

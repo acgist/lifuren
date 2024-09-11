@@ -220,6 +220,11 @@ bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, 
     }
 }
 
+bool lifuren::StableDiffusionCPPPaintClient::stop() {
+    // TODO: 停止
+    return true;
+}
+
 static void logCallback(sd_log_level_t level, const char* log, void* data) {
     SPDLOG_DEBUG("SD : {}", log);
 }

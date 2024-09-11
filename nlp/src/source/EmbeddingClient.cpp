@@ -68,7 +68,7 @@ std::map<std::string, std::vector<float>> lifuren::EmbeddingClient::getVector(co
     for(const auto& word : segment) {
         ret.emplace(word, std::move(this->getVector(word)));
     }
-    return std::move(ret);
+    return ret;
 }
 
 bool lifuren::EmbeddingClient::release() {

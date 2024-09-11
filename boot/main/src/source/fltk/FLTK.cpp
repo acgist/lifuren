@@ -6,16 +6,21 @@
 
 #include <cmath>
 #include <algorithm>
-
-#include "lifuren/Ptr.hpp"
+#include <filesystem>
 
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Ptr.hpp"
+#include "lifuren/Config.hpp"
 
 #include "FL/Fl_Choice.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
 // 是否关闭
 static bool fltkClose = false;
+
+// 上次选择路径
+static const char* last_directory = "";
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
@@ -44,34 +49,49 @@ std::string lifuren::fileChooser(const char* title, const char* directory, const
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_FILE);
     chooser.title(title);
     chooser.filter(filter);
-    chooser.directory(directory);
+    if(std::strlen(directory) > 0) {
+        chooser.directory(directory);
+    } else if(std::strlen(last_directory) > 0) {
+        chooser.directory(last_directory);
+    } else {
+    }
     const int code = chooser.show();
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
+            std::filesystem::path path{ filename };
+            last_directory = path.parent_path().string().c_str();
             SPDLOG_DEBUG("文件选择成功：{} - {}", title, filename);
             return filename;
         }
-        default:
+        default: {
             SPDLOG_DEBUG("文件选择失败：{} - {}", title, code);
-            return "";
+            return {};
+        }
     }
 }
 
 std::string lifuren::directoryChooser(const char* title, const char* directory) {
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
     chooser.title(title);
-    chooser.directory(directory);
+    if(std::strlen(directory) > 0) {
+        chooser.directory(directory);
+    } else if(std::strlen(last_directory) > 0) {
+        chooser.directory(last_directory);
+    } else {
+    }
     const int code = chooser.show();
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
+            last_directory = filename.c_str();
             SPDLOG_DEBUG("目录选择成功：{} - {}", title, filename);
             return filename;
         }
-        default:
+        default: {
             SPDLOG_DEBUG("目录选择失败：{} - {}", title, code);
-            return "";
+            return {};
+        }
     }
 }
 
@@ -90,10 +110,7 @@ lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(wi
 
 lifuren::Window::~Window() {
     SPDLOG_DEBUG("关闭窗口");
-    if(this->iconImagePtr != nullptr) {
-        delete this->iconImagePtr;
-        this->iconImagePtr = nullptr;
-    }
+    LFR_DELETE_THIS_PTR(iconImagePtr);
 }
 
 void lifuren::Window::init() {

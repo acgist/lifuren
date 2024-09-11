@@ -12,9 +12,16 @@ image:
     - paint-style-gan
 # 诗词页面配置
 poetry:
-  client: poetize-rnn
+  client: poetize-shixian-rnn
   clients:
-    - poetize-rnn
+    - poetize-shimo-rnn
+    - poetize-shifo-rnn
+    - poetize-shigui-rnn
+    - poetize-shixian-rnn
+    - poetize-shisheng-rnn
+    - poetize-lidu-rnn
+    - poetize-suxin-rnn
+    - poetize-wanyue-rnn
 # 诗词标记页面配置
 mark:
   - path: /data/mark/poetry
@@ -52,9 +59,30 @@ elasticsearch:
 # chinese-word-vectors配置
 chinese-word-vectors:
   path: /data/Chinese-Word-Vectors/sgns.sikuquanshu.word
-# poetize-rnn配置
-poetize-rnn:
-  model: /data/model/poetry-rnn.model
+# poetize-shifo-rnn配置
+poetize-shifo-rnn:
+  model: /data/model/poetize-shifo-rnn.model
+# poetize-shimo-rnn配置
+poetize-shimo-rnn:
+  model: /data/model/poetize-shimo-rnn.model
+# poetize-shigui-rnn配置
+poetize-shigui-rnn:
+  model: /data/model/poetize-shigui-rnn.model
+# poetize-shixian-rnn配置
+poetize-shixian-rnn:
+  model: /data/model/poetize-shixian-rnn.model
+# poetize-shisheng-rnn配置
+poetize-shisheng-rnn:
+  model: /data/model/poetize-shisheng-rnn.model
+# poetize-lidu-rnn配置
+poetize-lidu-rnn:
+  model: /data/model/poetize-lidu-rnn.model
+# poetize-suxin-rnn配置
+poetize-suxin-rnn:
+  model: /data/model/poetize-suxin-rnn.model
+# poetize-wanyue-rnn配置
+poetize-wanyue-rnn:
+  model: /data/model/poetize-wanyue-rnn.model
 # paint-cycle-gan配置
 paint-cycle-gan:
   model: /data/model/paint-cycle-gan.model

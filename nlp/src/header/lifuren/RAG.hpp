@@ -14,6 +14,10 @@
 
 #include "lifuren/EmbeddingClient.hpp"
 
+namespace faiss {
+    class Index;
+}
+
 namespace lifuren {
 
 /**
@@ -103,6 +107,11 @@ public:
  */
 class FaissRAGClient : public RAGClient {
 
+protected:
+    std::shared_ptr<faiss::Index> indexBasicDB { nullptr };
+    std::shared_ptr<faiss::Index> indexIdMapDB { nullptr };
+    std::shared_ptr<std::set<std::string*>> ids{ nullptr };
+
 public:
     /**
      * @param path      文档路径
@@ -125,7 +134,7 @@ public:
  */
 class ElasticSearchRAGClient : public RAGClient {
 
-public:
+protected:
     // 是否存在索引
     bool exists = false;
     // REST终端

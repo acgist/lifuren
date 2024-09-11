@@ -9,27 +9,42 @@
 #include "faiss/MetaIndexes.h"
 // #include "faiss/IndexIDMap.h"
 
-// 使用内存地址作为内容ID
-static std::set<std::string*> ids{};
 // 真实索引
-static std::unique_ptr<faiss::Index> indexBasicDB{ nullptr };
+static std::map<size_t, std::shared_ptr<faiss::Index>> indexBasicDBMap{};
 // 映射索引
-static std::unique_ptr<faiss::Index> indexIdMapDB{ nullptr };
+static std::map<size_t, std::shared_ptr<faiss::Index>> indexIdMapDBMap{};
+// 使用内存地址作为内容ID
+static std::map<size_t, std::shared_ptr<std::set<std::string*>>> idsMap{};
 
 lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
-    if(!indexBasicDB && !indexIdMapDB) {
-        indexBasicDB = std::make_unique<faiss::IndexFlatL2>(this->embeddingClient->getDims());
-        indexIdMapDB = std::make_unique<faiss::IndexIDMap>(indexBasicDB.get());
+    if(idsMap.contains(this->id)) {
+        this->ids = idsMap.at(this->id);
+        this->indexBasicDB = indexBasicDBMap.at(this->id);
+        this->indexIdMapDB = indexIdMapDBMap.at(this->id);
+    } else {
+        this->ids = std::make_shared<std::set<std::string*>>();
+        this->indexBasicDB = std::make_shared<faiss::IndexFlatL2>(this->embeddingClient->getDims());
+        this->indexIdMapDB = std::make_shared<faiss::IndexIDMap>(this->indexBasicDB.get());
+        idsMap.emplace(this->id, this->ids);
+        indexBasicDBMap.emplace(this->id, this->indexBasicDB);
+        indexIdMapDBMap.emplace(this->id, this->indexIdMapDB);
     }
 }
 
 lifuren::FaissRAGClient::~FaissRAGClient() {
+    if(!idsMap.contains(this->id)) {
+        // 如果已经删除索引删除无效数据
+        std::for_each(this->ids->begin(), this->ids->end(), [](const auto& ptr) {
+            delete ptr;
+        });
+        this->ids->clear();
+    }
 }
 
 std::vector<float> lifuren::FaissRAGClient::index(const std::string& content) {
     std::vector<float>&& vector = this->embeddingClient->getSegmentVector(content);
     std::string* ptr = new std::string(content);
-    ids.insert(ptr);
+    this->ids->insert(ptr);
     int64_t id = reinterpret_cast<size_t>(ptr);
     indexIdMapDB->add_with_ids(1, vector.data(), &id);
     return vector;
@@ -50,7 +65,7 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::string& prom
     ret.reserve(size);
     for(int index = 0; index < size; ++index) {
         std::string* ptr = reinterpret_cast<std::string*>(idx[index]);
-        if(ids.contains(ptr)) {
+        if(this->ids->contains(ptr)) {
             ret.push_back(*ptr);
         }
     }
@@ -60,10 +75,14 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::string& prom
 bool lifuren::FaissRAGClient::deleteRAG() {
     SPDLOG_INFO("删除Faiss索引：{}", this->id);
     this->truncateIndex();
-    for(const auto& ptr : ids) {
+    std::for_each(this->ids->begin(), this->ids->end(), [](const auto& ptr) {
         delete ptr;
-    }
-    ids.clear();
-    indexIdMapDB->reset();
+    });
+    this->ids->clear();
+    this->indexBasicDB->reset();
+    this->indexIdMapDB->reset();
+    idsMap.erase(this->id);
+    indexBasicDBMap.erase(this->id);
+    indexIdMapDBMap.erase(this->id);
     return true;
 }

@@ -1,25 +1,14 @@
-/**
- * 诗词处理
- * 
- * TODO:
- * 1. 内容错误
- * 2. 诗经
- * 3. 元曲
- * 4. 五代诗词
- */
-#include "lifuren/model/Poetry.hpp"
+#include "lifuren/Poetrys.hpp"
 
-#include <cstdint>
-#include <algorithm>
-
+#include "lifuren/Config.hpp"
 #include "lifuren/Strings.hpp"
 
-std::string lifuren::poetry::beautify(const std::string& segment) {
+std::string lifuren::poetrys::beautify(const std::string& segment) {
     std::string ret;
     if(segment.empty()) {
         return ret;
     }
-    std::vector<std::string> vector = lifuren::strings::split(segment, lifuren::poetry::POETRY_BEAUTIFY_DELIM, true);
+    std::vector<std::string> vector = lifuren::strings::split(segment, lifuren::poetrys::POETRY_BEAUTIFY_DELIM, true);
     for(
         auto iterator = vector.begin();
         iterator != vector.end();
@@ -34,64 +23,90 @@ std::string lifuren::poetry::beautify(const std::string& segment) {
     return ret;
 }
 
-lifuren::Poetry& lifuren::Poetry::preproccess() {
-    if(this->title.empty() && !this->rhythmic.empty()) {
-        this->title = this->rhythmic;
-    } else if(!this->title.empty() && this->rhythmic.empty()) {
-        this->rhythmic = this->title;
+std::vector<std::string> lifuren::poetrys::toChars(const std::string& poetry) {
+    return lifuren::strings::toChars(replaceSymbol(poetry));
+}
+
+std::vector<std::string> lifuren::poetrys::toWords(const std::string& poetry) {
+    lifuren::poetrys::Poetry value;
+    value.paragraphs = { poetry };
+    value.preproccess();
+    value.matchRhythm();
+    value.participle();
+    return value.participleParagraphs;
+}
+
+std::vector<std::string> lifuren::poetrys::toSegments(const std::string& poetry) {
+    return lifuren::strings::split(poetry, lifuren::poetrys::POETRY_SEGMENT_DELIM);
+}
+
+std::string lifuren::poetrys::replaceSymbol(const std::string& poetry) {
+    std::string copy = poetry;
+    lifuren::strings::replace(copy, lifuren::poetrys::POETRY_SYMBOL_DELIM, "");
+    return copy;
+}
+
+lifuren::poetrys::Poetry& lifuren::poetrys::Poetry::preproccess() {
+    if(this->title.empty() && !this->rhythm.empty()) {
+        this->title = this->rhythm;
+    } else if(!this->title.empty() && this->rhythm.empty()) {
+        this->rhythm = this->title;
     } else {
         //
     }
     std::string content = lifuren::strings::join(this->paragraphs, "");
     this->paragraphs = lifuren::strings::split(
         content,
-        lifuren::poetry::POETRY_BEAUTIFY_DELIM,
+        lifuren::poetrys::POETRY_BEAUTIFY_DELIM,
         true
     );
     this->simpleParagraphs = lifuren::strings::split(
         content,
-        lifuren::poetry::POETRY_SEGMENT_DELIM
+        lifuren::poetrys::POETRY_SEGMENT_DELIM
     );
     this->segment = lifuren::strings::join(this->paragraphs, "\n");
     this->simpleSegment = lifuren::strings::join(this->simpleParagraphs, "\n");
     return *this;
 }
 
-bool lifuren::Poetry::matchLabel() {
+bool lifuren::poetrys::Poetry::matchRhythm() {
+    if(this->rhythmPtr) {
+        return true;
+    }
     std::vector<uint32_t> segmentRule(this->simpleParagraphs.size());
     std::transform(this->simpleParagraphs.begin(), this->simpleParagraphs.end(), segmentRule.begin(), [](auto& v) -> uint32_t {
         return (uint32_t) lifuren::strings::length(v);
     });
     for(
-        auto iterator = lifuren::LABEL_POETRY.begin();
-        iterator != lifuren::LABEL_POETRY.end();
+        auto iterator = lifuren::config::RHYTHM.begin();
+        iterator != lifuren::config::RHYTHM.end();
         ++iterator
     ) {
-        LabelText& labelRef = iterator->second;
+        lifuren::config::Rhythm& ruythmRef = iterator->second;
         // TODO: 验证词能否正确匹配或者添加词牌
         if(
-            labelRef.segmentSize == static_cast<int>(this->simpleParagraphs.size()) &&
-            labelRef.segmentRule == segmentRule
+            ruythmRef.segmentSize == static_cast<int>(this->simpleParagraphs.size()) &&
+            ruythmRef.segmentRule == segmentRule
         ) {
-            this->label = &labelRef;
+            this->rhythmPtr = &ruythmRef;
             // 不全词牌名称
             if(this->title.empty()) {
-                this->title = labelRef.name;
+                this->title = ruythmRef.name;
             }
-            if(this->rhythmic.empty()) {
-                this->rhythmic = labelRef.rhythmic;
+            if(this->rhythm.empty()) {
+                this->rhythm = ruythmRef.rhythm;
             }
             break;
         }
     }
-    return this->label != nullptr;
+    return this->rhythmPtr;
 }
 
-bool lifuren::Poetry::participle() {
-    if(this->label == nullptr) {
+bool lifuren::poetrys::Poetry::participle() {
+    if(this->rhythmPtr == nullptr) {
         return false;
     }
-    std::vector<uint32_t>& participleRuleRef = this->label->participleRule;
+    std::vector<uint32_t>& participleRuleRef = this->rhythmPtr->participleRule;
     std::string word;
     uint32_t pos = 0;
     auto paragraphsIterator = this->simpleParagraphs.begin();
@@ -121,13 +136,13 @@ bool lifuren::Poetry::participle() {
     return true;
 }
 
-bool lifuren::Poetry::operator==(const lifuren::Poetry& poetry) const {
+bool lifuren::poetrys::Poetry::operator==(const lifuren::poetrys::Poetry& poetry) const {
     if(this == &poetry) {
         return true;
     }
     return
-        this->title      == poetry.title    &&
-        this->author     == poetry.author   &&
-        this->rhythmic   == poetry.rhythmic &&
+        this->title      == poetry.title  &&
+        this->author     == poetry.author &&
+        this->rhythm     == poetry.rhythm &&
         this->paragraphs == poetry.paragraphs;
 }

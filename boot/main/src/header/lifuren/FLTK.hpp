@@ -21,9 +21,6 @@
 #include "FL/Fl_Window.H"
 #include "FL/Fl_PNG_Image.H"
 
-#include "lifuren/Ptr.hpp"
-#include "lifuren/Config.hpp"
-
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_WIDTH         1280
@@ -113,16 +110,6 @@ protected:
  */
 class MainWindow : public Window {
 
-private:
-    // 诗词标记窗口
-    MarkWindow* markWindowPtr = nullptr;
-    // 图片生成窗口
-    ImageWindow* imageWindowPtr = nullptr;
-    // 诗词生成窗口
-    PoetryWindow* poetryWindowPtr = nullptr;
-    // 关于窗口
-    AboutWindow* aboutWindowPtr = nullptr;
-
 public:
     /**
      * @param width  窗口宽度
@@ -132,16 +119,6 @@ public:
     MainWindow(int width, int height, const char* title);
     // 析构函数
     virtual ~MainWindow();
-
-public:
-    // 诗词标记
-    void mark();
-    // 图片生成
-    void image();
-    // 诗词生成
-    void poetry();
-    // 关于
-    void about();
 
 protected:
     virtual void drawElement() override;
@@ -247,7 +224,7 @@ protected:
  * 
  * @return 选择文件路径
  */
-extern std::string fileChooser(const char* title, const char* directory = ".", const char* filter = "*.*");
+extern std::string fileChooser(const char* title, const char* directory = "", const char* filter = "*.*");
 
 /**
  * @param title     标题
@@ -255,7 +232,7 @@ extern std::string fileChooser(const char* title, const char* directory = ".", c
  * 
  * @return 选择目录路径
  */
-extern std::string directoryChooser(const char* title, const char* directory = ".");
+extern std::string directoryChooser(const char* title, const char* directory = "");
 
 /**
  * 填充选择

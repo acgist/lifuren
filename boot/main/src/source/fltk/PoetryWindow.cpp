@@ -8,6 +8,9 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 
+#include "lifuren/Ptr.hpp"
+#include "lifuren/Config.hpp"
+
 static Fl_Choice* clientPtr     { nullptr };
 static Fl_Input*  imagePathPtr  { nullptr };
 static Fl_Button* imageChoosePtr{ nullptr };
@@ -39,19 +42,61 @@ lifuren::PoetryWindow::~PoetryWindow() {
 
 void lifuren::PoetryWindow::saveConfig() {
     auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    if(poetryConfig.client == "poetize-rnn") {
-        auto& poetizeRNN = lifuren::config::CONFIG.poetizeRNN;
-        poetizeRNN.model = modelPathPtr->value();
+    if(poetryConfig.client == "poetize-shifo-rnn") {
+        auto& poetizeShifoRNN = lifuren::config::CONFIG.poetizeShifoRNN;
+        poetizeShifoRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-shimo-rnn") {
+        auto& poetizeShimoRNN = lifuren::config::CONFIG.poetizeShimoRNN;
+        poetizeShimoRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-shigui-rnn") {
+        auto& poetizeShiguiRNN = lifuren::config::CONFIG.poetizeShiguiRNN;
+        poetizeShiguiRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-shixian-rnn") {
+        auto& poetizeShixianRNN = lifuren::config::CONFIG.poetizeShixianRNN;
+        poetizeShixianRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-shisheng-rnn") {
+        auto& poetizeShishengRNN = lifuren::config::CONFIG.poetizeShishengRNN;
+        poetizeShishengRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-lidu-rnn") {
+        auto& poetizeLiduRNN = lifuren::config::CONFIG.poetizeLiduRNN;
+        poetizeLiduRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-suxin-rnn") {
+        auto& poetizeSuxinRNN = lifuren::config::CONFIG.poetizeSuxinRNN;
+        poetizeSuxinRNN.model = modelPathPtr->value();
+    } else if(poetryConfig.client == "poetize-wanyue-rnn") {
+        auto& poetizeWanyueRNN = lifuren::config::CONFIG.poetizeWanyueRNN;
+        poetizeWanyueRNN.model = modelPathPtr->value();
     } else {
     }
     lifuren::Configuration::saveConfig();
 }
 
 void lifuren::PoetryWindow::redrawConfigElement() {
-    auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    if(poetryConfig.client == "poetize-rnn") {
-        auto& poetizeRNN = lifuren::config::CONFIG.poetizeRNN;
-        modelPathPtr->value(poetizeRNN.model.c_str());
+    const auto& poetryConfig = lifuren::config::CONFIG.poetry;
+    if(poetryConfig.client == "poetize-shifo-rnn") {
+        const auto& poetizeShifoRNN = lifuren::config::CONFIG.poetizeShifoRNN;
+        modelPathPtr->value(poetizeShifoRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-shimo-rnn") {
+        const auto& poetizeShimoRNN = lifuren::config::CONFIG.poetizeShimoRNN;
+        modelPathPtr->value(poetizeShimoRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-shigui-rnn") {
+        const auto& poetizeShiguiRNN = lifuren::config::CONFIG.poetizeShiguiRNN;
+        modelPathPtr->value(poetizeShiguiRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-shixian-rnn") {
+        const auto& poetizeShixianRNN = lifuren::config::CONFIG.poetizeShixianRNN;
+        modelPathPtr->value(poetizeShixianRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-shisheng-rnn") {
+        const auto& poetizeShishengRNN = lifuren::config::CONFIG.poetizeShishengRNN;
+        modelPathPtr->value(poetizeShishengRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-lidu-rnn") {
+        const auto& poetizeLiduRNN = lifuren::config::CONFIG.poetizeLiduRNN;
+        modelPathPtr->value(poetizeLiduRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-suxin-rnn") {
+        const auto& poetizeSuxinRNN = lifuren::config::CONFIG.poetizeSuxinRNN;
+        modelPathPtr->value(poetizeSuxinRNN.model.c_str());
+    } else if(poetryConfig.client == "poetize-wanyue-rnn") {
+        const auto& poetizeWanyueRNN = lifuren::config::CONFIG.poetizeWanyueRNN;
+        modelPathPtr->value(poetizeWanyueRNN.model.c_str());
     } else {
     }
 }
