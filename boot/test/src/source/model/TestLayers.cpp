@@ -1,8 +1,8 @@
 #include "Test.hpp"
-#include "lifuren/Layers.hpp"
 
 #include "ggml.h"
 
+#include "lifuren/Layers.hpp"
 #include "lifuren/Tensors.hpp"
 
 static void testLinear() {

@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/Lifuren.hpp"
 
 LFR_TEST(

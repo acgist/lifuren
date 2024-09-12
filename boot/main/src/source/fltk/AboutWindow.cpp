@@ -26,6 +26,7 @@ void lifuren::AboutWindow::drawElement() {
     // 关于内容
     aboutDisplayPtr = new Fl_Text_Display(10, 30, this->w() - 20, this->h() - 90, "关于");
     aboutBufferPtr  = new Fl_Text_Buffer();
+    aboutDisplayPtr->begin();
     aboutDisplayPtr->color(FL_BACKGROUND_COLOR);
     aboutDisplayPtr->buffer(aboutBufferPtr);
     aboutDisplayPtr->wrap_mode(aboutDisplayPtr->WRAP_AT_COLUMN, aboutDisplayPtr->textfont());

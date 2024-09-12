@@ -1,7 +1,8 @@
 #include "Test.hpp"
-#include "lifuren/Files.hpp"
 
 #include <algorithm>
+
+#include "lifuren/Files.hpp"
 
 static void testListFiles() {
     std::vector<std::string> vector;

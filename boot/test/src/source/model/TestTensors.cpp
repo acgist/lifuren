@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/Tensors.hpp"
 
 static void testMul() {

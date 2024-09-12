@@ -1,7 +1,8 @@
 #include "Test.hpp"
-#include "lifuren/Yamls.hpp"
 
 #include "yaml-cpp/yaml.h"
+
+#include "lifuren/Yamls.hpp"
 
 static void testYamls() {
     YAML::Node yaml = lifuren::yamls::loadFile("D:\\tmp\\lifuren.yml");

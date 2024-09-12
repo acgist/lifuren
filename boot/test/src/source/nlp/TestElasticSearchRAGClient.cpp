@@ -1,8 +1,9 @@
 #include "Test.hpp"
-#include "lifuren/RAG.hpp"
 
 #include <chrono>
 #include <thread>
+
+#include "lifuren/RAG.hpp"
 
 static void testRAGClient() {
     lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };

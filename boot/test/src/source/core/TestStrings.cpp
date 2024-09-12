@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/Strings.hpp"
 
 static void testLowerUpper() {

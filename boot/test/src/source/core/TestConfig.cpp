@@ -1,7 +1,8 @@
 #include "Test.hpp"
-#include "lifuren/Config.hpp"
 
 #include <sstream>
+
+#include "lifuren/Config.hpp"
 
 static void testConfig() {
     auto& config = lifuren::config::CONFIG;

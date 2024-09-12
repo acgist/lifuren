@@ -14,8 +14,8 @@
 #ifndef LFR_HEADER_CORE_CONFIG_HPP
 #define LFR_HEADER_CORE_CONFIG_HPP
 
-#include <set>
 #include <map>
+#include <set>
 #include <list>
 #include <string>
 #include <vector>
@@ -242,8 +242,8 @@ public:
     lifuren::config::ModelConfig poetizeLiduRNN    {};
     lifuren::config::ModelConfig poetizeSuxinRNN   {};
     lifuren::config::ModelConfig poetizeWanyueRNN  {};
-    lifuren::config::ModelConfig paintCycleGAN{};
-    lifuren::config::ModelConfig paintSytleGAN{};
+    lifuren::config::ModelConfig paintCycleGAN     {};
+    lifuren::config::ModelConfig paintSytleGAN     {};
     lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:

@@ -1,8 +1,9 @@
 #include "Test.hpp"
-#include "lifuren/Client.hpp"
 
 #include <thread>
 #include <chrono>
+
+#include "lifuren/Client.hpp"
 
 [[maybe_unused]] static void testGet() {
     lifuren::RestClient client{ "http://192.168.8.228:11434" };

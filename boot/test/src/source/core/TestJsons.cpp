@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/Jsons.hpp"
 
 static void testLoadFile() {

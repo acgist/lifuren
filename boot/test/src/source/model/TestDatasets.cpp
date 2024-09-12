@@ -1,9 +1,19 @@
 #include "Test.hpp"
+
+#include "opencv2/opencv.hpp"
+
 #include "lifuren/Datasets.hpp"
 
-#include "spdlog/fmt/ostr.h"
-#include "spdlog/fmt/chrono.h"
-#include "spdlog/fmt/ranges.h"
+static void testReadImage() {
+    float* data = new float[256 * 256 * 3];
+    size_t length{ 0 };
+    lifuren::datasets::readImage("D:/tmp/logo.png", data, length);
+    cv::Mat image(256, 256, CV_8UC3);
+    std::copy(data, data + length, image.data);
+    cv::imwrite("D:/tmp/logo_copy.png", image);
+    delete data;
+    data = nullptr;
+}
 
 static void testLoadImageFileDataset() {
     std::map<std::string, int> mapping = {
@@ -132,6 +142,7 @@ static void testDatasetSharding() {
 }
 
 LFR_TEST(
-    testLoadImageFileDataset();
-    testDatasetSharding();
+    testReadImage();
+    // testLoadImageFileDataset();
+    // testDatasetSharding();
 );

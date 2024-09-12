@@ -1,8 +1,9 @@
 #include "Test.hpp"
-#include "lifuren/RAG.hpp"
 
 #include <thread>
 #include <chrono>
+
+#include "lifuren/RAG.hpp"
 
 [[maybe_unused]] static void testRAGService() {
     auto& service = lifuren::RAGService::getInstance();

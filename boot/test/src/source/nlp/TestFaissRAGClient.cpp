@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/RAG.hpp"
 
 static void testRAGClient() {

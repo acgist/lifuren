@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/EmbeddingClient.hpp"
 
 static void testEmbedding() {

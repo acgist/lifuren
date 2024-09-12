@@ -1,11 +1,11 @@
 #include "Test.hpp"
-#include "lifuren/Model.hpp"
 
 #include <random>
 #include <memory>
 
 #include "ggml.h"
 
+#include "lifuren/Model.hpp"
 #include "lifuren/Layers.hpp"
 #include "lifuren/Datasets.hpp"
 

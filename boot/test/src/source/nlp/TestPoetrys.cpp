@@ -1,7 +1,7 @@
 #include "Test.hpp"
-#include "lifuren/EmbeddingClient.hpp"
 
 #include "lifuren/Poetrys.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 static void testPoetrys() {
     const std::string& poetry = R"(

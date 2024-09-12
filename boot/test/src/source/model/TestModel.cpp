@@ -1,10 +1,10 @@
 #include "Test.hpp"
-#include "lifuren/Model.hpp"
 
 #include <random>
 
 #include "ggml.h"
 
+#include "lifuren/Model.hpp"
 #include "lifuren/Datasets.hpp"
 
 class SimpleModel : public lifuren::Model {

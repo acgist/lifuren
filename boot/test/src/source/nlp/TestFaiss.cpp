@@ -1,10 +1,10 @@
 #include "Test.hpp"
 
+#include <random>
+
 #include "faiss/IndexFlat.h"
 #include "faiss/MetaIndexes.h"
 // #include "faiss/IndexIDMap.h"
-
-#include <random>
 
 static void testSearch() {
     faiss::IndexFlatL2 db(3);

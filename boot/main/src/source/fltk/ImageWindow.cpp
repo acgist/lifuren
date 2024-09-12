@@ -14,16 +14,16 @@
 #include "lifuren/Ptr.hpp"
 #include "lifuren/Config.hpp"
 
-static Fl_Choice* clientPtr       { nullptr };
-static Fl_Input * modelPathPtr    { nullptr };
-static Fl_Button* modelChoosePtr  { nullptr };
-static Fl_Input * imagePathPtr    { nullptr };
-static Fl_Button* imageChoosePtr  { nullptr };
-static Fl_Input * outputPathPtr   { nullptr };
-static Fl_Button* outputChoosePtr { nullptr };
-static Fl_Button* generatePtr     { nullptr };
-static Fl_Input * poetryPromptPtr { nullptr };
-static Fl_Button* poetrySearchPtr { nullptr };
+static Fl_Choice* clientPtr      { nullptr };
+static Fl_Input * modelPathPtr   { nullptr };
+static Fl_Button* modelChoosePtr { nullptr };
+static Fl_Input * imagePathPtr   { nullptr };
+static Fl_Button* imageChoosePtr { nullptr };
+static Fl_Input * outputPathPtr  { nullptr };
+static Fl_Button* outputChoosePtr{ nullptr };
+static Fl_Button* generatePtr    { nullptr };
+static Fl_Input * poetryPromptPtr{ nullptr };
+static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
@@ -56,12 +56,15 @@ lifuren::ImageWindow::~ImageWindow() {
 void lifuren::ImageWindow::saveConfig() {
     auto& imageConfig = lifuren::config::CONFIG.image;
     imageConfig.output = outputPathPtr->value();
-    if(imageConfig.client == "stable-diffusion-cpp") {
+    if(imageConfig.client == lifuren::config::CONFIG_STABLE_DIFFUSION_CPP) {
         auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
         stableDiffusionCPP.model = modelPathPtr->value();
-    // 暂不支持以下模型
-    // } else if(imageConfig.client == "paint-cycle-gan") {
-    // } else if(imageConfig.client == "paint-style-gan") {
+    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
+        auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
+        paintCycleGAN.model = modelPathPtr->value();
+    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
+        auto& paintSytleGAN = lifuren::config::CONFIG.paintSytleGAN;
+        paintSytleGAN.model = modelPathPtr->value();
     } else {
         // 其他终端
     }
@@ -71,14 +74,16 @@ void lifuren::ImageWindow::saveConfig() {
 void lifuren::ImageWindow::redrawConfigElement() {
     const auto& imageConfig = lifuren::config::CONFIG.image;
     outputPathPtr->value(imageConfig.output.c_str());
-    if(imageConfig.client == "stable-diffusion-cpp") {
+    if(imageConfig.client == lifuren::config::CONFIG_STABLE_DIFFUSION_CPP) {
         const auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
         modelPathPtr->value(stableDiffusionCPP.model.c_str());
-    // 暂不支持以下模型
-    // } else if(imageConfig.client == "paint-cycle-gan") {
-    // } else if(imageConfig.client == "paint-style-gan") {
+    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
+        const auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
+        modelPathPtr->value(paintCycleGAN.model.c_str());
+    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
+        const auto& paintSytleGAN = lifuren::config::CONFIG.paintSytleGAN;
+        modelPathPtr->value(paintSytleGAN.model.c_str());
     } else {
-        // 其他终端
         modelPathPtr->value("");
     }
 }
@@ -89,17 +94,18 @@ void lifuren::ImageWindow::drawElement() {
     poetrySearchPtr = new Fl_Button(310, 10, 100, 30, "搜索诗词");
     promptEditorPtr = new Fl_Text_Editor(10, 50, this->w() - 20, 100, "提示内容");
     promptBufferPtr = new Fl_Text_Buffer();
+    promptEditorPtr->begin();
     promptEditorPtr->buffer(promptBufferPtr);
     promptEditorPtr->wrap_mode(promptEditorPtr->WRAP_AT_COLUMN, promptEditorPtr->textfont());
     promptEditorPtr->end();
-    imagePathPtr     = new Fl_Input( 70,  160, 400, 30, "图片路径");
-    imageChoosePtr   = new Fl_Button(470, 160, 100, 30, "选择图片");
-    clientPtr        = new Fl_Choice(70,  200, 200, 30, "终端名称");
-    modelPathPtr     = new Fl_Input( 70,  240, 400, 30, "模型路径");
-    modelChoosePtr   = new Fl_Button(470, 240, 100, 30, "选择模型");
-    outputPathPtr    = new Fl_Input( 70,  280, 400, 30, "输出路径");
-    outputChoosePtr  = new Fl_Button(470, 280, 100, 30, "选择输出");
-    generatePtr      = new Fl_Button(70,  320, 100, 30, "生成图片");
+    imagePathPtr    = new Fl_Input( 70,  160, 400, 30, "图片路径");
+    imageChoosePtr  = new Fl_Button(470, 160, 100, 30, "选择图片");
+    clientPtr       = new Fl_Choice(70,  200, 200, 30, "终端名称");
+    modelPathPtr    = new Fl_Input( 70,  240, 400, 30, "模型路径");
+    modelChoosePtr  = new Fl_Button(470, 240, 100, 30, "选择模型");
+    outputPathPtr   = new Fl_Input( 70,  280, 400, 30, "输出路径");
+    outputChoosePtr = new Fl_Button(470, 280, 100, 30, "选择输出");
+    generatePtr     = new Fl_Button(70,  320, 100, 30, "生成图片");
     // 绑定事件
     // 终端名称
     const auto& imageConfig = lifuren::config::CONFIG.image;

@@ -19,8 +19,11 @@
 #include "lifuren/Poetrys.hpp"
 #include "lifuren/Strings.hpp"
 
+// 诗词内容
 static nlohmann::json           poetryJson    {};
 static nlohmann::json::iterator poetryIterator{};
+
+// 诗词文件
 static std::vector<std::string>           fileVector  {};
 static std::vector<std::string>::iterator fileIterator{};
 
@@ -110,23 +113,26 @@ void lifuren::MarkWindow::drawElement() {
     sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调图片模型");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
+    sourceBufferPtr  = new Fl_Text_Buffer();
+    sourceDisplayPtr->begin();
     sourceDisplayPtr->wrap_mode(sourceDisplayPtr->WRAP_AT_COLUMN, sourceDisplayPtr->textfont());
     sourceDisplayPtr->color(FL_BACKGROUND_COLOR);
-    sourceBufferPtr = new Fl_Text_Buffer();
     sourceDisplayPtr->buffer(sourceBufferPtr);
     sourceDisplayPtr->end();
     // 格律
     rhythmDisplayPtr = new Fl_Text_Display(20 + (this->w() - 40) / 3, 110, (this->w() - 40) / 3, this->h() - 120, "格律");
+    rhythmBufferPtr  = new Fl_Text_Buffer();
+    rhythmDisplayPtr->begin();
     rhythmDisplayPtr->wrap_mode(rhythmDisplayPtr->WRAP_AT_COLUMN, rhythmDisplayPtr->textfont());
     rhythmDisplayPtr->color(FL_BACKGROUND_COLOR);
-    rhythmBufferPtr = new Fl_Text_Buffer();
     rhythmDisplayPtr->buffer(rhythmBufferPtr);
     rhythmDisplayPtr->end();
     // 分词
     targetDisplayPtr = new Fl_Text_Display(30 + (this->w() - 40) / 3 * 2, 110, (this->w() - 40) / 3, this->h() - 120, "分词");
+    targetBufferPtr  = new Fl_Text_Buffer();
+    targetDisplayPtr->begin();
     targetDisplayPtr->wrap_mode(targetDisplayPtr->WRAP_AT_COLUMN, targetDisplayPtr->textfont());
     targetDisplayPtr->color(FL_BACKGROUND_COLOR);
-    targetBufferPtr = new Fl_Text_Buffer();
     targetDisplayPtr->buffer(targetBufferPtr);
     targetDisplayPtr->end();
     // 绑定事件

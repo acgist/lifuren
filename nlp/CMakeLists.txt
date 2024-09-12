@@ -10,14 +10,14 @@ add_library(
     src/source/EmbeddingClient.cpp
     src/source/rag/FaissRAGClient.cpp
     src/source/rag/ElasticSearchRAGClient.cpp
-    src/source/model/ShifoModel.cpp
-    src/source/model/ShimoModel.cpp
-    src/source/model/ShiguiModel.cpp
-    src/source/model/ShixianModel.cpp
-    src/source/model/ShishengModel.cpp
-    src/source/model/LiduModel.cpp
-    src/source/model/SuxinModel.cpp
-    src/source/model/WanyueModel.cpp
+    src/source/model/ShifoRNNModel.cpp
+    src/source/model/ShimoRNNModel.cpp
+    src/source/model/ShiguiRNNModel.cpp
+    src/source/model/ShixianRNNModel.cpp
+    src/source/model/ShishengRNNModel.cpp
+    src/source/model/LiduRNNModel.cpp
+    src/source/model/SuxinRNNModel.cpp
+    src/source/model/WanyueRNNModel.cpp
     src/source/poetize/ShifoRNNPoetizeClient.cpp
     src/source/poetize/ShimoRNNPoetizeClient.cpp
     src/source/poetize/ShiguiRNNPoetizeClient.cpp

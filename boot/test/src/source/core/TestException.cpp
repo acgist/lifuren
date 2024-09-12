@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/Exception.hpp"
 
 static void testException() {

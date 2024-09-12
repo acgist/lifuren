@@ -9,12 +9,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <cassert>
 #include <functional>
-
-#include <assert.h>
-
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
 
 namespace cv {
     class Mat;
@@ -25,7 +21,24 @@ struct ggml_tensor;
 namespace lifuren  {
 namespace datasets {
 
-extern ggml_tensor* readImage(const std::string& path, int width, int height, const std::function<void(const cv::Mat&)> imageTransform = nullptr);
+/**
+ * 图片读取
+ * 
+ * @param path      图片路径
+ * @param data      图片数据
+ * @param length    图片数据长度
+ * @param width     目标图片宽度
+ * @param height    目标图片高度
+ * @param transform 图片变换
+ */
+extern void readImage(
+    const std::string& path,
+    float * data,
+    size_t& length,
+    const int& width  = 0,
+    const int& height = 0,
+    const std::function<void(const cv::Mat&)> transform = nullptr
+);
 
 /**
  * 数据集类型
@@ -205,7 +218,9 @@ inline auto loadImageFileDataset(
         height,
         imageTransform
     ](const std::string& path) -> ggml_tensor* {
-        return readImage(path, width, height, imageTransform);
+        // return readImage(path, width, height, imageTransform);
+        // TODO
+        return nullptr;
     });
     return dataset;
 }

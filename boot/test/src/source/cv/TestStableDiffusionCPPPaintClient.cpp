@@ -1,4 +1,5 @@
 #include "Test.hpp"
+
 #include "lifuren/PaintClient.hpp"
 
 static void testSD(const std::string& prompt, const std::string& image, const std::string& output, const std::string& model) {

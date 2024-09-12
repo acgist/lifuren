@@ -8,9 +8,9 @@
 
 #include <string>
 
-#include "nlohmann/json.hpp"
-
 #include "lifuren/Files.hpp"
+
+#include "nlohmann/json.hpp"
 
 namespace lifuren {
 namespace jsons   {
@@ -40,7 +40,7 @@ inline T loadFile(const std::string& path) {
  */
 extern bool saveFile(const std::string& path, const nlohmann::json& json);
 
-}
-}
+} // END OF json
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_JSONS_HPP
