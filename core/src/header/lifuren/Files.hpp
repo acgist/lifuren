@@ -15,15 +15,31 @@
 namespace lifuren {
 namespace files   {
 
+inline bool exists(const std::string& path) {
+    return std::filesystem::exists(std::filesystem::u8path(path));
+}
+
+inline bool isFile(const std::string& path) {
+    return std::filesystem::is_regular_file(std::filesystem::u8path(path));
+}
+
+inline bool isDirectory(const std::string& path) {
+    return std::filesystem::is_directory(std::filesystem::u8path(path));
+}
+
+inline std::string parent(const std::string& path) {
+    return std::filesystem::u8path(path).parent_path().string();
+}
+
 inline std::filesystem::path join(std::initializer_list<std::string> list) {
     if(list.size() <= 0) {
         return {};
     }
     auto iterator = list.begin();
-    std::filesystem::path path{ *iterator };
+    std::filesystem::path path{ std::filesystem::u8path(*iterator) };
     ++iterator;
     for(; iterator != list.end(); ++iterator) {
-        path /= *iterator;
+        path /= std::filesystem::u8path(*iterator);
     }
     return path;
 }

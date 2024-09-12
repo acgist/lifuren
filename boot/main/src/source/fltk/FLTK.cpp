@@ -6,11 +6,11 @@
 
 #include <cmath>
 #include <algorithm>
-#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Ptr.hpp"
+#include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 
 #include "FL/Fl_Choice.H"
@@ -59,8 +59,7 @@ std::string lifuren::fileChooser(const char* title, const char* directory, const
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
-            std::filesystem::path path{ filename };
-            last_directory = path.parent_path().string().c_str();
+            last_directory = lifuren::files::parent(filename).c_str();
             SPDLOG_DEBUG("文件选择成功：{} - {}", title, filename);
             return filename;
         }

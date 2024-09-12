@@ -3,7 +3,6 @@
 #include <array>
 #include <numeric>
 #include <algorithm>
-#include <filesystem>
 
 #include "ggml.h"
 
@@ -371,8 +370,8 @@ void lifuren::Model::train(size_t epoch, ggml_opt_context* opt_ctx) {
     for (int batch = 0; batch < batchCount; ++batch) {
         size_t size = this->trainDataset->batchGet(
             batch,
-            this->datas->data,  ggml_nbytes(this->datas),
-            this->labels->data, ggml_nbytes(this->labels)
+            this->datas->data,
+            this->labels->data
         );
         enum ggml_opt_result opt_result = ggml_opt_resume_g(this->ctx_compute, opt_ctx, this->loss, this->train_gf, this->train_gb, NULL, NULL);
         GGML_ASSERT(opt_result == GGML_OPT_RESULT_OK || opt_result == GGML_OPT_RESULT_DID_NOT_CONVERGE);
@@ -404,8 +403,8 @@ void lifuren::Model::val(size_t epoch) {
     for (int batch = 0; batch < batchCount; ++batch) {
         size_t size = this->valDataset->batchGet(
             batch,
-            this->datas->data,  ggml_nbytes(this->datas),
-            this->labels->data, ggml_nbytes(this->labels)
+            this->datas->data,
+            this->labels->data
         );
         ggml_graph_compute_with_ctx(this->ctx_compute, this->val_gf, this->params.thread_size);
         loss.push_back(*ggml_get_data_f32(this->loss));
@@ -436,8 +435,8 @@ void lifuren::Model::test() {
     for (int batch = 0; batch < batchCount; ++batch) {
         size_t size = this->testDataset->batchGet(
             batch,
-            this->datas->data,  ggml_nbytes(this->datas),
-            this->labels->data, ggml_nbytes(this->labels)
+            this->datas->data,
+            this->labels->data
         );
         ggml_graph_compute_with_ctx(this->ctx_compute, this->val_gf, this->params.thread_size);
         loss.push_back(*ggml_get_data_f32(this->loss));

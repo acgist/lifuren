@@ -1,7 +1,6 @@
 #include "lifuren/RAG.hpp"
 
 #include <fstream>
-#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
@@ -45,7 +44,9 @@ void lifuren::RAGClient::loadIndex() {
 
 void lifuren::RAGClient::saveIndex() {
     const std::filesystem::path path = lifuren::files::join({ this->path, "index", "lifuren.mark" });
-    lifuren::files::createParent(path.string());
+    if(!std::filesystem::exists(path.parent_path())) {
+        std::filesystem::create_directories(path.parent_path());
+    }
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!stream.is_open()) {

@@ -17,6 +17,7 @@ static void testMul() {
     ggml_set_param(ctx, a);
     ggml_set_param(ctx, b);
     ggml_set_param(ctx, c);
+    SPDLOG_DEBUG("a nbytes : {}", ggml_nbytes(a));
     lifuren::tensors::fill(a, 2.0F);
     lifuren::tensors::fill(b, 1.0F);
     lifuren::tensors::fill(c, 1.0F);

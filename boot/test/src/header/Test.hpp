@@ -1,6 +1,8 @@
 /**
  * 测试
  */
+#include <cassert>
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Logger.hpp"

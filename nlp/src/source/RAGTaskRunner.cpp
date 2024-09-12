@@ -1,7 +1,5 @@
 #include "lifuren/RAG.hpp"
 
-#include <filesystem>
-
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"
@@ -83,7 +81,7 @@ bool lifuren::RAGTaskRunner::execute() {
         SPDLOG_WARN("RAG任务没有就绪：{}", this->task.path);
         return false;
     }
-    if(!std::filesystem::exists(this->task.path)) {
+    if(!lifuren::files::exists(this->task.path)) {
         SPDLOG_WARN("RAG任务目录无效：{}", this->task.path);
         return false;
     }
@@ -95,7 +93,7 @@ bool lifuren::RAGTaskRunner::execute() {
         if(this->stop) {
             break;
         }
-        if(!std::filesystem::is_regular_file(path)) {
+        if(!lifuren::files::isFile(path)) {
             SPDLOG_DEBUG("RAG任务跳过其他文件：{}", path);
             continue;
         }

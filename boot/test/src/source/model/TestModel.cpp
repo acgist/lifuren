@@ -84,7 +84,7 @@ static void testLine() {
         auto v = labels[i];
         SPDLOG_DEBUG("l = {}", v);
     }
-    lifuren::datasets::TensorDataset* dataset = new lifuren::datasets::TensorDataset{
+    lifuren::datasets::RawDataset* dataset = new lifuren::datasets::RawDataset{
         210,
         10,
         features,

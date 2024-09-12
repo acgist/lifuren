@@ -5,7 +5,11 @@ add_library(
     src/source/Model.cpp
     src/source/Layers.cpp
     src/source/Tensors.cpp
+    src/source/Dataset.cpp
     src/source/Datasets.cpp
+    src/source/RawDataset.cpp
+    src/source/FileDataset.cpp
+    src/source/ShardingDataset.cpp
     src/source/layers/Conv2d.cpp
     src/source/layers/Linear.cpp
 )

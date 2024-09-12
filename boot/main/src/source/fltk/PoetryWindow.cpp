@@ -2,6 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
@@ -130,7 +131,7 @@ void lifuren::PoetryWindow::drawElement() {
 
 static void generate(Fl_Widget*, void* voidPtr) {
     if(clientPtr->value() < 0) {
-        fl_measure("没有选择诗词终端");
+        fl_message("没有选择诗词终端");
         return;
     }
     // TODO: 实现逻辑

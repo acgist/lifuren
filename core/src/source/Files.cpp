@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <algorithm>
-#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
@@ -30,16 +29,13 @@ void lifuren::files::listFiles(std::vector<std::string>& vector, const std::stri
 }
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate) {
-    if(!std::filesystem::exists(path)) {
+    if(!exists(path) || !isDirectory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
-    if(!std::filesystem::is_directory(path)) {
-        SPDLOG_DEBUG("不是目录：{}", path);
-        return;
-    }
-    auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
+    const auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
     for(const auto& entry : iterator) {
+        // TODO: utf8
         std::string filepath = entry.path().string();
         if(entry.is_regular_file()) {
             std::string filename = entry.path().filename().string();
@@ -86,13 +82,17 @@ bool lifuren::files::saveFile(const std::string& path, const std::string& value)
 }
 
 bool lifuren::files::createParent(const std::string& path) {
-    std::filesystem::path file(path);
-    auto parent = file.parent_path();
-    return lifuren::files::createFolder(parent.string());
+    const std::filesystem::path file { std::filesystem::u8path(path) };
+    const auto parent = file.parent_path();
+    if(std::filesystem::exists(parent)) {
+        return true;
+    } else {
+        return std::filesystem::create_directories(parent);
+    }
 }
 
 bool lifuren::files::createFolder(const std::string& path) {
-    std::filesystem::path file(path);
+    const std::filesystem::path file { std::filesystem::u8path(path) };
     if(std::filesystem::exists(file)) {
         return true;
     } else {
@@ -101,8 +101,11 @@ bool lifuren::files::createFolder(const std::string& path) {
 }
 
 std::string lifuren::files::fileType(const std::string& path) {
-     std::filesystem::path filePath{ path };
-     std::string extension = filePath.extension().string();
+     const std::filesystem::path file { std::filesystem::u8path(path) };
+     std::string extension = file.extension().string();
+     if(extension.empty()) {
+        return extension;
+     }
      if(extension.at(0) == '.') {
         return extension.substr(1);
      }

@@ -2,16 +2,16 @@
 
 #include <locale>
 #include <fstream>
-#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
 #include "yaml-cpp/yaml.h"
 
+#include "lifuren/Files.hpp"
 #include "lifuren/Logger.hpp"
 
 YAML::Node lifuren::yamls::loadFile(const std::string& path) {
-    if(!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
+    if(!lifuren::files::exists(path) || !lifuren::files::isFile(path)) {
         return YAML::Node();
     }
     return YAML::LoadFile(path);
