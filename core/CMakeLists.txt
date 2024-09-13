@@ -8,6 +8,7 @@ add_library(
     src/source/Yamls.cpp
     src/source/Config.cpp
     src/source/Logger.cpp
+    src/source/Rhythm.cpp
     src/source/Lifuren.cpp
     src/source/Strings.cpp
     src/source/Exception.cpp
