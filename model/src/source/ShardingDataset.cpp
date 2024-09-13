@@ -28,7 +28,7 @@ std::tuple<lifuren::datasets::ShardingDataset, lifuren::datasets::ShardingDatase
     for(size_t index = 0; index < count; ++index) {
         if(valCount > 0LL && valIndex <= index && index < valIndex + valCount) {
             valMapping.emplace(valPos++, index);
-        } else if(testCount >= 0LL && testIndex <= index && index < testIndex + testCount) {
+        } else if(testIndex <= index && index < testIndex + testCount) {
             testMapping.emplace(testPos++, index);
         } else {
             trainMapping.emplace(trainPos++, index);

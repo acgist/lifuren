@@ -4,7 +4,7 @@
 
 #include "lifuren/Yamls.hpp"
 
-static void testYamls() {
+[[maybe_unused]] static void testYamls() {
     YAML::Node yaml = lifuren::yamls::loadFile("D:\\tmp\\lifuren.yml");
     YAML::Node node;
     node["lifuren"] = "漂漂亮亮";

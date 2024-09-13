@@ -5,7 +5,7 @@
 
 #include "lifuren/RAG.hpp"
 
-static void testRAGClient() {
+[[maybe_unused]] static void testRAGClient() {
     lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };
     // lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ChineseWordVectors" };
     client.loadIndex();

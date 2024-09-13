@@ -8,7 +8,7 @@
 
 #include "lifuren/Strings.hpp"
 
-static void testPoetry() {
+[[maybe_unused]] static void testPoetry() {
     using namespace std::literals;
     const std::string content = lifuren::strings::trim(R"(
 月落乌啼霜满天，江枫渔火对愁眠。

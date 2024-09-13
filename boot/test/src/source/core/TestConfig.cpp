@@ -4,7 +4,7 @@
 
 #include "lifuren/Config.hpp"
 
-static void testConfig() {
+[[maybe_unused]] static void testConfig() {
     auto& config = lifuren::config::CONFIG;
     std::stringstream stream;
     stream << config.toYaml();

@@ -2,7 +2,7 @@
 
 #include "lifuren/Tensors.hpp"
 
-static void testMul() {
+[[maybe_unused]] static void testMul() {
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
@@ -28,7 +28,7 @@ static void testMul() {
     ggml_graph_compute_with_ctx(ctx, gf, 4);
     float* rr = ggml_get_data_f32(r);
     SPDLOG_DEBUG("r ne : {} - {} - {} - {}", r->ne[0], r->ne[1], r->ne[2], r->ne[3]);
-    for(size_t i = 0; i < ggml_nelements(r); ++i) {
+    for(int64_t i = 0; i < ggml_nelements(r); ++i) {
         SPDLOG_DEBUG("r {} - {}", i, rr[i]);
     }
     ggml_free(ctx);

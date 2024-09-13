@@ -5,7 +5,7 @@
 
 #include "opencv2/opencv.hpp"
 
-static void testRead() {
+[[maybe_unused]] static void testRead() {
     uint8_t* data{nullptr};
     size_t width {0};
     size_t height{0};
@@ -17,7 +17,7 @@ static void testRead() {
     data = nullptr;
 }
 
-static void testWrite() {
+[[maybe_unused]] static void testWrite() {
     uint8_t* data{nullptr};
     size_t width {0};
     size_t height{0};
@@ -45,7 +45,7 @@ static void testWrite() {
     data = nullptr;
 }
 
-static void testReadTransform() {
+[[maybe_unused]] static void testReadTransform() {
     float* data = new float[256 * 256 * 3];
     size_t length{ 0 };
     lifuren::images::readTransform("D:/tmp/logo.png", data, length);
@@ -57,7 +57,7 @@ static void testReadTransform() {
     data = nullptr;
 }
 
-static void testSplit() {
+[[maybe_unused]] static void testSplit() {
     auto image = cv::imread("D:/tmp/girl.png");
     cv::Mat rgb[3];
     cv::split(image, rgb);
@@ -77,7 +77,7 @@ static void testSplit() {
     cv::waitKey(0);
 }
 
-static void testMerge() {
+[[maybe_unused]] static void testMerge() {
     auto a = cv::imread("D:/tmp/girl_1.png");
     auto b = cv::imread("D:/tmp/girl_2.png");
     auto c = cv::imread("D:/tmp/girl_3.png");
@@ -98,6 +98,7 @@ static void testMerge() {
     cv::imshow("rgb", image);
     cv::waitKey(0);
 }
+
 LFR_TEST(
     // testRead();
     // testWrite();

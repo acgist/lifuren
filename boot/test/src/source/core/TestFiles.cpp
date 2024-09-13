@@ -4,7 +4,7 @@
 
 #include "lifuren/Files.hpp"
 
-static void testListFiles() {
+[[maybe_unused]] static void testListFiles() {
     std::vector<std::string> vector;
     // lifuren::files::listFiles(vector, "D:\\tmp");
     lifuren::files::listFiles(vector, "D:\\tmp", { ".png", ".jpg" });
@@ -13,12 +13,12 @@ static void testListFiles() {
     });
 }
 
-static void testLoadFile() {
+[[maybe_unused]] static void testLoadFile() {
     const std::string content = lifuren::files::loadFile("D:\\tmp\\lifuren.txt");
     SPDLOG_DEBUG("文件内容读取：{}", content);
 }
 
-static void testSaveFile() {
+[[maybe_unused]] static void testSaveFile() {
     const bool success = lifuren::files::saveFile("D:\\tmp\\lifuren.txt", "测试");
     SPDLOG_DEBUG("文件内容写出：{}", success);
 }

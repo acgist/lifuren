@@ -2,7 +2,7 @@
 
 #include "lifuren/Exception.hpp"
 
-static void testException() {
+[[maybe_unused]] static void testException() {
     try {
         int* ptr{ nullptr };
         // lifuren::Exception::trueThrow(ptr);

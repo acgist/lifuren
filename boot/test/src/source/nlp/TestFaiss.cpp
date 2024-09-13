@@ -6,7 +6,7 @@
 #include "faiss/MetaIndexes.h"
 // #include "faiss/IndexIDMap.h"
 
-static void testSearch() {
+[[maybe_unused]] static void testSearch() {
     faiss::IndexFlatL2 db(3);
     faiss::IndexIDMap map(&db);
     // faiss::IndexFlatL2 db(300);

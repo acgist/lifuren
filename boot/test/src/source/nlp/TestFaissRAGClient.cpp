@@ -2,7 +2,7 @@
 
 #include "lifuren/RAG.hpp"
 
-static void testRAGClient() {
+[[maybe_unused]] static void testRAGClient() {
     lifuren::FaissRAGClient client{ "D:/tmp/test", "ollama" };
     client.loadIndex();
     client.deleteRAG();

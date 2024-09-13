@@ -5,7 +5,7 @@
 #include "lifuren/Layers.hpp"
 #include "lifuren/Tensors.hpp"
 
-static void testLinear() {
+[[maybe_unused]] static void testLinear() {
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
@@ -40,7 +40,7 @@ static void testLinear() {
     }
 }
 
-static void testConv2d() {
+[[maybe_unused]] static void testConv2d() {
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,

@@ -10,6 +10,11 @@ add_subdirectory(json)
 add_subdirectory(stable-diffusion.cpp)
 # unset(SD_CUBLAS)
 
-set_target_properties(zip              PROPERTIES FOLDER "deps")
-set_target_properties(ggml             PROPERTIES FOLDER "deps")
-set_target_properties(stable-diffusion PROPERTIES FOLDER "deps")
+set_target_properties(
+  zip
+  ggml
+  stable-diffusion
+  PROPERTIES
+  FOLDER "deps"
+  COMPILE_FLAGS "-w"
+)

@@ -303,7 +303,7 @@ lifuren::Model& lifuren::Model::print(const char* name, const ggml_cgraph* cgrap
         printf("%-16s %8d\n",   "version", GGML_FILE_VERSION);
         printf("%-16s %8d\n",   "leafs",   cgraph->n_leafs);
         printf("%-16s %8d\n",   "nodes",   cgraph->n_nodes);
-        printf("%-16s %8lld\n", "eval",    size_eval);
+        printf("%-16s %8ld\n",  "eval",    size_eval);
         printf("\n");
         printf(
             "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
@@ -344,7 +344,7 @@ lifuren::Model& lifuren::Model::print(const char* from, const ggml_tensor* tenso
     const int64_t* ne = tensor->ne;
     const size_t * nb = tensor->nb;
     printf(
-        "%-32s %-4s %-4s %-4d %-4lld %-4lld %-4lld %-4lld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
+        "%-32s %-4s %-4s %-4d %-4ld %-4ld %-4ld %-4ld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
         tensor->name,
         from,
         ggml_type_name(tensor->type),
@@ -367,7 +367,7 @@ void lifuren::Model::train(size_t epoch, ggml_opt_context* opt_ctx) {
     std::vector<float> loss{};
     loss.reserve(batchCount);
     size_t accuSize = 0;
-    for (int batch = 0; batch < batchCount; ++batch) {
+    for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->trainDataset->batchGet(
             batch,
             static_cast<float*>(this->datas->data),
@@ -470,7 +470,7 @@ std::vector<size_t> lifuren::Model::evalClassify(const float* input, size_t size
     vector.reserve(this->params.size_classify);
     float *target = new float[size_data];
     float* data = this->eval(input, target, size_data);
-    for (int index = 0; index < size_data; ++index) {
+    for (size_t index = 0; index < size_data; ++index) {
         const float* pos = data + index * this->params.size_classify;
         vector.push_back(std::distance(std::max_element(pos, pos + this->params.size_classify), pos));
     }
@@ -490,7 +490,7 @@ void lifuren::Model::trainAndVal() {
     ggml_opt_context opt_ctx{};
     this->buildOptimizer(&opt_ctx);
     const int64_t train_start_us = ggml_time_us();
-    for(int epoch = 0; epoch < this->params.epoch_count; ++epoch) {
+    for(size_t epoch = 0; epoch < this->params.epoch_count; ++epoch) {
         this->train(epoch, &opt_ctx);
         this->val(epoch);
     }

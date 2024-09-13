@@ -4,7 +4,7 @@
 
 #include "spdlog/fmt/chrono.h"
 
-static void testFormat() {
+[[maybe_unused]] static void testFormat() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     SPDLOG_DEBUG("当前时间：{}", now);
     SPDLOG_DEBUG("日期时间转为字符串：{}", lifuren::dates::format(now, LFR_DATE_TIME_FORMAT));
@@ -13,7 +13,7 @@ static void testFormat() {
     SPDLOG_DEBUG("日期时间转为字符串：{}", lifuren::dates::format(tm, LFR_DATE_TIME_FORMAT));
 }
 
-static void testParse() {
+[[maybe_unused]] static void testParse() {
     std::string datetime = "2024-05-27 08:08:18";
     SPDLOG_DEBUG("字符串转为日期时间：{}", lifuren::dates::parseTp(datetime, LFR_DATE_TIME_FORMAT));
     std::tm tm = lifuren::dates::parseTm(datetime, LFR_DATE_TIME_FORMAT);
@@ -21,7 +21,7 @@ static void testParse() {
 
 }
 
-static void testMillis() {
+[[maybe_unused]] static void testMillis() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     const uint64_t millis = lifuren::dates::toMillis(now);
     std::tm tm = lifuren::dates::parseTm(millis);
@@ -31,7 +31,7 @@ static void testMillis() {
     SPDLOG_DEBUG("时间戳转日期时间：{} - {} - {} - {} - {} - {}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
-static void testCost() {
+[[maybe_unused]] static void testCost() {
     const std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
     const uint64_t millis = lifuren::dates::toMillis(a);
     for(int index = 0; index < 100000; ++index) {

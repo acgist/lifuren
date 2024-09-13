@@ -7,7 +7,7 @@
 #include "lifuren/Datasets.hpp"
 #include "lifuren/ImageDatasets.hpp"
 
-static void testRawDataset() {
+[[maybe_unused]] static void testRawDataset() {
     std::random_device device;
     std::mt19937 rand(device());
     std::normal_distribution<> nd(10, 2);
@@ -42,7 +42,7 @@ static void testRawDataset() {
     std::cout << '\n';
 }
 
-static void testFileDataset() {
+[[maybe_unused]] static void testFileDataset() {
     lifuren::datasets::FileDataset dataa(
         5,
         "D:/tmp",
@@ -77,7 +77,7 @@ static void testFileDataset() {
     SPDLOG_DEBUG("当前数量：{}", size);
 }
 
-static void testShardingDataset() {
+[[maybe_unused]] static void testShardingDataset() {
     std::random_device device;
     std::mt19937 rand(device());
     std::normal_distribution<> nd(10, 2);
@@ -121,7 +121,7 @@ static void testShardingDataset() {
     assert(testb.getBatchCount()  == 1LL);
 }
 
-static void testLoadImageFileDataset() {
+[[maybe_unused]] static void testLoadImageFileDataset() {
     std::map<std::string, float> mapping {
         { "man"  , 1.0F },
         { "woman", 0.0F }
@@ -133,7 +133,7 @@ static void testLoadImageFileDataset() {
     uint8_t data[120000];
     std::copy(features, features + 120000, data);
     lifuren::images::write("D:/tmp/loader.png", data, 200, 200);
-    for(int i = 0; i < data_loader.getBatchCount(); ++i) {
+    for(size_t i = 0; i < data_loader.getBatchCount(); ++i) {
         data_loader.batchGet(i, features, labels);
         std::copy(labels, labels + 5, std::ostream_iterator<float>(std::cout, " "));
         std::cout << '\n';

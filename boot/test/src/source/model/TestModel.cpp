@@ -52,7 +52,7 @@ public:
 
 };
 
-static void testSaveLoad() {
+[[maybe_unused]] static void testSaveLoad() {
     lifuren::Model::ModelParams params {
         .batch_size  = 1,
         .epoch_count = 64,
@@ -65,7 +65,7 @@ static void testSaveLoad() {
     // load.loadEval("D:/tmp").print();
 }
 
-static void testLine() {
+[[maybe_unused]] static void testLine() {
     std::random_device device;
     std::mt19937 rand(device());
     std::normal_distribution<> weight(10, 2);
