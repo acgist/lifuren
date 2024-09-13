@@ -45,7 +45,7 @@ void lifuren::images::show(uint8_t* data, size_t width, size_t height, size_t le
     image.release();
 }
 
-void lifuren::images::readTransform(
+void lifuren::images::load(
     const std::string& path,
     float * data,
     size_t& length,

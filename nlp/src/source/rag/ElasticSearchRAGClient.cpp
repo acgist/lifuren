@@ -39,9 +39,8 @@ std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& con
 }
 
 std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::string& prompt, const int size) {
-    const auto& ragConfig = lifuren::config::CONFIG.rag;
     auto&& vector = this->embeddingClient->getSegmentVector(prompt);
-    return ::search(this->id, vector, ragConfig.size, this->restClient);
+    return ::search(this->id, vector, size, this->restClient);
 }
 
 bool lifuren::ElasticSearchRAGClient::deleteRAG() {

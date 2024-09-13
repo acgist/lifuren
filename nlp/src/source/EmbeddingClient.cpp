@@ -1,5 +1,7 @@
 #include "lifuren/EmbeddingClient.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "lifuren/Poetrys.hpp"
 
 lifuren::EmbeddingClient::EmbeddingClient(lifuren::EmbeddingClient::SegmentType type) : type(type) {
@@ -21,7 +23,7 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
     }
 }
 
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment) {
+std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment) const {
     if(this->type == lifuren::EmbeddingClient::SegmentType::CHAR) {
         return this->getSegmentVector(lifuren::poetrys::toChars(segment));
     } else if(this->type == lifuren::EmbeddingClient::SegmentType::WORD) {
@@ -39,7 +41,7 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string&
  * 3. TF-IDF加权平均法
  * 4. ISF嵌入法
  */
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<std::string>& segment) {
+std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<std::string>& segment) const {
     std::map<std::string, std::vector<float>>&& ret = this->getVector(segment);
     if(ret.empty()) {
         return {};
@@ -50,6 +52,10 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<
     std::vector<float> data;
     data.resize(size);
     for(const auto& [key, value] : ret) {
+        if(value.empty()) {
+            // SPDLOG_DEBUG("没有嵌入向量：{}", key);
+            continue;
+        }
         for(size_t i = 0; i < size; ++i) {
             data[i] += value[i];
         }
@@ -60,7 +66,7 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<
     return data;
 }
 
-std::map<std::string, std::vector<float>> lifuren::EmbeddingClient::getVector(const std::vector<std::string>& segment) {
+std::map<std::string, std::vector<float>> lifuren::EmbeddingClient::getVector(const std::vector<std::string>& segment) const {
     if(segment.empty()) {
         return {};
     }

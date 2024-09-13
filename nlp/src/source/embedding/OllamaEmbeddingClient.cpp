@@ -14,7 +14,7 @@ lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient(Embedd
 lifuren::OllamaEmbeddingClient::~OllamaEmbeddingClient() {
 }
 
-std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& word) {
+std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& word) const {
     const auto& ollamaConfig    = lifuren::config::CONFIG.ollama;
     const auto& embeddingConfig = ollamaConfig.embeddingClient;
     nlohmann::json body = {
@@ -37,6 +37,6 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
     return ret;
 }
 
-size_t lifuren::OllamaEmbeddingClient::getDims() {
+size_t lifuren::OllamaEmbeddingClient::getDims() const {
     return 1024;
 }

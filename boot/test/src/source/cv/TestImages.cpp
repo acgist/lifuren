@@ -45,10 +45,10 @@
     data = nullptr;
 }
 
-[[maybe_unused]] static void testReadTransform() {
+[[maybe_unused]] static void testLoad() {
     float* data = new float[256 * 256 * 3];
     size_t length{ 0 };
-    lifuren::images::readTransform("D:/tmp/logo.png", data, length);
+    lifuren::images::load("D:/tmp/logo.png", data, length);
     cv::Mat image(256, 256, CV_8UC3);
     std::copy(data, data + length, image.data);
     // std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
@@ -104,5 +104,5 @@ LFR_TEST(
     // testWrite();
     // testSplit();
     testMerge();
-    // testReadTransform();
+    // testLoad();
 );

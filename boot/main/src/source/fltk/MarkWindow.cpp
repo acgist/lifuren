@@ -223,7 +223,7 @@ static bool reloadConfig(lifuren::MarkWindow* windowPtr, const std::string& path
     return newPath;
 }
 
-static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
+static void prevPoetry(Fl_Widget*, void*) {
     if(!selectMarkConfig) {
         return;
     }
@@ -244,7 +244,7 @@ static void prevPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
     matchPoetryRhythm();
 }
 
-static void nextPoetry(Fl_Widget* widgetPtr, void* voidPtr) {
+static void nextPoetry(Fl_Widget*, void*) {
     if(!selectMarkConfig) {
         return;
     }

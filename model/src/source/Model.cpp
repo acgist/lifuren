@@ -344,7 +344,11 @@ lifuren::Model& lifuren::Model::print(const char* from, const ggml_tensor* tenso
     const int64_t* ne = tensor->ne;
     const size_t * nb = tensor->nb;
     printf(
+        #if _WIN32
+        "%-32s %-4s %-4s %-4d %-4lld %-4lld %-4lld %-4lld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
+        #else
         "%-32s %-4s %-4s %-4d %-4ld %-4ld %-4ld %-4ld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
+        #endif
         tensor->name,
         from,
         ggml_type_name(tensor->type),
@@ -400,7 +404,7 @@ void lifuren::Model::val(size_t epoch) {
     std::vector<float> loss{};
     loss.reserve(batchCount);
     size_t accuSize = 0;
-    for (int batch = 0; batch < batchCount; ++batch) {
+    for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->valDataset->batchGet(
             batch,
             static_cast<float*>(this->datas->data),
@@ -496,6 +500,7 @@ void lifuren::Model::trainAndVal() {
     }
     this->test();
     const int64_t train_total_us = ggml_time_us() - train_start_us;
+    SPDLOG_DEBUG("累计耗时：{}", train_total_us);
 }
 
 void lifuren::Model::buildOptimizer(ggml_opt_context* opt_ctx) {

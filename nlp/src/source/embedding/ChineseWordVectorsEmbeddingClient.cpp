@@ -26,7 +26,7 @@ lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() 
 lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
 }
 
-std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& word) {
+std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& word) const {
     std::lock_guard<std::mutex> lock(mutex);
     if(vectors.empty()) {
         const auto& config = lifuren::config::CONFIG.chineseWordVectors;
@@ -43,7 +43,7 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     return iterator->second;
 }
 
-size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() {
+size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() const {
     return 300;
 }
 

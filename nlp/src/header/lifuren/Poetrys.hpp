@@ -12,6 +12,9 @@
 #include "lifuren/Config.hpp"
 
 namespace lifuren {
+
+class EmbeddingClient;
+
 namespace poetrys {
 
 /**
@@ -41,6 +44,8 @@ extern std::vector<std::string> toWords(const std::string& poetry);
 extern std::vector<std::string> toSegments(const std::string& poetry);
 
 extern std::string replaceSymbol(const std::string& poetry);
+
+extern void load(const lifuren::EmbeddingClient* client, const std::string& path, std::vector<std::vector<float>>& features);
 
 /**
  * 诗词

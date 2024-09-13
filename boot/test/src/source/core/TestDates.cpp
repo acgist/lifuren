@@ -33,7 +33,7 @@
 
 [[maybe_unused]] static void testCost() {
     const std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
-    const uint64_t millis = lifuren::dates::toMillis(a);
+    // const uint64_t millis = lifuren::dates::toMillis(a);
     for(int index = 0; index < 100000; ++index) {
         // lifuren::dates::toMillis(a);
         // lifuren::dates::parseTm(millis);

@@ -1,7 +1,13 @@
 #include "lifuren/Poetrys.hpp"
 
+#include "spdlog/spdlog.h"
+
+#include "nlohmann/json.hpp"
+
+#include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Strings.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 std::string lifuren::poetrys::beautify(const std::string& segment) {
     std::string ret;
@@ -44,6 +50,19 @@ std::string lifuren::poetrys::replaceSymbol(const std::string& poetry) {
     std::string copy = poetry;
     lifuren::strings::replace(copy, lifuren::poetrys::POETRY_SYMBOL_DELIM, "");
     return copy;
+}
+
+void lifuren::poetrys::load(const lifuren::EmbeddingClient* client, const std::string& path, std::vector<std::vector<float>>& features) {
+    SPDLOG_DEBUG("加载诗词文件：{}", path);
+    std::string&& json = lifuren::files::loadFile(path);
+    nlohmann::json poetrys{ nlohmann::json::parse(json) };
+    for(const auto& value : poetrys) {
+        lifuren::poetrys::Poetry poetry = value;
+        poetry.preproccess();
+        // TODO: 分词
+        features.push_back(std::move(client->getSegmentVector(poetry.segment)));
+        // features.push_back(std::move(client->getVector(poetry.segment)));
+    }
 }
 
 lifuren::poetrys::Poetry& lifuren::poetrys::Poetry::preproccess() {

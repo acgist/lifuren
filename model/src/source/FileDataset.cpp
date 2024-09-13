@@ -57,9 +57,11 @@ size_t lifuren::datasets::FileDataset::batchGet(size_t batch, float* features, f
     if(end <= begin || this->features.empty()) {
         return 0;
     }
+    size_t pos = 0;
     for(size_t index = begin; index < end; ++index) {
         const auto& feature = this->features[index];
-        std::copy(feature.begin(), feature.end(), features);
+        std::copy(feature.begin(), feature.end(), features + pos);
+        pos += feature.size();
     }
     if(!this->labels.empty()) {
         std::copy(this->labels.begin() + begin, this->labels.begin() + end, labels);

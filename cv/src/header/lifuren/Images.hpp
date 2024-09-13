@@ -33,7 +33,7 @@ extern void show(uint8_t* data, size_t width, size_t height, size_t length);
  * @param height    目标图片高度
  * @param transform 图片变换
  */
-extern void readTransform(
+extern void load(
     const std::string& path,
     float * data,
     size_t& length,

@@ -6,6 +6,8 @@
 
 #include "lifuren/Datasets.hpp"
 #include "lifuren/ImageDatasets.hpp"
+#include "lifuren/PoetryDatasets.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 [[maybe_unused]] static void testRawDataset() {
     std::random_device device;
@@ -144,9 +146,25 @@
     labels = nullptr;
 }
 
+[[maybe_unused]] static void testLoadPoetryFileDataset() {
+    // auto client = lifuren::EmbeddingClient::getClient("ollama");
+    auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
+    auto loader = lifuren::loadPoetryFileDataset(5, "D:/tmp/poetry", client.get());
+    // auto loader = lifuren::loadPoetryFileDataset(5, "D:/tmp/lifuren/poetry/data", client.get());
+    float* features = new float[300 * 5] { 0 };
+    loader.batchGet(3, features, nullptr);
+    auto pos = std::find_if(features, features + 1500, [](const auto& v) { return v == 0.0F; });
+    size_t distance = std::distance(features, pos);
+    SPDLOG_DEBUG("POS = {}", distance);
+    std::copy(features, features + 1500, std::ostream_iterator<float>(std::cout, " "));
+    delete features;
+    features = nullptr;
+}
+
 LFR_TEST(
     // testRawDataset();
     // testFileDataset();
     // testShardingDataset();
-    testLoadImageFileDataset();
+    // testLoadImageFileDataset();
+    testLoadPoetryFileDataset();
 );

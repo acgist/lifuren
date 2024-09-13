@@ -156,7 +156,6 @@ std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uin
 }
 
 std::vector<std::string> lifuren::strings::toChars(const std::string& segment, bool filter) {
-    const size_t length = lifuren::strings::length(segment);
     std::string ret;
     uint32_t pos   = 0;
     uint32_t index = 0;

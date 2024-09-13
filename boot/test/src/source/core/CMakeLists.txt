@@ -38,14 +38,6 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testPoetry TestPoetry.cpp)
-add_test(NAME testPoetry COMMAND testPoetry)
-set_target_properties(testPoetry PROPERTIES FOLDER "test-core")
-target_link_libraries(
-    testPoetry
-    lifurencore
-)
-
 add_executable(testStrings TestStrings.cpp)
 add_test(NAME testStrings COMMAND testStrings)
 set_target_properties(testStrings PROPERTIES FOLDER "test-core")

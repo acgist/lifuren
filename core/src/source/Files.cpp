@@ -8,7 +8,7 @@
 #include "lifuren/Strings.hpp"
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path) {
-    listFiles(vector, path, [](const std::string& path) { return true; });
+    listFiles(vector, path, [](const std::string&) { return true; });
 }
 
 void lifuren::files::listFiles(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& exts) {
