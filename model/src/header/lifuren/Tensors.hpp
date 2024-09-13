@@ -1,5 +1,5 @@
 /**
- * 矩阵
+ * 矩阵工具
  */
 #ifndef LFR_HEADER_MODEL_TENSORS_HPP
 #define LFR_HEADER_MODEL_TENSORS_HPP

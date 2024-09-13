@@ -12,7 +12,7 @@ static void testRead() {
     size_t length{0};
     // lifuren::images::read("D:/tmp/fail.jpg", &data, width, height, length);
     lifuren::images::read("D:/tmp/girl.png", &data, width, height, length);
-    lifuren::cv::show(data, width, height, length);
+    lifuren::images::show(data, width, height, length);
     delete data;
     data = nullptr;
 }

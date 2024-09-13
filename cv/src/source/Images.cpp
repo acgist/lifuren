@@ -37,6 +37,14 @@ bool lifuren::images::write(const std::string& path, uint8_t* data, size_t width
     return success;
 }
 
+void lifuren::images::show(uint8_t* data, size_t width, size_t height, size_t length) {
+    ::cv::Mat image(static_cast<int>(height), static_cast<int>(width), CV_8UC3);
+    memcpy(image.data, data, length);
+    ::cv::imshow("lifuren_show", image);
+    ::cv::waitKey();
+    image.release();
+}
+
 void lifuren::images::readTransform(
     const std::string& path,
     float * data,

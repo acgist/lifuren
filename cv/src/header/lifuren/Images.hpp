@@ -21,6 +21,8 @@ extern bool read(const std::string& path, uint8_t** data, size_t& width, size_t&
 // 写入图片
 extern bool write(const std::string& path, uint8_t* data, size_t width, size_t height, size_t length = 0LL, size_t channel = 3LL);
 
+extern void show(uint8_t* data, size_t width, size_t height, size_t length);
+
 /**
  * 读取图片
  * 

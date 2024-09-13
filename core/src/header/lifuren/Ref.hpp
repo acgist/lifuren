@@ -7,6 +7,7 @@
 #define LFR_HEADER_CORE_REF_HPP
 
 namespace lifuren {
-}
+
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_REF_HPP

@@ -9,9 +9,8 @@
 #include <map>
 #include <list>
 #include <mutex>
-#include <cstdio>
-#include <string>
 #include <memory>
+#include <string>
 #include <functional>
 
 #include "lifuren/Config.hpp"

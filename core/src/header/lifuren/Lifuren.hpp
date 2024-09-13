@@ -4,7 +4,8 @@
 #ifndef LFR_HEADER_CORE_LIFUREN_HPP
 #define LFR_HEADER_CORE_LIFUREN_HPP
 
-#include <cstddef>
+#include <cstdlib>
+#include <cstdint>
 
 namespace lifuren {
 

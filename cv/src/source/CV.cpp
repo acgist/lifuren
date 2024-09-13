@@ -10,11 +10,3 @@ void lifuren::cv::logger() {
     ::cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
     #endif
 }
-
-void lifuren::cv::show(uint8_t* data, size_t width, size_t height, size_t length) {
-    ::cv::Mat image(static_cast<int>(height), static_cast<int>(width), CV_8UC3);
-    memcpy(image.data, data, length);
-    ::cv::imshow("cv_show", image);
-    ::cv::waitKey();
-    image.release();
-}

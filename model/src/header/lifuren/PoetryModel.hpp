@@ -18,9 +18,7 @@
 #ifndef LFR_HEADER_MODEL_POETRY_HPP
 #define LFR_HEADER_MODEL_POETRY_HPP
 
-#include <vector>
-#include <string>
-
+#include "lifuren/Model.hpp"
 #include "lifuren/Config.hpp"
 
 namespace lifuren {

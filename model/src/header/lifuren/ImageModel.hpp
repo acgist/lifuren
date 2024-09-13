@@ -4,6 +4,8 @@
  * CycleGAN
  * StyleGAN
  */
+#include "lifuren/Model.hpp"
+
 namespace lifuren {
 
 class CycleGANModel {
