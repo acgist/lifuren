@@ -30,9 +30,9 @@ namespace layers  {
 class Layer {
 
 protected:
-    std::string name;
     ggml_context* ctx_weight { nullptr };
     ggml_context* ctx_compute{ nullptr };
+    std::string name;
 
 public:
     Layer(ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "");

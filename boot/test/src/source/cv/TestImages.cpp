@@ -26,15 +26,15 @@
     if(success) {
         lifuren::images::write("D:/tmp/girl_copy.png", data, width, height, length);
         uint8_t* x = new uint8_t[width * height];
-        for(int i = 0; i < width * height; ++i) {
+        for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i];
         }
         lifuren::images::write("D:/tmp/girl_1.png", x, width, height, 0, 1);
-        for(int i = 0; i < width * height; ++i) {
+        for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i + 1];
         }
         lifuren::images::write("D:/tmp/girl_2.png", x, width, height, 0, 1);
-        for(int i = 0; i < width * height; ++i) {
+        for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i + 2];
         }
         lifuren::images::write("D:/tmp/girl_3.png", x, width, height, 0, 1);

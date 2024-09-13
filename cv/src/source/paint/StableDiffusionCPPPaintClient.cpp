@@ -495,11 +495,11 @@ static int getOptions(int count, const char** mapping, const std::map<std::strin
 static sd_image_t* loadInputImage(SDParams& params) {
     sd_image_t* input_image     { nullptr };
     uint8_t   * input_image_data{ nullptr };
-    size_t width {0};
-    size_t height{0};
-    size_t length{0};
+    size_t width { 0 };
+    size_t height{ 0 };
+    size_t length{ 0 };
     lifuren::images::read(params.input_path, &input_image_data, width, height, length);
-    if (params.width != width || params.height != height) {
+    if (static_cast<size_t>(params.width) != width || static_cast<size_t>(params.height) != height) {
         const int resized_width  = params.width;
         const int resized_height = params.height;
         uint8_t* resized_image_data = new uint8_t[resized_width * resized_height * 3];
@@ -636,7 +636,7 @@ static bool writeImg(SDParams& params, size_t count, sd_image_t* result) {
     if(result == NULL) {
         return false;
     }
-    for (int i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (result[i].data == NULL) {
             continue;
         }
