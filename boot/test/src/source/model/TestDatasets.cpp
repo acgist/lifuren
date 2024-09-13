@@ -5,17 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Datasets.hpp"
-
-static void testReadImage() {
-    float* data = new float[256 * 256 * 3];
-    size_t length{ 0 };
-    lifuren::datasets::readImage("D:/tmp/logo.png", data, length);
-    cv::Mat image(256, 256, CV_8UC3);
-    std::copy(data, data + length, image.data);
-    cv::imwrite("D:/tmp/logo_copy.png", image);
-    delete data;
-    data = nullptr;
-}
+#include "lifuren/ImageDatasets.hpp"
 
 static void testRawDataset() {
     std::random_device device;
@@ -41,7 +31,15 @@ static void testRawDataset() {
     float f[5];
     float l[5];
     dataset.batchGet(0, f, l);
+    std::copy(f, f + 5, std::ostream_iterator<float>(std::cout, " "));
+    std::cout << '\n';
+    std::copy(l, l + 5, std::ostream_iterator<float>(std::cout, " "));
+    std::cout << '\n';
     dataset.batchGet(1, f, l);
+    std::copy(f, f + 5, std::ostream_iterator<float>(std::cout, " "));
+    std::cout << '\n';
+    std::copy(l, l + 5, std::ostream_iterator<float>(std::cout, " "));
+    std::cout << '\n';
 }
 
 static void testFileDataset() {
@@ -69,8 +67,8 @@ static void testFileDataset() {
             features.push_back(std::vector<float>{1.0F, 2.0F, 3.0F, 4.0F, 5.0F});
         },
         {
-            { "man"  , 1 },
-            { "woman", 0 }
+            { "man"  , 1.0F },
+            { "woman", 0.0F }
         }
     );
     size = datab.batchGet(0, f, l);
@@ -124,17 +122,31 @@ static void testShardingDataset() {
 }
 
 static void testLoadImageFileDataset() {
-    std::map<std::string, int> mapping = {
-        { "man"  , 1 },
-        { "woman", 0 }
+    std::map<std::string, float> mapping {
+        { "man"  , 1.0F },
+        { "woman", 0.0F }
     };
-    // auto data_loader = lifuren::datasets::loadImageFileDataset(200, 200, 20, "D:\\tmp\\gender\\train", ".jpg", mapping);
+    auto data_loader = lifuren::loadImageFileDataset(200, 200, 5, "D:/tmp/sex", ".jpg", mapping);
+    float* features  = new float[5 * 200 * 200 * 3];
+    float* labels    = new float[5];
+    data_loader.batchGet(0, features, labels);
+    uint8_t data[120000];
+    std::copy(features, features + 120000, data);
+    lifuren::images::write("D:/tmp/loader.png", data, 200, 200);
+    for(int i = 0; i < data_loader.getBatchCount(); ++i) {
+        data_loader.batchGet(i, features, labels);
+        std::copy(labels, labels + 5, std::ostream_iterator<float>(std::cout, " "));
+        std::cout << '\n';
+    }
+    delete features;
+    features = nullptr;
+    delete labels;
+    labels = nullptr;
 }
 
 LFR_TEST(
-    // testReadImage();
     // testRawDataset();
-    testFileDataset();
+    // testFileDataset();
     // testShardingDataset();
-    // testLoadImageFileDataset();
+    testLoadImageFileDataset();
 );

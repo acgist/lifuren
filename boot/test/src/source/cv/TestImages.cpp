@@ -45,6 +45,18 @@ static void testWrite() {
     data = nullptr;
 }
 
+static void testReadTransform() {
+    float* data = new float[256 * 256 * 3];
+    size_t length{ 0 };
+    lifuren::images::readTransform("D:/tmp/logo.png", data, length);
+    cv::Mat image(256, 256, CV_8UC3);
+    std::copy(data, data + length, image.data);
+    // std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
+    cv::imwrite("D:/tmp/logo_copy.png", image);
+    delete data;
+    data = nullptr;
+}
+
 static void testSplit() {
     auto image = cv::imread("D:/tmp/girl.png");
     cv::Mat rgb[3];
@@ -86,10 +98,10 @@ static void testMerge() {
     cv::imshow("rgb", image);
     cv::waitKey(0);
 }
-
 LFR_TEST(
     // testRead();
     // testWrite();
     // testSplit();
     testMerge();
+    // testReadTransform();
 );

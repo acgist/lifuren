@@ -14,31 +14,8 @@
 #include <vector>
 #include <functional>
 
-namespace cv {
-    class Mat;
-};
-
 namespace lifuren  {
 namespace datasets {
-
-/**
- * 图片读取
- * 
- * @param path      图片路径
- * @param data      图片数据
- * @param length    图片数据长度
- * @param width     目标图片宽度
- * @param height    目标图片高度
- * @param transform 图片变换
- */
-extern void readImage(
-    const std::string& path,
-    float * data,
-    size_t& length,
-    const int& width  = 0,
-    const int& height = 0,
-    const std::function<void(const cv::Mat&)> transform = nullptr
-);
 
 /**
  * 数据集
@@ -77,10 +54,6 @@ public:
      */
     virtual size_t getBatchCount() const;
     /**
-     * 洗牌
-     */
-    virtual void shuffle();
-    /**
      * 获取批次数据
      * 
      * @param batch    批次
@@ -89,7 +62,7 @@ public:
      * 
      * @return 剩余数据数量
      */
-    virtual size_t batchGet(size_t batch, void* features, void* labels) const = 0;
+    virtual size_t batchGet(size_t batch, float* features, float* labels) const = 0;
 
 };
 
@@ -116,7 +89,7 @@ public:
     ~ShardingDataset();
 
 public:
-    inline virtual size_t batchGet(size_t batch, void* features, void* labels) const override {
+    inline virtual size_t batchGet(size_t batch, float* features, float* labels) const override {
        return this->source->batchGet(this->indexMapping.at(batch), features, labels);
     }
 
@@ -162,7 +135,7 @@ public:
     ~RawDataset();
     
 public:
-    virtual size_t batchGet(size_t batch, void* features, void* labels) const override;
+    virtual size_t batchGet(size_t batch, float* features, float* labels) const override;
 
 };
 
@@ -191,60 +164,15 @@ public:
         const std::string& path,
         const std::vector<std::string>& exts,
         std::function<void(const std::string&, std::vector<std::vector<float>>&)> transform,
-        const std::map<std::string, float>& mapping = {}
+        const std::map<std::string, float>& mapping = {},
+        bool shuffle = true
     );
     ~FileDataset();
 
 public:
-    virtual size_t batchGet(size_t batch, void* features, void* labels) const override;
+    virtual size_t batchGet(size_t batch, float* features, float* labels) const override;
 
 };
-
-/**
- * 图片数据集
- * 
- * @param width      图片宽度
- * @param height     图片高度
- * @param batch_size 批次大小
- * @param path       图片路径
- * @param image_type 图片格式
- * @param mapping    标签映射
- * @param transform  图片转换
- */
-inline auto loadImageFileDataset(
-    const int& width,
-    const int& height,
-    const size_t& batch_size,
-    const std::string& path,
-    const std::string& image_type,
-    const std::map<std::string, float>& mapping,
-    const std::function<void(const cv::Mat&)> transform = nullptr
-) -> decltype(auto) {
-    auto dataset = lifuren::datasets::FileDataset(
-    batch_size,
-    path,
-    { image_type },
-    [width, height, transform](const std::string& path, std::vector<std::vector<float>>& features) {
-        std::vector<float> feature;
-        feature.resize(width * height * 3);
-        size_t length{ 0 };
-        lifuren::datasets::readImage(path, feature.data(), length, width, height, transform);
-        features.push_back(std::move(feature));
-    },
-    mapping);
-    return dataset;
-}
-
-using ImageFileDatasetLoader = std::invoke_result<
-    decltype(&lifuren::datasets::loadImageFileDataset),
-    const int&,
-    const int&,
-    const size_t&,
-    const std::string&,
-    const std::string&,
-    const std::map<std::string, float>&,
-    const std::function<void(const cv::Mat&)>
->::type;
 
 } // END OF datasets
 } // END OF lifuren

@@ -7,6 +7,7 @@ add_library(
     src/source/RAGService.cpp
     src/source/PoetizeClient.cpp
     src/source/RAGTaskRunner.cpp
+    src/source/PoetryDatasets.cpp
     src/source/EmbeddingClient.cpp
     src/source/rag/FaissRAGClient.cpp
     src/source/rag/ElasticSearchRAGClient.cpp

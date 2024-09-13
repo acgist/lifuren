@@ -27,6 +27,8 @@ add_test(NAME testDatasets COMMAND testDatasets)
 set_target_properties(testDatasets PROPERTIES FOLDER "test-model")
 target_link_libraries(
     testDatasets
+    lifurencv
+    lifurennlp
     lifurenmodel
 )
 

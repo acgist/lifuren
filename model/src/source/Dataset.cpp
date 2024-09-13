@@ -24,6 +24,3 @@ size_t lifuren::datasets::Dataset::getBatchCount() const {
         return (this->count / this->batchSize) + 1;
     }
 }
-
-void lifuren::datasets::Dataset::shuffle() {
-}

@@ -5,6 +5,7 @@ add_library(
     src/source/CV.cpp
     src/source/Images.cpp
     src/source/PaintClient.cpp
+    src/source/ImageDatasets.cpp
     src/source/paint/CycleGANPaintClient.cpp
     src/source/paint/StyleGANPaintClient.cpp
     src/source/paint/StableDiffusionCPPPaintClient.cpp

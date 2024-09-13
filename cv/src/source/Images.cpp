@@ -1,5 +1,7 @@
 #include "lifuren/Images.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "opencv2/opencv.hpp"
 
 bool lifuren::images::read(const std::string& path, uint8_t** data, size_t& width, size_t& height, size_t& length) {
@@ -33,4 +35,29 @@ bool lifuren::images::write(const std::string& path, uint8_t* data, size_t width
     bool success = cv::imwrite(path, image);
     image.release();
     return success;
+}
+
+void lifuren::images::readTransform(
+    const std::string& path,
+    float * data,
+    size_t& length,
+    const int& width,
+    const int& height,
+    const std::function<void(const cv::Mat&)> transform
+) {
+    const cv::Mat image = cv::imread(path);
+    if(image.channels() <= 0) {
+        SPDLOG_WARN("图片读取失败：{}", path);
+        return;
+    }
+    const cv::Mat target(height, width, CV_8UC3);
+    if(width > 0 && height > 0) {
+        cv::resize(image, target, cv::Size(width, height));
+    }
+    if(transform != nullptr) {
+        transform(target);
+    }
+    length = target.total() * target.elemSize();
+    std::copy(target.data, target.data + length, data);
+    // std::transform(target.data, target.data + length, data, [](const auto& v) { return static_cast<float>(v); });
 }
