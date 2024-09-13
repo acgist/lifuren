@@ -9,6 +9,7 @@
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
+        .no_alloc   = false
     };
     ggml_context* ctx = ggml_init(params);
     lifuren::layers::Linear linear(1, 1, ctx, "fc1", true);
@@ -44,6 +45,7 @@
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
+        .no_alloc   = false
     };
     ggml_context* ctx = ggml_init(params);
     lifuren::layers::Conv2d conv2d(3, 4, 3, ctx);

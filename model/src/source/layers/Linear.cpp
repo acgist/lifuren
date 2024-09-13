@@ -8,10 +8,10 @@ lifuren::layers::Linear::Linear(
     ggml_context* ctx,
     const std::string& name,
     bool bias
-) : in_features(in_features),
+) : Layer(ctx, ctx, name),
+    in_features(in_features),
     out_features(out_features),
-    bias_(bias),
-    Layer(ctx, ctx, name) {
+    bias_(bias) {
 }
 
 lifuren::layers::Linear::Linear(
@@ -20,10 +20,10 @@ lifuren::layers::Linear::Linear(
     ggml_context* ctx_weight,
     ggml_context* ctx_compute,
     const std::string& name, bool bias
-) : in_features(in_features),
+) : Layer(ctx_weight, ctx_compute, name),
+    in_features(in_features),
     out_features(out_features),
-    bias_(bias),
-    Layer(ctx_weight, ctx_compute, name) {
+    bias_(bias) {
 }
 
 lifuren::layers::Linear::~Linear() {

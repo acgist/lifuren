@@ -432,7 +432,7 @@ void lifuren::Model::test() {
     std::vector<float> loss{};
     loss.reserve(batchCount);
     size_t accuSize = 0;
-    for (int batch = 0; batch < batchCount; ++batch) {
+    for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->testDataset->batchGet(
             batch,
             static_cast<float*>(this->datas->data),
@@ -511,7 +511,7 @@ void lifuren::Model::buildOptimizer(ggml_opt_context* opt_ctx) {
 
 size_t lifuren::Model::batchAccu(const size_t& size) {
     size_t count = 0L;
-    for (int index = 0; index < size; ++index) {
+    for (size_t index = 0; index < size; ++index) {
         const float* predPos = ggml_get_data_f32(this->logits) + index * this->params.size_classify;
         const size_t predClassify = std::distance(std::max_element(predPos, predPos + this->params.classify), predPos);
         const float* labelPos = ggml_get_data_f32(this->labels) + index * this->params.size_classify;

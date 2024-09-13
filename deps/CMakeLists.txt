@@ -10,11 +10,22 @@ add_subdirectory(json)
 add_subdirectory(stable-diffusion.cpp)
 # unset(SD_CUBLAS)
 
-set_target_properties(
-  zip
-  ggml
-  stable-diffusion
-  PROPERTIES
-  FOLDER "deps"
-  COMPILE_FLAGS "-w"
-)
+if(CMAKE_HOST_UNIX)
+  set_target_properties(
+    zip
+    ggml
+    stable-diffusion
+    PROPERTIES
+    FOLDER "deps"
+    COMPILE_FLAGS "-w"
+  )
+else()
+  set_target_properties(
+    zip
+    ggml
+    stable-diffusion
+    PROPERTIES
+    FOLDER "deps"
+    COMPILE_FLAGS "/wd4005"
+  )
+endif()

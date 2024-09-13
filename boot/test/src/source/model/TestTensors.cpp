@@ -3,9 +3,10 @@
 #include "lifuren/Tensors.hpp"
 
 [[maybe_unused]] static void testMul() {
-    struct ggml_init_params params = {
+    ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
+        .no_alloc   = false
     };
     ggml_context* ctx = ggml_init(params);
     // ggml_tensor * a   = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 4);

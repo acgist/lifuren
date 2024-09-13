@@ -12,14 +12,14 @@ lifuren::layers::Conv2d::Conv2d(
     size_t padding,
     size_t dilation,
     bool   bias
-) : in_channels(in_channels),
+) : Layer(ctx, ctx, name),
+    in_channels(in_channels),
     out_channels(out_channels),
     kernel_size(kernel_size),
     stride(stride),
     padding(padding),
     dilation(dilation),
-    bias_(bias),
-    Layer(ctx, ctx, name) {
+    bias_(bias) {
 }
 
 lifuren::layers::Conv2d::Conv2d(
@@ -33,14 +33,14 @@ lifuren::layers::Conv2d::Conv2d(
     size_t padding,
     size_t dilation,
     bool   bias
-) : in_channels(in_channels),
+) : Layer(ctx_weight, ctx_compute, name),
+    in_channels(in_channels),
     out_channels(out_channels),
     kernel_size(kernel_size),
     stride(stride),
     padding(padding),
     dilation(dilation),
-    bias_(bias),
-    Layer(ctx_weight, ctx_compute, name) {
+    bias_(bias) {
 }
 
 lifuren::layers::Conv2d::~Conv2d() {
