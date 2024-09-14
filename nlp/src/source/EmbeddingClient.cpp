@@ -53,7 +53,7 @@ std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<
     data.resize(size);
     for(const auto& [key, value] : ret) {
         if(value.empty()) {
-            // SPDLOG_DEBUG("没有嵌入向量：{}", key);
+            SPDLOG_DEBUG("没有嵌入向量：{}", key);
             continue;
         }
         for(size_t i = 0; i < size; ++i) {
