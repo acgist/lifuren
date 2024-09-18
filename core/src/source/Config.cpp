@@ -392,6 +392,10 @@ void lifuren::config::init(const int argc, const char* const argv[]) {
     lifuren::config::loadConfig();
 }
 
+std::string lifuren::config::baseFile(const std::string& path) {
+    return lifuren::files::join({lifuren::config::base, path}).string();
+}
+
 void lifuren::config::loadConfig() noexcept {
     SPDLOG_DEBUG("加载全局所有配置");
     // 配置

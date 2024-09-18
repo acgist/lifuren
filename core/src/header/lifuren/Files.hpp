@@ -78,6 +78,16 @@ extern void listFiles(std::vector<std::string>& vector, const std::string& path,
 extern std::string loadFile(const std::string& path);
 
 /**
+ * 读取文件
+ * 数据使用完后调用`delete[]`释放资源
+ * 
+ * @param file   文件
+ * @param data   数据
+ * @param length 长度
+ */
+extern void loadFile(const std::string& path, char** data, size_t& length);
+
+/**
  * @param path  文件路径
  * @param value 文件内容
  * 

@@ -23,9 +23,8 @@ namespace lifuren {
 
 namespace content::type {
 
-    // HTML
     const char* const HTML = "text/html";
-    // JSON
+    const char* const ICON = "image/x-icon";
     const char* const JSON = "application/json";
 
 }; // END OF content::type

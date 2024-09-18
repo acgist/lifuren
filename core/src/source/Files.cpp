@@ -67,6 +67,23 @@ std::string lifuren::files::loadFile(const std::string& path) {
     return lines;
 }
 
+void lifuren::files::loadFile(const std::string& path, char** data, size_t& length) {
+    length = std::filesystem::file_size(std::filesystem::u8path(path));
+    if(length == 0LL) {
+        return;
+    }
+    std::ifstream input;
+    input.open(path, std::ios_base::in | std::ios_base::binary);
+    if(!input.is_open()) {
+        SPDLOG_WARN("打开文件失败：{}", path);
+        input.close();
+        return;
+    }
+    *data = new char[length];
+    input.read(*data, length);
+    input.close();
+}
+
 bool lifuren::files::saveFile(const std::string& path, const std::string& value) {
     createParent(path);
     std::ofstream output;

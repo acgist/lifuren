@@ -123,9 +123,7 @@ void lifuren::Window::init() {
 }
 
 void lifuren::Window::icon() {
-    const char* iconPath = "../images/logo.png";
-    SPDLOG_DEBUG("加载图标：{}", iconPath);
-    Fl_PNG_Image iconImage(iconPath);
+    Fl_PNG_Image iconImage(lifuren::config::baseFile("../images/logo.png").c_str());
     this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
     Fl_Window::default_icon(this->iconImagePtr);
 }

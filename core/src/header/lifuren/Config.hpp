@@ -330,6 +330,8 @@ extern bool saveFile(const std::string& path);
 
 extern void init(const int argc, const char * const argv[]);
 
+extern std::string baseFile(const std::string& path);
+
 /**
  * 加载所有全局配置
  */

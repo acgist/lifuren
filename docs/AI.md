@@ -183,7 +183,6 @@
 
 * https://github.com/lencx/ChatGPT
 * https://github.com/geekan/MetaGPT
-* https://github.com/ggerganov/ggml
 * https://github.com/xtekky/gpt4free
 * https://github.com/salesforce/BLIP
 * https://github.com/reworkd/AgentGPT
@@ -303,7 +302,7 @@ ADMA + L2
 * 动态图
 * 静态图
 
-### 预训练
+#### 预训练
 
 #### 特征工程
 
@@ -359,6 +358,7 @@ ADMA + L2
 
 ## 训练框架
 
+* [GGML](https://github.com/ggerganov/ggml)
 * [PyTorch](https://github.com/pytorch/pytorch)
 * [MindSpore](https://github.com/mindspore-ai/mindspore)
 * [TensorFlow](https://github.com/tensorflow/tensorflow)

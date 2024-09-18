@@ -45,7 +45,7 @@ target_include_directories(
     PUBLIC ${HEADER_DIR}
 )
 
-file(COPY src/images/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/images FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.jpeg")
+file(COPY src/images/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/images FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets

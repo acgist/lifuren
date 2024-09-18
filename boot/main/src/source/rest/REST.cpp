@@ -8,6 +8,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 
 httplib::Server lifuren::httpServer;
@@ -15,11 +16,9 @@ httplib::Server lifuren::httpServer;
 // 是否关闭
 static bool restClose = false;
 
-// 全局代理
 static void restHandler();
-// 项目首页
 static void restGetIndex();
-// 关闭服务
+static void restGetFavicon();
 static void restGetShutdown();
 
 void lifuren::initHttpServer() {
@@ -98,6 +97,7 @@ static void restHandler() {
 
 void lifuren::restAPI() {
     restGetIndex();
+    restGetFavicon();
     restGetShutdown();
 }
 
@@ -120,6 +120,20 @@ static void restGetIndex() {
 </body>
 </html>
         )", lifuren::content::type::HTML);
+    });
+}
+
+static void restGetFavicon() {
+    lifuren::httpServer.Get("/favicon.ico", [](const httplib::Request& request, httplib::Response& response) {
+        char * data  { nullptr };
+        size_t length{ 0LL };
+        lifuren::files::loadFile(lifuren::config::baseFile("../images/favicon.ico"), &data, length);
+        if(length == 0LL) {
+            return;
+        }
+        response.set_content(data, length, lifuren::content::type::ICON);
+        delete[] data;
+        data = nullptr;
     });
 }
 
