@@ -17,9 +17,7 @@
 #include <set>
 #include <string>
 
-#include "FL/Fl.H"
 #include "FL/Fl_Window.H"
-#include "FL/Fl_PNG_Image.H"
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
@@ -40,6 +38,7 @@ lifuren::strings::replace(path, "/", "\\/");
 #endif
 
 class Fl_Choice;
+class Fl_PNG_Image;
 
 namespace lifuren {
 

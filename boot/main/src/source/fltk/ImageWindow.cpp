@@ -1,7 +1,5 @@
 #include "lifuren/FLTK.hpp"
 
-#include <algorithm>
-
 #include "spdlog/spdlog.h"
 
 #include "FL/fl_ask.H"
@@ -13,6 +11,7 @@
 
 #include "lifuren/Ptr.hpp"
 #include "lifuren/Config.hpp"
+#include "lifuren/PaintClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * modelPathPtr   { nullptr };
@@ -26,6 +25,8 @@ static Fl_Input * poetryPromptPtr{ nullptr };
 static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
+
+static std::unique_ptr<lifuren::PaintClient> paintClient{ nullptr };
 
 static void generate(Fl_Widget*, void*);
 static void clientCallback(Fl_Widget*, void*);
@@ -66,7 +67,7 @@ void lifuren::ImageWindow::saveConfig() {
         auto& paintSytleGAN = lifuren::config::CONFIG.paintSytleGAN;
         paintSytleGAN.model = modelPathPtr->value();
     } else {
-        // 其他终端
+        SPDLOG_WARN("不支持的绘画终端：{}", imageConfig.client);
     }
     lifuren::Configuration::saveConfig();
 }
@@ -128,7 +129,27 @@ static void generate(Fl_Widget*, void*) {
         fl_message("没有选择绘画终端");
         return;
     }
-    // TODO: 实现逻辑
+    if(paintClient && paintClient->isRunning()) {
+        fl_message("上次绘画任务没有完成");
+        return;
+    }
+    paintClient = lifuren::PaintClient::getClient(clientPtr->text());
+    if(!paintClient) {
+        fl_message("不支持的终端");
+        return;
+    }
+    lifuren::PaintClient::PaintOptions options;
+    options.mode   = std::strlen(imagePathPtr->value()) == 0LL ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG;
+    options.image  = imagePathPtr->value();
+    options.prompt = promptBufferPtr->text();
+    paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
+        if(finish) {
+            fl_message("绘制完成");
+        } else {
+            // 进度
+        }
+        return true;
+    });
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {

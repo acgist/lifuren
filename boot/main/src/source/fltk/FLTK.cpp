@@ -13,7 +13,9 @@
 #include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 
+#include "FL/Fl.H"
 #include "FL/Fl_Choice.H"
+#include "FL/Fl_PNG_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
 // 是否关闭

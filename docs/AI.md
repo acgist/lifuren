@@ -15,7 +15,6 @@
 
 #### 学习方式
 
-* 强化学习
 * 有监督学习
 * 无监督学习
 * 半监督学习
@@ -200,6 +199,21 @@
 * https://github.com/AUTOMATIC1111/stable-diffusion-webui
 
 ## 迁移学习
+
+#### 领域偏移
+
+## 强化学习
+## 元学习
+## 终身学习
+
+## 网络压缩
+
+* 网络剪枝
+* 知识蒸馏
+* 参数量化
+* 动态计算
+* 网络架构设计
+
 ## 模型量化
 
 ## 模型微调（Fine-tune）
@@ -289,16 +303,18 @@ ADMA + L2
 * 动态图
 * 静态图
 
+### 预训练
+
 #### 特征工程
 
-###### 数值
-###### 文本
-###### 分类变量
-###### 特征缩放
-###### 数据降维
-###### 数据分箱
-###### 图像裁剪
-###### 图像增⼴
+* 数值
+* 文本
+* 分类变量
+* 特征缩放
+* 数据降维
+* 数据分箱
+* 图像裁剪
+* 图像增⼴
 
 #### 共享参数（parameter sharing）
 #### 数据增强
@@ -323,40 +339,31 @@ ADMA + L2
 不要总是训练对的数据，给一些错误的噪声。
 
 #### 检索增强生成（RAG）
+#### 自然语言推理（NLI）
 #### prompt
 #### Tokenizer
 #### Embedding
-#### Normalization（归一化）
-### 自然语言推理（NLI）
 
+#### Normalization（归一化）
+
+```
 1. (x - min(x))  / (max(x) - min(x)) [ 0, 1]
 2. (x - mean(x)) / (max(x) - min(x)) [-1, 1]
+```
 
 #### Standardization（标准化）
 
+```
 1. (x - mean(x)) / std(x)
+```
 
 ## 训练框架
 
-#### PyTorch
-
-https://github.com/pytorch/pytorch
-
-#### TensorFlow
-
-https://github.com/tensorflow/tensorflow
-
-#### MindSpore
-
-https://github.com/mindspore-ai/mindspore
-
-#### PaddlePaddle
-
-https://github.com/PaddlePaddle/PaddleHub
-
-#### scikit-learn
-
-https://github.com/scikit-learn/scikit-learn
+* [PyTorch](https://github.com/pytorch/pytorch)
+* [MindSpore](https://github.com/mindspore-ai/mindspore)
+* [TensorFlow](https://github.com/tensorflow/tensorflow)
+* [PaddlePaddle](https://github.com/PaddlePaddle/PaddleHub)
+* [scikit-learn](https://github.com/scikit-learn/scikit-learn)
 
 ## 模型工具
 

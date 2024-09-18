@@ -303,7 +303,11 @@ lifuren::Model& lifuren::Model::print(const char* name, const ggml_cgraph* cgrap
         printf("%-16s %8d\n",   "version", GGML_FILE_VERSION);
         printf("%-16s %8d\n",   "leafs",   cgraph->n_leafs);
         printf("%-16s %8d\n",   "nodes",   cgraph->n_nodes);
+        #if _WIN32
+        printf("%-16s %8lld\n", "eval",    size_eval);
+        #else
         printf("%-16s %8ld\n",  "eval",    size_eval);
+        #endif
         printf("\n");
         printf(
             "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
