@@ -1,6 +1,7 @@
 #include "Test.hpp"
 
 #include "lifuren/CV.hpp"
+#include "lifuren/Files.hpp"
 #include "lifuren/Images.hpp"
 
 #include "opencv2/opencv.hpp"
@@ -10,8 +11,8 @@
     size_t width {0};
     size_t height{0};
     size_t length{0};
-    // lifuren::images::read("D:/tmp/fail.jpg", &data, width, height, length);
-    lifuren::images::read("D:/tmp/girl.png", &data, width, height, length);
+    // lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "fail.jpg"}).string(), &data, width, height, length);
+    lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
     lifuren::images::show(data, width, height, length);
     delete data;
     data = nullptr;
@@ -22,22 +23,22 @@
     size_t width {0};
     size_t height{0};
     size_t length{0};
-    bool success = lifuren::images::read("D:/tmp/girl.jpg", &data, width, height, length);
+    bool success = lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
     if(success) {
-        lifuren::images::write("D:/tmp/girl_copy.png", data, width, height, length);
+        lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_copy.png"}).string(), data, width, height, length);
         uint8_t* x = new uint8_t[width * height];
         for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i];
         }
-        lifuren::images::write("D:/tmp/girl_1.png", x, width, height, 0, 1);
+        lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_1.png"}).string(), x, width, height, 0, 1);
         for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i + 1];
         }
-        lifuren::images::write("D:/tmp/girl_2.png", x, width, height, 0, 1);
+        lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_2.png"}).string(), x, width, height, 0, 1);
         for(size_t i = 0; i < width * height; ++i) {
             x[i] = data[3 * i + 2];
         }
-        lifuren::images::write("D:/tmp/girl_3.png", x, width, height, 0, 1);
+        lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_3.png"}).string(), x, width, height, 0, 1);
         delete x;
         x = nullptr;
     }
@@ -48,17 +49,17 @@
 [[maybe_unused]] static void testLoad() {
     float* data = new float[256 * 256 * 3];
     size_t length{ 0 };
-    lifuren::images::load("D:/tmp/logo.png", data, length);
+    lifuren::images::load(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo.png"}).string(), data, length);
     cv::Mat image(256, 256, CV_8UC3);
     std::copy(data, data + length, image.data);
     // std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
-    cv::imwrite("D:/tmp/logo_copy.png", image);
+    cv::imwrite(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo_copy.png"}).string(), image);
     delete data;
     data = nullptr;
 }
 
 [[maybe_unused]] static void testSplit() {
-    auto image = cv::imread("D:/tmp/girl.png");
+    auto image = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
     cv::Mat rgb[3];
     cv::split(image, rgb);
     cv::imshow("rgb-0", rgb[0]);
@@ -78,12 +79,12 @@
 }
 
 [[maybe_unused]] static void testMerge() {
-    auto a = cv::imread("D:/tmp/girl_1.png");
-    auto b = cv::imread("D:/tmp/girl_2.png");
-    auto c = cv::imread("D:/tmp/girl_3.png");
-    // auto a = cv::imread("D:/tmp/girl_1.png", cv::ImreadModes::IMREAD_GRAYSCALE);
-    // auto b = cv::imread("D:/tmp/girl_2.png", cv::ImreadModes::IMREAD_GRAYSCALE);
-    // auto c = cv::imread("D:/tmp/girl_3.png", cv::ImreadModes::IMREAD_GRAYSCALE);
+    auto a = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_1.png"}).string());
+    auto b = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_2.png"}).string());
+    auto c = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_3.png"}).string());
+    // auto a = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_1.png"}).string(), cv::ImreadModes::IMREAD_GRAYSCALE);
+    // auto b = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_2.png"}).string(), cv::ImreadModes::IMREAD_GRAYSCALE);
+    // auto c = cv::imread(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_3.png"}).string(), cv::ImreadModes::IMREAD_GRAYSCALE);
     std::vector<cv::Mat> aa(3);
     std::vector<cv::Mat> bb(3);
     std::vector<cv::Mat> cc(3);

@@ -1,3 +1,6 @@
+# 公共配置
+config:
+  tmp: D:\tmp
 # HTTP监听
 http-server:
   host: 0.0.0.0

@@ -55,6 +55,7 @@ target[#key] = source.name;
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 
+const std::string lifuren::config::CONFIG_CONFIG               = "config";
 const std::string lifuren::config::CONFIG_HTTP_SERVER          = "http-server";
 const std::string lifuren::config::CONFIG_IMAGE                = "image";
 const std::string lifuren::config::CONFIG_POETRY               = "poetry";
@@ -103,7 +104,12 @@ std::string lifuren::config::Config::toYaml() {
 }
 
 void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
-    if(name == lifuren::config::CONFIG_HTTP_SERVER) {
+    if(name == lifuren::config::CONFIG_CONFIG) {
+        const auto& tmp = yaml["tmp"];
+        if(tmp) {
+            config.tmp = tmp.as<std::string>();
+        }
+    } else if(name == lifuren::config::CONFIG_HTTP_SERVER) {
         const auto& host = yaml["host"];
         const auto& port = yaml["port"];
         if(host) {
@@ -196,6 +202,11 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
 YAML::Node toYaml() {
     const auto& config = lifuren::config::CONFIG;
     YAML::Node yaml;
+    {
+        YAML::Node config;
+        config["tmp"] = lifuren::config::CONFIG.tmp;
+        yaml[lifuren::config::CONFIG_CONFIG] = config;
+    }
     {
         YAML::Node http;
         http["host"] = lifuren::config::httpServerHost;

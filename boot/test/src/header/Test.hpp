@@ -5,6 +5,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 
 #ifndef LFR_TEST

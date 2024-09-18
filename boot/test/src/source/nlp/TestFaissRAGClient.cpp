@@ -1,9 +1,10 @@
 #include "Test.hpp"
 
 #include "lifuren/RAG.hpp"
+#include "lifuren/Files.hpp"
 
 [[maybe_unused]] static void testRAGClient() {
-    lifuren::FaissRAGClient client{ "D:/tmp/test", "ollama" };
+    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     client.deleteRAG();
     client.index("猪");

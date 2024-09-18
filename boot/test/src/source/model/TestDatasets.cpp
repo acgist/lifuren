@@ -4,6 +4,7 @@
 
 #include "opencv2/opencv.hpp"
 
+#include "lifuren/Files.hpp"
 #include "lifuren/Datasets.hpp"
 #include "lifuren/ImageDatasets.hpp"
 #include "lifuren/PoetryDatasets.hpp"
@@ -47,7 +48,7 @@
 [[maybe_unused]] static void testFileDataset() {
     lifuren::datasets::FileDataset dataa(
         5,
-        "D:/tmp",
+        lifuren::config::CONFIG.tmp,
         { ".jpg" },
         [](const std::string& path, std::vector<std::vector<float>>& features) {
             SPDLOG_DEBUG("读取文件：{}", path);
@@ -62,7 +63,7 @@
     SPDLOG_DEBUG("当前数量：{}", size);
     lifuren::datasets::FileDataset datab(
         5,
-        "D:/tmp/sex",
+        lifuren::files::join({lifuren::config::CONFIG.tmp, "sex"}).string(),
         { ".jpg" },
         [](const std::string& path, std::vector<std::vector<float>>& features) {
             SPDLOG_DEBUG("读取文件：{}", path);
@@ -128,13 +129,13 @@
         { "man"  , 1.0F },
         { "woman", 0.0F }
     };
-    auto data_loader = lifuren::loadImageFileDataset(200, 200, 5, "D:/tmp/sex", ".jpg", mapping);
+    auto data_loader = lifuren::loadImageFileDataset(200, 200, 5, lifuren::files::join({lifuren::config::CONFIG.tmp, "sex"}).string(), ".jpg", mapping);
     float* features  = new float[5 * 200 * 200 * 3];
     float* labels    = new float[5];
     data_loader.batchGet(0, features, labels);
     uint8_t data[120000];
     std::copy(features, features + 120000, data);
-    lifuren::images::write("D:/tmp/loader.png", data, 200, 200);
+    lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "loader.png"}).string(), data, 200, 200);
     for(size_t i = 0; i < data_loader.getBatchCount(); ++i) {
         data_loader.batchGet(i, features, labels);
         std::copy(labels, labels + 5, std::ostream_iterator<float>(std::cout, " "));
@@ -149,8 +150,8 @@
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
     // auto client = lifuren::EmbeddingClient::getClient("ollama");
     auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
-    auto loader = lifuren::loadPoetryFileDataset(5, "D:/tmp/poetry", client.get());
-    // auto loader = lifuren::loadPoetryFileDataset(5, "D:/tmp/lifuren/poetry/data", client.get());
+    auto loader = lifuren::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
+    // auto loader = lifuren::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "lifuren", "poetry", "data"}).string(), client.get());
     float* features = new float[300 * 5] { 0 };
     loader.batchGet(3, features, nullptr);
     auto pos = std::find_if(features, features + 1500, [](const auto& v) { return v == 0.0F; });

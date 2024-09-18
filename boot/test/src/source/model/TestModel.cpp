@@ -58,11 +58,11 @@ public:
         .epoch_count = 64,
     };
     SimpleModel save{params};
-    save.define().print().save("D:/tmp");
-    // save.define().print().saveEval("D:/tmp");
+    save.define().print().save(lifuren::config::CONFIG.tmp);
+    // save.define().print().saveEval(lifuren::config::CONFIG.tmp);
     SimpleModel load{params};
-    load.load("D:/tmp").print();
-    // load.loadEval("D:/tmp").print();
+    load.load(lifuren::config::CONFIG.tmp).print();
+    // load.loadEval(lifuren::config::CONFIG.tmp).print();
 }
 
 [[maybe_unused]] static void testLine() {

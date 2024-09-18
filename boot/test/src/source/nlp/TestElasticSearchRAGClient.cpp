@@ -4,10 +4,11 @@
 #include <thread>
 
 #include "lifuren/RAG.hpp"
+#include "lifuren/Files.hpp"
 
 [[maybe_unused]] static void testRAGClient() {
-    lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ollama" };
-    // lifuren::ElasticSearchRAGClient client{ "D:/tmp/test", "ChineseWordVectors" };
+    lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
     client.loadIndex();
     client.deleteRAG();
     client.index("猪");

@@ -39,6 +39,7 @@ extern std::string httpServerHost;
 extern int         httpServerPort;
 
 // 全局配置名称
+extern const std::string CONFIG_CONFIG;
 extern const std::string CONFIG_HTTP_SERVER;
 extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_POETRY;
@@ -226,6 +227,9 @@ struct ModelConfig {
 class Config {
 
 public:
+    // 基础配置
+    std::string tmp;
+    // 复合配置
     lifuren::config::ImageConfig  image {};
     lifuren::config::PoetryConfig poetry{};
     std::list<lifuren::config::MarkConfig> mark{};
