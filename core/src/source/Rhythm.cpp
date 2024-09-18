@@ -7,6 +7,7 @@
 
 #include "yaml-cpp/yaml.h"
 
+#include "lifuren/Files.hpp"
 #include "lifuren/Yamls.hpp"
 
 #ifndef LFR_RHYTHM_SETTER
@@ -42,9 +43,10 @@ std::string lifuren::config::Rhythm::toYaml() {
 }
 
 std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile(const std::string& path) {
-    SPDLOG_DEBUG("加载标签文件：{}", path);
+    const std::string fullpath = lifuren::files::join({lifuren::config::base, path}).string();
+    SPDLOG_DEBUG("加载标签文件：{}", fullpath);
     std::map<std::string, Rhythm> map;
-    YAML::Node yaml = lifuren::yamls::loadFile(path);
+    YAML::Node yaml = lifuren::yamls::loadFile(fullpath);
     if(yaml.size() == 0L) {
         return map;
     }

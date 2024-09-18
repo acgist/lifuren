@@ -18,6 +18,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 
 static std::mutex mutex;
@@ -61,11 +62,12 @@ static void launch() {
     }
 }
 
-int main(const int argc, const char * const argv[]) {
+int main(const int argc, const char* const argv[]) {
     std::set_terminate([]() {
         std::exit(-9999);
     });
     lifuren::logger::init();
+    lifuren::config::initBase(argc, argv);
     SPDLOG_DEBUG("启动系统");
     launch();
     SPDLOG_DEBUG("系统退出");

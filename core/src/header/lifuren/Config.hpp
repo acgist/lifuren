@@ -35,6 +35,7 @@ const char* const RHYTHM_PATH = "../config/rhythm.yml";
 class Config;
 class Rhythm;
 
+extern std::string base;
 extern std::string httpServerHost;
 extern int         httpServerPort;
 
@@ -326,6 +327,8 @@ extern bool saveFile();
  * @return 是否成功
  */
 extern bool saveFile(const std::string& path);
+
+extern void initBase(const int argc, const char * const argv[]);
 
 } // END OF lifuren::config
 

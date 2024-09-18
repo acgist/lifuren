@@ -1,13 +1,14 @@
 #include "lifuren/Config.hpp"
 
 #include <algorithm>
+#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
 #include "yaml-cpp/yaml.h"
 
+#include "lifuren/Files.hpp"
 #include "lifuren/Yamls.hpp"
-#include "lifuren/Logger.hpp"
 
 // 配置读取
 #ifndef LFR_CONFIG_YAML_GETTER
@@ -52,6 +53,7 @@ if(name && !name.IsNull() && name.IsSequence()) {                    \
 target[#key] = source.name;
 #endif
 
+std::string lifuren::config::base           = "";
 std::string lifuren::config::httpServerHost = "0.0.0.0";
 int         lifuren::config::httpServerPort = 8080;
 
@@ -343,7 +345,7 @@ YAML::Node toYaml() {
 
 lifuren::config::Config lifuren::config::loadFile() {
     try {
-        return lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+        return lifuren::config::loadFile(lifuren::files::join({lifuren::config::base, lifuren::config::CONFIG_PATH}).string());
     } catch(const std::exception& e) {
         SPDLOG_ERROR("加载配置异常：{}", e.what());
     } catch(...) {
@@ -372,12 +374,20 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
 }
 
 bool lifuren::config::saveFile() {
-    return lifuren::config::saveFile(lifuren::config::CONFIG_PATH);
+    return lifuren::config::saveFile(lifuren::files::join({lifuren::config::base, lifuren::config::CONFIG_PATH}).string());
 }
 
 bool lifuren::config::saveFile(const std::string& path) {
     SPDLOG_INFO("保存配置文件：{}", path);
     return lifuren::yamls::saveFile(toYaml(), path);
+}
+
+void lifuren::config::initBase(const int argc, const char* const argv[]) {
+    if(argc <= 0) {
+        return;
+    }
+    lifuren::config::base = std::filesystem::absolute(std::filesystem::u8path(argv[0]).parent_path()).string();
+    SPDLOG_DEBUG("当前项目执行目录：{}", lifuren::config::base);
 }
 
 bool lifuren::config::MarkConfig::operator==(const std::string& path) const {

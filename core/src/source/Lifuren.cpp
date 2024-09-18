@@ -12,7 +12,7 @@ static std::mutex mutex;
 void lifuren::loadConfig() noexcept {
     SPDLOG_DEBUG("加载全局所有配置");
     // 配置
-    auto config = lifuren::config::loadFile(lifuren::config::CONFIG_PATH);
+    auto config = lifuren::config::loadFile();
     lifuren::config::CONFIG = config;
     // 格律
     auto rhythm = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);

@@ -8,7 +8,6 @@
 #include "yaml-cpp/yaml.h"
 
 #include "lifuren/Files.hpp"
-#include "lifuren/Logger.hpp"
 
 YAML::Node lifuren::yamls::loadFile(const std::string& path) {
     if(!lifuren::files::exists(path) || !lifuren::files::isFile(path)) {
