@@ -59,6 +59,7 @@ void lifuren::poetrys::load(const lifuren::EmbeddingClient* client, const std::s
     for(const auto& value : poetrys) {
         lifuren::poetrys::Poetry poetry = value;
         poetry.preproccess();
+        // TODO：如果没有格律直接忽略
         // TODO: 分词
         features.push_back(std::move(client->getSegmentVector(poetry.segment)));
         // features.push_back(std::move(client->getVector(poetry.segment)));
