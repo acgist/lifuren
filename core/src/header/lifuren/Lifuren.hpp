@@ -10,11 +10,6 @@
 namespace lifuren {
 
 /**
- * 加载所有全局配置
- */
-extern void loadConfig() noexcept;
-
-/**
  * @return ID(yyyyMMddHHmmssxxxx)
  */
 extern size_t uuid() noexcept;

@@ -67,7 +67,7 @@ int main(const int argc, const char* const argv[]) {
         std::exit(-9999);
     });
     lifuren::logger::init();
-    lifuren::config::initBase(argc, argv);
+    lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
     launch();
     SPDLOG_DEBUG("系统退出");

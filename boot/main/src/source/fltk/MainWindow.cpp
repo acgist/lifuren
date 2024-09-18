@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Raii.hpp"
-#include "lifuren/Lifuren.hpp"
+#include "lifuren/Config.hpp"
 
 #include "FL/fl_ask.H"
 #include "FL/filename.H"
@@ -100,7 +100,7 @@ void lifuren::MainWindow::drawElement() {
     }, this);
     // 加载配置
     reloadButtonPtr->callback([](Fl_Widget*, void*) {
-        lifuren::loadConfig();
+        lifuren::config::loadConfig();
     }, this);
 }
 

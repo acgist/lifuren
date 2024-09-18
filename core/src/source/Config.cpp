@@ -79,7 +79,7 @@ const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN      = "paint-cycle-ga
 const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN      = "paint-style-gan";
 const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
 
-lifuren::config::Config lifuren::config::CONFIG = lifuren::config::loadFile();
+lifuren::config::Config lifuren::config::CONFIG{};
 
 /**
  * @param config 配置
@@ -382,12 +382,26 @@ bool lifuren::config::saveFile(const std::string& path) {
     return lifuren::yamls::saveFile(toYaml(), path);
 }
 
-void lifuren::config::initBase(const int argc, const char* const argv[]) {
+void lifuren::config::init(const int argc, const char* const argv[]) {
     if(argc <= 0) {
+        lifuren::config::loadConfig();
         return;
     }
     lifuren::config::base = std::filesystem::absolute(std::filesystem::u8path(argv[0]).parent_path()).string();
     SPDLOG_DEBUG("当前项目执行目录：{}", lifuren::config::base);
+    lifuren::config::loadConfig();
+}
+
+void lifuren::config::loadConfig() noexcept {
+    SPDLOG_DEBUG("加载全局所有配置");
+    // 配置
+    auto config = lifuren::config::loadFile();
+    lifuren::config::CONFIG = config;
+    // 格律
+    auto rhythm = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);
+    lifuren::config::RHYTHM.clear();
+    // std::swap(lifuren::config::RHYTHM, rhythm);
+    lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
 }
 
 bool lifuren::config::MarkConfig::operator==(const std::string& path) const {

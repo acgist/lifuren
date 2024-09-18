@@ -328,7 +328,12 @@ extern bool saveFile();
  */
 extern bool saveFile(const std::string& path);
 
-extern void initBase(const int argc, const char * const argv[]);
+extern void init(const int argc, const char * const argv[]);
+
+/**
+ * 加载所有全局配置
+ */
+extern void loadConfig() noexcept;
 
 } // END OF lifuren::config
 

@@ -18,7 +18,7 @@ if(key##Node) {                                             \
 }
 #endif
 
-std::map<std::string, lifuren::config::Rhythm> lifuren::config::RHYTHM = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);
+std::map<std::string, lifuren::config::Rhythm> lifuren::config::RHYTHM{};
 
 lifuren::config::Rhythm::Rhythm() {
 }

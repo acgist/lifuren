@@ -3,23 +3,7 @@
 #include <mutex>
 #include <chrono>
 
-#include "spdlog/spdlog.h"
-
-#include "lifuren/Config.hpp"
-
 static std::mutex mutex;
-
-void lifuren::loadConfig() noexcept {
-    SPDLOG_DEBUG("加载全局所有配置");
-    // 配置
-    auto config = lifuren::config::loadFile();
-    lifuren::config::CONFIG = config;
-    // 格律
-    auto rhythm = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);
-    lifuren::config::RHYTHM.clear();
-    // std::swap(lifuren::config::RHYTHM, rhythm);
-    lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
-}
 
 size_t lifuren::uuid() noexcept {
     static int index = 0;
