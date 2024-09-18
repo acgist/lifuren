@@ -232,7 +232,9 @@ bool lifuren::StableDiffusionCPPPaintClient::stop() {
 }
 
 static void logCallback(sd_log_level_t level, const char* log, void* data) {
-    SPDLOG_DEBUG("SD : {}", log);
+    std::string message = log;
+    message.resize(message.size() - 1);
+    SPDLOG_DEBUG("SD Log : {}", message);
 }
 
 static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOptions& paintOptions) {
@@ -347,64 +349,116 @@ static void initSDParams(SDParams& params, const lifuren::PaintClient::PaintOpti
 }
 
 static void printSDParams(SDParams& params) {
-    printf("SD Params: \n");
-    printf("    mode                      :    %s\n", options_mode[static_cast<int>(params.mode)]);
-    printf("    wtype                     :    %s\n", options_wtype[params.wtype]);
-    printf("    rng_type                  :    %s\n", options_rng[params.rng_type]);
-    printf("    schedule                  :    %s\n", options_schedule[params.schedule]);
-    printf("    sample_method             :    %s\n", options_sample_method[params.sample_method]);
+    SPDLOG_DEBUG(R"(
+SD Params:
+    mode                      :    {}
+    wtype                     :    {}
+    rng_type                  :    {}
+    schedule                  :    {}
+    sample_method             :    {}
 
-    printf("    prompt                    :    %s\n", params.prompt.c_str());
-    printf("    vae_path                  :    %s\n", params.vae_path.c_str());
-    printf("    model_path                :    %s\n", params.model_path.c_str());
-    printf("    input_path                :    %s\n", params.input_path.c_str());
-    printf("    t5xxl_path                :    %s\n", params.t5xxl_path.c_str());
-    printf("    taesd_path                :    %s\n", params.taesd_path.c_str());
-    printf("    clip_l_path               :    %s\n", params.clip_l_path.c_str());
-    printf("    esrgan_path               :    %s\n", params.esrgan_path.c_str());
-    printf("    output_path               :    %s\n", params.output_path.c_str());
-    printf("    lora_model_dir            :    %s\n", params.lora_model_dir.c_str());
-    printf("    controlnet_path           :    %s\n", params.controlnet_path.c_str());
-    printf("    embeddings_path           :    %s\n", params.embeddings_path.c_str());
-    printf("    negative_prompt           :    %s\n", params.negative_prompt.c_str());
-    printf("    control_image_path        :    %s\n", params.control_image_path.c_str());
-    printf("    input_id_images_path      :    %s\n", params.input_id_images_path.c_str());
-    printf("    diffusion_model_path      :    %s\n", params.diffusion_model_path.c_str());
-    printf("    stacked_id_embeddings_path:    %s\n", params.stacked_id_embeddings_path.c_str());
+    prompt                    :    {}
+    vae_path                  :    {}
+    model_path                :    {}
+    input_path                :    {}
+    t5xxl_path                :    {}
+    taesd_path                :    {}
+    clip_l_path               :    {}
+    esrgan_path               :    {}
+    output_path               :    {}
+    lora_model_dir            :    {}
+    controlnet_path           :    {}
+    embeddings_path           :    {}
+    negative_prompt           :    {}
+    control_image_path        :    {}
+    input_id_images_path      :    {}
+    diffusion_model_path      :    {}
+    stacked_id_embeddings_path:    {}
 
-    printf("    fps                       :    %d\n", params.fps);
-    printf("    width                     :    %d\n", params.width);
-    printf("    height                    :    %d\n", params.height);
-    printf("    n_threads                 :    %d\n", params.n_threads);
-    printf("    clip_skip                 :    %d\n", params.clip_skip);
-    printf("    batch_count               :    %d\n", params.batch_count);
-    printf("    video_frames              :    %d\n", params.video_frames);
-    printf("    sample_steps              :    %d\n", params.sample_steps);
-    printf("    upscale_repeats           :    %d\n", params.upscale_repeats);
-    printf("    motion_bucket_id          :    %d\n", params.motion_bucket_id);
+    fps                       :    {}
+    width                     :    {}
+    height                    :    {}
+    n_threads                 :    {}
+    clip_skip                 :    {}
+    batch_count               :    {}
+    video_frames              :    {}
+    sample_steps              :    {}
+    upscale_repeats           :    {}
+    motion_bucket_id          :    {}
 
-    #if _WIN32
-    printf("    seed                      :    %lld\n", params.seed);
-    #else
-    printf("    seed                      :    %ld\n",  params.seed);
-    #endif
+    seed                      :    {}
 
-    printf("    min_cfg                   :    %.2f\n", params.min_cfg);
-    printf("    strength                  :    %.2f\n", params.strength);
-    printf("    guidance                  :    %.2f\n", params.guidance);
-    printf("    cfg_scale                 :    %.2f\n", params.cfg_scale);
-    printf("    style ratio               :    %.2f\n", params.style_ratio);
-    printf("    control_strength          :    %.2f\n", params.control_strength);
-    printf("    augmentation_level        :    %.2f\n", params.augmentation_level);
+    min_cfg                   :    {:.2f}
+    strength                  :    {:.2f}
+    guidance                  :    {:.2f}
+    cfg_scale                 :    {:.2f}
+    style ratio               :    {:.2f}
+    control_strength          :    {:.2f}
+    augmentation_level        :    {:.2f}
+    
+    color                     :    {}
+    verbose                   :    {}
+    vae_tiling                :    {}
+    vae_on_cpu                :    {}
+    clip_on_cpu               :    {}
+    normalize_input           :    {}
+    control_net_cpu           :    {}
+    canny_preprocess          :    {}
+    )",
+    options_mode[static_cast<int>(params.mode)],
+    options_wtype[params.wtype],
+    options_rng[params.rng_type],
+    options_schedule[params.schedule],
+    options_sample_method[params.sample_method],
 
-    printf("    color                     :    %s\n", params.color            ? "true" : "false");
-    printf("    verbose                   :    %s\n", params.verbose          ? "true" : "false");
-    printf("    vae_tiling                :    %s\n", params.vae_tiling       ? "true" : "false");
-    printf("    vae_on_cpu                :    %s\n", params.vae_on_cpu       ? "true" : "false");
-    printf("    clip_on_cpu               :    %s\n", params.clip_on_cpu      ? "true" : "false");
-    printf("    normalize_input           :    %s\n", params.normalize_input  ? "true" : "false");
-    printf("    control_net_cpu           :    %s\n", params.control_net_cpu  ? "true" : "false");
-    printf("    canny_preprocess          :    %s\n", params.canny_preprocess ? "true" : "false");
+    params.prompt,
+    params.vae_path,
+    params.model_path,
+    params.input_path,
+    params.t5xxl_path,
+    params.taesd_path,
+    params.clip_l_path,
+    params.esrgan_path,
+    params.output_path,
+    params.lora_model_dir,
+    params.controlnet_path,
+    params.embeddings_path,
+    params.negative_prompt,
+    params.control_image_path,
+    params.input_id_images_path,
+    params.diffusion_model_path,
+    params.stacked_id_embeddings_path,
+
+    params.fps,
+    params.width,
+    params.height,
+    params.n_threads,
+    params.clip_skip,
+    params.batch_count,
+    params.video_frames,
+    params.sample_steps,
+    params.upscale_repeats,
+    params.motion_bucket_id,
+
+    params.seed,
+
+    params.min_cfg,
+    params.strength,
+    params.guidance,
+    params.cfg_scale,
+    params.style_ratio,
+    params.control_strength,
+    params.augmentation_level,
+
+    params.color,
+    params.verbose,
+    params.vae_tiling,
+    params.vae_on_cpu,
+    params.clip_on_cpu,
+    params.normalize_input,
+    params.control_net_cpu,
+    params.canny_preprocess
+    );
 }
 
 static bool checkSDParams(SDParams& params) {

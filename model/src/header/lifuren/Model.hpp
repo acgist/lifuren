@@ -153,8 +153,8 @@ public:
     virtual Model& defineCgraph();
     // 打印模型
     virtual Model& print();
-    virtual Model& print(const char* name, const ggml_cgraph* cgraph);
-    virtual Model& print(const char* from, const ggml_tensor* tensor);
+    virtual Model& print(const char* name, const ggml_cgraph* cgraph, std::string& message);
+    virtual Model& print(const char* from, const ggml_tensor* tensor, std::string& message);
     // 训练模型
     virtual void train(size_t epoch, ggml_opt_context* opt_ctx);
     // 验证模型

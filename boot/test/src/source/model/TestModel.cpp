@@ -117,6 +117,6 @@ public:
 }
 
 LFR_TEST(
-    testLine();
-    // testSaveLoad();
+    // testLine();
+    testSaveLoad();
 );

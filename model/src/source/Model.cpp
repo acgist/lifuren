@@ -258,108 +258,106 @@ lifuren::Model& lifuren::Model::defineCgraph() {
 }
 
 lifuren::Model& lifuren::Model::print() {
-    printf("\n");
-    printf(
-        "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
-        "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
+    std::string message{ "\n" };
+    message += fmt::format(
+        "{: <32s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <8s} {: <8s} {: <8s} {: <8s} {: <16s} {: <32s}\n",
+        "NAME",   "FROM", "TYPE", "DIMS", "NE0",  "NE1",  "NE2",  "NE3",  "NB0",  "NB1",  "NB2",  "NB3",  "DATA",  "OP"
     );
     auto* weightTensor = ggml_get_first_tensor(this->ctx_weight);
     while(weightTensor) {
-        this->print("CTXW", weightTensor);
+        this->print("CTXW", weightTensor, message);
         weightTensor = ggml_get_next_tensor(this->ctx_weight, weightTensor);
     }
-    printf("\n");
-    printf(
-        "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
-        "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
+    message += '\n';
+    message += fmt::format(
+        "{: <32s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <8s} {: <8s} {: <8s} {: <8s} {: <16s} {: <32s}\n",
+        "NAME",   "FROM", "TYPE", "DIMS", "NE0",  "NE1",  "NE2",  "NE3",  "NB0",  "NB1",  "NB2",  "NB3",  "DATA",  "OP"
     );
     auto* computeTensor = ggml_get_first_tensor(this->ctx_compute);
     while(computeTensor) {
-        this->print("CTXC", computeTensor);
+        this->print("CTXC", computeTensor, message);
         computeTensor = ggml_get_next_tensor(this->ctx_compute, computeTensor);
     }
-    printf("\n");
-    this->print("train_gf", this->train_gf);
-    this->print("train_gb", this->train_gb);
-    this->print("val_gf",   this->val_gf);
-    this->print("test_gf",  this->test_gf);
-    this->print("eval_gf",  this->eval_gf);
-    printf("\n");
+    this->print("train_gf", this->train_gf, message);
+    this->print("train_gb", this->train_gb, message);
+    this->print("val_gf",   this->val_gf  , message);
+    this->print("test_gf",  this->test_gf , message);
+    this->print("eval_gf",  this->eval_gf , message);
+    SPDLOG_DEBUG("\n{}\n", message);
     return *this;
 }
 
-lifuren::Model& lifuren::Model::print(const char* name, const ggml_cgraph* cgraph) {
+lifuren::Model& lifuren::Model::print(const char* name, const ggml_cgraph* cgraph, std::string& message) {
     if(cgraph == nullptr) {
         return *this;
     }
-    uint64_t size_eval = 0;
+    uint64_t nbytes_pad = 0;
     for (int i = 0; i < cgraph->n_nodes; ++i) {
-        size_eval += ggml_nbytes_pad(cgraph->nodes[i]);
+        nbytes_pad += ggml_nbytes_pad(cgraph->nodes[i]);
     }
-    {
-        printf("\n");
-        printf("%-16s %8s\n",   "name",    name);
-        printf("%-16s %8x\n",   "magic",   GGML_FILE_MAGIC);
-        printf("%-16s %8d\n",   "version", GGML_FILE_VERSION);
-        printf("%-16s %8d\n",   "leafs",   cgraph->n_leafs);
-        printf("%-16s %8d\n",   "nodes",   cgraph->n_nodes);
-        #if _WIN32
-        printf("%-16s %8lld\n", "eval",    size_eval);
-        #else
-        printf("%-16s %8ld\n",  "eval",    size_eval);
-        #endif
-        printf("\n");
-        printf(
-            "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
-            "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
-        );
-        for (int i = 0; i < cgraph->n_leafs; ++i) {
-            const ggml_tensor* tensor = cgraph->leafs[i];
-            this->print("IN", tensor);
+    message += fmt::format(R"(
+name       : {}
+magic      : {}
+version    : {}
+leafs      : {}
+nodes      : {}
+nbytes_pad : {}
+
+)",
+    name,
+    GGML_FILE_MAGIC,
+    GGML_FILE_VERSION,
+    cgraph->n_leafs,
+    cgraph->n_nodes,
+    nbytes_pad
+    );
+    message += fmt::format(
+        "{: <32s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <8s} {: <8s} {: <8s} {: <8s} {: <16s} {: <32s}\n",
+        "NAME",   "FROM", "TYPE", "DIMS", "NE0",  "NE1",  "NE2",  "NE3",  "NB0",  "NB1",  "NB2",  "NB3",  "DATA",  "OP"
+    );
+    for (int i = 0; i < cgraph->n_leafs; ++i) {
+        const ggml_tensor* tensor = cgraph->leafs[i];
+        this->print("IN", tensor, message);
+    }
+    message += '\n';
+    message += fmt::format(
+        "{: <32s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <4s} {: <8s} {: <8s} {: <8s} {: <8s} {: <16s} {: <32s}\n",
+        "NAME",   "FROM", "TYPE", "DIMS", "NE0",  "NE1",  "NE2",  "NE3",  "NB0",  "NB1",  "NB2",  "NB3",  "DATA",  "OP"
+    );
+    for (int i = 0; i < cgraph->n_nodes; ++i) {
+        {
+            const ggml_tensor* tensor = cgraph->nodes[i];
+            this->print("DST", tensor, message);
         }
-        printf("\n");
-        printf(
-            "%-32s %-4s %-4s %-4s %-4s %-4s %-4s %-4s %-8s %-8s %-8s %-8s %-16s %-32s\n",
-            "NAME", "FROM", "TYPE", "DIMS", "NE0", "NE1", "NE2", "NE3", "NB0", "NB1", "NB2", "NB3", "DATA", "OP"
-        );
-        for (int i = 0; i < cgraph->n_nodes; ++i) {
-            {
-                const ggml_tensor* tensor = cgraph->nodes[i];
-                this->print("DST", tensor);
+        for (int j = 0; j < GGML_MAX_SRC; ++j) {
+            const ggml_tensor* tensor = cgraph->nodes[i]->src[j];
+            if (tensor == nullptr) {
+                break;
+            } else {
+                this->print("SRC", tensor, message);
             }
-            for (int j = 0; j < GGML_MAX_SRC; ++j) {
-                const ggml_tensor* tensor = cgraph->nodes[i]->src[j];
-                if (tensor) {
-                    this->print("SRC", tensor);
-                } else {
-                    break;
-                }
-            }
-            printf("\n");
         }
+        message += '\n';
     }
     return *this;
 }
 
-lifuren::Model& lifuren::Model::print(const char* from, const ggml_tensor* tensor) {
+lifuren::Model& lifuren::Model::print(const char* from, const ggml_tensor* tensor, std::string& message) {
     if(tensor == nullptr) {
         return *this;
     }
     const int64_t* ne = tensor->ne;
     const size_t * nb = tensor->nb;
-    printf(
-        #if _WIN32
-        "%-32s %-4s %-4s %-4d %-4lld %-4lld %-4lld %-4lld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
-        #else
-        "%-32s %-4s %-4s %-4d %-4ld %-4ld %-4ld %-4ld %-8zu %-8zu %-8zu %-8zu %-16p %-32s\n",
-        #endif
+    message += fmt::format(
+        "{: <32s} {: <4s} {: <4s} {: <4d} {: <4d} {: <4d} {: <4d} {: <4d} {: <8d} {: <8d} {: <8d} {: <8d} {: <16s} {: <32s}\n",
         tensor->name,
         from,
         ggml_type_name(tensor->type),
         ggml_n_dims(tensor),
         ne[0], ne[1], ne[2], ne[3],
         nb[0], nb[1], nb[2], nb[3],
-        tensor->data,
+        "-",
+        // static_cast<const char*>(tensor->data),
         ggml_op_name(tensor->op)
     );
     return *this;

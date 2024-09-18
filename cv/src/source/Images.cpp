@@ -2,6 +2,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Files.hpp"
+
 #include "opencv2/opencv.hpp"
 
 bool lifuren::images::read(const std::string& path, uint8_t** data, size_t& width, size_t& height, size_t& length) {
@@ -14,7 +16,6 @@ bool lifuren::images::read(const std::string& path, uint8_t** data, size_t& widt
     length = image.total() * image.elemSize();
     *data  = new uint8_t[length];
     std::memcpy(*data, image.data, length);
-    image.release();
     return true;
 }
 
@@ -28,12 +29,12 @@ bool lifuren::images::write(const std::string& path, uint8_t* data, size_t width
     if(width <= 0 || height <= 0 || length <= 0) {
         return false;
     }
+    lifuren::files::createParent(path);
     cv::Mat image(height, width, channel == 1LL ? CV_8UC1 :
                                  channel == 2LL ? CV_8UC2 :
                                  channel == 3LL ? CV_8UC3 : CV_8UC4);
     memcpy(image.data, data, length);
     bool success = cv::imwrite(path, image);
-    image.release();
     return success;
 }
 
@@ -42,7 +43,6 @@ void lifuren::images::show(uint8_t* data, size_t width, size_t height, size_t le
     memcpy(image.data, data, length);
     ::cv::imshow("lifuren_show", image);
     ::cv::waitKey();
-    image.release();
 }
 
 void lifuren::images::load(
