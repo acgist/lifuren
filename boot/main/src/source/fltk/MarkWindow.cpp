@@ -12,7 +12,7 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 #include "lifuren/RAG.hpp"
 #include "lifuren/Jsons.hpp"
 #include "lifuren/Config.hpp"

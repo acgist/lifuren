@@ -11,11 +11,11 @@ const bool& lifuren::StatefulClient::isRunning() const {
 }
 
 void lifuren::StatefulClient::changeState() {
-    std::lock_guard<std::mutex> lock(this->mutex);
+    std::unique_lock<std::mutex> lock(this->mutex);
     this->running = !this->running;
 }
 
 void lifuren::StatefulClient::changeState(bool running) {
-    std::lock_guard<std::mutex> lock(this->mutex);
+    std::unique_lock<std::mutex> lock(this->mutex);
     this->running = running;
 }

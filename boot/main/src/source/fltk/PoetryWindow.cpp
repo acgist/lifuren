@@ -9,7 +9,7 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 
 static Fl_Choice* clientPtr     { nullptr };

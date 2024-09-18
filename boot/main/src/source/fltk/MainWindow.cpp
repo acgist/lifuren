@@ -2,7 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 #include "lifuren/Lifuren.hpp"
 
 #include "FL/fl_ask.H"

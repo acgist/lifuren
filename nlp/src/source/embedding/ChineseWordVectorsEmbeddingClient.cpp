@@ -27,14 +27,16 @@ lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient()
 }
 
 std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& word) const {
-    std::lock_guard<std::mutex> lock(mutex);
     if(vectors.empty()) {
-        const auto& config = lifuren::config::CONFIG.chineseWordVectors;
-        if(config.path.empty()) {
-            SPDLOG_WARN("加载ChineseWordVectors失败（没有配置文件）：{}", config.path);
-            return {};
+        std::lock_guard<std::mutex> lock(mutex);
+        if(vectors.empty()) {
+            const auto& config = lifuren::config::CONFIG.chineseWordVectors;
+            if(config.path.empty()) {
+                SPDLOG_WARN("加载ChineseWordVectors失败（没有配置文件）：{}", config.path);
+                return {};
+            }
+            initVectors(config.path);
         }
-        initVectors(config.path);
     }
     auto iterator = vectors.find(word);
     if(iterator == vectors.end()) {
@@ -78,6 +80,8 @@ static void initVectors(const std::string& path) {
     }
     char *pos{ nullptr };
     char *old{ nullptr };
+    // 使用临时变量接收最后赋值防止重入问题
+    static std::unordered_map<std::string, std::vector<float>> copy;
     while(std::getline(input, line)) {
         if(line.empty()) {
             break;
@@ -97,8 +101,9 @@ static void initVectors(const std::string& path) {
                 ++pos;
             }
         }
-        vectors.emplace(word, std::move(vector));
+        copy.emplace(word, std::move(vector));
     }
-    SPDLOG_DEBUG("加载ChineseWordVectors完成：{} - {}", vectors.size(), dims);
+    SPDLOG_DEBUG("加载ChineseWordVectors完成：{} - {}", copy.size(), dims);
+    vectors = std::move(copy);
     input.close();
 }

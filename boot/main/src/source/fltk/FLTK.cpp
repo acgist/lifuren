@@ -9,7 +9,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 #include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 

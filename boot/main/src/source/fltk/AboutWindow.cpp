@@ -7,7 +7,7 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 
 static Fl_Button*       homePagePtr    { nullptr };
 static Fl_Text_Buffer*  aboutBufferPtr { nullptr };

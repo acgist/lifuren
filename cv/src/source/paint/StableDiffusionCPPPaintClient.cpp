@@ -13,6 +13,7 @@
 
 #include "opencv2/opencv.hpp"
 
+#include "lifuren/Raii.hpp"
 #include "lifuren/Files.hpp"
 #include "lifuren/Images.hpp"
 #include "lifuren/Lifuren.hpp"
@@ -181,6 +182,11 @@ lifuren::StableDiffusionCPPPaintClient::~StableDiffusionCPPPaintClient() {
 }
 
 bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, lifuren::PaintClient::PaintCallback callback) {
+    std::unique_lock<std::mutex> lock(this->mutex);
+    this->running = true;
+    lifuren::Finally finally([this]() {
+        this->running = false;
+    });
     SDParams params{};
     initSDParams(params, options);
     printSDParams(params);

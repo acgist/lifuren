@@ -1,10 +1,12 @@
 /**
- * 指针工具
+ * RAII工具
  * 
  * @author acgist
  */
-#ifndef LFR_HEADER_CORE_PTR_HPP
-#define LFR_HEADER_CORE_PTR_HPP
+#ifndef LFR_HEADER_CORE_RAII_HPP
+#define LFR_HEADER_CORE_RAII_HPP
+
+#include <functional>
 
 // 删除指针
 #ifndef LFR_DELETE_PTR
@@ -26,6 +28,22 @@
 
 namespace lifuren {
 
+class Finally {
+
+private:
+    std::function<void(void)> finally{ nullptr };
+
+public:
+    Finally(Finally&)  = delete;
+    Finally(Finally&&) = delete;
+    Finally(std::function<void(void)> finally) : finally(finally) {
+    }
+    ~Finally() {
+        finally();
+    }
+
+};
+
 } // END lifuren
 
-#endif // LFR_HEADER_CORE_PTR_HPP
+#endif // LFR_HEADER_CORE_RAII_HPP

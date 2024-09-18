@@ -1,5 +1,8 @@
 #include "lifuren/FLTK.hpp"
 
+#include <mutex>
+#include <thread>
+
 #include "spdlog/spdlog.h"
 
 #include "FL/fl_ask.H"
@@ -9,7 +12,7 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Editor.H"
 
-#include "lifuren/Ptr.hpp"
+#include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/PaintClient.hpp"
 
@@ -25,6 +28,8 @@ static Fl_Input * poetryPromptPtr{ nullptr };
 static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
+
+static std::mutex mutex;
 
 static std::unique_ptr<lifuren::PaintClient> paintClient{ nullptr };
 
@@ -129,27 +134,36 @@ static void generate(Fl_Widget*, void*) {
         fl_message("没有选择绘画终端");
         return;
     }
-    if(paintClient && paintClient->isRunning()) {
-        fl_message("上次绘画任务没有完成");
-        return;
-    }
-    paintClient = lifuren::PaintClient::getClient(clientPtr->text());
-    if(!paintClient) {
-        fl_message("不支持的终端");
-        return;
-    }
-    lifuren::PaintClient::PaintOptions options;
-    options.mode   = std::strlen(imagePathPtr->value()) == 0LL ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG;
-    options.image  = imagePathPtr->value();
-    options.prompt = promptBufferPtr->text();
-    paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
-        if(finish) {
-            fl_message("绘制完成");
-        } else {
-            // 进度
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        if(paintClient && paintClient->isRunning()) {
+            fl_message("上次绘画任务没有完成");
+            return;
         }
-        return true;
+        paintClient = lifuren::PaintClient::getClient(clientPtr->text());
+        if(!paintClient) {
+            fl_message("不支持的终端");
+            return;
+        }
+    }
+    std::thread thread([]() {
+        lifuren::PaintClient::PaintOptions options;
+        options.mode   = std::strlen(imagePathPtr->value()) == 0LL ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG;
+        options.image  = imagePathPtr->value();
+        options.prompt = promptBufferPtr->text();
+        #if defined(_DEBUG) || !defined(NDEBUG)
+        options.steps  = 1;
+        #endif
+        paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
+            if(finish) {
+                fl_message("绘制完成");
+            } else {
+                // 进度
+            }
+            return true;
+        });
     });
+    thread.detach();
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
