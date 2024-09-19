@@ -37,6 +37,8 @@ rag:
 embedding:
   # ollama|chinese-word-vectors
   type: ollama
+  # char|rhythm
+  participle: rhythm
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:

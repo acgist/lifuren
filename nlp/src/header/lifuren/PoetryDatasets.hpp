@@ -33,7 +33,7 @@ inline auto loadPoetryFileDataset(
         path,
         { ".json" },
         [&client](const std::string& file, std::vector<std::vector<float>>& features) {
-            lifuren::poetrys::load(client, file, features);
+            // TODO: 加载embedding.model
         }
     );
 }

@@ -32,8 +32,8 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const st
     const auto& embedding = lifuren::config::CONFIG.embedding;
     RAGTask task{
         .type      = rag.type,
-        .path      = path,
         .embedding = embedding.type,
+        .path      = path,
     };
     const auto iterator = this->tasks.find(task.path);
     if(iterator != this->tasks.end()) {

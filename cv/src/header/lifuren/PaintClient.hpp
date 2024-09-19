@@ -72,6 +72,8 @@ public:
      * @return 是否成功
      */
     virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
+    // 释放资源
+    virtual bool release();
 
 };
 
@@ -98,6 +100,7 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
+    bool release() override;
     bool stop() override;
 
 };

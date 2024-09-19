@@ -29,43 +29,6 @@ std::string lifuren::poetrys::beautify(const std::string& segment) {
     return ret;
 }
 
-std::vector<std::string> lifuren::poetrys::toChars(const std::string& poetry) {
-    return lifuren::strings::toChars(replaceSymbol(poetry));
-}
-
-std::vector<std::string> lifuren::poetrys::toWords(const std::string& poetry) {
-    lifuren::poetrys::Poetry value;
-    value.paragraphs = { poetry };
-    value.preproccess();
-    value.matchRhythm();
-    value.participle();
-    return value.participleParagraphs;
-}
-
-std::vector<std::string> lifuren::poetrys::toSegments(const std::string& poetry) {
-    return lifuren::strings::split(poetry, lifuren::poetrys::POETRY_SEGMENT_DELIM);
-}
-
-std::string lifuren::poetrys::replaceSymbol(const std::string& poetry) {
-    std::string copy = poetry;
-    lifuren::strings::replace(copy, lifuren::poetrys::POETRY_SYMBOL_DELIM, "");
-    return copy;
-}
-
-void lifuren::poetrys::load(const lifuren::EmbeddingClient* client, const std::string& path, std::vector<std::vector<float>>& features) {
-    SPDLOG_DEBUG("加载诗词文件：{}", path);
-    std::string&& json = lifuren::files::loadFile(path);
-    nlohmann::json poetrys{ nlohmann::json::parse(json) };
-    for(const auto& value : poetrys) {
-        lifuren::poetrys::Poetry poetry = value;
-        poetry.preproccess();
-        // TODO：如果没有格律直接忽略
-        // TODO: 分词
-        features.push_back(std::move(client->getSegmentVector(poetry.segment)));
-        // features.push_back(std::move(client->getVector(poetry.segment)));
-    }
-}
-
 lifuren::poetrys::Poetry& lifuren::poetrys::Poetry::preproccess() {
     if(this->title.empty() && !this->rhythm.empty()) {
         this->title = this->rhythm;

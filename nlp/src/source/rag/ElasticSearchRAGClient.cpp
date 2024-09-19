@@ -26,14 +26,7 @@ lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
 }
 
 std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& content) {
-    // 检查索引
-    if(!this->exists) {
-        this->exists = indexExists(this->id, this->restClient);
-        if(!this->exists) {
-            this->exists = indexCreate(this->id, this->restClient, this->embeddingClient->getDims());
-        }
-    }
-    auto&& vector = this->embeddingClient->getSegmentVector(content);
+    auto&& vector = this->embeddingClient->getVector(content);
     ::index(this->id, content, vector, this->restClient);
     return vector;
 }
@@ -42,9 +35,17 @@ std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vect
     return ::search(this->id, prompt, size, this->restClient);
 }
 
+void lifuren::ElasticSearchRAGClient::loadIndex() {
+    lifuren::RAGClient::loadIndex();
+    if(indexExists(this->id, this->restClient)) {
+        return;
+    }
+    indexCreate(this->id, this->restClient, this->embeddingClient->getDims());
+}
+
 void lifuren::ElasticSearchRAGClient::truncateIndex() {
+    indexDelete(this->id, this->restClient);
     lifuren::RAGClient::truncateIndex();
-    ::indexDelete(this->id, this->restClient);
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
@@ -79,6 +80,7 @@ static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 }
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client) {
+    // TODO: 是否需要重复验证
     nlohmann::json body = {
         { "vector" , vector  },
         { "content", content }

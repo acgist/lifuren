@@ -148,12 +148,6 @@ struct SDParams {
     bool canny_preprocess = false; // --canny
 };
 
-#if LFR_SHARE_SD_CTX
-static bool shareSDCtx = true;
-#else
-static bool shareSDCtx = false;
-#endif
-
 sd_ctx_t* share_sd_ctx{ nullptr };
 
 static void logCallback(sd_log_level_t level, const char* log, void* data);
@@ -217,13 +211,17 @@ bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, 
         } else {
             SPDLOG_WARN("不支持的类型");
         }
-        if(shareSDCtx) {
-            // 共享
-        } else {
-            free_sd_ctx(sd_ctx);
-        }
         return success;
     }
+}
+
+bool lifuren::StableDiffusionCPPPaintClient::release() {
+    // TODO: 线程安全
+    if(share_sd_ctx != nullptr) {
+        free_sd_ctx(share_sd_ctx);
+        share_sd_ctx = nullptr;
+    }
+    return lifuren::PaintClient::release();
 }
 
 bool lifuren::StableDiffusionCPPPaintClient::stop() {
@@ -612,6 +610,16 @@ static sd_image_t* loadControlImage(SDParams& params) {
     return control_image;
 }
 
+static void releaseImg(sd_image_t** image) {
+    if(image == nullptr || *image == nullptr) {
+        return;
+    }
+    delete[] (*image)->data;
+    (*image)->data = nullptr;
+    delete *image;
+    *image = nullptr;
+}
+
 static bool paintTxt2Img(SDParams& params, sd_ctx_t* sd_ctx) {
     sd_image_t* control_image { loadControlImage(params) };
     sd_image_t* result = txt2img(
@@ -674,7 +682,8 @@ static bool paintImg2Img(SDParams& params, sd_ctx_t* sd_ctx) {
 
 static bool paintImg2Vid(SDParams& params, sd_ctx_t* sd_ctx) {
     sd_image_t* input_image { loadInputImage(params) };
-    sd_image_t* result = img2vid(sd_ctx,
+    sd_image_t* result = img2vid(
+        sd_ctx,
         *input_image,
         params.width,
         params.height,
@@ -713,22 +722,12 @@ static bool writeImg(SDParams& params, size_t count, sd_image_t* result) {
     return true;
 }
 
-static void releaseImg(sd_image_t** image) {
-    if(image == nullptr || *image == nullptr) {
-        return;
-    }
-    delete[] (*image)->data;
-    (*image)->data = nullptr;
-    delete *image;
-    *image = nullptr;
-}
-
 static sd_ctx_t* getSDCtx(SDParams& params, bool vae_decode_only) {
     // TODO: 线程安全
-    if(shareSDCtx && share_sd_ctx != nullptr) {
+    if(share_sd_ctx != nullptr) {
         return share_sd_ctx;
     }
-    sd_ctx_t* sd_ctx = new_sd_ctx(
+    share_sd_ctx = new_sd_ctx(
         params.model_path.c_str(),
         params.clip_l_path.c_str(),
         params.t5xxl_path.c_str(),
@@ -750,8 +749,5 @@ static sd_ctx_t* getSDCtx(SDParams& params, bool vae_decode_only) {
         params.control_net_cpu,
         params.vae_on_cpu
     );
-    if(shareSDCtx && sd_ctx != nullptr) {
-        share_sd_ctx = sd_ctx;
-    }
-    return sd_ctx;
+    return share_sd_ctx;
 }

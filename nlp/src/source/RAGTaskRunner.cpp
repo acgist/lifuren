@@ -7,7 +7,7 @@
 #include "nlohmann/json.hpp"
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
-    this->ragClient = lifuren::RAGClient::getRAGClient(task.type, task.path, task.embedding);
+    this->ragClient = lifuren::RAGClient::getRAGClient(task.type, task.embedding, task.path);
     if(!this->ragClient) {
         this->stop   = true;
         this->finish = true;

@@ -4,7 +4,7 @@
 
 #include "lifuren/Poetrys.hpp"
 
-lifuren::EmbeddingClient::EmbeddingClient(lifuren::EmbeddingClient::SegmentType type) : type(type) {
+lifuren::EmbeddingClient::EmbeddingClient() {
 }
 
 lifuren::EmbeddingClient::~EmbeddingClient() {
@@ -20,18 +20,6 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
         return std::make_unique<lifuren::ChineseWordVectorsEmbeddingClient>();
     } else {
         return nullptr;
-    }
-}
-
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::string& segment) const {
-    if(this->type == lifuren::EmbeddingClient::SegmentType::CHAR) {
-        return this->getSegmentVector(lifuren::poetrys::toChars(segment));
-    } else if(this->type == lifuren::EmbeddingClient::SegmentType::WORD) {
-        return this->getSegmentVector(lifuren::poetrys::toWords(segment));
-    } else if(this->type == lifuren::EmbeddingClient::SegmentType::SEGMENT) {
-        return this->getSegmentVector(std::vector<std::string>{ lifuren::poetrys::replaceSymbol(segment) });
-    } else {
-        return {};
     }
 }
 

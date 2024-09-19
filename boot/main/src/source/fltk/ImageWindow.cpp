@@ -24,6 +24,7 @@ static Fl_Button* imageChoosePtr { nullptr };
 static Fl_Input * outputPathPtr  { nullptr };
 static Fl_Button* outputChoosePtr{ nullptr };
 static Fl_Button* generatePtr    { nullptr };
+static Fl_Button* modelReleasePtr{ nullptr };
 static Fl_Input * poetryPromptPtr{ nullptr };
 static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
@@ -34,6 +35,7 @@ static std::mutex mutex;
 static std::unique_ptr<lifuren::PaintClient> paintClient{ nullptr };
 
 static void generate(Fl_Widget*, void*);
+static void modelReleaseCallback(Fl_Widget*, void*);
 static void clientCallback(Fl_Widget*, void*);
 static void chooseFileCallback(Fl_Widget*, void*);
 static void chooseDirectoryCallback(Fl_Widget*, void*);
@@ -53,6 +55,7 @@ lifuren::ImageWindow::~ImageWindow() {
     LFR_DELETE_PTR(outputPathPtr);
     LFR_DELETE_PTR(outputChoosePtr);
     LFR_DELETE_PTR(generatePtr);
+    LFR_DELETE_PTR(modelReleasePtr);
     LFR_DELETE_PTR(poetryPromptPtr);
     LFR_DELETE_PTR(poetrySearchPtr);
     LFR_DELETE_PTR(promptEditorPtr);
@@ -112,6 +115,7 @@ void lifuren::ImageWindow::drawElement() {
     outputPathPtr   = new Fl_Input( 70,  280, 400, 30, "输出路径");
     outputChoosePtr = new Fl_Button(470, 280, 100, 30, "选择输出");
     generatePtr     = new Fl_Button(70,  320, 100, 30, "生成图片");
+    modelReleasePtr = new Fl_Button(170, 320, 100, 30, "释放模型");
     // 绑定事件
     // 终端名称
     const auto& imageConfig = lifuren::config::CONFIG.image;
@@ -125,6 +129,8 @@ void lifuren::ImageWindow::drawElement() {
     outputChoosePtr->callback(chooseDirectoryCallback, outputPathPtr);
     // 生成图片
     generatePtr->callback(generate, this);
+    // 释放模型
+    modelReleasePtr->callback(modelReleaseCallback, this);
     // 重绘配置
     this->redrawConfigElement();
 }
@@ -140,6 +146,7 @@ static void generate(Fl_Widget*, void*) {
             fl_message("上次绘画任务没有完成");
             return;
         }
+        // TODO: 模型切换是否自动释放模型
         paintClient = lifuren::PaintClient::getClient(clientPtr->text());
         if(!paintClient) {
             fl_message("不支持的终端");
@@ -164,6 +171,17 @@ static void generate(Fl_Widget*, void*) {
         });
     });
     thread.detach();
+}
+
+static void modelReleaseCallback(Fl_Widget*, void*) {
+    if(!paintClient) {
+        return;
+    }
+    if(paintClient->isRunning()) {
+        fl_message("当前正在进行生成图片任务");
+        return;
+    }
+    paintClient->release();
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {

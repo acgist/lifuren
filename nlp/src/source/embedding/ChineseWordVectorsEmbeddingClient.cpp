@@ -15,13 +15,8 @@ static std::unordered_map<std::string, std::vector<float>> vectors;
 
 static void initVectors(const std::string& path);
 
-#ifdef LFR_CHINESE_WORD_VECTORS_WORD
-lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::WORD) {
+lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient() {
 }
-#else
-lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::CHAR) {
-}
-#endif
 
 lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
 }
@@ -52,7 +47,7 @@ size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() const {
 bool lifuren::ChineseWordVectorsEmbeddingClient::release() {
     std::lock_guard<std::mutex> lock(mutex);
     vectors.clear();
-    return true;
+    return lifuren::EmbeddingClient::release();
 }
 
 static void initVectors(const std::string& path) {

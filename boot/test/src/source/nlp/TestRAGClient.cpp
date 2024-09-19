@@ -19,8 +19,8 @@
 [[maybe_unused]] static void testRAGTaskRunner() {
     lifuren::RAGTask task {
         .type      = "elasticsearch",
-        .path      = lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(),
         .embedding = "text",
+        .path      = lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(),
     };
     lifuren::RAGTaskRunner runner{ task };
     std::this_thread::sleep_for(std::chrono::seconds(16));

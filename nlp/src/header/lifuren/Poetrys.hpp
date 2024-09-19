@@ -18,10 +18,6 @@ class EmbeddingClient;
 namespace poetrys {
 
 /**
- * 符号
- */
-const std::vector<std::string> POETRY_SYMBOL_DELIM = { "\r", "\n", "\t", " ", "?", ".", "、", "；", "，", "。", "？", "！" };
-/**
  * 段落分隔符
  */
 const std::vector<std::string> POETRY_SEGMENT_DELIM = { "、", "，", "。", "？", "！", "；" };
@@ -36,16 +32,6 @@ const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "�
  * @return 美化后的段落
  */
 extern std::string beautify(const std::string& segment);
-
-extern std::vector<std::string> toChars(const std::string& poetry);
-
-extern std::vector<std::string> toWords(const std::string& poetry);
-
-extern std::vector<std::string> toSegments(const std::string& poetry);
-
-extern std::string replaceSymbol(const std::string& poetry);
-
-extern void load(const lifuren::EmbeddingClient* client, const std::string& path, std::vector<std::vector<float>>& features);
 
 /**
  * 诗词

@@ -20,24 +20,9 @@ namespace lifuren {
 class EmbeddingClient : public Client {
 
 public:
-// 分词类型
-enum class SegmentType {
-    // 字符
-    CHAR,
-    // 分词
-    WORD,
-    // 整句
-    SEGMENT,
-};
-
-public:
     static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
 
-private:
-    lifuren::EmbeddingClient::SegmentType type;
-
 public:
-    virtual std::vector<float> getSegmentVector(const std::string& segment) const;
     virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment) const;
     virtual std::vector<float> getVector(const std::string& word) const = 0;
     virtual std::map<std::string, std::vector<float>> getVector(const std::vector<std::string>& segment) const;
@@ -45,7 +30,7 @@ public:
     virtual bool release();
 
 public:
-    EmbeddingClient(lifuren::EmbeddingClient::SegmentType type);
+    EmbeddingClient();
     virtual ~EmbeddingClient();
 
 };

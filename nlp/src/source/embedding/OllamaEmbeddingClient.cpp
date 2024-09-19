@@ -5,7 +5,7 @@
 
 #include "nlohmann/json.hpp"
 
-lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient(EmbeddingClient::SegmentType::SEGMENT) {
+lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient() {
     const auto& ollamaConfig = lifuren::config::CONFIG.ollama;
     this->restClient = std::make_unique<lifuren::RestClient>(ollamaConfig.api);
     this->restClient->auth(ollamaConfig);

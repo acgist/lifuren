@@ -39,6 +39,7 @@ extern int         httpServerPort; // 监听端口
 const std::string LIFUREN_HIDDEN_FILE  = ".lifuren";        // 隐藏文件
 const std::string MARK_MODEL_FILE      = "mark.model";      // 标记文件
 const std::string FAISS_MODEL_FILE     = "faiss.model";     // FAISS向量文件
+const std::string MAPPING_MODEL_FILE   = "mapping.model";   // FAISS映射文件
 const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件
 
 // 全局配置名称

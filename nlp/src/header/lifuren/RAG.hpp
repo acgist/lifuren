@@ -15,7 +15,7 @@
 #include "lifuren/EmbeddingClient.hpp"
 
 namespace faiss {
-    class Index;
+    struct Index;
 }
 
 namespace lifuren {
@@ -27,10 +27,10 @@ struct RAGTask {
     
     // RAG方式
     std::string type;
-    // 文档路径
-    std::string path;
     // 词嵌入方式
     std::string embedding;
+    // 文档路径
+    std::string path;
 
 };
 
@@ -84,12 +84,12 @@ public:
 public:
     /**
      * @param type      RAG终端类型
-     * @param path      文档路径
      * @param embedding 词嵌入方式
+     * @param path      文档路径
      * 
      * @return RAG终端
      */
-    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& type, const std::string& path, const std::string& embedding);
+    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& type, const std::string& embedding, const std::string& path);
 
 };
 
@@ -101,8 +101,7 @@ public:
 class FaissRAGClient : public RAGClient {
 
 protected:
-    std::shared_ptr<faiss::Index> indexBasicDB { nullptr };
-    std::shared_ptr<faiss::Index> indexIdMapDB { nullptr };
+    std::shared_ptr<faiss::Index> indexIdMapDB{ nullptr };
     std::shared_ptr<std::map<size_t, std::string>> idMapping{ nullptr };
 
 public:
@@ -117,6 +116,8 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& content) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    void loadIndex() override;
+    void saveIndex() override;
     void truncateIndex() override;
 
 };
@@ -129,8 +130,6 @@ public:
 class ElasticSearchRAGClient : public RAGClient {
 
 protected:
-    // 是否存在索引
-    bool exists = false;
     // REST终端
     std::shared_ptr<lifuren::RestClient> restClient{ nullptr };
 
@@ -146,6 +145,7 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& content) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    void loadIndex() override;
     void truncateIndex() override;
 
 };

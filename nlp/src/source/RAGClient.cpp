@@ -76,11 +76,11 @@ bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {
 }
 
 std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, const int size) {
-    auto&& vector = this->embeddingClient->getSegmentVector(prompt);
+    auto&& vector = this->embeddingClient->getVector(prompt);
     return this->search(vector, size);
 }
 
-std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getRAGClient(const std::string& type, const std::string& path, const std::string& embedding) {
+std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getRAGClient(const std::string& type, const std::string& embedding, const std::string& path) {
     if(type == "faiss" || type == "Faiss") {
         return std::make_unique<lifuren::FaissRAGClient>(path, embedding);
     } else if(type == "elasticsearch" || type == "ElasticSearch") {
