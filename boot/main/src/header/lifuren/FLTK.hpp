@@ -21,18 +21,16 @@
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
-#define LFR_WINDOW_WIDTH         1280
-#define LFR_WINDOW_WIDTH_CONFIG  820
-#define LFR_WINDOW_HEIGHT        800
-#define LFR_WINDOW_HEIGHT_CONFIG 820
+#define LFR_WINDOW_WIDTH  1280
+#define LFR_WINDOW_HEIGHT 820
 #endif
 
-#ifndef LFR_CHOICE_TRANSFER
+#ifndef LFR_CHOICE_PATH
 #if _WIN32
-#define LFR_CHOICE_TRANSFER(path) \
+#define LFR_CHOICE_PATH(path) \
 lifuren::strings::replace(path, "\\", "\\\\");
 #else
-#define LFR_CHOICE_TRANSFER(path) \
+#define LFR_CHOICE_PATH(path) \
 lifuren::strings::replace(path, "/", "\\/");
 #endif
 #endif
@@ -44,7 +42,6 @@ namespace lifuren {
 
 // 加载FLTK窗口
 extern void initFltkWindow();
-
 // 关闭FLTK窗口
 extern void shutdownFltkWindow();
 
@@ -55,7 +52,7 @@ class Window : public Fl_Window {
 
 protected:
     // 图标指针
-    Fl_PNG_Image* iconImagePtr = nullptr;
+    Fl_PNG_Image* iconImagePtr{ nullptr };
 
 public:
     /**
@@ -64,7 +61,6 @@ public:
      * @param title  窗口名称
      */
     Window(int width, int height, const char* title);
-    // 析构函数
     virtual ~Window();
 
 public:
@@ -93,13 +89,9 @@ class AboutWindow;
 class Configuration {
 
 protected:
-    /**
-     * 保存配置
-     */
+    // 保存配置
     virtual void saveConfig();
-    /**
-     * 重新绘制配置元素
-     */
+    // 重新绘制配置元素
     virtual void redrawConfigElement() = 0;
 
 };
@@ -115,8 +107,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    MainWindow(int width, int height, const char* title);
-    // 析构函数
+    MainWindow(int width, int height, const char* title = "李夫人");
     virtual ~MainWindow();
 
 protected:
@@ -136,7 +127,6 @@ public:
      * @param title  窗口名称
      */
     MarkWindow(int width, int height, const char* title = "诗词标记");
-    // 析构函数
     virtual ~MarkWindow();
 
 public:
@@ -149,7 +139,7 @@ protected:
 };
 
 /**
- * 图片内容生成
+ * 图片生成窗口
  */
 class ImageWindow : public Window, public Configuration {
 
@@ -160,7 +150,6 @@ public:
      * @param title  窗口名称
      */
     ImageWindow(int width, int height, const char* title = "图片内容生成");
-    // 析构函数
     virtual ~ImageWindow();
 
 public:
@@ -173,7 +162,7 @@ protected:
 };
 
 /**
- * 诗词内容生成
+ * 诗词生成窗口
  */
 class PoetryWindow : public Window, public Configuration {
 
@@ -184,7 +173,6 @@ public:
      * @param title  窗口名称
      */
     PoetryWindow(int width, int height, const char* title = "诗词内容生成");
-    // 析构函数
     virtual ~PoetryWindow();
 
 public:
@@ -208,7 +196,6 @@ public:
      * @param title  窗口名称
      */
     AboutWindow(int width, int height, const char* title = "关于");
-    // 析构函数
     virtual ~AboutWindow();
 
 protected:
@@ -234,7 +221,9 @@ extern std::string fileChooser(const char* title, const char* directory = "", co
 extern std::string directoryChooser(const char* title, const char* directory = "");
 
 /**
- * 填充选择
+ * @param choice 选择框
+ * @param set    选项列表
+ * @param value  默认选项
  */
 extern void fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value = "");
 

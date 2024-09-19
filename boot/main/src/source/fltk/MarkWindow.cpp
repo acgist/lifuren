@@ -140,7 +140,7 @@ void lifuren::MarkWindow::drawElement() {
     const auto& mark = lifuren::config::CONFIG.mark;
     for(auto& value : mark) {
         std::string path = value.path;
-        LFR_CHOICE_TRANSFER(path);
+        LFR_CHOICE_PATH(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->callback(pathCallback, this);
@@ -168,7 +168,7 @@ static void newCallback(Fl_Widget*, void* voidPtr) {
     lifuren::MarkWindow* windowPtr = static_cast<lifuren::MarkWindow*>(voidPtr);
     if(reloadConfig(windowPtr, filename)) {
         std::string path = filename;
-        LFR_CHOICE_TRANSFER(path);
+        LFR_CHOICE_PATH(path);
         pathPtr->add(path.c_str());
     }
     pathPtr->value(pathPtr->find_index(filename.c_str()));

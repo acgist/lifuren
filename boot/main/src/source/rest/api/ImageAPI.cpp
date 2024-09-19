@@ -2,6 +2,8 @@
 
 #include "httplib.h"
 
+#include "nlohmann/json.hpp"
+
 // 生成图片
 static void restPostImage();
 

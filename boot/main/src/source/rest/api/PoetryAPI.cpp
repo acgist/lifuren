@@ -2,6 +2,8 @@
 
 #include "httplib.h"
 
+#include "nlohmann/json.hpp"
+
 // 生成诗词
 static void restPostPoetry();
 

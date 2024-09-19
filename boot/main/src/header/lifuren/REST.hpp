@@ -12,7 +12,7 @@
 #endif
 #endif
 
-#include "nlohmann/json.hpp"
+#include <string>
 
 namespace httplib {
     class Server;
@@ -44,7 +44,7 @@ extern void shutdownHttpServer();
  */
 extern void response(httplib::Response& response, const char* body);
 /**
- * 响应
+ * 失败响应
  * 
  * @param response 响应
  * @param code     响应编码
@@ -56,14 +56,14 @@ extern void response(httplib::Response& response, const char* code, const char* 
  * 
  * @return 成功响应
  */
-extern nlohmann::json buildResponse(const char* body);
+extern std::string buildResponse(const char* body);
 /**
  * @param code    响应编码
  * @param message 响应描述
  * 
- * @return 响应
+ * @return 失败响应
  */
-extern nlohmann::json buildResponse(const char* code, const char* message);
+extern std::string buildResponse(const char* code, const char* message);
 
 // 公共接口
 extern void restAPI();

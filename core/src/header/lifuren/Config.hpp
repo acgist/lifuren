@@ -3,8 +3,6 @@
  * 
  * @author acgist
  * 
- * 诗词处理
- * 
  * TODO:
  * 1. 内容错误
  * 2. 诗经
@@ -22,6 +20,9 @@
 
 namespace lifuren::config {
 
+class Config;
+class Rhythm;
+
 // 配置路径
 #ifdef _WIN32
 const char* const CONFIG_PATH = "../config/config-win.yml";
@@ -31,13 +32,9 @@ const char* const CONFIG_PATH = "../config/config.yml";
 // 格律路径
 const char* const RHYTHM_PATH = "../config/rhythm.yml";
 
-// 前置声明
-class Config;
-class Rhythm;
-
-extern std::string base;
-extern std::string httpServerHost;
-extern int         httpServerPort;
+extern std::string base;           // 执行绝对路径
+extern std::string httpServerHost; // 监听地址
+extern int         httpServerPort; // 监听端口
 
 // 全局配置名称
 extern const std::string CONFIG_CONFIG;
@@ -86,14 +83,12 @@ struct RestConfig {
 };
 
 /**
- * 命令配置
+ * 模型配置
  */
-struct CommandConfig {
+struct ModelConfig {
 
-    // 命令路径
-    std::string command;
-    // 默认参数
-    std::map<std::string, std::string> options{};
+    // 模型文件
+    std::string model;
 
 };
 
@@ -112,7 +107,7 @@ struct EmbeddingClientConfig {
 };
 
 /**
- * 图片生成页面配置
+ * 图片页面配置
  */
 struct ImageConfig {
 
@@ -126,7 +121,7 @@ struct ImageConfig {
 };
 
 /**
- * 诗词生成页面配置
+ * 诗词页面配置
  */
 struct PoetryConfig {
 
@@ -138,7 +133,7 @@ struct PoetryConfig {
 };
 
 /**
- * 标记配置
+ * 标记页面配置
  */
 struct MarkConfig {
 
@@ -155,8 +150,6 @@ struct MarkConfig {
  */
 struct RAGConfig {
 
-    // 最后索引
-    size_t id;
     // RAG类型
     std::string type;
     // 返回数量
@@ -196,6 +189,7 @@ struct ElasticSearchConfig : RestConfig {
  */
 struct ChineseWordVectorsConfig {
 
+    // 文件路径
     std::string path;
 
 };
@@ -209,16 +203,6 @@ struct StableDiffusionCPPConfig {
     std::string model;
     // 默认参数
     std::map<std::string, std::string> options{};
-
-};
-
-/**
- * 模型配置
- */
-struct ModelConfig {
-
-    // 模型目录
-    std::string model;
 
 };
 
@@ -256,6 +240,9 @@ public:
     virtual ~Config();
 
 public:
+    /**
+     * @return YAML
+     */
     std::string toYaml();
 
 };
@@ -304,6 +291,8 @@ public:
 
 /**
  * 加载配置
+ * 
+ * @return 配置
  */
 extern lifuren::config::Config loadFile();
 
@@ -328,12 +317,24 @@ extern bool saveFile();
  */
 extern bool saveFile(const std::string& path);
 
-extern void init(const int argc, const char * const argv[]);
+/**
+ * @param argc 参数长度
+ * @param argv 参数内容
+ */
+extern void init(const int argc, const char* const argv[]);
 
+/**
+ * @param path 相对目录
+ * 
+ * @return 绝对路径
+ */
 extern std::string baseFile(const std::string& path);
 
 /**
- * 加载所有全局配置
+ * 加载配置
+ * 
+ * @see #CONFIG_PATH
+ * @see #RHYTHM_PATH
  */
 extern void loadConfig() noexcept;
 

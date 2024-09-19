@@ -28,18 +28,29 @@
 
 namespace lifuren {
 
+/**
+ * 自动释放
+ * 
+ * lifuren::Finally finally([]() {
+ *     ...释放资源
+ * });
+ */
 class Finally {
 
 private:
+    // 资源释放
     std::function<void(void)> finally{ nullptr };
 
 public:
     Finally(Finally&)  = delete;
     Finally(Finally&&) = delete;
+    /**
+     * @param finally 资源释放
+     */
     Finally(std::function<void(void)> finally) : finally(finally) {
     }
     ~Finally() {
-        finally();
+        this->finally();
     }
 
 };

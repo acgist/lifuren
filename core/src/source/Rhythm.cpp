@@ -43,8 +43,8 @@ std::string lifuren::config::Rhythm::toYaml() {
 }
 
 std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile(const std::string& path) {
-    const std::string fullpath = lifuren::files::join({lifuren::config::base, path}).string();
-    SPDLOG_DEBUG("加载标签文件：{}", fullpath);
+    const std::string fullpath = lifuren::config::baseFile(path);
+    SPDLOG_DEBUG("加载格律文件：{}", fullpath);
     std::map<std::string, Rhythm> map;
     YAML::Node yaml = lifuren::yamls::loadFile(fullpath);
     if(yaml.size() == 0L) {

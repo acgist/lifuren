@@ -144,7 +144,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             config.mark.push_back(markConfig);
         });
     } else if(lifuren::config::CONFIG_RAG == name) {
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, id,   id,   size_t);
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
     } else if(lifuren::config::CONFIG_EMBEDDING == name) {
@@ -201,7 +200,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
     }
 }
 
-YAML::Node toYaml() {
+static YAML::Node toYaml() {
     const auto& config = lifuren::config::CONFIG;
     YAML::Node yaml;
     {
@@ -247,7 +246,6 @@ YAML::Node toYaml() {
     }
     {
         YAML::Node rag;
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, id,   id);
         LFR_CONFIG_YAML_SETTER(rag, config.rag, type, type);
         LFR_CONFIG_YAML_SETTER(rag, config.rag, size, size);
         yaml[lifuren::config::CONFIG_RAG] = rag;
@@ -345,7 +343,7 @@ YAML::Node toYaml() {
 
 lifuren::config::Config lifuren::config::loadFile() {
     try {
-        return lifuren::config::loadFile(lifuren::files::join({lifuren::config::base, lifuren::config::CONFIG_PATH}).string());
+        return lifuren::config::loadFile(lifuren::config::baseFile(lifuren::config::CONFIG_PATH));
     } catch(const std::exception& e) {
         SPDLOG_ERROR("加载配置异常：{}", e.what());
     } catch(...) {
@@ -374,21 +372,19 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
 }
 
 bool lifuren::config::saveFile() {
-    return lifuren::config::saveFile(lifuren::files::join({lifuren::config::base, lifuren::config::CONFIG_PATH}).string());
+    return lifuren::config::saveFile(lifuren::config::baseFile(lifuren::config::CONFIG_PATH));
 }
 
 bool lifuren::config::saveFile(const std::string& path) {
     SPDLOG_INFO("保存配置文件：{}", path);
-    return lifuren::yamls::saveFile(toYaml(), path);
+    return lifuren::yamls::saveFile(::toYaml(), path);
 }
 
 void lifuren::config::init(const int argc, const char* const argv[]) {
-    if(argc <= 0) {
-        lifuren::config::loadConfig();
-        return;
+    if(argc > 0) {
+        lifuren::config::base = std::filesystem::absolute(std::filesystem::u8path(argv[0]).parent_path()).string();
     }
-    lifuren::config::base = std::filesystem::absolute(std::filesystem::u8path(argv[0]).parent_path()).string();
-    SPDLOG_DEBUG("当前项目执行目录：{}", lifuren::config::base);
+    SPDLOG_DEBUG("执行目录：{}", lifuren::config::base);
     lifuren::config::loadConfig();
 }
 
@@ -397,15 +393,14 @@ std::string lifuren::config::baseFile(const std::string& path) {
 }
 
 void lifuren::config::loadConfig() noexcept {
-    SPDLOG_DEBUG("加载全局所有配置");
+    SPDLOG_DEBUG("加载配置");
     // 配置
-    auto config = lifuren::config::loadFile();
-    lifuren::config::CONFIG = config;
+    lifuren::config::CONFIG = std::move(lifuren::config::loadFile());
     // 格律
     auto rhythm = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);
     lifuren::config::RHYTHM.clear();
-    // std::swap(lifuren::config::RHYTHM, rhythm);
-    lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
+    std::swap(lifuren::config::RHYTHM, rhythm);
+    // lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
 }
 
 bool lifuren::config::MarkConfig::operator==(const std::string& path) const {

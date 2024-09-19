@@ -8,6 +8,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "nlohmann/json.hpp"
+
 #include "lifuren/Files.hpp"
 #include "lifuren/Config.hpp"
 
@@ -48,41 +50,40 @@ void lifuren::shutdownHttpServer() {
 }
 
 void lifuren::response(httplib::Response& response, const char* body) {
-    response.set_content(buildResponse(body).dump(), lifuren::content::type::JSON);
+    response.set_content(lifuren::buildResponse(body), lifuren::content::type::JSON);
 }
 
 void lifuren::response(httplib::Response& response, const char* code, const char* message) {
-    response.set_content(buildResponse(code, message).dump(), lifuren::content::type::JSON);
+    response.set_content(lifuren::buildResponse(code, message), lifuren::content::type::JSON);
 }
 
-nlohmann::json lifuren::buildResponse(const char* body) {
+std::string lifuren::buildResponse(const char* body) {
     nlohmann::json response;
     nlohmann::json header;
     header["code"]     = "0000";
     header["message"]  = "成功";
     response["header"] = header;
     response["body"]   = body;
-    return response;
+    return response.dump();
 }
 
-nlohmann::json lifuren::buildResponse(const char* code, const char* message) {
+std::string lifuren::buildResponse(const char* code, const char* message) {
     nlohmann::json response;
     nlohmann::json header;
     header["code"]     = code;
     header["message"]  = message;
     response["header"] = header;
-    return response;
+    return response.dump();
 }
 
 static void restHandler() {
     lifuren::httpServer.set_error_handler([](const httplib::Request& request, httplib::Response& response) {
         SPDLOG_ERROR("发生系统错误：{} - {} - {}", request.path, request.body, response.status);
-        auto message = lifuren::buildResponse("9999", "未知错误");
-        response.set_content(message.dump(), lifuren::content::type::JSON);
+        response.set_content(lifuren::buildResponse("9999", "未知错误"), lifuren::content::type::JSON);
     });
     lifuren::httpServer.set_exception_handler([](const httplib::Request& request, httplib::Response& response, std::exception_ptr e) {
         SPDLOG_ERROR("发生系统异常：{} - {} - {}", request.path, request.body, response.status);
-        nlohmann::json message{};
+        std::string message{};
         try {
             std::rethrow_exception(e);
         } catch (std::exception& e) {
@@ -91,7 +92,7 @@ static void restHandler() {
             message = lifuren::buildResponse("9999", "未知异常");
         }
         response.status = httplib::StatusCode::InternalServerError_500;
-        response.set_content(message.dump(), lifuren::content::type::JSON);
+        response.set_content(message, lifuren::content::type::JSON);
     });
 }
 
@@ -139,7 +140,7 @@ static void restGetFavicon() {
 
 static void restGetShutdown() {
     lifuren::httpServer.Get("/shutdown", [](const httplib::Request& request, httplib::Response& response) {
-        response.set_content(lifuren::buildResponse("0000", "正在关机").dump(), lifuren::content::type::JSON);
+        response.set_content(lifuren::buildResponse("0000", "正在关机"), lifuren::content::type::JSON);
         lifuren::shutdownHttpServer();
     });
 }
