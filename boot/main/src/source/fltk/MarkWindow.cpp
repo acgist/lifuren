@@ -108,7 +108,7 @@ void lifuren::MarkWindow::drawElement() {
     nextPtr     = new Fl_Button(110, 50, 100, 30, "下首诗词");
     autoMarkPtr = new Fl_Button(210, 50, 100, 30, "匹配格律");
     imagePtr    = new Fl_Button(310, 50, 100, 30, "匹配图片");
-    ragTaskPtr  = new Fl_Button(410, 50, 100, 30, "建立索引");
+    ragTaskPtr  = new Fl_Button(410, 50, 100, 30, "诗词嵌入");
     modelPtr    = new Fl_Button(510, 50, 100, 30, "训练诗词模型");
     sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调图片模型");
     // 诗词
@@ -185,14 +185,20 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
     if(index < 0) {
         return;
     }
+    if(lifuren::RAGService::getInstance().getRAGTask(pathPtr->text())) {
+        fl_message("任务正在执行请先停止然后删除");
+        return;
+    }
+    const auto client = lifuren::RAGClient::getRAGClient(lifuren::config::CONFIG.rag.type, pathPtr->text(), lifuren::config::CONFIG.embedding.type);
+    if(client) {
+        client->truncateIndex();
+    }
     lifuren::MarkWindow* windowPtr = static_cast<lifuren::MarkWindow*>(voidPtr);
     auto& markConfig = lifuren::config::CONFIG.mark;
     auto iterator = std::find(markConfig.begin(), markConfig.end(), pathPtr->text());
     if(iterator != markConfig.end()) {
         markConfig.erase(iterator);
     }
-    auto& ragService = lifuren::RAGService::getInstance();
-    ragService.deleteRAGTask(pathPtr->text());
     pathPtr->remove(index);
     selectMarkConfig = nullptr;
     resetPoetryRhythm();
@@ -392,7 +398,7 @@ static void ragTaskCallback(Fl_Widget*, void*) {
         ragService.stopRAGTask(pathPtr->text());
         return;
     }
-    ragService.buildRAGTask(pathPtr->text());
+    ragService.runRAGTask(pathPtr->text());
 }
 
 static void modelCallback(Fl_Widget*, void*) {

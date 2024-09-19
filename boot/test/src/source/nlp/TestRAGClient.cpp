@@ -8,7 +8,7 @@
 
 [[maybe_unused]] static void testRAGService() {
     auto& service = lifuren::RAGService::getInstance();
-    auto ptr = service.buildRAGTask(lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string());
+    auto ptr = service.runRAGTask(lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string());
     while(!ptr->finish) {
         SPDLOG_DEBUG("当前进度：{}", ptr->percent());
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -30,7 +30,7 @@
     lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "" };
     // client.index("李夫人");
     client.search("李夫人");
-    // client.deleteRAG();
+    // client.truncateIndex();
 }
 
 LFR_TEST(

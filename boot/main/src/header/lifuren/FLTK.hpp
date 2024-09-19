@@ -205,12 +205,12 @@ protected:
 
 /**
  * @param title     标题
- * @param directory 当前目录
  * @param filter    文件过滤：*.{cxx,cpp}
+ * @param directory 当前目录
  * 
  * @return 选择文件路径
  */
-extern std::string fileChooser(const char* title, const char* directory = "", const char* filter = "*.*");
+extern std::string fileChooser(const char* title, const char* filter = "*.*", const char* directory = "");
 
 /**
  * @param title     标题

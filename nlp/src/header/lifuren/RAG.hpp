@@ -60,33 +60,26 @@ public:
 
 public:
     // 加载索引
-    void loadIndex();
+    virtual void loadIndex();
     // 保存索引
-    void saveIndex();
+    virtual void saveIndex();
     // 清空索引
-    void truncateIndex();
+    virtual void truncateIndex();
     /**
      * 添加已经处理文件
      * 
      * @param file 处理文件路径
      */
-    void doneFileEmplace(const std::string& file);
-    /**
-     * @param file 处理文件路径
-     * 
-     * @return 是否以及处理
-     */
-    bool doneFileContains(const std::string& file);
+    bool doneFileEmplace(const std::string& file);
     /**
      * @param content 文档内容
      * 
      * @return 索引向量
      */
     virtual std::vector<float> index(const std::string& content) = 0;
-    /**
-     * @return 是否删除成功
-     */
-    virtual bool deleteRAG() = 0;
+    
+    virtual std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
+    virtual std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) = 0;
 
 public:
     /**
@@ -110,7 +103,7 @@ class FaissRAGClient : public RAGClient {
 protected:
     std::shared_ptr<faiss::Index> indexBasicDB { nullptr };
     std::shared_ptr<faiss::Index> indexIdMapDB { nullptr };
-    std::shared_ptr<std::set<std::string*>> ids{ nullptr };
+    std::shared_ptr<std::map<size_t, std::string>> idMapping{ nullptr };
 
 public:
     /**
@@ -121,9 +114,10 @@ public:
     ~FaissRAGClient();
 
 public:
+    using RAGClient::search;
     std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
-    bool deleteRAG() override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    void truncateIndex() override;
 
 };
 
@@ -149,9 +143,10 @@ public:
     ~ElasticSearchRAGClient();
 
 public:
+    using RAGClient::search;
     std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
-    bool deleteRAG() override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    void truncateIndex() override;
 
 };
 
@@ -200,12 +195,6 @@ public:
      */
     bool startExecute();
     /**
-     * 删除任务
-     * 
-     * @return 是否成功
-     */
-    bool deleteRAG();
-    /**
      * @return 任务进度
      */
     float percent();
@@ -250,7 +239,7 @@ private:
      * RAG任务执行器列表
      * 任务地址 = RAG任务执行器
      */
-    std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks;
+    std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks{};
 
 public:
     /**
@@ -264,7 +253,7 @@ public:
      * 
      * @return RAG任务执行器
      */
-    std::shared_ptr<RAGTaskRunner> buildRAGTask(const std::string& path);
+    std::shared_ptr<RAGTaskRunner> runRAGTask(const std::string& path);
     /**
      * 结束任务
      * 
@@ -273,14 +262,6 @@ public:
      * @return 是否成功
      */
     bool stopRAGTask(const std::string& path);
-    /**
-     * 删除任务
-     * 
-     * @param path 任务路径
-     * 
-     * @return 是否成功
-     */
-    bool deleteRAGTask(const std::string& path);
     /**
      * 移除任务
      * 

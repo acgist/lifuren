@@ -47,7 +47,7 @@ void lifuren::shutdownFltkWindow() {
     }
 }
 
-std::string lifuren::fileChooser(const char* title, const char* directory, const char* filter) {
+std::string lifuren::fileChooser(const char* title, const char* filter, const char* directory) {
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_FILE);
     chooser.title(title);
     chooser.filter(filter);
@@ -101,6 +101,7 @@ void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, co
         const int index = choice->add(v.c_str());
         if(v == value) {
             choice->value(index);
+        } else {
         }
     });
 }

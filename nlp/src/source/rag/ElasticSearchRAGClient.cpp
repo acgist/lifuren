@@ -38,15 +38,13 @@ std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& con
     return vector;
 }
 
-std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::string& prompt, const int size) {
-    auto&& vector = this->embeddingClient->getSegmentVector(prompt);
-    return ::search(this->id, vector, size, this->restClient);
+std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const int size) {
+    return ::search(this->id, prompt, size, this->restClient);
 }
 
-bool lifuren::ElasticSearchRAGClient::deleteRAG() {
-    SPDLOG_INFO("删除ElasticSearch索引：{}", this->id);
-    this->truncateIndex();
-    return indexDelete(this->id, this->restClient);
+void lifuren::ElasticSearchRAGClient::truncateIndex() {
+    lifuren::RAGClient::truncateIndex();
+    ::indexDelete(this->id, this->restClient);
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {

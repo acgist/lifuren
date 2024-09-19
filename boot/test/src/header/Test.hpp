@@ -2,6 +2,8 @@
  * 测试
  */
 #include <cassert>
+#include <cstdlib>
+#include <cstdint>
 
 #include "spdlog/spdlog.h"
 

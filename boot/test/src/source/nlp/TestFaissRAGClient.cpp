@@ -6,7 +6,7 @@
 [[maybe_unused]] static void testRAGClient() {
     lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
-    client.deleteRAG();
+    client.truncateIndex();
     client.index("猪");
     client.index("牛");
     client.index("马");

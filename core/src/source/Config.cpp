@@ -393,7 +393,6 @@ std::string lifuren::config::baseFile(const std::string& path) {
 }
 
 void lifuren::config::loadConfig() noexcept {
-    SPDLOG_DEBUG("加载配置");
     // 配置
     lifuren::config::CONFIG = std::move(lifuren::config::loadFile());
     // 格律

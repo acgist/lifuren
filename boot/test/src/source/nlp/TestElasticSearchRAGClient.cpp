@@ -10,7 +10,7 @@
     lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     // lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
     client.loadIndex();
-    client.deleteRAG();
+    client.truncateIndex();
     client.index("猪");
     client.index("牛");
     client.index("马");

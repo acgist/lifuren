@@ -54,13 +54,6 @@ bool lifuren::RAGTaskRunner::startExecute() {
     return true;
 }
 
-bool lifuren::RAGTaskRunner::deleteRAG() {
-    if(!this->ragClient) {
-        return false;
-    }
-    return this->ragClient->deleteRAG();
-}
-
 float lifuren::RAGTaskRunner::percent() {
     if(this->fileCount <= 0) {
         return 0.0F;
@@ -97,11 +90,10 @@ bool lifuren::RAGTaskRunner::execute() {
             SPDLOG_DEBUG("RAG任务跳过其他文件：{}", path);
             continue;
         }
-        if(this->ragClient->doneFileContains(path)) {
+        if(this->ragClient->doneFileEmplace(path)) {
             SPDLOG_DEBUG("RAG任务跳过已经处理过的文件：{}", path);
             continue;
         }
-        this->ragClient->doneFileEmplace(path);
         SPDLOG_DEBUG("RAG任务处理文件：{}", path);
         std::string&& content = lifuren::files::loadFile(path);
         if(content.empty()) {

@@ -8,7 +8,7 @@ http-server:
 # 图片页面配置
 image:
   client: stable-diffusion-cpp
-  output: /data/image
+  output: /data/lifuren/image
   clients:
     - stable-diffusion-cpp
     - paint-cycle-gan
@@ -27,7 +27,7 @@ poetry:
     - poetize-wanyue-rnn
 # 标记页面配置
 mark:
-  - path: /data/mark/poetry
+  - path: /data/lifuren/mark/poetry
 # RAG配置
 rag:
   # faiss|elasticsearch
@@ -58,40 +58,39 @@ elasticsearch:
   auth-type: Basic
 # chinese-word-vectors配置
 chinese-word-vectors:
-  path: /data/Chinese-Word-Vectors/sgns.sikuquanshu.word
+  path: /data/lifuren/Chinese-Word-Vectors/sgns.sikuquanshu.word
 # poetize-shifo-rnn配置
 poetize-shifo-rnn:
-  model: /data/model/poetize-shifo-rnn.model
+  model: /data/lifuren/model/poetize-shifo-rnn.model
 # poetize-shimo-rnn配置
 poetize-shimo-rnn:
-  model: /data/model/poetize-shimo-rnn.model
+  model: /data/lifuren/model/poetize-shimo-rnn.model
 # poetize-shigui-rnn配置
 poetize-shigui-rnn:
-  model: /data/model/poetize-shigui-rnn.model
+  model: /data/lifuren/model/poetize-shigui-rnn.model
 # poetize-shixian-rnn配置
 poetize-shixian-rnn:
-  model: /data/model/poetize-shixian-rnn.model
+  model: /data/lifuren/model/poetize-shixian-rnn.model
 # poetize-shisheng-rnn配置
 poetize-shisheng-rnn:
-  model: /data/model/poetize-shisheng-rnn.model
+  model: /data/lifuren/model/poetize-shisheng-rnn.model
 # poetize-lidu-rnn配置
 poetize-lidu-rnn:
-  model: /data/model/poetize-lidu-rnn.model
+  model: /data/lifuren/model/poetize-lidu-rnn.model
 # poetize-suxin-rnn配置
 poetize-suxin-rnn:
-  model: /data/model/poetize-suxin-rnn.model
+  model: /data/lifuren/model/poetize-suxin-rnn.model
 # poetize-wanyue-rnn配置
 poetize-wanyue-rnn:
-  model: /data/model/poetize-wanyue-rnn.model
+  model: /data/lifuren/model/poetize-wanyue-rnn.model
 # paint-cycle-gan配置
 paint-cycle-gan:
-  model: /data/model/paint-cycle-gan.model
+  model: /data/lifuren/model/paint-cycle-gan.model
 # paint-style-gan配置
 paint-style-gan:
-  model: /data/model/paint-style-gan.model
+  model: /data/lifuren/model/paint-style-gan.model
 # stable-diffusion-cpp配置
 stable-diffusion-cpp:
-  model: /data/stable-diffusion-cpp/model.ckpt
-  # https://github.com/leejet/stable-diffusion.cpp/blob/master/examples/cli/main.cpp
+  model: /data/lifuren/stable-diffusion-cpp/model.ckpt
   options: {}
   

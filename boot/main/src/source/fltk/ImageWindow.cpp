@@ -167,7 +167,7 @@ static void generate(Fl_Widget*, void*) {
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::fileChooser("选择文件");
+    std::string filename = lifuren::fileChooser("选择文件", "*.{png,jpg,jpeg}");
     if(filename.empty()) {
         return;
     }

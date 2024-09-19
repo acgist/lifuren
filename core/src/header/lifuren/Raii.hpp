@@ -44,6 +44,8 @@ private:
 public:
     Finally(Finally&)  = delete;
     Finally(Finally&&) = delete;
+    Finally operator=(Finally& ) = delete;
+    Finally operator=(Finally&&) = delete;
     /**
      * @param finally 资源释放
      */

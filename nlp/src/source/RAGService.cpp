@@ -26,7 +26,7 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const st
     return iterator->second;
 }
 
-std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::buildRAGTask(const std::string& path) {
+std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const std::string& path) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     const auto& rag       = lifuren::config::CONFIG.rag;
     const auto& embedding = lifuren::config::CONFIG.embedding;
@@ -62,21 +62,6 @@ bool lifuren::RAGService::stopRAGTask(const std::string& path) {
     SPDLOG_DEBUG("结束RAG任务：{}", path);
     iterator->second->stop = true;
     return true;
-}
-
-bool lifuren::RAGService::deleteRAGTask(const std::string& path) {
-    std::lock_guard<std::recursive_mutex> lock(mutex);
-    auto iterator = this->tasks.find(path);
-    SPDLOG_DEBUG("删除RAG任务：{}", path);
-    if(iterator == this->tasks.end()) {
-        const auto& rag       = lifuren::config::CONFIG.rag;
-        const auto& embedding = lifuren::config::CONFIG.embedding;
-        const auto client     = lifuren::RAGClient::getRAGClient(rag.type, path, embedding.type);
-        return client->deleteRAG();
-    } else {
-        iterator->second->stop = true;
-        return iterator->second->deleteRAG();
-    }
 }
 
 bool lifuren::RAGService::removeRAGTask(const std::string& path) {
