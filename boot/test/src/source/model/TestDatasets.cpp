@@ -129,7 +129,7 @@
         { "man"  , 1.0F },
         { "woman", 0.0F }
     };
-    auto data_loader = lifuren::loadImageFileDataset(200, 200, 5, lifuren::files::join({lifuren::config::CONFIG.tmp, "sex"}).string(), ".jpg", mapping);
+    auto data_loader = lifuren::datasets::loadImageFileDataset(200, 200, 5, lifuren::files::join({lifuren::config::CONFIG.tmp, "sex"}).string(), ".jpg", mapping);
     float* features  = new float[5 * 200 * 200 * 3];
     float* labels    = new float[5];
     data_loader.batchGet(0, features, labels);

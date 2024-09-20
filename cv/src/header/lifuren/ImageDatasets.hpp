@@ -12,7 +12,7 @@
 #include "lifuren/Images.hpp"
 #include "lifuren/Datasets.hpp"
 
-namespace lifuren {
+namespace lifuren::datasets {
 
 /**
  * @param width      图片宽度
@@ -52,7 +52,7 @@ inline auto loadImageFileDataset(
 }
 
 using ImageFileDatasetLoader = std::invoke_result<
-    decltype(&lifuren::loadImageFileDataset),
+    decltype(&lifuren::datasets::loadImageFileDataset),
     const int&,
     const int&,
     const size_t&,

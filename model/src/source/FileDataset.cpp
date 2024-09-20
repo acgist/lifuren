@@ -3,8 +3,6 @@
 #include <random>
 #include <algorithm>
 
-#include "ggml.h"
-
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"

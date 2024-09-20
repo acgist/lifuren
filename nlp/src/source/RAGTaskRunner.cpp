@@ -1,10 +1,18 @@
 #include "lifuren/RAG.hpp"
 
+#include <fstream>
+#include <algorithm>
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Files.hpp"
+#include "lifuren/Poetrys.hpp"
+#include "lifuren/Strings.hpp"
+#include "lifuren/PoetryDatasets.hpp"
 
 #include "nlohmann/json.hpp"
+
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client);
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) : task(task) {
     this->ragClient = lifuren::RAGClient::getRAGClient(task.type, task.embedding, task.path);
@@ -82,6 +90,16 @@ bool lifuren::RAGTaskRunner::execute() {
     lifuren::files::listFiles(vector, this->task.path, { ".json" });
     this->fileCount = vector.size();
     SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
+    size_t count = 0LL; // 处理成功诗词总数
+    size_t total = 0LL; // 累计读取诗词总数
+    const std::filesystem::path embeddingPath = lifuren::files::join({ this->task.path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::EMBEDDING_MODEL_FILE });
+    std::ofstream stream;
+    stream.open(embeddingPath, std::ios_base::out | std::ios_base::app | std::ios_base::binary);
+    if(!stream.is_open()) {
+        SPDLOG_DEBUG("打开Embedding文件失败：{}", embeddingPath.string());
+        stream.close();
+        return false;
+    }
     for(const auto& path : vector) {
         if(this->stop) {
             break;
@@ -99,33 +117,22 @@ bool lifuren::RAGTaskRunner::execute() {
         if(content.empty()) {
             continue;
         }
-        nlohmann::json json = nlohmann::json::parse(content);
-        for(const auto& poetry : json) {
+        // TODO: embedding.model
+        nlohmann::json poetrys = nlohmann::json::parse(content);
+        for(const auto& poetry : poetrys) {
+            ++total;
             if(this->stop) {
                 break;
             }
             if(poetry.empty()) {
                 continue;
             }
-            auto title      = poetry.find("title");
-            auto rhythm     = poetry.find("rhythm");
-            auto paragraphs = poetry.find("paragraphs");
-            std::string chunk;
-            if(title != poetry.end()) {
-                chunk += title->get<std::string>();
-                chunk += '\n';
+            if(embedding(poetry, stream, this->ragClient.get())) {
+                ++count;
+                if(count % 100 == 0) {
+                    SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
+                }
             }
-            if(rhythm != poetry.end()) {
-                chunk += rhythm->get<std::string>();
-                chunk += '\n';
-            }
-            if(paragraphs != poetry.end()) {
-                std::for_each(paragraphs->begin(), paragraphs->end(), [&chunk](const auto& paragraph) {
-                    chunk += paragraph;
-                    chunk += '\n';
-                });
-            }
-            this->ragClient->index(chunk);
         }
         ++this->doneFileCount;
         if(this->percentCallback) {
@@ -135,5 +142,45 @@ bool lifuren::RAGTaskRunner::execute() {
     if(this->percentCallback) {
         this->percentCallback(this->percent(), true);
     }
+    SPDLOG_DEBUG("累计处理诗词数量：{} / {}", count, total);
+    stream << lifuren::datasets::poetry::END_OF_DATASETS;
+    stream.close();
     return true;
+}
+
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient) {
+    const std::string& participle = lifuren::config::CONFIG.embedding.participle;
+    std::vector<std::string> words;
+    lifuren::poetrys::Poetry poetry = json;
+    poetry.preproccess();
+    if(!poetry.matchRhythm()) {
+        // SPDLOG_WARN("没有匹配格律：{}");
+        return false;
+    }
+    words.push_back(poetry.rhythmPtr->rhythm);
+    if(
+        participle == "char" ||
+        participle == "CHAR"
+    ) {
+        auto&& ret = lifuren::strings::toChars(poetry.simpleSegment);
+        words.insert(words.end(), ret.begin(), ret.end());
+    } else if(
+        participle == "rhythm" ||
+        participle == "RHYTHM"
+    ) {
+        poetry.participle();
+        words.insert(words.end(), poetry.participleParagraphs.begin(), poetry.participleParagraphs.end());
+    } else {
+        SPDLOG_WARN("不支持的分词方式：{}", participle);
+        return false;
+    }
+    if(words.empty()) {
+        return false;
+    }
+    std::vector<std::vector<float>> ret;
+    ret.reserve(words.size());
+    std::transform(words.begin(), words.end(), ret.begin(), [&ragClient](const auto& word) {
+        return ragClient->index(word);
+    });
+    lifuren::datasets::poetry::write(stream, ret);
 }

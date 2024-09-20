@@ -170,6 +170,8 @@ struct EmbeddingConfig {
 
     // 词嵌入类型
     std::string type;
+    // 分词类型
+    std::string participle;
 
 };
 

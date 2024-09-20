@@ -147,7 +147,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
     } else if(lifuren::config::CONFIG_EMBEDDING == name) {
-        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type, type, std::string);
+        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type,       type,       std::string);
+        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, participle, participle, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
@@ -252,7 +253,8 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node embedding;
-        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, type, type);
+        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, type,       type);
+        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, participle, participle);
         yaml[lifuren::config::CONFIG_EMBEDDING] = embedding;
     }
     {

@@ -72,7 +72,6 @@ bool lifuren::poetrys::Poetry::matchRhythm() {
             ruythmRef.segmentRule == segmentRule
         ) {
             this->rhythmPtr = &ruythmRef;
-            // 不全词牌名称
             if(this->title.empty()) {
                 this->title = ruythmRef.name;
             }

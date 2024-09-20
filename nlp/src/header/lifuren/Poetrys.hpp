@@ -18,13 +18,13 @@ class EmbeddingClient;
 namespace poetrys {
 
 /**
+ * 美化分隔符
+ */
+const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "；" };
+/**
  * 段落分隔符
  */
 const std::vector<std::string> POETRY_SEGMENT_DELIM = { "、", "，", "。", "？", "！", "；" };
-/**
- * 段落美化分隔符
- */
-const std::vector<std::string> POETRY_BEAUTIFY_DELIM = { "。", "？", "！", "；" };
 
 /**
  * @param segment 段落
@@ -65,6 +65,7 @@ public:
 public:
     /**
      * 预处理
+     * 1. 去掉符号
      * 
      * @return 诗词
      */
@@ -77,6 +78,7 @@ public:
     bool matchRhythm();
     /**
      * 段落分词
+     * 按照格律对进行诗句分词
      * 
      * @return 是否分词成功
      */

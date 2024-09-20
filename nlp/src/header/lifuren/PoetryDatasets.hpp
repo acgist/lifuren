@@ -12,9 +12,21 @@
 #include "lifuren/Poetrys.hpp"
 #include "lifuren/Datasets.hpp"
 
-namespace lifuren {
+#include <fstream>
+
+namespace lifuren::datasets {
 
 class EmbeddingClient;
+
+namespace poetry {
+
+const short END_OF_POETRY   = -1; // 诗词结束
+const short END_OF_DATASETS = -2; // 数据集结束
+
+extern bool read (std::ifstream& stream, std::vector<std::vector<float>>& vector);
+extern void write(std::ofstream& stream, std::vector<std::vector<float>>& vector);
+
+}
 
 /**
  * @param batchSize 批量大小
@@ -39,7 +51,7 @@ inline auto loadPoetryFileDataset(
 }
 
 using PoetryFileDatasetLoader = std::invoke_result<
-    decltype(&lifuren::loadPoetryFileDataset),
+    decltype(&lifuren::datasets::loadPoetryFileDataset),
     const size_t&,
     const std::string&,
     lifuren::EmbeddingClient*

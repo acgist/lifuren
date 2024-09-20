@@ -10,6 +10,7 @@ add_subdirectory(json)
 add_subdirectory(stable-diffusion.cpp)
 # unset(SD_CUBLAS)
 
+# 忽略所有依赖警告
 if(CMAKE_HOST_UNIX)
   set_target_properties(
     zip

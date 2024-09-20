@@ -55,7 +55,7 @@ static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 
 static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client, size_t dims) {
     SPDLOG_DEBUG("创建ElasticSearch索引：{}", id);
-    nlohmann::json body = {
+    const nlohmann::json body = {
         { "mappings", {
             { "properties", {
                 { "vector", {
@@ -81,7 +81,7 @@ static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client) {
     // TODO: 是否需要重复验证
-    nlohmann::json body = {
+    const nlohmann::json body = {
         { "vector" , vector  },
         { "content", content }
     };
@@ -89,7 +89,7 @@ static bool index(const size_t& id, const std::string& content, const std::vecto
 }
 
 static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const int& size, std::shared_ptr<lifuren::RestClient> client) {
-    nlohmann::json body = {
+    const nlohmann::json body = {
         { "knn", {
             { "k"             , size     },
             { "field"         , "vector" },
