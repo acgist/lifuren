@@ -143,7 +143,7 @@ bool lifuren::RAGTaskRunner::execute() {
         this->percentCallback(this->percent(), true);
     }
     SPDLOG_DEBUG("累计处理诗词数量：{} / {}", count, total);
-    stream << lifuren::datasets::poetry::END_OF_DATASETS;
+    stream.write(reinterpret_cast<const char*>(&lifuren::datasets::poetry::END_OF_DATASETS), sizeof(lifuren::datasets::poetry::END_OF_DATASETS));
     stream.close();
     return true;
 }
@@ -183,4 +183,5 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
         return ragClient->index(word);
     });
     lifuren::datasets::poetry::write(stream, ret);
+    return true;
 }

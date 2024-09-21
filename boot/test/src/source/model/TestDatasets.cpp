@@ -134,7 +134,8 @@
     float* labels    = new float[5];
     data_loader.batchGet(0, features, labels);
     uint8_t data[120000];
-    std::copy(features, features + 120000, data);
+    // std::copy(features, features + 120000, data);
+    std::transform(features, features + 120000, data, [](const auto& v) { return static_cast<uint8_t>(v); });
     lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "loader.png"}).string(), data, 200, 200);
     for(size_t i = 0; i < data_loader.getBatchCount(); ++i) {
         data_loader.batchGet(i, features, labels);
@@ -150,9 +151,9 @@
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
     // auto client = lifuren::EmbeddingClient::getClient("ollama");
     auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
-    auto loader = lifuren::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
-    // auto loader = lifuren::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "lifuren", "poetry", "data"}).string(), client.get());
-    float* features = new float[300 * 5] { 0 };
+    auto loader = lifuren::datasets::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
+    // auto loader = lifuren::datasets::loadPoetryFileDataset(5, lifuren::files::join({lifuren::config::CONFIG.tmp, "lifuren", "poetry", "data"}).string(), client.get());
+    float* features = new float[300 * 5] { 0.0F };
     loader.batchGet(3, features, nullptr);
     auto pos = std::find_if(features, features + 1500, [](const auto& v) { return v == 0.0F; });
     size_t distance = std::distance(features, pos);
@@ -162,10 +163,30 @@
     features = nullptr;
 }
 
+[[maybe_unused]] static void testPoetryEmbeddingReadWrite() {
+    std::vector<float> w{ 1.0F, 2.0F, 3.0F, 4.0F };
+    std::vector<std::vector<float>> ww{ w };
+    std::ofstream out;
+    out.open(lifuren::files::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::out | std::ios_base::binary);
+    lifuren::datasets::poetry::write(out, ww);
+    out.close();
+    std::ifstream in;
+    in.open(lifuren::files::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::in | std::ios_base::binary);
+    std::vector<std::vector<float>> rr;
+    rr.reserve(1);
+    lifuren::datasets::poetry::read(in, rr);
+    in.close();
+    for(const float& v : rr[0]) {
+        SPDLOG_DEBUG("数据读取：{}", v);
+    }
+    assert(rr == ww);
+}
+
 LFR_TEST(
     // testRawDataset();
     // testFileDataset();
     // testShardingDataset();
     // testLoadImageFileDataset();
-    testLoadPoetryFileDataset();
+    // testLoadPoetryFileDataset();
+    testPoetryEmbeddingReadWrite();
 );
