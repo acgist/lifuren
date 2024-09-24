@@ -262,17 +262,17 @@ class Rhythm {
 
 public:
     Rhythm();
-    Rhythm(const std::string& name, const std::string& alias);
+    Rhythm(const std::string& rhythm);
     virtual ~Rhythm();
 
 public:
-    // 标签名称
-    std::string name;
-    // 标签别名
-    std::string alias;
     // 韵律：题材、词牌
     std::string rhythm;
-    // 示例
+    // 别名
+    std::vector<std::string> alias;
+    // 标题
+    std::string title;
+    // 内容
     std::string example;
     // 字数
     int fontSize = 0;

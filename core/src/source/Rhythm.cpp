@@ -23,7 +23,7 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::RHYTHM{};
 lifuren::config::Rhythm::Rhythm() {
 }
 
-lifuren::config::Rhythm::Rhythm(const std::string& name, const std::string& alias) : name(name), alias(alias) {
+lifuren::config::Rhythm::Rhythm(const std::string& rhythm) : rhythm(rhythm) {
 }
 
 lifuren::config::Rhythm::~Rhythm() {
@@ -32,6 +32,8 @@ lifuren::config::Rhythm::~Rhythm() {
 std::string lifuren::config::Rhythm::toYaml() {
     YAML::Node yaml;
     yaml["rhythm"]         = this->rhythm;
+    yaml["alias"]          = this->alias;
+    yaml["title"]          = this->title;
     yaml["example"]        = this->example;
     yaml["fontSize"]       = this->fontSize;
     yaml["segmentSize"]    = this->segmentSize;
@@ -53,8 +55,10 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile
     for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
         const std::string key = iterator->first.as<std::string>();
         const auto value      = iterator->second;
-        Rhythm rhythm(key, key);
+        Rhythm rhythm(key);
         LFR_RHYTHM_SETTER(value, rhythm,         rhythm, rhythm,         std::string);
+        LFR_RHYTHM_SETTER(value, alias,          rhythm, alias,          std::vector<std::string>);
+        LFR_RHYTHM_SETTER(value, title,          rhythm, title,          std::string);
         LFR_RHYTHM_SETTER(value, example,        rhythm, example,        std::string);
         LFR_RHYTHM_SETTER(value, fontSize,       rhythm, fontSize,       int);
         LFR_RHYTHM_SETTER(value, segmentSize,    rhythm, segmentSize,    int);

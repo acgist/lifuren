@@ -286,6 +286,10 @@ static void autoMark(Fl_Widget*, void*) {
             }
             loadPoetryJson();
         }
+        if(!poetryIterator->is_object()) {
+            SPDLOG_WARN("诗词数据格式错误");
+            break;
+        }
         lifuren::poetrys::Poetry poetry = *poetryIterator;
         if(stopFile == fileIterator && stopPoetry == poetry) {
             fl_message("所有诗词全部匹配");
@@ -294,6 +298,7 @@ static void autoMark(Fl_Widget*, void*) {
         poetry.preproccess();
         const bool hasRhythm = poetry.matchRhythm();
         if(hasRhythm) {
+            //
         } else {
             matchPoetryRhythm();
             break;
@@ -341,6 +346,11 @@ static void matchPoetryRhythm() {
         SPDLOG_WARN("没有可用诗词");
         return;
     }
+    if(!poetryIterator->is_object()) {
+        resetPoetryRhythm();
+        SPDLOG_WARN("诗词数据格式错误");
+        return;
+    }
     lifuren::poetrys::Poetry poetry = *poetryIterator;
     poetry.preproccess();
     SPDLOG_DEBUG("解析诗词：{} - {}", *fileIterator, poetry.title);
@@ -360,7 +370,7 @@ static void matchPoetryRhythm() {
     // 规则内容
     if(hasRhythm) {
         const lifuren::config::Rhythm* rhythmPtr = poetry.rhythmPtr;
-        rhythmBufferPtr->text(rhythmPtr->name.c_str());
+        rhythmBufferPtr->text(rhythmPtr->title.c_str());
         rhythmBufferPtr->append("\n");
         rhythmBufferPtr->append("\n");
         rhythmBufferPtr->append(lifuren::poetrys::beautify(rhythmPtr->example).c_str());

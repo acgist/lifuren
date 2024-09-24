@@ -29,7 +29,7 @@ void lifuren::datasets::poetry::fillRhythm(int dims, std::vector<std::vector<flo
         return;
     }
     if(dims < rhythm->fontSize) {
-        SPDLOG_WARN("诗词长度超过向量维度：{} - {} - {}", rhythm->name, rhythm->fontSize, dims);
+        SPDLOG_WARN("诗词长度超过向量维度：{} - {} - {}", rhythm->rhythm, rhythm->fontSize, dims);
         return;
     }
     std::vector<float> segmentRule;

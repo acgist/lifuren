@@ -73,7 +73,7 @@ bool lifuren::poetrys::Poetry::matchRhythm() {
         ) {
             this->rhythmPtr = &ruythmRef;
             if(this->title.empty()) {
-                this->title = ruythmRef.name;
+                this->title = ruythmRef.title;
             }
             if(this->rhythm.empty()) {
                 this->rhythm = ruythmRef.rhythm;

@@ -124,7 +124,7 @@ bool lifuren::RAGTaskRunner::execute() {
             if(this->stop) {
                 break;
             }
-            if(poetry.empty()) {
+            if(poetry.empty() || !poetry.is_object()) {
                 continue;
             }
             if(embedding(poetry, stream, this->ragClient.get())) {

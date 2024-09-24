@@ -57,7 +57,7 @@ public:
     std::vector<std::string> simpleParagraphs;
     // 分词段落
     std::vector<std::string> participleParagraphs;
-    // 规则：不要释放资源（全局资源）
+    // 格律指针：不要释放资源（全局资源）
     lifuren::config::Rhythm* rhythmPtr = nullptr;
     // JSON解析
     NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythm, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
