@@ -164,10 +164,9 @@
 }
 
 [[maybe_unused]] static void testPoetryEmbeddingReadWrite() {
-    std::vector<float> w{ 1.0F, 2.0F, 3.0F, 4.0F };
-    std::vector<std::vector<float>> ww{ w };
+    std::vector<std::vector<float>> ww{ { 1.0F, 2.0F, 3.0F, 4.0F } };
     std::ofstream out;
-    out.open(lifuren::files::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::out | std::ios_base::binary);
+    out.open(lifuren::files::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     lifuren::datasets::poetry::write(out, ww);
     out.close();
     std::ifstream in;
@@ -176,16 +175,16 @@
     rr.reserve(1);
     lifuren::datasets::poetry::read(in, rr);
     in.close();
-    for(const float& v : rr[0]) {
-        SPDLOG_DEBUG("数据读取：{}", v);
-    }
     assert(rr == ww);
 }
 
 [[maybe_unused]] static void testFillRhythm() {
     std::vector<std::vector<float>> vector;
-    lifuren::datasets::poetry::fillRhythm(128, vector, &lifuren::config::RHYTHM["虞美人"]);
+    const auto& rhythm = lifuren::config::RHYTHM["虞美人"];
+    lifuren::datasets::poetry::fillRhythm(128, vector, &rhythm);
     assert(2 == vector.size());
+    assert(static_cast<float>(rhythm.segmentRule.size()) == std::accumulate(vector[0].begin(), vector[0].end(), 0.0F));
+    assert(static_cast<float>(rhythm.participleRule.size()) == std::accumulate(vector[1].begin(), vector[1].end(), 0.0F));
 }
 
 LFR_TEST(

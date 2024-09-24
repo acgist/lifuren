@@ -96,7 +96,7 @@ public:
      * 
      * @return RAG终端
      */
-    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& rag, const std::string& embedding, const std::string& path);
+    static std::unique_ptr<lifuren::RAGClient> getClient(const std::string& rag, const std::string& embedding, const std::string& path);
 
 };
 

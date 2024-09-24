@@ -72,17 +72,33 @@ public:
      * @return 是否成功
      */
     virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
-    // 释放资源
-    virtual bool release();
+
+    virtual bool stop() override;
 
 };
 
-class CycleGANPaintClient {
-    // TODO: 实现算法
+class CycleGANPaintClient : public PaintClient {
+
+public:
+    CycleGANPaintClient();
+    ~CycleGANPaintClient();
+
+public:
+    bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
+    bool stop() override;
+    
 };
 
-class StyleGANPaintClient {
-    // TODO: 实现算法
+class StyleGANPaintClient : public PaintClient {
+
+public:
+    StyleGANPaintClient();
+    ~StyleGANPaintClient();
+
+public:
+    bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
+    bool stop() override;
+
 };
 
 /**
@@ -92,15 +108,12 @@ class StyleGANPaintClient {
  */
 class StableDiffusionCPPPaintClient : public PaintClient {
 
-private:
-
 public:
     StableDiffusionCPPPaintClient();
     ~StableDiffusionCPPPaintClient();
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-    bool release() override;
     bool stop() override;
 
 };

@@ -15,7 +15,7 @@ bool lifuren::datasets::poetry::read(std::ifstream& stream, std::vector<std::vec
     return size == lifuren::datasets::poetry::END_OF_DATASETS;
 }
 
-void lifuren::datasets::poetry::write(std::ofstream& stream, std::vector<std::vector<float>>& vector) {
+void lifuren::datasets::poetry::write(std::ofstream& stream, const std::vector<std::vector<float>>& vector) {
     std::for_each(vector.begin(), vector.end(), [&stream](const std::vector<float>& v) {
         const short size = static_cast<short>(v.size());
         stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
@@ -24,7 +24,7 @@ void lifuren::datasets::poetry::write(std::ofstream& stream, std::vector<std::ve
     stream.write(reinterpret_cast<const char*>(&lifuren::datasets::poetry::END_OF_POETRY), sizeof(lifuren::datasets::poetry::END_OF_POETRY));
 }
 
-bool lifuren::datasets::poetry::fillRhythm(int dims, std::vector<std::vector<float>>& vector, lifuren::config::Rhythm* rhythm) {
+bool lifuren::datasets::poetry::fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm) {
     if(rhythm == nullptr) {
         return false;
     }

@@ -181,7 +181,7 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
         fl_message("当前正在进行生成图片任务");
         return;
     }
-    paintClient->release();
+    paintClient = nullptr;
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {

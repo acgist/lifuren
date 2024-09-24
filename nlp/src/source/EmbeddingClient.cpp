@@ -11,7 +11,7 @@ lifuren::EmbeddingClient::~EmbeddingClient() {
 }
 
 std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(const std::string& embedding) {
-    if(embedding == "ollama") {
+    if(embedding == "ollama" || embedding == "Ollama") {
         return std::make_unique<lifuren::OllamaEmbeddingClient>();
     } else if (
         embedding == "chinesewordvectors" || embedding == "chinese-word-vectors" ||

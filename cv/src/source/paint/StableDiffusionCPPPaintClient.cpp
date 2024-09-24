@@ -148,7 +148,8 @@ struct SDParams {
     bool canny_preprocess = false; // --canny
 };
 
-sd_ctx_t* share_sd_ctx{ nullptr };
+static int share_count = 0;
+static sd_ctx_t* share_sd_ctx{ nullptr };
 
 static void logCallback(sd_log_level_t level, const char* log, void* data);
 static void initSDParams(SDParams&  params, const lifuren::PaintClient::PaintOptions& options);
@@ -170,9 +171,18 @@ static void releaseImg(sd_image_t** image);
 static sd_ctx_t* getSDCtx(SDParams& params, bool vae_decode_only);
 
 lifuren::StableDiffusionCPPPaintClient::StableDiffusionCPPPaintClient() {
+    ++share_count;
 }
 
 lifuren::StableDiffusionCPPPaintClient::~StableDiffusionCPPPaintClient() {
+    --share_count;
+    if(share_count == 0) {
+        // TODO: 线程安全
+        if(share_sd_ctx != nullptr) {
+            free_sd_ctx(share_sd_ctx);
+            share_sd_ctx = nullptr;
+        }
+    }
 }
 
 bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, lifuren::PaintClient::PaintCallback callback) {
@@ -215,18 +225,9 @@ bool lifuren::StableDiffusionCPPPaintClient::paint(const PaintOptions& options, 
     }
 }
 
-bool lifuren::StableDiffusionCPPPaintClient::release() {
-    // TODO: 线程安全
-    if(share_sd_ctx != nullptr) {
-        free_sd_ctx(share_sd_ctx);
-        share_sd_ctx = nullptr;
-    }
-    return lifuren::PaintClient::release();
-}
-
 bool lifuren::StableDiffusionCPPPaintClient::stop() {
     // TODO: 停止
-    return true;
+    return lifuren::PaintClient::stop();
 }
 
 static void logCallback(sd_log_level_t level, const char* log, void* data) {

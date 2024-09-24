@@ -37,7 +37,7 @@ extern bool read(std::ifstream& stream, std::vector<std::vector<float>>& vector)
  * @param stream 文件流
  * @param vector 诗词数据
  */
-extern void write(std::ofstream& stream, std::vector<std::vector<float>>& vector);
+extern void write(std::ofstream& stream, const std::vector<std::vector<float>>& vector);
 
 /**
  * @param dims   向量维度
@@ -46,7 +46,7 @@ extern void write(std::ofstream& stream, std::vector<std::vector<float>>& vector
  * 
  * @return 是否成功
  */
-extern bool fillRhythm(int dims, std::vector<std::vector<float>>& vector, lifuren::config::Rhythm* rhythm);
+extern bool fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm);
 
 }
 
