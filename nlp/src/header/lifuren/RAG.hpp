@@ -26,7 +26,7 @@ namespace lifuren {
 struct RAGTask {
     
     // RAG方式：faiss|elasticsearch
-    std::string type;
+    std::string rag;
     // 词嵌入方式：ollama|chinese-word-vectors
     std::string embedding;
     // 文档路径
@@ -42,6 +42,7 @@ class RAGClient : public RAGSearchClient {
 public:
     // 唯一标识
     size_t id = 0LL;
+
 protected:
     // 文档路径
     std::string path;
@@ -59,7 +60,9 @@ public:
     virtual ~RAGClient();
 
 public:
-    // 维度
+    /**
+     * @return 维度
+     */
     virtual size_t getDims() const;
     // 加载索引
     virtual void loadIndex();
@@ -71,27 +74,29 @@ public:
      * 添加已经处理文件
      * 
      * @param file 处理文件路径
+     * 
+     * @return 是否已经添加
      */
     bool doneFileEmplace(const std::string& file);
     /**
-     * @param content 文档内容
+     * @param prompt 索引内容
      * 
      * @return 索引向量
      */
-    virtual std::vector<float> index(const std::string& content) = 0;
+    virtual std::vector<float> index(const std::string& prompt) = 0;
     
-    virtual std::vector<std::string> search(const std::string& prompt, const int size = 4) override;
-    virtual std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) = 0;
+    virtual std::vector<std::string> search(const std::string& prompt,        const int size = 4) const override;
+    virtual std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override = 0;
 
 public:
     /**
-     * @param type      RAG终端类型
+     * @param rag       RAG终端类型
      * @param embedding 词嵌入方式
      * @param path      文档路径
      * 
      * @return RAG终端
      */
-    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& type, const std::string& embedding, const std::string& path);
+    static std::unique_ptr<lifuren::RAGClient> getRAGClient(const std::string& rag, const std::string& embedding, const std::string& path);
 
 };
 
@@ -116,8 +121,8 @@ public:
 
 public:
     using RAGClient::search;
-    std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    std::vector<float> index(const std::string& prompt) override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
     void loadIndex() override;
     void saveIndex() override;
     void truncateIndex() override;
@@ -145,8 +150,8 @@ public:
 
 public:
     using RAGClient::search;
-    std::vector<float> index(const std::string& content) override;
-    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) override;
+    std::vector<float> index(const std::string& prompt) override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
     void loadIndex() override;
     void truncateIndex() override;
 
@@ -243,10 +248,7 @@ public:
     ~RAGService();
 
 private:
-    /**
-     * RAG任务执行器列表
-     * 任务地址 = RAG任务执行器
-     */
+    // 任务地址 = RAG任务执行器
     std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks{};
 
 public:
@@ -255,8 +257,10 @@ public:
      * 
      * @return RAG任务执行器
      */
-    std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path);
+    std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path) const;
     /**
+     * 执行任务
+     * 
      * @param path 任务路径
      * 
      * @return RAG任务执行器
@@ -269,7 +273,7 @@ public:
      * 
      * @return 是否成功
      */
-    bool stopRAGTask(const std::string& path);
+    bool stopRAGTask(const std::string& path) const;
     /**
      * 移除任务
      * 
@@ -281,7 +285,7 @@ public:
     /**
      * @return 当前任务总量（执行中和待执行的总量）
      */
-    size_t taskCount();
+    size_t taskCount() const;
 
 };
 

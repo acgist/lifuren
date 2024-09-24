@@ -25,13 +25,13 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
 }
 
-std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& content) {
-    auto&& vector = this->embeddingClient->getVector(content);
-    ::index(this->id, content, vector, this->restClient);
+std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& prompt) {
+    auto&& vector = this->embeddingClient->getVector(prompt);
+    ::index(this->id, prompt, vector, this->restClient);
     return vector;
 }
 
-std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const int size) {
+std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const int size) const {
     return ::search(this->id, prompt, size, this->restClient);
 }
 

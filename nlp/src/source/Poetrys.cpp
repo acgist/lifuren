@@ -2,32 +2,9 @@
 
 #include "spdlog/spdlog.h"
 
-#include "nlohmann/json.hpp"
-
 #include "lifuren/Files.hpp"
-#include "lifuren/Config.hpp"
 #include "lifuren/Strings.hpp"
 #include "lifuren/EmbeddingClient.hpp"
-
-std::string lifuren::poetrys::beautify(const std::string& segment) {
-    std::string ret;
-    if(segment.empty()) {
-        return ret;
-    }
-    std::vector<std::string> vector = lifuren::strings::split(segment, lifuren::poetrys::POETRY_BEAUTIFY_DELIM, true);
-    for(
-        auto iterator = vector.begin();
-        iterator != vector.end();
-        ++iterator
-    ) {
-        if(iterator->empty()) {
-            continue;
-        }
-        ret += lifuren::strings::trim(*iterator);
-        ret += "\n";
-    }
-    return ret;
-}
 
 lifuren::poetrys::Poetry& lifuren::poetrys::Poetry::preproccess() {
     if(this->title.empty() && !this->rhythm.empty()) {
@@ -37,16 +14,8 @@ lifuren::poetrys::Poetry& lifuren::poetrys::Poetry::preproccess() {
     } else {
         //
     }
-    std::string content = lifuren::strings::join(this->paragraphs, "");
-    this->paragraphs = lifuren::strings::split(
-        content,
-        lifuren::poetrys::POETRY_BEAUTIFY_DELIM,
-        true
-    );
-    this->simpleParagraphs = lifuren::strings::split(
-        content,
-        lifuren::poetrys::POETRY_SEGMENT_DELIM
-    );
+    const std::string&& content = lifuren::strings::join(this->paragraphs, "");
+    this->simpleParagraphs = lifuren::strings::split(content, lifuren::poetrys::POETRY_SIMPLE);
     this->segment = lifuren::strings::join(this->paragraphs, "\n");
     this->simpleSegment = lifuren::strings::join(this->simpleParagraphs, "\n");
     return *this;
@@ -57,26 +26,23 @@ bool lifuren::poetrys::Poetry::matchRhythm() {
         return true;
     }
     std::vector<uint32_t> segmentRule(this->simpleParagraphs.size());
-    std::transform(this->simpleParagraphs.begin(), this->simpleParagraphs.end(), segmentRule.begin(), [](auto& v) -> uint32_t {
-        return (uint32_t) lifuren::strings::length(v);
+    std::transform(this->simpleParagraphs.begin(), this->simpleParagraphs.end(), segmentRule.begin(), [](const auto& v) -> uint32_t {
+        return static_cast<uint32_t>(lifuren::strings::length(v));
     });
-    for(
-        auto iterator = lifuren::config::RHYTHM.begin();
-        iterator != lifuren::config::RHYTHM.end();
-        ++iterator
-    ) {
-        lifuren::config::Rhythm& ruythmRef = iterator->second;
-        // TODO: 验证词能否正确匹配或者添加词牌
+    auto iterator  = lifuren::config::RHYTHM.begin();
+    const auto end = lifuren::config::RHYTHM.end();
+    for(; iterator != end; ++iterator) {
+        lifuren::config::Rhythm& rhythmRef = iterator->second;
         if(
-            ruythmRef.segmentSize == static_cast<int>(this->simpleParagraphs.size()) &&
-            ruythmRef.segmentRule == segmentRule
+            rhythmRef.segmentSize == static_cast<int>(this->simpleParagraphs.size()) &&
+            rhythmRef.segmentRule == segmentRule
         ) {
-            this->rhythmPtr = &ruythmRef;
+            this->rhythmPtr = &rhythmRef;
             if(this->title.empty()) {
-                this->title = ruythmRef.title;
+                this->title = rhythmRef.title;
             }
             if(this->rhythm.empty()) {
-                this->rhythm = ruythmRef.rhythm;
+                this->rhythm = rhythmRef.rhythm;
             }
             break;
         }
@@ -88,15 +54,14 @@ bool lifuren::poetrys::Poetry::participle() {
     if(this->rhythmPtr == nullptr) {
         return false;
     }
-    std::vector<uint32_t>& participleRuleRef = this->rhythmPtr->participleRule;
     std::string word;
     uint32_t pos = 0;
-    auto paragraphsIterator = this->simpleParagraphs.begin();
-    for(
-        auto iterator = participleRuleRef.begin();
-        iterator != participleRuleRef.end();
-        ++iterator
-    ) {
+    const std::vector<uint32_t>& participleRuleRef = this->rhythmPtr->participleRule;
+    auto iterator  = participleRuleRef.begin();
+    const auto end = participleRuleRef.end();
+    auto paragraphsIterator  = this->simpleParagraphs.begin();
+    const auto paragraphsEnd = this->simpleParagraphs.end();
+    for(; iterator != end; ++iterator) {
         word = lifuren::strings::substr(paragraphsIterator->c_str(), pos, *iterator);
         this->participleParagraphs.push_back(word);
         if(this->participleSegment.empty()) {
@@ -107,7 +72,7 @@ bool lifuren::poetrys::Poetry::participle() {
         if(pos >= paragraphsIterator->length()) {
             pos = 0;
             ++paragraphsIterator;
-            if(paragraphsIterator == this->simpleParagraphs.end()) {
+            if(paragraphsIterator == paragraphsEnd) {
                 break;
             }
             this->participleSegment += "\n";
@@ -122,9 +87,6 @@ bool lifuren::poetrys::Poetry::operator==(const lifuren::poetrys::Poetry& poetry
     if(this == &poetry) {
         return true;
     }
-    return
-        this->title      == poetry.title  &&
-        this->author     == poetry.author &&
-        this->rhythm     == poetry.rhythm &&
-        this->paragraphs == poetry.paragraphs;
+    // 内容相同即可
+    return this->paragraphs == poetry.paragraphs;
 }

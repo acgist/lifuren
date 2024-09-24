@@ -22,7 +22,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) :
     task(task),
-    ragClient(lifuren::RAGClient::getRAGClient(task.type, task.embedding, task.path))
+    ragClient(lifuren::RAGClient::getRAGClient(task.rag, task.embedding, task.path))
 {
     if(!this->ragClient) {
         this->stop   = true;

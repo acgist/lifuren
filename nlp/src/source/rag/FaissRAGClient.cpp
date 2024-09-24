@@ -26,18 +26,18 @@ lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::stri
 lifuren::FaissRAGClient::~FaissRAGClient() {
 }
 
-std::vector<float> lifuren::FaissRAGClient::index(const std::string& content) {
+std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     // TODO: 是否需要重复验证
     // TODO: 验证一秒钟会不会超过一万
     const int faiss_n = 1;
     const int64_t id = lifuren::uuid();
-    std::vector<float>&& vector = this->embeddingClient->getVector(content);
-    this->idMapping->emplace(id, content);
+    std::vector<float>&& vector = this->embeddingClient->getVector(prompt);
+    this->idMapping->emplace(id, prompt);
     this->indexIdMapDB->add_with_ids(faiss_n, vector.data(), &id);
     return vector;
 }
 
-std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const int size) {
+std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const int size) const {
     const int faiss_n = 1;
     // 数据
     std::vector<float> data;
@@ -62,6 +62,7 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float
 
 void lifuren::FaissRAGClient::loadIndex() {
     lifuren::RAGClient::loadIndex();
+    // TODO: 异步加载
     if(idMappingMap.contains(this->id)) {
         this->idMapping = idMappingMap.at(this->id);
         this->indexIdMapDB = indexIdMapDBMap.at(this->id);

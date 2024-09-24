@@ -23,12 +23,12 @@ const char* const EMPTY_CHARS = " \t\r\n";
  * @return 拼接内容
  */
 template<typename T>
-std::string join(T& collection, const std::string& delim = "") {
+std::string join(const T& collection, const std::string& delim = "") {
     std::stringstream ret;
     if(collection.empty()) {
         return ret.str();
     }
-    typename T::iterator iterator = collection.begin();
+    typename T::const_iterator iterator   = collection.begin();
     const typename T::const_iterator end  = collection.end();
     const typename T::const_iterator last = collection.end() - 1;
     for (; iterator != end; ++iterator) {

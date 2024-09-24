@@ -373,7 +373,7 @@ static void matchPoetryRhythm() {
         rhythmBufferPtr->text(rhythmPtr->title.c_str());
         rhythmBufferPtr->append("\n");
         rhythmBufferPtr->append("\n");
-        rhythmBufferPtr->append(lifuren::poetrys::beautify(rhythmPtr->example).c_str());
+        rhythmBufferPtr->append(rhythmPtr->example.c_str());
     } else {
         rhythmBufferPtr->text("没有匹配规则");
     }
