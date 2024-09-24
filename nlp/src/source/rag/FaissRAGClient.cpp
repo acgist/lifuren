@@ -105,6 +105,7 @@ void lifuren::FaissRAGClient::truncateIndex() {
 }
 
 static void serialization(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
+    lifuren::files::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     if(stream.is_open()) {

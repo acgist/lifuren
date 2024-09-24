@@ -7,17 +7,28 @@
 #include "lifuren/Files.hpp"
 #include "lifuren/Lifuren.hpp"
 
-lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedding) : path(path) {
-    this->embeddingClient = lifuren::EmbeddingClient::getClient(embedding);
+lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedding) :
+    path(path),
+    embeddingClient(lifuren::EmbeddingClient::getClient(embedding))
+{
 }
 
 lifuren::RAGClient::~RAGClient() {
+}
+
+size_t lifuren::RAGClient::getDims() const {
+    if(this->embeddingClient) {
+        return this->embeddingClient->getDims();
+    } else {
+        return 0;
+    }
 }
 
 void lifuren::RAGClient::loadIndex() {
     const std::filesystem::path path = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     if(std::filesystem::exists(path)) {
         std::ifstream stream;
+        lifuren::files::createFolder(path.parent_path());
         stream.open(path, std::ios_base::in);
         if(!stream.is_open()) {
             SPDLOG_WARN("RAG索引文件打开失败：{}", path.string());
@@ -44,9 +55,7 @@ void lifuren::RAGClient::loadIndex() {
 
 void lifuren::RAGClient::saveIndex() {
     const std::filesystem::path path = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
-    if(!std::filesystem::exists(path.parent_path())) {
-        std::filesystem::create_directories(path.parent_path());
-    }
+    lifuren::files::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!stream.is_open()) {

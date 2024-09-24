@@ -17,7 +17,7 @@ YAML::Node lifuren::yamls::loadFile(const std::string& path) {
 }
 
 bool lifuren::yamls::saveFile(const YAML::Node& yaml, const std::string& path) {
-    // 保存文件
+    lifuren::files::createParent(path);
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {

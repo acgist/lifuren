@@ -25,9 +25,9 @@ namespace lifuren {
  */
 struct RAGTask {
     
-    // RAG方式
+    // RAG方式：faiss|elasticsearch
     std::string type;
-    // 词嵌入方式
+    // 词嵌入方式：ollama|chinese-word-vectors
     std::string embedding;
     // 文档路径
     std::string path;
@@ -59,6 +59,8 @@ public:
     virtual ~RAGClient();
 
 public:
+    // 维度
+    virtual size_t getDims() const;
     // 加载索引
     virtual void loadIndex();
     // 保存索引
@@ -152,26 +154,25 @@ public:
 
 /**
  * RAG任务执行器
+ * 
+ * 诗词分词生成Embedding文件以及向量搜索文件
  */
 class RAGTaskRunner {
 
 public:
-    // 索引标识
-    size_t id = 0LL;
-    // 是否停止
-    bool stop = false;
-    // 是否完成
-    bool finish = false;
+    size_t id   = 0LL;   // 索引标识
+    bool stop   = false; // 是否停止
+    bool finish = false; // 是否完成
 
 private:
-    // 加锁
+    // RAG任务
+    RAGTask task;
+    // 互斥锁
     std::mutex mutex;
     // 文件总数
     uint32_t fileCount = 0;
     // 处理文件总数
     uint32_t doneFileCount = 0;
-    // RAG任务
-    RAGTask task;
     // 执行线程
     std::unique_ptr<std::thread> thread{ nullptr };
     // RAG终端
@@ -180,11 +181,18 @@ private:
     std::function<void(float, bool)> percentCallback{ nullptr };
 
 public:
+    /**
+     * @param task RAG任务
+     */
     RAGTaskRunner(RAGTask task);
     virtual ~RAGTaskRunner();
 
 private:
-    // 执行任务
+    /**
+     * 执行任务
+     * 
+     * @return 是否成功
+     */
     bool execute();
 
 public:
@@ -197,7 +205,7 @@ public:
     /**
      * @return 任务进度
      */
-    float percent();
+    float percent() const;
     /**
      * 注册进度回调
      * 

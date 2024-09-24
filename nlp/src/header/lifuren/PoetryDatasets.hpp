@@ -43,8 +43,10 @@ extern void write(std::ofstream& stream, std::vector<std::vector<float>>& vector
  * @param dims   向量维度
  * @param vector 向量数据
  * @param rhythm 诗词格律
+ * 
+ * @return 是否成功
  */
-extern void fillRhythm(int dims, std::vector<std::vector<float>>& vector, lifuren::config::Rhythm* rhythm);
+extern bool fillRhythm(int dims, std::vector<std::vector<float>>& vector, lifuren::config::Rhythm* rhythm);
 
 }
 

@@ -85,7 +85,7 @@ void lifuren::files::loadFile(const std::string& path, char** data, size_t& leng
 }
 
 bool lifuren::files::saveFile(const std::string& path, const std::string& value) {
-    createParent(path);
+    lifuren::files::createParent(path);
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
