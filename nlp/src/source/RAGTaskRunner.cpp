@@ -157,7 +157,6 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
         // SPDLOG_WARN("没有匹配格律：{}");
         return false;
     }
-    words.push_back(poetry.rhythmPtr->rhythm);
     if(
         participle == "char" ||
         participle == "CHAR"
@@ -178,6 +177,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
         return false;
     }
     std::vector<std::vector<float>> ret;
+    // TODO: 是否填充格律
     ret.reserve(words.size());
     std::transform(words.begin(), words.end(), ret.begin(), [&ragClient](const auto& word) {
         return ragClient->index(word);

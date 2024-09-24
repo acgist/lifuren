@@ -5,6 +5,8 @@
  * 
  * TODO:
  * 1. 词嵌入分离直接保存嵌入之后的文件不用每次都要嵌入
+ * 2. 诗词断句
+ * 3. 诗词长度
  */
 #ifndef LFR_HEADER_NLP_POETRY_DATASETS_HPP
 #define LFR_HEADER_NLP_POETRY_DATASETS_HPP
@@ -23,8 +25,26 @@ namespace poetry {
 const short END_OF_POETRY   = -1; // 诗词结束
 const short END_OF_DATASETS = -2; // 数据集结束
 
-extern bool read (std::ifstream& stream, std::vector<std::vector<float>>& vector);
+/**
+ * @param stream 文件流
+ * @param vector 诗词数据
+ * 
+ * @return 是否读完
+ */
+extern bool read(std::ifstream& stream, std::vector<std::vector<float>>& vector);
+
+/**
+ * @param stream 文件流
+ * @param vector 诗词数据
+ */
 extern void write(std::ofstream& stream, std::vector<std::vector<float>>& vector);
+
+/**
+ * @param dims   向量维度
+ * @param vector 向量数据
+ * @param rhythm 诗词格律
+ */
+extern void fillRhythm(int dims, std::vector<std::vector<float>>& vector, lifuren::config::Rhythm* rhythm);
 
 }
 

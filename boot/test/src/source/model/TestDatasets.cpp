@@ -182,11 +182,18 @@
     assert(rr == ww);
 }
 
+[[maybe_unused]] static void testFillRhythm() {
+    std::vector<std::vector<float>> vector;
+    lifuren::datasets::poetry::fillRhythm(128, vector, &lifuren::config::RHYTHM["虞美人·春花秋月何时了"]);
+    assert(2 == vector.size());
+}
+
 LFR_TEST(
     // testRawDataset();
     // testFileDataset();
     // testShardingDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
-    testPoetryEmbeddingReadWrite();
+    // testPoetryEmbeddingReadWrite();
+    testFillRhythm();
 );
