@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
@@ -71,48 +72,40 @@ static void loadVectors(const std::string& path) {
         return;
     }
     SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
+    char * beg  { nullptr };
     char * pos  { nullptr };
-    char * bend { nullptr };
     char * lend { nullptr };
     size_t dims { 0 };
-    const size_t size = 64LL * 1024;
-    char buffer[size];
+    const size_t size = std::filesystem::file_size(std::filesystem::u8path(path));
+    std::vector<char> data(size);
+    char *buffer = data.data();
     input.read(buffer, size);
-    bend = buffer + input.gcount();
+    char * bend = buffer + input.gcount();
     pos  = std::find(buffer, bend, ' ');
     dims = std::strtod(pos, &pos);
-    lend = std::find(pos, bend, '\n');
-    bend = std::move(lend + 1, bend, buffer);
     // 使用临时变量接收最后赋值防止重入问题
     std::unordered_map<std::string, std::vector<float>> copy;
+    pos = std::find(pos, bend, '\n') + 1;
+    beg = pos;
     while(true) {
-        if(!input.eof()) {
-            input.read(bend, size - (bend - buffer));
-            bend = bend + input.gcount();
+        std::string word;
+        std::vector<float> vector;
+        vector.reserve(dims);
+        lend = std::find(beg, bend, '\n');
+        pos  = std::find(beg, lend, ' ');
+        word = std::string(beg, pos);
+        if(word.empty()) {
+            break;
         }
-        while(true) {
-            std::string word;
-            std::vector<float> vector;
-            vector.reserve(dims);
-            lend = std::find(buffer, bend, '\n');
-            pos  = std::find(buffer, lend, ' ');
-            word = std::string(buffer, pos);
-            if(word.empty()) {
-                break;
-            }
-            while(pos < lend && pos < bend) {
-                vector.emplace_back(std::strtof(pos, &pos));
-                ++pos;
-            }
-            copy.emplace(word, std::move(vector));
-            if(lend && lend < bend) {
-                pos  = lend + 1;
-                bend = std::move(lend + 1, bend, buffer);
-            } else {
-                break;
-            }
+        while(pos < lend && pos < bend) {
+            vector.emplace_back(std::strtof(pos, &pos));
+            ++pos;
         }
-        if(input.eof()) {
+        copy.emplace(word, std::move(vector));
+        if(lend && lend < bend) {
+            pos = lend + 1;
+            beg = pos;
+        } else {
             break;
         }
     }
