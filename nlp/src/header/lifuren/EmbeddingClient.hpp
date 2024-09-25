@@ -6,7 +6,6 @@
 #ifndef LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 #define LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 
-#include <map>
 #include <vector>
 #include <string>
 
@@ -20,18 +19,34 @@ namespace lifuren {
 class EmbeddingClient : public Client {
 
 public:
-    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
-
-public:
-    virtual std::vector<float> getSegmentVector(const std::vector<std::string>& segment) const;
-    virtual std::vector<float> getVector(const std::string& word) const = 0;
-    virtual std::map<std::string, std::vector<float>> getVector(const std::vector<std::string>& segment) const;
-    virtual size_t getDims() const = 0;
-    virtual bool release();
-
-public:
     EmbeddingClient();
     virtual ~EmbeddingClient();
+
+public:
+    /**
+     * @param prompt 提示内容
+     * 
+     * @return 嵌入向量
+     */
+    virtual std::vector<float> getVector(const std::string& prompt) const = 0;
+    /**
+     * @param prompts 提示内容
+     * 
+     * @return 嵌入向量
+     */
+    virtual std::vector<float> getVector(const std::vector<std::string>& prompts) const;
+    /**
+     * @return 嵌入向量维度
+     */
+    virtual size_t getDims() const = 0;
+
+public:
+    /**
+     * @param embedding 词嵌入类型
+     * 
+     * @return 词嵌入终端
+     */
+    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
 
 };
 
@@ -41,6 +56,7 @@ public:
 class OllamaEmbeddingClient : public EmbeddingClient {
 
 private:
+    // REST终端
     std::unique_ptr<lifuren::RestClient> restClient{ nullptr };
 
 public:
@@ -48,7 +64,7 @@ public:
     virtual ~OllamaEmbeddingClient();
 
 public:
-    std::vector<float> getVector(const std::string& word) const override;
+    std::vector<float> getVector(const std::string& prompt) const override;
     size_t getDims() const override;
 
 };
@@ -65,9 +81,8 @@ public:
     virtual ~ChineseWordVectorsEmbeddingClient();
 
 public:
-    std::vector<float> getVector(const std::string& word) const override;
+    std::vector<float> getVector(const std::string& prompt) const override;
     size_t getDims() const override;
-    bool release() override;
 
 };
 

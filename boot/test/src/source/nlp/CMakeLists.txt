@@ -30,11 +30,11 @@ target_link_libraries(
     lifurennlp
 )
 
-add_executable(testOllamaEmbeddingClient TestOllamaEmbeddingClient.cpp)
-add_test(NAME testOllamaEmbeddingClient COMMAND testOllamaEmbeddingClient)
-set_target_properties(testOllamaEmbeddingClient PROPERTIES FOLDER "test-nlp")
+add_executable(testEmbeddingClient TestEmbeddingClient.cpp)
+add_test(NAME testEmbeddingClient COMMAND testEmbeddingClient)
+set_target_properties(testEmbeddingClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
-    testOllamaEmbeddingClient
+    testEmbeddingClient
     lifurennlp
 )
 
@@ -43,13 +43,5 @@ add_test(NAME testElasticSearchRAGClient COMMAND testElasticSearchRAGClient)
 set_target_properties(testElasticSearchRAGClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testElasticSearchRAGClient
-    lifurennlp
-)
-
-add_executable(testChineseWordVectorsEmbeddingClient TestChineseWordVectorsEmbeddingClient.cpp)
-add_test(NAME testChineseWordVectorsEmbeddingClient COMMAND testChineseWordVectorsEmbeddingClient)
-set_target_properties(testChineseWordVectorsEmbeddingClient PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testChineseWordVectorsEmbeddingClient
     lifurennlp
 )

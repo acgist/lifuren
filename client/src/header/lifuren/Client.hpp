@@ -102,10 +102,10 @@ public:
     Response();
     Response(const Response&  response);
     Response(const Response&& response);
-    ~Response();
+    virtual ~Response();
 
 public:
-    operator bool();
+    operator bool() const;
 
 };
 

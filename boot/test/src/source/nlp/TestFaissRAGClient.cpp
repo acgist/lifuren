@@ -27,10 +27,16 @@
         SPDLOG_DEBUG("动物 = {}", v);
     }
     client.saveIndex();
-    // client.truncateIndex();
+}
+
+[[maybe_unused]] static void testRAGClientTruncate() {
+    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    client.loadIndex();
+    client.truncateIndex();
 }
 
 LFR_TEST(
     // testRAGClientIndex();
-    testRAGClientSearch();
+    // testRAGClientSearch();
+    testRAGClientTruncate();
 );

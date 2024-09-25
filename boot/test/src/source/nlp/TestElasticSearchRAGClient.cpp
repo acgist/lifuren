@@ -1,8 +1,5 @@
 #include "Test.hpp"
 
-#include <chrono>
-#include <thread>
-
 #include "lifuren/RAG.hpp"
 #include "lifuren/Files.hpp"
 
@@ -34,12 +31,16 @@
         // SPDLOG_DEBUG("草莓 = {}", v);
     }
     client.saveIndex();
-    // client.truncateIndex();
+}
+
+[[maybe_unused]] static void testRAGClientTruncate() {
+    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    client.loadIndex();
+    client.truncateIndex();
 }
 
 LFR_TEST(
     // testRAGClientIndex();
-    // // 这里需要等待索引建立
-    // std::this_thread::sleep_for(std::chrono::seconds(2));
     testRAGClientSearch();
+    // testRAGClientTruncate();
 );

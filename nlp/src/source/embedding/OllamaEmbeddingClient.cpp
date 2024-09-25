@@ -3,6 +3,8 @@
  */
 #include "lifuren/EmbeddingClient.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "nlohmann/json.hpp"
 
 lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient() {
@@ -14,27 +16,28 @@ lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient() : EmbeddingClient() {
 lifuren::OllamaEmbeddingClient::~OllamaEmbeddingClient() {
 }
 
-std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& word) const {
+std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& prompt) const {
     const auto& ollamaConfig    = lifuren::config::CONFIG.ollama;
     const auto& embeddingConfig = ollamaConfig.embeddingClient;
     nlohmann::json body = {
         { "model", embeddingConfig.model },
-        { "input", word }
+        { "input", prompt                }
     };
     const auto&& response = this->restClient->postJson(embeddingConfig.path, body.dump());
-    if(!response.success) {
+    if(!response) {
         return {};
     }
     nlohmann::json data = nlohmann::json::parse(response.body);
-    std::vector<float> ret{};
-    if(data.contains("embeddings")) {
-        const auto& embeddings = data["embeddings"].get<std::vector<std::vector<float>>>();
-        for(const auto& embedding : embeddings) {
-            ret.reserve(ret.size() + embedding.size());
-            ret.insert(ret.begin(), embedding.begin(), embedding.end());
-        }
+    auto iterator = data.find("embeddings");
+    if(iterator == data.end()) {
+        return {};
     }
-    return ret;
+    auto embeddings = iterator->get<std::vector<std::vector<float>>>();
+    if(embeddings.size() == 0LL || embeddings.size() > 1LL) {
+        SPDLOG_WARN("Ollama词嵌入返回错误：{}", prompt);
+        return {};
+    }
+    return embeddings[0];
 }
 
 size_t lifuren::OllamaEmbeddingClient::getDims() const {

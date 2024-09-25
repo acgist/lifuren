@@ -11,13 +11,6 @@
 #include "lifuren/Strings.hpp"
 #include "lifuren/PoetryDatasets.hpp"
 
-/**
- * @param json   诗词内容
- * @param stream 文件流
- * @param client RAG终端
- * 
- * @return 是否成功
- */
 static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client);
 
 lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) :

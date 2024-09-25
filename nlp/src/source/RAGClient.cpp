@@ -83,8 +83,7 @@ bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {
 }
 
 std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, const int size) const {
-    auto&& vector = this->embeddingClient->getVector(prompt);
-    return this->search(vector, size);
+    return this->search(std::move(this->embeddingClient->getVector(prompt)), size);
 }
 
 std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getClient(const std::string& rag, const std::string& embedding, const std::string& path) {

@@ -62,7 +62,7 @@ public:
 
 public:
     PaintClient(PaintCallback callback = nullptr);
-    ~PaintClient();
+    virtual ~PaintClient();
 
 public:
     /**
@@ -81,7 +81,7 @@ class CycleGANPaintClient : public PaintClient {
 
 public:
     CycleGANPaintClient();
-    ~CycleGANPaintClient();
+    virtual ~CycleGANPaintClient();
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
@@ -93,7 +93,7 @@ class StyleGANPaintClient : public PaintClient {
 
 public:
     StyleGANPaintClient();
-    ~StyleGANPaintClient();
+    virtual ~StyleGANPaintClient();
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
@@ -110,7 +110,7 @@ class StableDiffusionCPPPaintClient : public PaintClient {
 
 public:
     StableDiffusionCPPPaintClient();
-    ~StableDiffusionCPPPaintClient();
+    virtual ~StableDiffusionCPPPaintClient();
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;

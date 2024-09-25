@@ -2,8 +2,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Poetrys.hpp"
-
 lifuren::EmbeddingClient::EmbeddingClient() {
 }
 
@@ -29,42 +27,26 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
  * 3. TF-IDF加权平均法
  * 4. ISF嵌入法
  */
-std::vector<float> lifuren::EmbeddingClient::getSegmentVector(const std::vector<std::string>& segment) const {
-    std::map<std::string, std::vector<float>>&& ret = this->getVector(segment);
-    if(ret.empty()) {
+std::vector<float> lifuren::EmbeddingClient::getVector(const std::vector<std::string>& prompts) const {
+    if(prompts.empty()) {
         return {};
     }
-    std::vector<float>& head = ret.begin()->second;
-    const size_t rows = ret.size();
-    const size_t size = head.size();
-    std::vector<float> data;
-    data.resize(size);
-    for(const auto& [key, value] : ret) {
-        if(value.empty()) {
-            SPDLOG_DEBUG("没有嵌入向量：{}", key);
+    const size_t dims = this->getDims();
+    std::vector<float> ret;
+    ret.reserve(dims);
+    for(const auto& prompt : prompts) {
+        const std::vector<float>&& vec = this->getVector(prompt);
+        if(vec.empty()) {
+            SPDLOG_WARN("没有嵌入向量：{}", prompt);
             continue;
         }
-        for(size_t i = 0; i < size; ++i) {
-            data[i] += value[i];
+        for(size_t i = 0; i < dims; ++i) {
+            ret[i] += vec[i];
         }
     }
-    for(size_t i = 0; i < size; ++i) {
-        data[i] /= rows;
-    }
-    return data;
-}
-
-std::map<std::string, std::vector<float>> lifuren::EmbeddingClient::getVector(const std::vector<std::string>& segment) const {
-    if(segment.empty()) {
-        return {};
-    }
-    std::map<std::string, std::vector<float>> ret;
-    for(const auto& word : segment) {
-        ret.emplace(word, std::move(this->getVector(word)));
+    const size_t size = prompts.size();
+    for(size_t i = 0; i < dims; ++i) {
+        ret[i] /= size;
     }
     return ret;
-}
-
-bool lifuren::EmbeddingClient::release() {
-    return true;
 }

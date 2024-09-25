@@ -108,7 +108,9 @@ public:
 class FaissRAGClient : public RAGClient {
 
 protected:
+    // 向量数据库
     std::shared_ptr<faiss::Index> indexIdMapDB{ nullptr };
+    // ID = 单词
     std::shared_ptr<std::map<size_t, std::string>> idMapping{ nullptr };
 
 public:

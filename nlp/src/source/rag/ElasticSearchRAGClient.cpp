@@ -13,6 +13,7 @@
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
 static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client, size_t dims);
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
+
 static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client);
 static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const int& size, std::shared_ptr<lifuren::RestClient> client);
 
@@ -26,7 +27,7 @@ lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
 }
 
 std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& prompt) {
-    auto&& vector = this->embeddingClient->getVector(prompt);
+    const auto&& vector = this->embeddingClient->getVector(prompt);
     ::index(this->id, prompt, vector, this->restClient);
     return vector;
 }
@@ -49,7 +50,7 @@ void lifuren::ElasticSearchRAGClient::truncateIndex() {
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
-    SPDLOG_INFO("检查ElasticSearch索引：{}", id);
+    SPDLOG_DEBUG("检查ElasticSearch索引：{}", id);
     return client->head("/" + std::to_string(id));
 }
 
@@ -59,9 +60,9 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
         { "mappings", {
             { "properties", {
                 { "vector", {
-                    { "type"      , "dense_vector" },
-                    { "dims"      , dims           },
-                    { "index"     , true           },
+                    { "type",       "dense_vector" },
+                    { "dims",       dims           },
+                    { "index",      true           },
                     { "similarity", "l2_norm"      }
                 } },
                 { "content", {
@@ -97,7 +98,7 @@ static std::vector<std::string> search(const size_t& id, const std::vector<float
             { "num_candidates", 100      },
         } }
     };
-    auto&& response = client->postJson("/" + std::to_string(id) + "/_search", body.dump());
+    const auto&& response = client->postJson("/" + std::to_string(id) + "/_search", body.dump());
     if(!response) {
         return {};
     }

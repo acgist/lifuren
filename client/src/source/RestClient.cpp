@@ -218,6 +218,6 @@ lifuren::RestClient::Response::Response(const lifuren::RestClient::Response&& re
 lifuren::RestClient::Response::~Response() {
 }
 
-lifuren::RestClient::Response::operator bool() {
+lifuren::RestClient::Response::operator bool() const {
     return this->success;
 }

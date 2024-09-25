@@ -15,10 +15,14 @@
 #include "lifuren/Lifuren.hpp"
 
 static std::map<size_t, std::shared_ptr<faiss::Index>> indexIdMapDBMap{};
+// TODO: 使用short代替size_t
 static std::map<size_t, std::shared_ptr<std::map<size_t, std::string>>> idMappingMap{};
 
-static void serialization(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
-static void unserialization(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
+static std::shared_ptr<std::map<size_t, std::string>> loadIdMapping(const std::filesystem::path& path);
+static void saveIdMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
+
+static faiss::Index* loadIndexIdMapDB(size_t dims, const std::filesystem::path& path);
+static void saveIndexIdMapDB(faiss::Index* index, const std::filesystem::path& path);
 
 lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
 }
@@ -31,7 +35,7 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     // TODO: 验证一秒钟会不会超过一万
     const int faiss_n = 1;
     const int64_t id = lifuren::uuid();
-    std::vector<float>&& vector = this->embeddingClient->getVector(prompt);
+    const std::vector<float>&& vector = this->embeddingClient->getVector(prompt);
     this->idMapping->emplace(id, prompt);
     this->indexIdMapDB->add_with_ids(faiss_n, vector.data(), &id);
     return vector;
@@ -39,14 +43,11 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
 
 std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const int size) const {
     const int faiss_n = 1;
-    // 数据
     std::vector<float> data;
     data.resize(faiss_n * size);
-    // 索引
     std::vector<int64_t> idx;
     idx.resize(faiss_n * size);
     this->indexIdMapDB->search(faiss_n, prompt.data(), size, data.data(), idx.data());
-    // 结果
     std::vector<std::string> ret;
     ret.reserve(size);
     for(int index = 0; index < size; ++index) {
@@ -67,34 +68,21 @@ void lifuren::FaissRAGClient::loadIndex() {
         this->idMapping = idMappingMap.at(this->id);
         this->indexIdMapDB = indexIdMapDBMap.at(this->id);
     } else {
-        // indexIdMapDB
         const std::filesystem::path faissPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::FAISS_MODEL_FILE });
-        if(std::filesystem::exists(faissPath)) {
-            auto index = faiss::read_index(faissPath.string().c_str());
-            if(index) {
-                this->indexIdMapDB.reset(index);
-            } else {
-                SPDLOG_WARN("加载本地Faiss索引失败：{}", faissPath.string());
-            }
-        }
-        if(!this->indexIdMapDB) {
-            this->indexIdMapDB = std::make_shared<faiss::IndexIDMap>(new faiss::IndexFlatL2(this->embeddingClient->getDims()));
-        }
+        this->indexIdMapDB.reset(loadIndexIdMapDB(this->embeddingClient->getDims(), faissPath));
         indexIdMapDBMap.emplace(this->id, this->indexIdMapDB);
-        // idMapping
         const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-        this->idMapping = std::make_shared<std::map<size_t, std::string>>();
-        unserialization(this->idMapping, mappingPath);
+        this->idMapping = loadIdMapping(mappingPath);
         idMappingMap.emplace(this->id, this->idMapping);
     }
 }
 
 void lifuren::FaissRAGClient::saveIndex() {
     lifuren::RAGClient::saveIndex();
-    const std::filesystem::path faissPath   = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::FAISS_MODEL_FILE });
+    const std::filesystem::path faissPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::FAISS_MODEL_FILE });
+    saveIndexIdMapDB(this->indexIdMapDB.get(), faissPath);
     const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-    faiss::write_index(this->indexIdMapDB.get(), faissPath.string().c_str());
-    serialization(this->idMapping, mappingPath);
+    saveIdMapping(this->idMapping, mappingPath);
 }
 
 void lifuren::FaissRAGClient::truncateIndex() {
@@ -105,15 +93,40 @@ void lifuren::FaissRAGClient::truncateIndex() {
     lifuren::RAGClient::truncateIndex();
 }
 
-static void serialization(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
+static std::shared_ptr<std::map<size_t, std::string>> loadIdMapping(const std::filesystem::path& path) {
+    std::shared_ptr<std::map<size_t, std::string>> map = std::make_shared<std::map<size_t, std::string>>();
+    if(!std::filesystem::exists(path)) {
+        return map;
+    }
+    std::ifstream stream;
+    stream.open(path, std::ios_base::in | std::ios_base::binary);
+    if(stream.is_open()) {
+        size_t  id     = 0LL;
+        uint8_t length = 0;
+        while(stream >> id && stream >> length) {
+            std::string word;
+            word.resize(length);
+            if(stream.read(word.data(), length)) {
+                map->emplace(id, std::move(word));
+            } else {
+                break;
+            }
+        }
+    } else {
+        SPDLOG_WARN("Faiss映射文件打开失败：{}", path.string());
+    }
+    stream.close();
+    return map;
+}
+
+static void saveIdMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
     lifuren::files::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     if(stream.is_open()) {
         for(const auto& [id, word] : *map) {
             stream << id;
-            uint8_t length = word.size();
-            stream << length;
+            stream << static_cast<uint8_t>(word.size());
             stream << word;
         }
     } else {
@@ -122,26 +135,19 @@ static void serialization(std::shared_ptr<std::map<size_t, std::string>> map, co
     stream.close();
 }
 
-static void unserialization(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
+static faiss::Index* loadIndexIdMapDB(size_t dims, const std::filesystem::path& path) {
     if(std::filesystem::exists(path)) {
-        std::ifstream stream;
-        stream.open(path, std::ios_base::in | std::ios_base::binary);
-        if(stream.is_open()) {
-            size_t id = 0LL;
-            uint8_t length = 0;
-            while(stream >> id && stream >> length) {
-                std::string word;
-                word.resize(length);
-                if(stream.read(word.data(), length)) {
-                    map->emplace(id, std::move(word));
-                } else {
-                    break;
-                }
-            }
+        auto index = faiss::read_index(path.string().c_str());
+        if(index) {
+            return index;
         } else {
-            SPDLOG_WARN("Faiss映射文件打开失败：{}", path.string());
+            SPDLOG_WARN("Faiss索引文件打开失败：{}", path.string());
         }
-        stream.close();
-    } else {
     }
+    return new faiss::IndexIDMap(new faiss::IndexFlatL2(dims));
+}
+
+static void saveIndexIdMapDB(faiss::Index* index, const std::filesystem::path& path) {
+    lifuren::files::createFolder(path.parent_path());
+    faiss::write_index(index, path.string().c_str());
 }

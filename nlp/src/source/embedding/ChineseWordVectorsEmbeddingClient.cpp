@@ -19,9 +19,12 @@ lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() 
 }
 
 lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
+    // TODO: 释放
+    // std::lock_guard<std::mutex> lock(mutex);
+    // vectors.clear();
 }
 
-std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& word) const {
+std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& prompt) const {
     if(vectors.empty()) {
         std::lock_guard<std::mutex> lock(mutex);
         if(vectors.empty()) {
@@ -33,7 +36,7 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
             initVectors(config.path);
         }
     }
-    auto iterator = vectors.find(word);
+    auto iterator = vectors.find(prompt);
     if(iterator == vectors.end()) {
         return {};
     }
@@ -42,12 +45,6 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
 
 size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() const {
     return 300;
-}
-
-bool lifuren::ChineseWordVectorsEmbeddingClient::release() {
-    std::lock_guard<std::mutex> lock(mutex);
-    vectors.clear();
-    return lifuren::EmbeddingClient::release();
 }
 
 static void initVectors(const std::string& path) {
