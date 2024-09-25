@@ -37,6 +37,6 @@
 
 LFR_TEST(
     // testRAGClientIndex();
-    // testRAGClientSearch();
-    testRAGClientTruncate();
+    testRAGClientSearch();
+    // testRAGClientTruncate();
 );

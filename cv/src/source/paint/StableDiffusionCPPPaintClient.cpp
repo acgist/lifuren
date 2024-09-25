@@ -3,8 +3,9 @@
  */
 #include "lifuren/PaintClient.hpp"
 
-#include <thread>
+#include <atomic>
 #include <random>
+#include <thread>
 
 #include "spdlog/spdlog.h"
 
@@ -148,7 +149,7 @@ struct SDParams {
     bool canny_preprocess = false; // --canny
 };
 
-static int share_count = 0;
+static std::atomic<int> share_count(0);
 static sd_ctx_t* share_sd_ctx{ nullptr };
 
 static void logCallback(sd_log_level_t level, const char* log, void* data);
@@ -175,13 +176,10 @@ lifuren::StableDiffusionCPPPaintClient::StableDiffusionCPPPaintClient() {
 }
 
 lifuren::StableDiffusionCPPPaintClient::~StableDiffusionCPPPaintClient() {
-    --share_count;
-    if(share_count == 0) {
-        // TODO: 线程安全
-        if(share_sd_ctx != nullptr) {
-            free_sd_ctx(share_sd_ctx);
-            share_sd_ctx = nullptr;
-        }
+    if(--share_count == 0 && share_sd_ctx != nullptr) {
+        SPDLOG_DEBUG("StableDiffusionCPP没有引用释放缓存内容");
+        free_sd_ctx(share_sd_ctx);
+        share_sd_ctx = nullptr;
     }
 }
 

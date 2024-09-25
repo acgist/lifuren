@@ -34,7 +34,7 @@
 }
 
 [[maybe_unused]] static void testRAGClientTruncate() {
-    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     client.truncateIndex();
 }

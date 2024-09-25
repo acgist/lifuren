@@ -12,10 +12,10 @@
     lifuren::ChineseWordVectorsEmbeddingClient client{};
     auto v = client.getVector("中");
     // auto v = client.getVector({ "李", "夫", "人"});
-    SPDLOG_DEBUG("v = {}", v.size());
+    SPDLOG_DEBUG("v length = {}", v.size());
 }
 
 LFR_TEST(
-    testOllamaEmbedding();
-    // testChineseWordVectorsEmbedding();
+    // testOllamaEmbedding();
+    testChineseWordVectorsEmbedding();
 );

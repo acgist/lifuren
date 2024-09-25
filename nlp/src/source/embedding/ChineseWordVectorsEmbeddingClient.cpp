@@ -5,37 +5,34 @@
 
 #include <map>
 #include <mutex>
+#include <atomic>
+#include <chrono>
 #include <thread>
 #include <fstream>
 
 #include "spdlog/spdlog.h"
 
 static std::mutex mutex;
+static std::atomic<int> share_count(0);
 static std::unordered_map<std::string, std::vector<float>> vectors;
 
-static void initVectors(const std::string& path);
+static void initVectors();
+static void loadVectors(const std::string& path);
 
 lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient() {
+    ++share_count;
 }
 
 lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
-    // TODO: 释放
-    // std::lock_guard<std::mutex> lock(mutex);
-    // vectors.clear();
+    if(--share_count <= 0) {
+        std::lock_guard<std::mutex> lock(mutex);
+        SPDLOG_DEBUG("ChineseWordVectors没有引用释放缓存内容");
+        vectors.clear();
+    }
 }
 
 std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& prompt) const {
-    if(vectors.empty()) {
-        std::lock_guard<std::mutex> lock(mutex);
-        if(vectors.empty()) {
-            const auto& config = lifuren::config::CONFIG.chineseWordVectors;
-            if(config.path.empty()) {
-                SPDLOG_WARN("加载ChineseWordVectors失败（没有配置文件）：{}", config.path);
-                return {};
-            }
-            initVectors(config.path);
-        }
-    }
+    initVectors();
     auto iterator = vectors.find(prompt);
     if(iterator == vectors.end()) {
         return {};
@@ -47,55 +44,79 @@ size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() const {
     return 300;
 }
 
-static void initVectors(const std::string& path) {
+static void initVectors() {
+    if(!vectors.empty()) {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(mutex);
+    if(!vectors.empty()) {
+        return;
+    }
+    auto aTime = std::chrono::system_clock::now();
+    loadVectors(lifuren::config::CONFIG.chineseWordVectors.path);
+    auto zTime = std::chrono::system_clock::now();
+    SPDLOG_DEBUG("加载ChineseWordVectors耗时：{}毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(zTime - aTime).count());
+}
+
+// TODO: 性能优化到一秒内
+static void loadVectors(const std::string& path) {
+    if(path.empty()) {
+        SPDLOG_WARN("加载ChineseWordVectors失败（没有配置文件）：{}", path);
+        return;
+    }
     std::ifstream input;
-    input.open(path);
+    input.open(path, std::ios::in);
     if(!input.is_open()) {
         SPDLOG_WARN("加载ChineseWordVectors失败（文件打开失败）：{}", path);
         return;
     }
-    // TODO: 优化读取
-    // std::ifstream input("input.txt", std::ios::binary | std::ios::ate);
-    // std::streamsize file_size = input.tellg();
-    // input.seekg(0, std::ios::beg);
-    // std::vector<char> buffer(file_size);
-    // input.read(buffer.data(), file_size);
-    // std::cout.write(buffer.data(), file_size);
-    // input.close();
     SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
+    char * pos  { nullptr };
+    char * bend { nullptr };
+    char * lend { nullptr };
     size_t dims { 0 };
-    size_t index{ 0 };
-    std::string line;
-    if(std::getline(input, line)) {
-        index = line.find_first_of(" ");
-        dims  = std::atoi(line.substr(index + 1).c_str());
-    }
-    char *pos{ nullptr };
-    char *old{ nullptr };
+    const size_t size = 64LL * 1024;
+    char buffer[size];
+    input.read(buffer, size);
+    bend = buffer + input.gcount();
+    pos  = std::find(buffer, bend, ' ');
+    dims = std::strtod(pos, &pos);
+    lend = std::find(pos, bend, '\n');
+    bend = std::move(lend + 1, bend, buffer);
     // 使用临时变量接收最后赋值防止重入问题
-    static std::unordered_map<std::string, std::vector<float>> copy;
-    while(std::getline(input, line)) {
-        if(line.empty()) {
-            break;
+    std::unordered_map<std::string, std::vector<float>> copy;
+    while(true) {
+        if(!input.eof()) {
+            input.read(bend, size - (bend - buffer));
+            bend = bend + input.gcount();
         }
-        std::string word;
-        std::vector<float> vector;
-        vector.reserve(dims);
-        index = line.find_first_of(" ");
-        word  = line.substr(0, index);
-        pos   = &line.at(index + 1);
-        while(*pos) {
-            old = pos;
-            vector.emplace_back(std::strtof(pos, &pos));
-            if(pos == old) {
+        while(true) {
+            std::string word;
+            std::vector<float> vector;
+            vector.reserve(dims);
+            lend = std::find(buffer, bend, '\n');
+            pos  = std::find(buffer, lend, ' ');
+            word = std::string(buffer, pos);
+            if(word.empty()) {
                 break;
-            } else {
+            }
+            while(pos < lend && pos < bend) {
+                vector.emplace_back(std::strtof(pos, &pos));
                 ++pos;
             }
+            copy.emplace(word, std::move(vector));
+            if(lend && lend < bend) {
+                pos  = lend + 1;
+                bend = std::move(lend + 1, bend, buffer);
+            } else {
+                break;
+            }
         }
-        copy.emplace(word, std::move(vector));
+        if(input.eof()) {
+            break;
+        }
     }
     SPDLOG_DEBUG("加载ChineseWordVectors完成：{} - {}", copy.size(), dims);
-    vectors = std::move(copy);
+    vectors.swap(copy);
     input.close();
 }
