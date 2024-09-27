@@ -16,14 +16,6 @@ lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedd
 lifuren::RAGClient::~RAGClient() {
 }
 
-size_t lifuren::RAGClient::getDims() const {
-    if(this->embeddingClient) {
-        return this->embeddingClient->getDims();
-    } else {
-        return 0;
-    }
-}
-
 void lifuren::RAGClient::loadIndex() {
     const std::filesystem::path markPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     if(!std::filesystem::exists(markPath)) {
@@ -72,6 +64,14 @@ void lifuren::RAGClient::truncateIndex() {
     SPDLOG_DEBUG("清空RAG索引：{}", this->id);
     this->doneFile.clear();
     this->saveIndex();
+}
+
+size_t lifuren::RAGClient::getDims() const {
+    if(this->embeddingClient) {
+        return this->embeddingClient->getDims();
+    } else {
+        return 0;
+    }
 }
 
 bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {

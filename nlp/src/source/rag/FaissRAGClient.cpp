@@ -14,15 +14,15 @@
 #include "lifuren/Files.hpp"
 #include "lifuren/Lifuren.hpp"
 
-static std::map<size_t, std::shared_ptr<faiss::Index>> indexIdMapDBMap{};
+static std::map<size_t, std::shared_ptr<faiss::Index>> indexDBMap{};
 // TODO: 使用short代替size_t
-static std::map<size_t, std::shared_ptr<std::map<size_t, std::string>>> idMappingMap{};
+static std::map<size_t, std::shared_ptr<std::map<size_t, std::string>>> mappingMap{};
 
-static std::shared_ptr<std::map<size_t, std::string>> loadIdMapping(const std::filesystem::path& path);
-static void saveIdMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
+static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::filesystem::path& path);
+static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
 
-static faiss::Index* loadIndexIdMapDB(size_t dims, const std::filesystem::path& path);
-static void saveIndexIdMapDB(faiss::Index* index, const std::filesystem::path& path);
+static faiss::Index* loadIndexDB(size_t dims, const std::filesystem::path& path);
+static void saveIndexDB(faiss::Index* index, const std::filesystem::path& path);
 
 lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
 }
@@ -36,8 +36,8 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     const int faiss_n = 1;
     const int64_t id = lifuren::uuid();
     const std::vector<float>&& vector = this->embeddingClient->getVector(prompt);
-    this->idMapping->emplace(id, prompt);
-    this->indexIdMapDB->add_with_ids(faiss_n, vector.data(), &id);
+    this->mapping->emplace(id, prompt);
+    this->indexDB->add_with_ids(faiss_n, vector.data(), &id);
     return vector;
 }
 
@@ -47,12 +47,12 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float
     data.resize(faiss_n * size);
     std::vector<int64_t> idx;
     idx.resize(faiss_n * size);
-    this->indexIdMapDB->search(faiss_n, prompt.data(), size, data.data(), idx.data());
+    this->indexDB->search(faiss_n, prompt.data(), size, data.data(), idx.data());
     std::vector<std::string> ret;
     ret.reserve(size);
     for(int index = 0; index < size; ++index) {
-        auto iterator = this->idMapping->find(idx[index]);
-        if(iterator == this->idMapping->end()) {
+        auto iterator = this->mapping->find(idx[index]);
+        if(iterator == this->mapping->end()) {
             SPDLOG_WARN("索引没有映射：{}", idx[index]);
         } else {
             ret.push_back(iterator->second);
@@ -64,36 +64,36 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float
 void lifuren::FaissRAGClient::loadIndex() {
     lifuren::RAGClient::loadIndex();
     // TODO: 异步加载
-    if(idMappingMap.contains(this->id)) {
-        this->idMapping = idMappingMap.at(this->id);
-        this->indexIdMapDB = indexIdMapDBMap.at(this->id);
+    if(mappingMap.contains(this->id)) {
+        this->mapping = mappingMap.at(this->id);
+        this->indexDB = indexDBMap.at(this->id);
     } else {
-        const std::filesystem::path faissPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::FAISS_MODEL_FILE });
-        this->indexIdMapDB.reset(loadIndexIdMapDB(this->embeddingClient->getDims(), faissPath));
-        indexIdMapDBMap.emplace(this->id, this->indexIdMapDB);
+        const std::filesystem::path indexDBPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+        this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
+        indexDBMap.emplace(this->id, this->indexDB);
         const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-        this->idMapping = loadIdMapping(mappingPath);
-        idMappingMap.emplace(this->id, this->idMapping);
+        this->mapping = loadMapping(mappingPath);
+        mappingMap.emplace(this->id, this->mapping);
     }
 }
 
 void lifuren::FaissRAGClient::saveIndex() {
     lifuren::RAGClient::saveIndex();
-    const std::filesystem::path faissPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::FAISS_MODEL_FILE });
-    saveIndexIdMapDB(this->indexIdMapDB.get(), faissPath);
+    const std::filesystem::path indexDBPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+    saveIndexDB(this->indexDB.get(), indexDBPath);
     const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-    saveIdMapping(this->idMapping, mappingPath);
+    saveMapping(this->mapping, mappingPath);
 }
 
 void lifuren::FaissRAGClient::truncateIndex() {
-    this->idMapping->clear();
-    this->indexIdMapDB->reset();
-    idMappingMap.erase(this->id);
-    indexIdMapDBMap.erase(this->id);
+    this->mapping->clear();
+    this->indexDB->reset();
+    mappingMap.erase(this->id);
+    indexDBMap.erase(this->id);
     lifuren::RAGClient::truncateIndex();
 }
 
-static std::shared_ptr<std::map<size_t, std::string>> loadIdMapping(const std::filesystem::path& path) {
+static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::filesystem::path& path) {
     std::shared_ptr<std::map<size_t, std::string>> map = std::make_shared<std::map<size_t, std::string>>();
     if(!std::filesystem::exists(path)) {
         return map;
@@ -119,7 +119,7 @@ static std::shared_ptr<std::map<size_t, std::string>> loadIdMapping(const std::f
     return map;
 }
 
-static void saveIdMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
+static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
     lifuren::files::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
@@ -135,7 +135,7 @@ static void saveIdMapping(std::shared_ptr<std::map<size_t, std::string>> map, co
     stream.close();
 }
 
-static faiss::Index* loadIndexIdMapDB(size_t dims, const std::filesystem::path& path) {
+static faiss::Index* loadIndexDB(size_t dims, const std::filesystem::path& path) {
     if(std::filesystem::exists(path)) {
         auto index = faiss::read_index(path.string().c_str());
         if(index) {
@@ -147,7 +147,7 @@ static faiss::Index* loadIndexIdMapDB(size_t dims, const std::filesystem::path& 
     return new faiss::IndexIDMap(new faiss::IndexFlatL2(dims));
 }
 
-static void saveIndexIdMapDB(faiss::Index* index, const std::filesystem::path& path) {
+static void saveIndexDB(faiss::Index* index, const std::filesystem::path& path) {
     lifuren::files::createFolder(path.parent_path());
     faiss::write_index(index, path.string().c_str());
 }

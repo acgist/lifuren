@@ -69,27 +69,35 @@ static void loadVectors(const std::string& path) {
     input.open(path, std::ios::in);
     if(!input.is_open()) {
         SPDLOG_WARN("加载ChineseWordVectors失败（文件打开失败）：{}", path);
+        input.close();
         return;
     }
     SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
-    char * beg  { nullptr };
-    char * pos  { nullptr };
-    char * lend { nullptr };
-    size_t dims { 0 };
+    char * beg { nullptr };
+    char * pos { nullptr };
+    char * lend{ nullptr };
+    char * bend{ nullptr };
+    size_t dims{ 0 };
     const size_t size = std::filesystem::file_size(std::filesystem::u8path(path));
     std::vector<char> data(size);
     char *buffer = data.data();
     input.read(buffer, size);
-    char * bend = buffer + input.gcount();
-    pos  = std::find(buffer, bend, ' ');
+    bend = buffer + input.gcount();
+    lend = std::find(buffer, bend, '\n');
+    pos  = std::find(buffer, lend, ' ');
     dims = std::strtod(pos, &pos);
+    pos  = lend + 1;
+    beg  = pos;
+    if(lend == bend || dims == 0) {
+        SPDLOG_WARN("加载ChineseWordVectors失败（数据格式错误）：{}", path);
+        input.close();
+        return;
+    }
+    std::string word;
+    std::vector<float> vector;
     // 使用临时变量接收最后赋值防止重入问题
     std::unordered_map<std::string, std::vector<float>> copy;
-    pos = std::find(pos, bend, '\n') + 1;
-    beg = pos;
     while(true) {
-        std::string word;
-        std::vector<float> vector;
         vector.reserve(dims);
         lend = std::find(beg, bend, '\n');
         pos  = std::find(beg, lend, ' ');
@@ -97,12 +105,13 @@ static void loadVectors(const std::string& path) {
         if(word.empty()) {
             break;
         }
-        while(pos < lend && pos < bend) {
+        ++pos;
+        while(pos < lend) {
             vector.emplace_back(std::strtof(pos, &pos));
             ++pos;
         }
         copy.emplace(word, std::move(vector));
-        if(lend && lend < bend) {
+        if(lend < bend) {
             pos = lend + 1;
             beg = pos;
         } else {

@@ -160,10 +160,17 @@
 * https://github.com/leejet/stable-diffusion.cpp
 * https://github.com/Stability-AI/stablediffusion
 
+#### VAE
+#### LoRA
+
 #### CLIP
 
 * https://github.com/openai/clip
 * https://github.com/monatis/clip.cpp
+
+#### Flux
+
+* https://github.com/black-forest-labs/flux
 
 #### Embedding
 
@@ -190,6 +197,7 @@
 * https://github.com/TencentARC/PhotoMaker
 * https://github.com/Akegarasu/lora-scripts
 * https://github.com/langchain-ai/langchain
+* https://github.com/comfyanonymous/ComfyUI
 * https://github.com/KichangKim/DeepDanbooru
 * https://github.com/Significant-Gravitas/AutoGPT
 * https://github.com/Stability-AI/generative-models

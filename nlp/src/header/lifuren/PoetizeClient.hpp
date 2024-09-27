@@ -1,9 +1,7 @@
 /**
  * 诗词终端
  * 
- * 自监督学习
- * 
- * RNN/GRU/LSTM/诗词填空
+ * RNN/GRU/LSTM/诗词填空/自监督学习
  * 
  * @author acgist
  */
@@ -31,6 +29,9 @@ public:
 
 };
 
+/**
+ * 诗佛终端
+ */
 class ShifoRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -39,6 +40,9 @@ public:
 
 };
 
+/**
+ * 诗魔终端
+ */
 class ShimoRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -47,6 +51,9 @@ public:
 
 };
 
+/**
+ * 诗鬼终端
+ */
 class ShiguiRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -55,6 +62,9 @@ public:
 
 };
 
+/**
+ * 诗仙终端
+ */
 class ShixianRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -63,6 +73,9 @@ public:
 
 };
 
+/**
+ * 诗圣终端
+ */
 class ShishengRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -71,6 +84,9 @@ public:
 
 };
 
+/**
+ * 李杜终端
+ */
 class LiduRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -79,6 +95,9 @@ public:
 
 };
 
+/**
+ * 苏辛终端
+ */
 class SuxinRNNPoetizeClient : public PoetizeClient {
 
 public:
@@ -87,6 +106,9 @@ public:
 
 };
 
+/**
+ * 婉约终端
+ */
 class WanyueRNNPoetizeClient : public PoetizeClient {
 
 public:

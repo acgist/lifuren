@@ -65,7 +65,7 @@ inline auto loadPoetryFileDataset(
     return lifuren::datasets::FileDataset(
         batchSize,
         path,
-        { ".json" },
+        { ".model" },
         [&client](const std::string& file, std::vector<std::vector<float>>& features) {
             // TODO: 加载embedding.model
         }

@@ -19,8 +19,8 @@ lifuren::RAGService& lifuren::RAGService::getInstance() {
 
 std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const std::string& path) const {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    const auto iterator = this->tasks.find(path);
-    if(iterator == this->tasks.end()) {
+    const auto iterator = this->taskMap.find(path);
+    if(iterator == this->taskMap.end()) {
         return nullptr;
     }
     return iterator->second;
@@ -35,8 +35,8 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const st
         .embedding = embedding.type,
         .path      = path,
     };
-    const auto iterator = this->tasks.find(path);
-    if(iterator != this->tasks.end()) {
+    const auto iterator = this->taskMap.find(path);
+    if(iterator != this->taskMap.end()) {
         SPDLOG_DEBUG("RAG任务已经添加：{}", path);
         return iterator->second;
     }
@@ -46,7 +46,7 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const st
         return nullptr;
     } else if(runner->startExecute()) {
         SPDLOG_DEBUG("添加RAG任务：{}", path);
-        const auto pair = this->tasks.emplace(path, runner);
+        const auto pair = this->taskMap.emplace(path, runner);
         return pair.first->second;
     } else {
         SPDLOG_WARN("执行RAG任务失败：{}", path);
@@ -56,8 +56,8 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const st
 
 bool lifuren::RAGService::stopRAGTask(const std::string& path) const {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    const auto iterator = this->tasks.find(path);
-    if(iterator == this->tasks.end()) {
+    const auto iterator = this->taskMap.find(path);
+    if(iterator == this->taskMap.end()) {
         SPDLOG_DEBUG("RAG任务已经结束：{}", path);
         return true;
     }
@@ -68,8 +68,8 @@ bool lifuren::RAGService::stopRAGTask(const std::string& path) const {
 
 bool lifuren::RAGService::removeRAGTask(const std::string& path) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    const auto iterator = this->tasks.find(path);
-    if(iterator == this->tasks.end()) {
+    const auto iterator = this->taskMap.find(path);
+    if(iterator == this->taskMap.end()) {
         SPDLOG_DEBUG("RAG任务已经移除：{}", path);
         return true;
     }
@@ -78,10 +78,10 @@ bool lifuren::RAGService::removeRAGTask(const std::string& path) {
         return false;
     }
     SPDLOG_DEBUG("移除RAG任务：{}", path);
-    return this->tasks.erase(path) > 0;
+    return this->taskMap.erase(path) > 0;
 }
 
 size_t lifuren::RAGService::taskCount() const {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    return this->tasks.size();
+    return this->taskMap.size();
 }

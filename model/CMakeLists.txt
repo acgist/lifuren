@@ -4,8 +4,8 @@ add_library(
     ${PROJECT_NAME}
     src/source/Model.cpp
     src/source/Layers.cpp
-    src/source/Tensors.cpp
     src/source/Dataset.cpp
+    src/source/Tensors.cpp
     src/source/Datasets.cpp
     src/source/RawDataset.cpp
     src/source/FileDataset.cpp

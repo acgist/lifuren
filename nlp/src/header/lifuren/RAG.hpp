@@ -60,10 +60,6 @@ public:
     virtual ~RAGClient();
 
 public:
-    /**
-     * @return 维度
-     */
-    virtual size_t getDims() const;
     // 加载索引
     virtual void loadIndex();
     // 保存索引
@@ -71,17 +67,19 @@ public:
     // 清空索引
     virtual void truncateIndex();
     /**
-     * 添加已经处理文件
-     * 
+     * @return 嵌入向量维度
+     */
+    virtual size_t getDims() const;
+    /**
      * @param file 处理文件路径
      * 
      * @return 是否已经添加
      */
     bool doneFileEmplace(const std::string& file);
     /**
-     * @param prompt 索引内容
+     * @param prompt 提示内容
      * 
-     * @return 索引向量
+     * @return 提示向量
      */
     virtual std::vector<float> index(const std::string& prompt) = 0;
     
@@ -90,7 +88,7 @@ public:
 
 public:
     /**
-     * @param rag       RAG终端类型
+     * @param rag       RAG类型
      * @param embedding 词嵌入方式
      * @param path      文档路径
      * 
@@ -109,9 +107,9 @@ class FaissRAGClient : public RAGClient {
 
 protected:
     // 向量数据库
-    std::shared_ptr<faiss::Index> indexIdMapDB{ nullptr };
+    std::shared_ptr<faiss::Index> indexDB{ nullptr };
     // ID = 单词
-    std::shared_ptr<std::map<size_t, std::string>> idMapping{ nullptr };
+    std::shared_ptr<std::map<size_t, std::string>> mapping{ nullptr };
 
 public:
     /**
@@ -162,7 +160,9 @@ public:
 /**
  * RAG任务执行器
  * 
- * 诗词分词生成Embedding文件以及向量搜索文件
+ * 1. 诗词分词
+ * 2. 生成词嵌入文件
+ * 3. 生成向量搜索文件
  */
 class RAGTaskRunner {
 
@@ -204,8 +204,6 @@ private:
 
 public:
     /**
-     * 开始任务
-     * 
      * @return 是否成功
      */
     bool startExecute();
@@ -251,7 +249,7 @@ public:
 
 private:
     // 任务地址 = RAG任务执行器
-    std::map<std::string, std::shared_ptr<RAGTaskRunner>> tasks{};
+    std::map<std::string, std::shared_ptr<RAGTaskRunner>> taskMap{};
 
 public:
     /**
@@ -261,24 +259,18 @@ public:
      */
     std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path) const;
     /**
-     * 执行任务
-     * 
      * @param path 任务路径
      * 
      * @return RAG任务执行器
      */
     std::shared_ptr<RAGTaskRunner> runRAGTask(const std::string& path);
     /**
-     * 结束任务
-     * 
      * @param path 任务路径
      * 
      * @return 是否成功
      */
     bool stopRAGTask(const std::string& path) const;
     /**
-     * 移除任务
-     * 
      * @param path 任务路径
      * 
      * @return 是否成功

@@ -51,6 +51,8 @@ public:
 };
 
 /**
+ * Ollama词嵌入终端
+ * 
  * https://github.com/ollama/ollama
  */
 class OllamaEmbeddingClient : public EmbeddingClient {
