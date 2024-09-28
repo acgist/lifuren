@@ -19,7 +19,8 @@ lifuren::layers::Conv2d::Conv2d(
     stride(stride),
     padding(padding),
     dilation(dilation),
-    bias_(bias) {
+    bias_(bias)
+{
 }
 
 lifuren::layers::Conv2d::Conv2d(
@@ -40,7 +41,8 @@ lifuren::layers::Conv2d::Conv2d(
     stride(stride),
     padding(padding),
     dilation(dilation),
-    bias_(bias) {
+    bias_(bias)
+{
 }
 
 lifuren::layers::Conv2d::~Conv2d() {

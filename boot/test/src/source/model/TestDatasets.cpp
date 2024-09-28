@@ -45,17 +45,26 @@
     std::cout << '\n';
 }
 
+[[maybe_unused]] static void testFillRhythm() {
+    std::vector<std::vector<float>> vector;
+    const auto& rhythm = lifuren::config::RHYTHM["虞美人"];
+    lifuren::datasets::poetry::fillRhythm(128, vector, &rhythm);
+    assert(2 == vector.size());
+    assert(static_cast<float>(rhythm.segmentRule.size()) == std::accumulate(vector[0].begin(), vector[0].end(), 0.0F));
+    assert(static_cast<float>(rhythm.participleRule.size()) == std::accumulate(vector[1].begin(), vector[1].end(), 0.0F));
+}
+
 [[maybe_unused]] static void testFileDataset() {
     lifuren::datasets::FileDataset dataa(
         5,
         lifuren::config::CONFIG.tmp,
         { ".jpg" },
         [](const std::string& path, std::vector<std::vector<float>>& features) {
-            SPDLOG_DEBUG("读取文件：{}", path);
+            // SPDLOG_DEBUG("读取文件：{}", path);
             features.push_back(std::vector<float>{1.0F, 2.0F, 3.0F, 4.0F, 5.0F});
         }
     );
-    float f[5];
+    float f[5 * 5];
     float l[5];
     size_t size = dataa.batchGet(0, f, l);
     SPDLOG_DEBUG("当前数量：{}", size);
@@ -66,7 +75,7 @@
         lifuren::files::join({lifuren::config::CONFIG.tmp, "sex"}).string(),
         { ".jpg" },
         [](const std::string& path, std::vector<std::vector<float>>& features) {
-            SPDLOG_DEBUG("读取文件：{}", path);
+            // SPDLOG_DEBUG("读取文件：{}", path);
             features.push_back(std::vector<float>{1.0F, 2.0F, 3.0F, 4.0F, 5.0F});
         },
         {
@@ -178,21 +187,12 @@
     assert(rr == ww);
 }
 
-[[maybe_unused]] static void testFillRhythm() {
-    std::vector<std::vector<float>> vector;
-    const auto& rhythm = lifuren::config::RHYTHM["虞美人"];
-    lifuren::datasets::poetry::fillRhythm(128, vector, &rhythm);
-    assert(2 == vector.size());
-    assert(static_cast<float>(rhythm.segmentRule.size()) == std::accumulate(vector[0].begin(), vector[0].end(), 0.0F));
-    assert(static_cast<float>(rhythm.participleRule.size()) == std::accumulate(vector[1].begin(), vector[1].end(), 0.0F));
-}
-
 LFR_TEST(
     // testRawDataset();
+    // testFillRhythm();
     // testFileDataset();
-    // testShardingDataset();
+    testShardingDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
     // testPoetryEmbeddingReadWrite();
-    testFillRhythm();
 );

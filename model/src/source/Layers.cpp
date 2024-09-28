@@ -4,7 +4,14 @@
 
 #include "spdlog/spdlog.h"
 
-lifuren::layers::Layer::Layer(ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name) : ctx_weight(ctx_weight), ctx_compute(ctx_compute), name(name) {
+lifuren::layers::Layer::Layer(
+    ggml_context* ctx_weight,
+    ggml_context* ctx_compute,
+    const std::string& name
+) : ctx_weight(ctx_weight),
+    ctx_compute(ctx_compute),
+    name(name)
+{
 }
 
 lifuren::layers::Layer::~Layer() {

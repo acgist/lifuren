@@ -11,7 +11,8 @@ lifuren::layers::Linear::Linear(
 ) : Layer(ctx, ctx, name),
     in_features(in_features),
     out_features(out_features),
-    bias_(bias) {
+    bias_(bias)
+{
 }
 
 lifuren::layers::Linear::Linear(
@@ -23,14 +24,15 @@ lifuren::layers::Linear::Linear(
 ) : Layer(ctx_weight, ctx_compute, name),
     in_features(in_features),
     out_features(out_features),
-    bias_(bias) {
+    bias_(bias)
+{
 }
 
 lifuren::layers::Linear::~Linear() {
 }
 
 std::string lifuren::layers::Linear::info() {
-return this->name + " => in = " + std::to_string(this->in_features) + " out = " + std::to_string(this->out_features);
+    return this->name + " => in = " + std::to_string(this->in_features) + " out = " + std::to_string(this->out_features);
 }
 
 ggml_tensor* lifuren::layers::Linear::forward(ggml_tensor* input) {

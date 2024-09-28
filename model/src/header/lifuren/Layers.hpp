@@ -25,7 +25,7 @@ namespace lifuren {
 namespace layers  {
 
 /**
- * 层
+ * Layer
  */
 class Layer {
 

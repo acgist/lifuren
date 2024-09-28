@@ -1,11 +1,12 @@
 #include "lifuren/Datasets.hpp"
 
-#include <cassert>
-
 lifuren::datasets::ShardingDataset::ShardingDataset(
     std::shared_ptr<Dataset> source,
     std::map<size_t, size_t> indexMapping
-) : lifuren::datasets::Dataset(indexMapping.size() * source->getBatchSize(), source->getBatchSize()), source(source), indexMapping(std::move(indexMapping)) {
+) : lifuren::datasets::Dataset(indexMapping.size() * source->getBatchSize(), source->getBatchSize()),
+    source(source),
+    indexMapping(std::move(indexMapping))
+{
 }
 
 lifuren::datasets::ShardingDataset::~ShardingDataset() {
@@ -25,10 +26,10 @@ std::tuple<lifuren::datasets::ShardingDataset, lifuren::datasets::ShardingDatase
     size_t trainPos = 0LL;
     size_t valPos   = 0LL;
     size_t testPos  = 0LL;
-    for(size_t index = 0; index < count; ++index) {
+    for(size_t index = 0LL; index < count; ++index) {
         if(valCount > 0LL && valIndex <= index && index < valIndex + valCount) {
             valMapping.emplace(valPos++, index);
-        } else if(testIndex <= index && index < testIndex + testCount) {
+        } else if(testCount > 0LL && testIndex <= index && index < testIndex + testCount) {
             testMapping.emplace(testPos++, index);
         } else {
             trainMapping.emplace(trainPos++, index);

@@ -24,36 +24,57 @@
 namespace lifuren {
 
 /**
- * TODO: 模型定义
+ * 诗佛
  */
 class ShifoRNNModel {
 
 };
 
+/**
+ * 诗魔
+ */
 class ShimoRNNModel {
 
 };
 
+/**
+ * 诗鬼
+ */
 class ShiguiRNNModel {
 
 };
 
+/**
+ * 诗仙
+ */
 class ShixianRNNModel {
 
 };
 
+/**
+ * 诗圣
+ */
 class ShishengRNNModel {
 
 };
 
+/**
+ * 李杜
+ */
 class LiduRNNModel {
 
 };
 
+/**
+ * 苏辛
+ */
 class SuxinRNNModel {
 
 };
 
+/**
+ * 婉约
+ */
 class WanyueRNNModel {
 
 };

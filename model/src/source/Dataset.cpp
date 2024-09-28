@@ -21,6 +21,6 @@ size_t lifuren::datasets::Dataset::getBatchCount() const {
     if(this->count % this->batchSize == 0) {
         return this->count / this->batchSize;
     } else {
-        return (this->count / this->batchSize) + 1;
+        return this->count / this->batchSize + 1;
     }
 }

@@ -11,15 +11,22 @@
 namespace lifuren {
 namespace tensors {
 
+/**
+ * @param tensor 张量
+ * @param value  填充
+ */
 inline void fill(ggml_tensor* tensor, float value = 0.0F) {
     GGML_ASSERT(tensor->type == GGML_TYPE_F32);
     int64_t size = ggml_nelements(tensor);
     float * data = ggml_get_data_f32(tensor);
-    for(int i = 0; i < size; ++i) {
-        data[i] = value;
-    }
+    std::fill(data, data + size, value);
 }
 
+/**
+ * @param tensor 张量
+ * @param mean   均值
+ * @param sigma  方差
+ */
 inline void fillRand(ggml_tensor* tensor, float mean = 0.0F, float sigma = 0.001F) {
     GGML_ASSERT(tensor->type == GGML_TYPE_F32);
     std::random_device device{};
@@ -32,12 +39,16 @@ inline void fillRand(ggml_tensor* tensor, float mean = 0.0F, float sigma = 0.001
     }
 }
 
-inline void fillRange(ggml_tensor* tensor, float value = 0.0F) {
+/**
+ * @param tensor 张量
+ * @param beg    开始
+ */
+inline void fillRange(ggml_tensor* tensor, float beg = 0.0F) {
     GGML_ASSERT(tensor->type == GGML_TYPE_F32);
     int64_t size = ggml_nelements(tensor);
     float * data = ggml_get_data_f32(tensor);
     for(int i = 0; i < size; ++i) {
-        data[i] = value + i;
+        data[i] = beg + i;
     }
 }
 

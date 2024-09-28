@@ -54,8 +54,6 @@ public:
      */
     virtual size_t getBatchCount() const;
     /**
-     * 获取批次数据
-     * 
      * @param batch    批次
      * @param features 数据
      * @param labels   标签
@@ -89,7 +87,16 @@ public:
     ~ShardingDataset();
 
 public:
-    inline virtual size_t batchGet(size_t batch, float* features, float* labels) const override {
+    inline size_t batchGet(size_t batch, float* features) const {
+        if(!this->source) {
+            return 0LL;
+        }
+        return this->source->batchGet(this->indexMapping.at(batch), features, nullptr);
+    }
+    inline size_t batchGet(size_t batch, float* features, float* labels) const override {
+        if(!this->source) {
+            return 0LL;
+        }
        return this->source->batchGet(this->indexMapping.at(batch), features, labels);
     }
 

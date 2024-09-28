@@ -1,16 +1,19 @@
 /**
  * 图片模型
- * 
- * CycleGAN
- * StyleGAN
  */
 #include "lifuren/Model.hpp"
 
 namespace lifuren {
 
+/**
+ * CycleGAN
+ */
 class CycleGANModel {
 };
 
+/**
+ * StyleGAN
+ */
 class StyleGANModel {
 };
 

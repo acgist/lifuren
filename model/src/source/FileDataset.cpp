@@ -32,7 +32,8 @@ lifuren::datasets::FileDataset::FileDataset(
     std::function<void(const std::string&, std::vector<std::vector<float>>&)> transform,
     const std::map<std::string, float>& mapping,
     bool shuffle
-) : lifuren::datasets::Dataset(batchSize), transform(transform) {
+) : lifuren::datasets::Dataset(batchSize), transform(transform)
+{
     if(!lifuren::files::exists(path) || !lifuren::files::isDirectory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
@@ -50,21 +51,24 @@ lifuren::datasets::FileDataset::~FileDataset() {
 }
 
 size_t lifuren::datasets::FileDataset::batchGet(size_t batch, float* features, float* labels) const {
-    const size_t begin = batch * this->batchSize;
-    const size_t end   = std::min(this->count, begin + this->batchSize);
-    if(end <= begin || this->features.empty()) {
-        return 0;
+    if(features == nullptr && labels == nullptr) {
+        return 0LL;
     }
-    size_t pos = 0;
-    for(size_t index = begin; index < end; ++index) {
+    const size_t beg = batch * this->batchSize;
+    const size_t end = std::min(this->count, beg + this->batchSize);
+    if(end <= beg || this->features.empty()) {
+        return 0LL;
+    }
+    size_t pos = 0LL;
+    for(size_t index = beg; index < end; ++index) {
         const auto& feature = this->features[index];
         std::copy(feature.begin(), feature.end(), features + pos);
         pos += feature.size();
     }
-    if(!this->labels.empty()) {
-        std::copy(this->labels.begin() + begin, this->labels.begin() + end, labels);
+    if(labels != nullptr && !this->labels.empty()) {
+        std::copy(this->labels.begin() + beg, this->labels.begin() + end, labels);
     }
-    return end - begin;
+    return end - beg;
 }
 
 static void listFile(
