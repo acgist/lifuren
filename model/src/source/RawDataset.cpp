@@ -1,5 +1,7 @@
 #include "lifuren/Datasets.hpp"
 
+#include <memory>
+
 lifuren::datasets::RawDataset::RawDataset(
     size_t count,
     size_t batchSize,
@@ -27,15 +29,19 @@ size_t lifuren::datasets::RawDataset::batchGet(size_t batch, float* features, fl
         return 0LL;
     }
     if(remaining >= this->batchSize) {
-        std::memcpy(features, this->features + batch * this->batchSize * feature_size, sizeof(float) * this->batchSize * feature_size);
+        std::copy_n(this->features + batch * this->batchSize * feature_size, this->batchSize * feature_size, features);
+        // std::memcpy(features, this->features + batch * this->batchSize * feature_size, sizeof(float) * this->batchSize * feature_size);
         if(labels != nullptr && this->labels != nullptr) {
-            std::memcpy(labels, this->labels + batch * this->batchSize * label_size, sizeof(float) * this->batchSize * label_size);
+            std::copy_n(this->labels + batch * this->batchSize * label_size, this->batchSize * label_size, labels);
+            // std::memcpy(labels, this->labels + batch * this->batchSize * label_size, sizeof(float) * this->batchSize * label_size);
         }
         return this->batchSize;
     } else {
-        std::memcpy(features, this->features + batch * this->batchSize * feature_size, sizeof(float) * remaining * feature_size);
+        std::copy_n(this->features + batch * this->batchSize * feature_size, remaining * feature_size, features);
+        // std::memcpy(features, this->features + batch * this->batchSize * feature_size, sizeof(float) * remaining * feature_size);
         if(labels != nullptr && this->labels != nullptr) {
-            std::memcpy(labels, this->labels + batch * this->batchSize * label_size, sizeof(float) * remaining * label_size);
+            std::copy_n(this->labels + batch * this->batchSize * label_size, remaining * label_size, labels);
+            // std::memcpy(labels, this->labels + batch * this->batchSize * label_size, sizeof(float) * remaining * label_size);
         }
         return remaining;
     }

@@ -188,7 +188,7 @@
 }
 
 LFR_TEST(
-    // testRawDataset();
+    testRawDataset();
     // testFillRhythm();
     // testFileDataset();
     testShardingDataset();
