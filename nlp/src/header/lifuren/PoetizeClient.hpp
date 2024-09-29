@@ -22,9 +22,6 @@ public:
     virtual ~PoetizeClient();
 
 public:
-    bool stop() override;
-
-public:
     static std::unique_ptr<lifuren::PoetizeClient> getClient(const std::string& client);
 
 };

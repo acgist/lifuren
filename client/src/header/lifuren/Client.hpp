@@ -49,7 +49,7 @@ public:
     const bool& isRunning() const;
     void changeState();
     void changeState(bool running);
-    virtual bool stop() = 0;
+    virtual bool stop();
 
 public:
     StatefulClient();

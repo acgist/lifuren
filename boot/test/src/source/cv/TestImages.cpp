@@ -11,10 +11,12 @@
     size_t width {0};
     size_t height{0};
     size_t length{0};
-    // lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "fail.jpg"}).string(), &data, width, height, length);
-    lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
-    lifuren::images::show(data, width, height, length);
-    delete data;
+    // const bool success = lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "fail.jpg"}).string(), &data, width, height, length);
+    const bool success = lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
+    if(success) {
+        lifuren::images::show(data, width, height, length);
+    }
+    delete[] data;
     data = nullptr;
 }
 
@@ -23,7 +25,7 @@
     size_t width {0};
     size_t height{0};
     size_t length{0};
-    bool success = lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
+    const bool success = lifuren::images::read(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), &data, width, height, length);
     if(success) {
         lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_copy.png"}).string(), data, width, height, length);
         uint8_t* x = new uint8_t[width * height];
@@ -39,10 +41,10 @@
             x[i] = data[3 * i + 2];
         }
         lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "girl_3.png"}).string(), x, width, height, 0, 1);
-        delete x;
+        delete[] x;
         x = nullptr;
     }
-    delete data;
+    delete[] data;
     data = nullptr;
 }
 
@@ -51,10 +53,11 @@
     size_t length{ 0 };
     lifuren::images::load(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo.png"}).string(), data, length);
     cv::Mat image(256, 256, CV_8UC3);
-    std::copy(data, data + length, image.data);
-    // std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
+    // std::copy(data, data + length, image.data);
+    std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
+    lifuren::images::show(image.data, image.cols, image.rows, image.total() * image.elemSize());
     cv::imwrite(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo_copy.png"}).string(), image);
-    delete data;
+    delete[] data;
     data = nullptr;
 }
 
@@ -101,9 +104,9 @@
 }
 
 LFR_TEST(
-    // testRead();
-    // testWrite();
+    testRead();
+    testWrite();
+    testLoad();
     // testSplit();
-    testMerge();
-    // testLoad();
+    // testMerge();
 );

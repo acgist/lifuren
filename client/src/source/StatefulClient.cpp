@@ -19,3 +19,8 @@ void lifuren::StatefulClient::changeState(bool running) {
     std::unique_lock<std::mutex> lock(this->mutex);
     this->running = running;
 }
+
+bool lifuren::StatefulClient::stop() {
+    this->changeState(false);
+    return true;
+}

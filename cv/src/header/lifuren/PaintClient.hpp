@@ -73,8 +73,6 @@ public:
      */
     virtual bool paint(const PaintOptions& options, PaintCallback callback = nullptr) = 0;
 
-    virtual bool stop() override;
-
 };
 
 class CycleGANPaintClient : public PaintClient {
@@ -85,7 +83,6 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-    bool stop() override;
     
 };
 
@@ -97,7 +94,6 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-    bool stop() override;
 
 };
 
@@ -114,7 +110,6 @@ public:
 
 public:
     bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-    bool stop() override;
 
 };
 

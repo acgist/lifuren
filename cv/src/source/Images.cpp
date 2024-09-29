@@ -8,7 +8,7 @@
 
 bool lifuren::images::read(const std::string& path, uint8_t** data, size_t& width, size_t& height, size_t& length) {
     cv::Mat image{ cv::imread(path) };
-    if(image.total() <= 0) {
+    if(image.total() <= 0LL) {
         return false;
     }
     width  = image.cols;
@@ -19,53 +19,51 @@ bool lifuren::images::read(const std::string& path, uint8_t** data, size_t& widt
     return true;
 }
 
-bool lifuren::images::write(const std::string& path, uint8_t* data, size_t width, size_t height, size_t length, size_t channel) {
+bool lifuren::images::write(const std::string& path, const uint8_t* data, const size_t& width, const size_t& height, size_t length, const size_t& channel) {
     if(data == nullptr) {
         return false;
     }
-    if(length <= 0) {
-        length = width * height * channel;
-    }
-    if(width <= 0 || height <= 0 || length <= 0) {
+    if(width <= 0LL || height <= 0LL || channel <= 0LL) {
         return false;
+    }
+    if(length <= 0LL) {
+        length = width * height * channel;
     }
     lifuren::files::createParent(path);
     cv::Mat image(height, width, channel == 1LL ? CV_8UC1 :
                                  channel == 2LL ? CV_8UC2 :
                                  channel == 3LL ? CV_8UC3 : CV_8UC4);
-    memcpy(image.data, data, length);
-    bool success = cv::imwrite(path, image);
-    return success;
+    std::memcpy(image.data, data, length);
+    return cv::imwrite(path, image);
 }
 
-void lifuren::images::show(uint8_t* data, size_t width, size_t height, size_t length) {
-    ::cv::Mat image(static_cast<int>(height), static_cast<int>(width), CV_8UC3);
-    memcpy(image.data, data, length);
-    ::cv::imshow("lifuren_show", image);
-    ::cv::waitKey();
+void lifuren::images::show(const uint8_t* data, const size_t& width, const size_t& height, const size_t& length) {
+    cv::Mat image(static_cast<int>(height), static_cast<int>(width), CV_8UC3);
+    std::memcpy(image.data, data, length);
+    cv::imshow("lifuren_show", image);
+    cv::waitKey();
 }
 
 void lifuren::images::load(
     const std::string& path,
     float * data,
     size_t& length,
-    const int& width,
-    const int& height,
+    const size_t& width,
+    const size_t& height,
     const std::function<void(const cv::Mat&)> transform
 ) {
     const cv::Mat image = cv::imread(path);
-    if(image.channels() <= 0) {
+    if(image.total() <= 0LL) {
         SPDLOG_WARN("图片读取失败：{}", path);
         return;
     }
-    const cv::Mat target(height, width, CV_8UC3);
-    if(width > 0 && height > 0) {
-        cv::resize(image, target, cv::Size(width, height));
+    if(width > 0LL && height > 0LL) {
+        cv::resize(image, image, cv::Size(width, height));
     }
     if(transform != nullptr) {
-        transform(target);
+        transform(image);
     }
-    length = target.total() * target.elemSize();
-    std::copy(target.data, target.data + length, data);
-    // std::transform(target.data, target.data + length, data, [](const auto& v) { return static_cast<float>(v); });
+    length = image.total() * image.elemSize();
+    std::copy(image.data, image.data + length, data);
+    // std::transform(image.data, image.data + length, data, [](const auto& v) { return static_cast<float>(v); });
 }
