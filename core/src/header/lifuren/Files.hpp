@@ -15,22 +15,47 @@
 namespace lifuren {
 namespace files   {
 
+/**
+ * @param path 文件路径
+ * 
+ * @return 文件是否存在
+ */
 inline bool exists(const std::string& path) {
     return std::filesystem::exists(std::filesystem::u8path(path));
 }
 
+/**
+ * @param path 文件路径
+ * 
+ * @return 是否是文件
+ */
 inline bool isFile(const std::string& path) {
     return std::filesystem::is_regular_file(std::filesystem::u8path(path));
 }
 
+/**
+ * @param path 文件路径
+ * 
+ * @return 是否是目录
+ */
 inline bool isDirectory(const std::string& path) {
     return std::filesystem::is_directory(std::filesystem::u8path(path));
 }
 
+/**
+ * @param path 文件路径
+ * 
+ * @return 上级文件路径
+ */
 inline std::string parent(const std::string& path) {
     return std::filesystem::u8path(path).parent_path().string();
 }
 
+/**
+ * @param list 文件路径列表
+ * 
+ * @return 文件路径
+ */
 inline std::filesystem::path join(std::initializer_list<std::string> list) {
     if(list.size() <= 0) {
         return {};
@@ -128,7 +153,7 @@ inline bool createFolder(const std::filesystem::path& path) {
  */
 extern std::string fileType(const std::string& path);
 
-}
-}
+} // END OF files
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_FILES_HPP

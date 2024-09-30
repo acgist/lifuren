@@ -95,7 +95,7 @@ inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
     #endif
 }
 
-}
-}
+} // END OF datas
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_DATES_HPP

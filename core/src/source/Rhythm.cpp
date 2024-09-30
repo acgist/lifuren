@@ -49,12 +49,12 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile
     SPDLOG_DEBUG("加载格律文件：{}", fullpath);
     std::map<std::string, Rhythm> map;
     YAML::Node yaml = lifuren::yamls::loadFile(fullpath);
-    if(yaml.size() == 0L) {
+    if(yaml.size() == 0LL) {
         return map;
     }
-    for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
-        const std::string key = iterator->first.as<std::string>();
-        const auto value      = iterator->second;
+    std::for_each(yaml.begin(), yaml.end(), [&map](const auto& node) {
+        const std::string key = node.first.as<std::string>();
+        const auto value      = node.second;
         Rhythm rhythm(key);
         LFR_RHYTHM_SETTER(value, rhythm,         rhythm, rhythm,         std::string);
         LFR_RHYTHM_SETTER(value, alias,          rhythm, alias,          std::vector<std::string>);
@@ -65,6 +65,6 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile
         LFR_RHYTHM_SETTER(value, segmentRule,    rhythm, segmentRule,    std::vector<uint32_t>);
         LFR_RHYTHM_SETTER(value, participleRule, rhythm, participleRule, std::vector<uint32_t>);
         map.emplace(key, rhythm);
-    }
+    });
     return map;
 }

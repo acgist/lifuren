@@ -4,7 +4,6 @@ add_library(
     ${PROJECT_NAME}
     src/source/Dates.cpp
     src/source/Files.cpp
-    src/source/Jsons.cpp
     src/source/Yamls.cpp
     src/source/Config.cpp
     src/source/Logger.cpp

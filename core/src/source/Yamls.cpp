@@ -1,6 +1,5 @@
 #include "lifuren/Yamls.hpp"
 
-#include <locale>
 #include <fstream>
 
 #include "spdlog/spdlog.h"

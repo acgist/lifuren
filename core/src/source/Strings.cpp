@@ -1,14 +1,13 @@
 #include "lifuren/Strings.hpp"
 
-#include <cctype>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
-#include <algorithm>
 
 std::vector<std::string> lifuren::strings::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
     std::vector<std::string> vector;
-    size_t pos   = 0;
-    size_t index = 0;
+    size_t pos   = 0LL;
+    size_t index = 0LL;
     std::string substr;
     while(true) {
         pos = content.find(delim, index);
@@ -18,18 +17,22 @@ std::vector<std::string> lifuren::strings::split(const std::string& content, con
         substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
         if(filter) {
             substr = lifuren::strings::trim(substr);
-        }
-        if(!filter || !substr.empty()) {
+            if(!substr.empty()) {
+                vector.push_back(substr);
+            }
+        } else {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
-    if(pos != index && index <= content.length()) {
+    if(index <= content.length()) {
         substr = content.substr(index, content.length() - index);
         if(filter) {
             substr = lifuren::strings::trim(substr);
-        }
-        if(!filter || !substr.empty()) {
+            if(!substr.empty()) {
+                vector.push_back(substr);
+            }
+        } else {
             vector.push_back(substr);
         }
     }
@@ -38,8 +41,8 @@ std::vector<std::string> lifuren::strings::split(const std::string& content, con
 
 std::vector<std::string> lifuren::strings::split(const std::string& content, const std::vector<std::string>& multi, bool retain, bool filter) {
     std::vector<std::string> vector;
-    size_t pos   = 0;
-    size_t index = 0;
+    size_t pos   = 0LL;
+    size_t index = 0LL;
     std::string delim;
     std::string substr;
     while(true) {
@@ -58,42 +61,26 @@ std::vector<std::string> lifuren::strings::split(const std::string& content, con
         substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
         if(filter) {
             substr = lifuren::strings::trim(substr);
-        }
-        if(!filter || !substr.empty()) {
+            if(!substr.empty()) {
+                vector.push_back(substr);
+            }
+        } else {
             vector.push_back(substr);
         }
         index = pos + delim.length();
     }
-    if(pos != index && index <= content.length()) {
+    if(index <= content.length()) {
         substr = content.substr(index, content.length() - index);
         if(filter) {
             substr = lifuren::strings::trim(substr);
-        }
-        if(!filter || !substr.empty()) {
+            if(!substr.empty()) {
+                vector.push_back(substr);
+            }
+        } else {
             vector.push_back(substr);
         }
     }
     return vector;
-}
-
-void lifuren::strings::toLower(std::string& value) {
-    #if _WIN32
-    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
-    #else
-    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
-        return std::tolower(v);
-    });
-    #endif
-}
-
-void lifuren::strings::toUpper(std::string& value) {
-    #if _WIN32
-    std::transform(value.begin(), value.end(), value.begin(), ::toupper);
-    #else
-    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
-        return std::toupper(v);
-    });
-    #endif
 }
 
 std::string lifuren::strings::trim(const std::string& value) {
@@ -126,8 +113,8 @@ char* lifuren::strings::trim(char* value) {
 }
 
 size_t lifuren::strings::length(const char* value) {
-    size_t index = 0;
-    size_t jndex = 0;
+    size_t index = 0LL;
+    size_t jndex = 0LL;
     while (value[index]) {
         if ((value[index] & 0xC0) != 0x80) {
             ++jndex;
@@ -137,21 +124,12 @@ size_t lifuren::strings::length(const char* value) {
     return jndex;
 }
 
-std::string lifuren::strings::substr(const char* value, uint32_t& pos, const uint32_t& length) {
+std::string lifuren::strings::substr(const char* value, const uint32_t& offset, const uint32_t& length) {
     std::string ret;
-    uint32_t index = 0;
-    while(value[pos]) {
-        ret.push_back(value[pos]);
-        if((value[pos] & 0xC0) != 0x80) {
-            ++index;
-        };
-        ++pos;
-        if((value[pos] & 0xC0) != 0x80) {
-            if(index >= length) {
-                break;
-            }
-        };
-    }
+    uint32_t pos = 0;
+    uint32_t beg = lifuren::strings::indexPos(value, pos, offset);
+    uint32_t end = lifuren::strings::indexPos(value, pos, length);
+    ret.insert(ret.begin(), value + beg, value + end);
     return ret;
 }
 
@@ -169,9 +147,9 @@ std::vector<std::string> lifuren::strings::toChars(const std::string& segment, b
         ++pos;
         if((value[pos] & 0xC0) != 0x80) {
             if(filter) {
-                ret = trim(ret);
+                ret = lifuren::strings::trim(ret);
                 if(!ret.empty()) {
-                    vector.push_back(trim(ret));
+                    vector.push_back(ret);
                 }
             } else {
                 vector.push_back(ret);
@@ -183,7 +161,7 @@ std::vector<std::string> lifuren::strings::toChars(const std::string& segment, b
 }
 
 void lifuren::strings::replace(std::string& value, const std::string& oldValue, const std::string& newValue) {
-    std::string::size_type index = 0;
+    std::string::size_type index = 0LL;
     std::string::size_type oldValueLength = oldValue.length();
     std::string::size_type newValueLength = newValue.length();
     while(true) {
@@ -197,11 +175,7 @@ void lifuren::strings::replace(std::string& value, const std::string& oldValue, 
 }
 
 void lifuren::strings::replace(std::string& value, const std::vector<std::string>& oldValue, const std::string& newValue) {
-    for(
-        auto iterator = oldValue.begin();
-        iterator != oldValue.end();
-        ++iterator
-    ) {
-        lifuren::strings::replace(value, *iterator, newValue);
-    }
+    std::for_each(oldValue.begin(), oldValue.end(), [&value, &newValue](const auto& v) {
+        lifuren::strings::replace(value, v, newValue);
+    });
 }

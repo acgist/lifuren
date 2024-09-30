@@ -6,9 +6,11 @@
 #ifndef LFR_HEADER_CORE_STRINGS_HPP
 #define LFR_HEADER_CORE_STRINGS_HPP
 
+#include <cctype>
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 namespace lifuren {
 namespace strings {
@@ -17,23 +19,23 @@ namespace strings {
 const char* const EMPTY_CHARS = " \t\r\n";
 
 /**
- * @param collection 拼接集合
- * @param delim      分隔符号
+ * @param values 拼接集合
+ * @param delim  分隔符号
  * 
  * @return 拼接内容
  */
 template<typename T>
-std::string join(const T& collection, const std::string& delim = "") {
+std::string join(const T& values, const std::string& delim = "") {
     std::stringstream ret;
-    if(collection.empty()) {
+    if(values.empty()) {
         return ret.str();
     }
-    typename T::const_iterator iterator   = collection.begin();
-    const typename T::const_iterator end  = collection.end();
-    const typename T::const_iterator last = collection.end() - 1;
-    for (; iterator != end; ++iterator) {
-        ret << *iterator;
-        if (iterator != last) {
+          typename T::const_iterator beg  = values.begin();
+    const typename T::const_iterator end  = values.end();
+    const typename T::const_iterator last = values.end() - 1;
+    for (; beg != end; ++beg) {
+        ret << *beg;
+        if (beg != last) {
             ret << delim;
         }
     }
@@ -65,14 +67,30 @@ extern std::vector<std::string> split(const std::string& content, const std::vec
  * 
  * @param value 字符串
  */
-extern void toLower(std::string& value);
+inline void toLower(std::string& value) {
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    #else
+    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
+        return std::tolower(v);
+    });
+    #endif
+}
 
 /**
  * 转为大写
  * 
  * @param value 字符串
  */
-extern void toUpper(std::string& value);
+inline void toUpper(std::string& value) {
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::toupper);
+    #else
+    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
+        return std::toupper(v);
+    });
+    #endif
+}
 
 /**
  * @param value 字符串
@@ -110,25 +128,36 @@ inline size_t length(const std::string& value) {
  * 3字节 1110xxxx 10xxxxxx 10xxxxxx
  * 4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
  * 
- * @param value  UTF8字符串
- * @param pos    开始位置
- * @param length 截取长度
- * 
- * @return 截取内容
+ * @param value 字符串
+ * @param pos   偏移位置
+ * @param size  字符长度
  */
-extern std::string substr(const char* value, uint32_t& pos, const uint32_t& length);
+inline uint32_t indexPos(const char* value, uint32_t& pos, const uint32_t& size) {
+    uint32_t index = 0;
+    if(index < size) {
+        while(value[pos]) {
+            if((value[pos] & 0xC0) != 0x80) {
+                ++index;
+            }
+            ++pos;
+            if((value[pos] & 0xC0) != 0x80) {
+                if(index >= size) {
+                    break;
+                }
+            }
+        }
+    }
+    return pos;
+}
 
 /**
- * @param value  UTF8字符串
- * @param pos    开始位置
+ * @param value  字符串
+ * @param offset 开始位置
  * @param length 截取长度
  * 
  * @return 截取内容
  */
-inline std::string substr(const char* value, const uint32_t& pos, const uint32_t& length) {
-    uint32_t copy = pos;
-    return substr(value, copy, length);
-}
+extern std::string substr(const char* value, const uint32_t& offset, const uint32_t& length);
 
 /**
  * @param segment 字符串
@@ -150,7 +179,7 @@ extern void replace(std::string& value, const std::string& oldValue, const std::
  */
 extern void replace(std::string& value, const std::vector<std::string>& oldValue, const std::string& newValue = "");
 
-}
-}
+} // END OF strings
+} // END OF lifuren
 
 #endif // LFR_HEADER_CORE_STRINGS_HPP

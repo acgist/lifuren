@@ -6,7 +6,7 @@
 #include "lifuren/Yamls.hpp"
 
 [[maybe_unused]] static void testYamls() {
-    YAML::Node yaml = lifuren::yamls::loadFile(lifuren::files::join({lifuren::config::CONFIG.tmp, "lifuren.yml"}).string());
+    YAML::Node&& yaml = lifuren::yamls::loadFile(lifuren::files::join({lifuren::config::CONFIG.tmp, "lifuren.yml"}).string());
     YAML::Node node;
     node["lifuren"] = "漂漂亮亮";
     // yaml.push_back(node);

@@ -14,14 +14,6 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testJsons TestJsons.cpp)
-add_test(NAME testJsons COMMAND testJsons)
-set_target_properties(testJsons PROPERTIES FOLDER "test-core")
-target_link_libraries(
-    testJsons
-    lifurencore
-)
-
 add_executable(testYamls TestYamls.cpp)
 add_test(NAME testYamls COMMAND testYamls)
 set_target_properties(testYamls PROPERTIES FOLDER "test-core")

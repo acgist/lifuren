@@ -56,6 +56,7 @@ bool lifuren::poetrys::Poetry::participle() {
     }
     std::string word;
     uint32_t pos = 0;
+    uint32_t len = 0;
     const std::vector<uint32_t>& participleRuleRef = this->rhythmPtr->participleRule;
     auto iterator  = participleRuleRef.begin();
     const auto end = participleRuleRef.end();
@@ -63,14 +64,17 @@ bool lifuren::poetrys::Poetry::participle() {
     const auto paragraphsEnd = this->simpleParagraphs.end();
     for(; iterator != end; ++iterator) {
         word = lifuren::strings::substr(paragraphsIterator->c_str(), pos, *iterator);
+        pos += *iterator;
+        len += word.length();
         this->participleParagraphs.push_back(word);
         if(this->participleSegment.empty()) {
             this->participleSegment = word;
         } else {
             this->participleSegment = this->participleSegment + word;
         }
-        if(pos >= paragraphsIterator->length()) {
+        if(len >= paragraphsIterator->length()) {
             pos = 0;
+            len = 0;
             ++paragraphsIterator;
             if(paragraphsIterator == paragraphsEnd) {
                 break;
