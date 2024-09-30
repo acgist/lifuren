@@ -6,30 +6,18 @@
  */
 #include "lifuren/Client.hpp"
 
-#include <chrono>
-
 #include "httplib.h"
 
 #include "spdlog/spdlog.h"
 
-/**
- * 授权请求
- * 
- * @param client   请求终端
- * @param path     请求地址
- * @param username 账号
- * @param password 密码
- * 
- * @return Token
- */
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password);
-
-static lifuren::RestClient::Response buildResponse(const httplib::Result& response);
-static httplib::Params buildParams(const std::map<std::string, std::string>& params);
+static httplib::Params  buildParams( const std::map<std::string, std::string>& params);
 static httplib::Headers buildHeaders(const std::map<std::string, std::string>& headers);
+static lifuren::RestClient::Response buildResponse(const httplib::Result& response);
 
-lifuren::RestClient::RestClient(const std::string& baseUrl, bool trustAllCert, const std::string& certPath) : baseUrl(baseUrl) {
+lifuren::RestClient::RestClient(const std::string& baseUrl, const bool& trustAllCert, const std::string& certPath) : baseUrl(baseUrl) {
     this->client = std::make_unique<httplib::Client>(baseUrl);
+    // 自动跳转
     this->client->set_follow_location(true);
     // 超时时间
     #if defined(_DEBUG) || !defined(NDEBUG)
@@ -45,8 +33,10 @@ lifuren::RestClient::RestClient(const std::string& baseUrl, bool trustAllCert, c
     #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
     if(trustAllCert) {
         this->client->enable_server_certificate_verification(true);
-    } else {
+    } else if(!certPath.empty()) {
         this->client->set_ca_cert_path(certPath);
+    } else {
+        // -
     }
     #endif
     // 默认头部
@@ -60,12 +50,19 @@ lifuren::RestClient::~RestClient() {
 
 bool lifuren::RestClient::auth(const lifuren::config::RestConfig& config) {
     lifuren::RestClient::AuthType authType = lifuren::RestClient::AuthType::NONE;
-    if(config.authType == "Basic") {
+    if(
+        config.authType == "basic" ||
+        config.authType == "Basic"
+    ) {
         authType = lifuren::RestClient::AuthType::BASIC;
-    } else if(config.authType == "Token") {
+    } else if(
+        config.authType == "token" ||
+        config.authType == "Token" ||
+        config.authType == "OAuth" ||
+        config.authType == "oauth"
+    ) {
         authType = lifuren::RestClient::AuthType::TOKEN;
     } else {
-
     }
     return this->auth(authType, config.username, config.password, config.authPath);
 }
@@ -75,15 +72,17 @@ bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, co
     this->username = username;
     this->password = password;
     if(authType == lifuren::RestClient::AuthType::NONE) {
+        // -
     }  else if (authType == lifuren::RestClient::AuthType::BASIC) {
         this->client->set_basic_auth(username, password);
     } else if(authType == lifuren::RestClient::AuthType::TOKEN) {
         this->token     = oauthToken(*this, path, username, password);
         this->tokenPath = path;
-        SPDLOG_DEBUG("RestClient Token: {}", this->token);
         if(this->token.empty()) {
+            SPDLOG_WARN("Token授权失败");
             return false;
         }
+        SPDLOG_DEBUG("Token授权成功: {}", this->token);
         this->client->set_default_headers({
             { "Authorization", "Bearer " + this->token }
         });
@@ -91,33 +90,33 @@ bool lifuren::RestClient::auth(const lifuren::RestClient::AuthType& authType, co
     return true;
 }
 
-lifuren::RestClient::Response lifuren::RestClient::head(const std::string& path, const std::map<std::string, std::string>& headers) {
-    auto response = this->client->Head(path, buildHeaders(headers));
+lifuren::RestClient::Response lifuren::RestClient::head(const std::string& path, const std::map<std::string, std::string>& headers) const {
+    const auto&& response = this->client->Head(path, buildHeaders(headers));
     return buildResponse(response);
 }
 
 lifuren::RestClient::Response lifuren::RestClient::get(const std::string& path, const std::map<std::string, std::string>& headers) const {
-    auto response = this->client->Get(path, buildHeaders(headers));
+    const auto&& response = this->client->Get(path, buildHeaders(headers));
     return buildResponse(response);
 }
 
 lifuren::RestClient::Response lifuren::RestClient::putJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
-    auto response = this->client->Put(path, buildHeaders(headers), data, "application/json");
+    const auto&& response = this->client->Put(path, buildHeaders(headers), data, "application/json");
     return buildResponse(response);
 }
 
 lifuren::RestClient::Response lifuren::RestClient::postJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
-    auto response = this->client->Post(path, buildHeaders(headers), data, "application/json");
+    const auto&& response = this->client->Post(path, buildHeaders(headers), data, "application/json");
     return buildResponse(response);
 }
 
 lifuren::RestClient::Response lifuren::RestClient::postForm(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers) const {
-    auto response = this->client->Post(path, buildHeaders(headers), data, "application/x-www-form-urlencoded");
+    const auto&& response = this->client->Post(path, buildHeaders(headers), data, "application/x-www-form-urlencoded");
     return buildResponse(response);
 }
 
-lifuren::RestClient::Response lifuren::RestClient::post(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers) const {
-    auto response = this->client->Post(path, buildHeaders(headers), buildParams(params));
+lifuren::RestClient::Response lifuren::RestClient::postForm(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers) const {
+    const auto&& response = this->client->Post(path, buildHeaders(headers), buildParams(params));
     return buildResponse(response);
 }
 
@@ -131,17 +130,17 @@ bool lifuren::RestClient::postStream(const std::string& path, const std::string&
     request.content_receiver = [&callback](const char* data, size_t data_length, uint64_t /* offset */, uint64_t /* total_length */) {
         return callback(data, data_length);
     };
-    auto response = this->client->send(request);
+    const auto&& response = this->client->send(request);
     return buildResponse(response);
 }
 
-lifuren::RestClient::Response lifuren::RestClient::deletePath(const std::string& path, const std::map<std::string, std::string>& headers) {
-    auto response = this->client->Delete(path, buildHeaders(headers));
+lifuren::RestClient::Response lifuren::RestClient::del(const std::string& path, const std::map<std::string, std::string>& headers) {
+    const auto&& response = this->client->Delete(path, buildHeaders(headers));
     return buildResponse(response);
 }
 
 static std::string oauthToken(const lifuren::RestClient& client, const std::string& path, const std::string& username, const std::string& password) {
-    auto response = client.post(path, {
+    auto response = client.postForm(path, {
         { "username", username },
         { "password", password }
     });
@@ -151,14 +150,33 @@ static std::string oauthToken(const lifuren::RestClient& client, const std::stri
     return "";
 }
 
+static httplib::Params buildParams(const std::map<std::string, std::string>& params) {
+    httplib::Params ret{};
+    if(params.empty()) {
+        return ret;
+    }
+    for(const auto& [key, val] : params) {
+        ret.emplace(key, val);
+    }
+    return ret;
+}
+
+static httplib::Headers buildHeaders(const std::map<std::string, std::string>& headers) {
+    httplib::Headers ret{};
+    if(headers.empty()) {
+        return ret;
+    }
+    for(const auto& [key, val] : headers) {
+        ret.emplace(key, val);
+    }
+    return ret;
+}
+
 static lifuren::RestClient::Response buildResponse(const httplib::Result& response) {
     lifuren::RestClient::Response ret;
     if(response) {
-        if(
-            response->status != httplib::StatusCode::OK_200 &&
-            response->status != httplib::StatusCode::Created_201
-        ) {
-            SPDLOG_DEBUG("RestClient响应失败：{} - {}", response->status, response->body);
+        if(response->status >= httplib::StatusCode::BadRequest_400) {
+            SPDLOG_WARN("RestClient失败响应：{} - {}", response->status, response->body);
             ret.success = false;
         } else {
             ret.success = true;
@@ -169,31 +187,9 @@ static lifuren::RestClient::Response buildResponse(const httplib::Result& respon
             ret.headers.emplace(pair.first, pair.second);
         }
     } else {
-        SPDLOG_DEBUG("RestClient请求失败：{}", httplib::to_string(response.error()));
+        SPDLOG_WARN("RestClient请求失败：{}", httplib::to_string(response.error()));
         ret.status  = 500;
         ret.success = false;
-    }
-    return ret;
-}
-
-static httplib::Params buildParams(const std::map<std::string, std::string>& params) {
-    httplib::Params ret{};
-    if(params.empty()) {
-        return ret;
-    }
-    for(const auto& pair : params) {
-        ret.emplace(pair.first, pair.second);
-    }
-    return ret;
-}
-
-static httplib::Headers buildHeaders(const std::map<std::string, std::string>& headers) {
-    httplib::Headers ret{};
-    if(headers.empty()) {
-        return ret;
-    }
-    for(const auto& pair : headers) {
-        ret.emplace(pair.first, pair.second);
     }
     return ret;
 }
@@ -202,15 +198,15 @@ lifuren::RestClient::Response::Response() {
 }
 
 lifuren::RestClient::Response::Response(const lifuren::RestClient::Response& response) {
-    this->status  = response.status;
     this->success = response.success;
+    this->status  = response.status;
     this->headers = response.headers;
     this->body    = response.body;
 }
 
 lifuren::RestClient::Response::Response(const lifuren::RestClient::Response&& response) {
-    this->status  = response.status;
     this->success = response.success;
+    this->status  = response.status;
     this->headers = std::move(response.headers);
     this->body    = std::move(response.body);
 }
@@ -220,4 +216,15 @@ lifuren::RestClient::Response::~Response() {
 
 lifuren::RestClient::Response::operator bool() const {
     return this->success;
+}
+
+std::string lifuren::http::toQuery(const std::map<std::string, std::string>& data) {
+    std::string body;
+    for(const auto& [key, val] : data) {
+        body += key + "=" + httplib::detail::encode_query_param(val) + "&";
+    }
+    if(!body.empty()) {
+        body.resize(body.size() - 1);
+    }
+    return body;
 }

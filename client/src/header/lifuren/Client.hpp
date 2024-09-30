@@ -37,7 +37,7 @@ public:
 /**
  * 有状态的终端
  */
-class StatefulClient {
+class StatefulClient : public Client {
 
 protected:
     // 是否运行
@@ -46,9 +46,19 @@ protected:
     std::mutex mutex;
 
 public:
+    /**
+     * @return 是否运行
+     */
     const bool& isRunning() const;
+    // 修改状态
     void changeState();
+    /**
+     * @param running 修改状态
+     */
     void changeState(bool running);
+    /**
+     * @return 是否停止
+     */
     virtual bool stop();
 
 public:
@@ -60,7 +70,7 @@ public:
 /**
  * RAG搜索终端
  */
-class RAGSearchClient {
+class RAGSearchClient : public Client {
 
 public:
     /**
@@ -80,6 +90,17 @@ public:
 
 };
 
+namespace http {
+
+/**
+ * @param data 请求数据
+ * 
+ * @return body
+ */
+extern std::string toQuery(const std::map<std::string, std::string>& data);
+
+}
+
 /**
  * REST终端
  */
@@ -88,14 +109,29 @@ class RestClient : public Client {
 public:
 
 /**
+ * 授权方式
+ */
+enum class AuthType {
+
+    NONE,  // 没有授权
+    BASIC, // Basic
+    TOKEN, // OAuth Bearer Token
+
+};
+
+/**
  * 响应内容
  */
 class Response {
 
 public:
-    int  status  = 200;
+    // 是否成功
     bool success = true;
+    // 状态码
+    int status = 200;
+    // 响应头
     std::map<std::string, std::string> headers;
+    // 响应体
     std::string body;
 
 public:
@@ -109,21 +145,10 @@ public:
 
 };
 
-/**
- * 授权方式
- */
-enum class AuthType {
-
-    NONE,  // 没有授权
-    BASIC, // Basic
-    TOKEN, // OAuth Bearer Token
-
-};
-
 public:
     // 基础地址
     std::string baseUrl;
-    // HTTP终端
+    // HTTP Client
     std::unique_ptr<httplib::Client> client{ nullptr };
     // 授权方式
     AuthType authType{ RestClient::AuthType::NONE };
@@ -133,7 +158,7 @@ public:
     std::string password;
     // Token
     std::string token;
-    // Token地址
+    // Token请求地址
     std::string tokenPath;
 
 public:
@@ -142,13 +167,11 @@ public:
      * @param trustAllCert 信任所有证书
      * @param certPath     证书地址
      */
-    RestClient(const std::string& baseUrl, bool trustAllCert = false, const std::string& certPath = "./ca.crt");
+    RestClient(const std::string& baseUrl = "", const bool& trustAllCert = false, const std::string& certPath = "./ca.crt");
     virtual ~RestClient();
 
 public:
     /**
-     * 授权
-     * 
      * @param config 配置
      * 
      * @return 是否成功
@@ -156,8 +179,6 @@ public:
     bool auth(const lifuren::config::RestConfig& config);
 
     /**
-     * 授权
-     * 
      * @param authType 授权方式
      * @param username 账号
      * @param password 密码
@@ -173,7 +194,7 @@ public:
      * 
      * @return 响应内容
      */
-    Response head(const std::string& path, const std::map<std::string, std::string>& headers = {});
+    Response head(const std::string& path, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
      * @param path    请求地址
@@ -184,8 +205,6 @@ public:
     Response get(const std::string& path, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 数据请求
-     * 
      * @param path    请求地址
      * @param data    请求数据
      * @param headers 请求头部
@@ -195,8 +214,6 @@ public:
     Response putJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 数据请求
-     * 
      * @param path    请求地址
      * @param data    请求数据
      * @param headers 请求头部
@@ -206,8 +223,6 @@ public:
     Response postJson(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 表单请求
-     * 
      * @param path    请求地址
      * @param data    请求数据
      * @param headers 请求头部
@@ -217,19 +232,15 @@ public:
     Response postForm(const std::string& path, const std::string& data, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 表单请求
-     * 
      * @param path    请求地址
      * @param params  请求参数
      * @param headers 请求头部
      * 
      * @return 响应内容
      */
-    Response post(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers = {}) const;
+    Response postForm(const std::string& path, const std::map<std::string, std::string>& params, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 流式请求
-     * 
      * @param path     请求地址
      * @param data     请求数据
      * @param callback 响应回调
@@ -240,14 +251,12 @@ public:
     bool postStream(const std::string& path, const std::string& data, std::function<bool(const char*, size_t)> callback, const std::map<std::string, std::string>& headers = {}) const;
 
     /**
-     * 删除请求
-     * 
      * @param path    请求地址
      * @param headers 请求头部
      * 
      * @return 响应内容
      */
-    Response deletePath(const std::string& path, const std::map<std::string, std::string>& headers = {});
+    Response del(const std::string& path, const std::map<std::string, std::string>& headers = {});
 
 };
 

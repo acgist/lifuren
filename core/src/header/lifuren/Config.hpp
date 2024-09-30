@@ -229,7 +229,7 @@ public:
     lifuren::config::RAGConfig       rag       {};
     lifuren::config::EmbeddingConfig embedding {};
     lifuren::config::OllamaConfig    ollama    {};
-    lifuren::config::ElasticSearchConfig      elasticsearch{};
+    lifuren::config::ElasticSearchConfig      elasticsearch     {};
     lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
     lifuren::config::ModelConfig poetizeShifoRNN   {};
     lifuren::config::ModelConfig poetizeShimoRNN   {};
