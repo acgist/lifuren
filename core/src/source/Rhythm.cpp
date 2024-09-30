@@ -14,7 +14,7 @@
 #define LFR_RHYTHM_SETTER(source, key, target, field, type) \
 const auto& key##Node = source[#key];                       \
 if(key##Node) {                                             \
-    target.field = key##Node.as<type>();                    \
+    target.field = key##Node.template as<type>();           \
 }
 #endif
 
@@ -53,8 +53,8 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile
         return map;
     }
     std::for_each(yaml.begin(), yaml.end(), [&map](const auto& node) {
-        const std::string key = node.first.as<std::string>();
-        const auto value      = node.second;
+        const std::string& key = node.first.template as<std::string>();
+        const auto& value      = node.second;
         Rhythm rhythm(key);
         LFR_RHYTHM_SETTER(value, rhythm,         rhythm, rhythm,         std::string);
         LFR_RHYTHM_SETTER(value, alias,          rhythm, alias,          std::vector<std::string>);
