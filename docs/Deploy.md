@@ -92,10 +92,6 @@ cmake --install .
 * `cmake -A x64 ..`
 * `cmake -G "Visual Studio 17 2022 Win64" ..`
 
-#### 注意事项
-
-* `windows`需要删除`fltk/unofficial-brotli`模块
-
 ## 开发环境
 
 * https://code.visualstudio.com/

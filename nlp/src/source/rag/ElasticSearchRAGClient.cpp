@@ -77,7 +77,7 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 }
 
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
-    return client->deletePath("/" + std::to_string(id));
+    return client->del("/" + std::to_string(id));
 }
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client) {

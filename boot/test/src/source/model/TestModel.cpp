@@ -39,9 +39,13 @@ public:
         return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
     }
     ggml_tensor* buildLoss() override {
+        // return ggml_sub(this->ctx_compute, this->labels, this->logits);
+        // return ggml_sub(this->ctx_compute, this->logits, this->labels);
         // return ggml_cross_entropy_loss(this->ctx_compute, this->logits, this->labels);
-        return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        // return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
         // return ggml_sum(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        return ggml_sum(this->ctx_compute, ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels)));
+        // return ggml_transpose(this->ctx_compute, ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels)));
     };
     ggml_tensor* buildLogits() override {
         return ggml_add(this->ctx_compute,
@@ -54,7 +58,7 @@ public:
 
 [[maybe_unused]] static void testSaveLoad() {
     lifuren::Model::ModelParams params {
-        .batch_size  = 1,
+        .batch_size  = 10,
         .epoch_count = 64,
     };
     SimpleModel save{params};
