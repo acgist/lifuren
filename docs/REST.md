@@ -2,7 +2,7 @@
 
 ## Postman REST API
 
-[Postman REST API](./attachment/lifuren.postman_collection.json)
+[Postman REST API](./rest/lifuren.postman_collection.json)
 
 ## 训练
 

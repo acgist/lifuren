@@ -61,8 +61,10 @@ std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float
     return ret;
 }
 
-void lifuren::FaissRAGClient::loadIndex() {
-    lifuren::RAGClient::loadIndex();
+bool lifuren::FaissRAGClient::loadIndex() {
+    if(!lifuren::RAGClient::loadIndex()) {
+        return false;
+    }
     // TODO: 异步加载
     if(mappingMap.contains(this->id)) {
         this->mapping = mappingMap.at(this->id);
@@ -75,22 +77,26 @@ void lifuren::FaissRAGClient::loadIndex() {
         this->mapping = loadMapping(mappingPath);
         mappingMap.emplace(this->id, this->mapping);
     }
+    return true;
 }
 
-void lifuren::FaissRAGClient::saveIndex() {
-    lifuren::RAGClient::saveIndex();
+bool lifuren::FaissRAGClient::saveIndex() {
+    if(!lifuren::RAGClient::saveIndex()) {
+        return false;
+    }
     const std::filesystem::path indexDBPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
     saveIndexDB(this->indexDB.get(), indexDBPath);
     const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
     saveMapping(this->mapping, mappingPath);
+    return true;
 }
 
-void lifuren::FaissRAGClient::truncateIndex() {
+bool lifuren::FaissRAGClient::truncateIndex() {
     this->mapping->clear();
     this->indexDB->reset();
     mappingMap.erase(this->id);
     indexDBMap.erase(this->id);
-    lifuren::RAGClient::truncateIndex();
+    return lifuren::RAGClient::truncateIndex();
 }
 
 static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::filesystem::path& path) {

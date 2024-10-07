@@ -16,7 +16,7 @@ lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedd
 lifuren::RAGClient::~RAGClient() {
 }
 
-void lifuren::RAGClient::loadIndex() {
+bool lifuren::RAGClient::loadIndex() {
     const std::filesystem::path markPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     if(!std::filesystem::exists(markPath)) {
         this->id = lifuren::uuid();
@@ -27,7 +27,7 @@ void lifuren::RAGClient::loadIndex() {
         SPDLOG_WARN("RAG索引文件打开失败：{}", markPath.string());
         this->id = lifuren::uuid();
         stream.close();
-        return;
+        return false;
     }
     std::string line;
     while(std::getline(stream, line)) {
@@ -41,9 +41,10 @@ void lifuren::RAGClient::loadIndex() {
         }
     }
     stream.close();
+    return true;
 }
 
-void lifuren::RAGClient::saveIndex() {
+bool lifuren::RAGClient::saveIndex() {
     const std::filesystem::path markPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     lifuren::files::createFolder(markPath.parent_path());
     std::ofstream stream;
@@ -51,19 +52,21 @@ void lifuren::RAGClient::saveIndex() {
     if(!stream.is_open()) {
         SPDLOG_WARN("RAG索引文件打开失败：{}", markPath.string());
         stream.close();
-        return;
+        return false;
     }
     stream << this->id << '\n';
     for(const auto& line : this->doneFile) {
         stream << line << '\n';
     }
     stream.close();
+    return true;
 }
 
-void lifuren::RAGClient::truncateIndex() {
+bool lifuren::RAGClient::truncateIndex() {
     SPDLOG_DEBUG("清空RAG索引：{}", this->id);
     this->doneFile.clear();
     this->saveIndex();
+    return true;
 }
 
 size_t lifuren::RAGClient::getDims() const {

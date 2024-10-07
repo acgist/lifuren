@@ -61,11 +61,11 @@ public:
 
 public:
     // 加载索引
-    virtual void loadIndex();
+    virtual bool loadIndex();
     // 保存索引
-    virtual void saveIndex();
+    virtual bool saveIndex();
     // 清空索引
-    virtual void truncateIndex();
+    virtual bool truncateIndex();
     /**
      * @return 嵌入向量维度
      */
@@ -123,9 +123,9 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
-    void loadIndex() override;
-    void saveIndex() override;
-    void truncateIndex() override;
+    bool loadIndex() override;
+    bool saveIndex() override;
+    bool truncateIndex() override;
 
 };
 
@@ -152,8 +152,8 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
-    void loadIndex() override;
-    void truncateIndex() override;
+    bool loadIndex() override;
+    bool truncateIndex() override;
 
 };
 

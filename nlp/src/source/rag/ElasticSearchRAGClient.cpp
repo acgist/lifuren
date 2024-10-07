@@ -36,17 +36,24 @@ std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vect
     return ::search(this->id, prompt, size, this->restClient);
 }
 
-void lifuren::ElasticSearchRAGClient::loadIndex() {
-    lifuren::RAGClient::loadIndex();
-    if(indexExists(this->id, this->restClient)) {
-        return;
+bool lifuren::ElasticSearchRAGClient::loadIndex() {
+    if(!lifuren::RAGClient::loadIndex()) {
+        return false;
     }
-    indexCreate(this->id, this->restClient, this->embeddingClient->getDims());
+    if(indexExists(this->id, this->restClient)) {
+        return true;
+    }
+    if(indexCreate(this->id, this->restClient, this->embeddingClient->getDims())) {
+        return true;
+    }
+    return false;
 }
 
-void lifuren::ElasticSearchRAGClient::truncateIndex() {
-    indexDelete(this->id, this->restClient);
-    lifuren::RAGClient::truncateIndex();
+bool lifuren::ElasticSearchRAGClient::truncateIndex() {
+    if(indexDelete(this->id, this->restClient)) {
+        return lifuren::RAGClient::truncateIndex();
+    }
+    return false;
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {

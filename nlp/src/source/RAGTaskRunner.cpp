@@ -23,8 +23,13 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) :
         SPDLOG_WARN("RAG任务没有就绪：{}", task.path);
         return;
     }
-    this->ragClient->loadIndex();
-    this->id = this->ragClient->id;
+    if(this->ragClient->loadIndex()) {
+        this->id = this->ragClient->id;
+    } else {
+        this->stop   = true;
+        this->finish = true;
+        SPDLOG_WARN("RAG任务加载失败：{}", task.path);
+    }
 }
 
 lifuren::RAGTaskRunner::~RAGTaskRunner() {
