@@ -2,15 +2,15 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/source/Dates.cpp
-    src/source/Files.cpp
-    src/source/Yamls.cpp
-    src/source/Config.cpp
-    src/source/Logger.cpp
-    src/source/Rhythm.cpp
-    src/source/Lifuren.cpp
-    src/source/Strings.cpp
-    src/source/Exception.cpp
+    src/Dates.cpp
+    src/Files.cpp
+    src/Yamls.cpp
+    src/Config.cpp
+    src/Logger.cpp
+    src/Rhythm.cpp
+    src/Lifuren.cpp
+    src/Strings.cpp
+    src/Exception.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
@@ -46,6 +46,6 @@ install(
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
 
-file(COPY src/config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)
+file(COPY config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)
 
-install(DIRECTORY src/config/ DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
+install(DIRECTORY config/ DESTINATION ${CMAKE_INSTALL_PREFIX}/config)

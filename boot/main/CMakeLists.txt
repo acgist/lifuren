@@ -3,19 +3,19 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 if(ENABLE_FLTK)
     message(STATUS "开启FLTK界面")
     add_definitions(-DLFR_ENABLE_FLTK=true)
-    aux_source_directory(src/source/fltk/ FLTK_FILES)
+    aux_source_directory(src/fltk/ FLTK_FILES)
 endif()
     
 if(ENABLE_REST)
     message(STATUS "开启REST接口")
     add_definitions(-DLFR_ENABLE_REST=true)
-    aux_source_directory(src/source/rest/     REST_FILES)
-    aux_source_directory(src/source/rest/api/ REST_FILES)
+    aux_source_directory(src/rest/     REST_FILES)
+    aux_source_directory(src/rest/api/ REST_FILES)
 endif()
 
 add_executable(
     ${PROJECT_NAME}
-    src/source/Main.cpp
+    src/Main.cpp
     ${FLTK_FILES}
     ${REST_FILES}
 )
@@ -54,9 +54,9 @@ install(
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
 
-file(COPY src/images/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/images FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
+file(COPY images/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/images FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
 
-install(DIRECTORY src/images/ DESTINATION ${CMAKE_INSTALL_PREFIX}/images)
+install(DIRECTORY images/ DESTINATION ${CMAKE_INSTALL_PREFIX}/images)
 
 if(CMAKE_HOST_WIN32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")

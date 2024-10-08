@@ -8,7 +8,7 @@ target_link_libraries(
     lifurencore
 )
 
-include_directories(src/header)
+include_directories(${HEADER_DIR})
 
 target_include_directories(
     ${PROJECT_NAME}
@@ -47,9 +47,9 @@ if(CMAKE_HOST_WIN32)
     )
 endif()
 
-add_subdirectory(src/source/cv)
-add_subdirectory(src/source/nlp)
-add_subdirectory(src/source/core)
-add_subdirectory(src/source/boot)
-add_subdirectory(src/source/model)
-add_subdirectory(src/source/client)
+add_subdirectory(src/cv)
+add_subdirectory(src/nlp)
+add_subdirectory(src/core)
+add_subdirectory(src/boot)
+add_subdirectory(src/model)
+add_subdirectory(src/client)

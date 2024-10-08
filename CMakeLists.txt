@@ -66,7 +66,11 @@ else()
     message(STATUS "C++_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
+set(HEADER_DIR include/)
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
+endif()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug/lib)
@@ -79,9 +83,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
-
-set(HEADER_DIR src/header/)
-set(SOURCE_DIR src/source/)
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -136,13 +137,13 @@ find_package(spdlog   REQUIRED)
 find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
-add_subdirectory(deps)
-add_subdirectory(core)
-add_subdirectory(model)
-add_subdirectory(client)
 add_subdirectory(cv)
 add_subdirectory(nlp)
 add_subdirectory(boot)
+add_subdirectory(core)
+add_subdirectory(deps)
+add_subdirectory(model)
+add_subdirectory(client)
 
 set(HELP "LICENSE" "README.md")
 

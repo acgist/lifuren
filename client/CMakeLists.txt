@@ -2,9 +2,9 @@ project(lifurenclient VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/source/Client.cpp
-    src/source/RestClient.cpp
-    src/source/StatefulClient.cpp
+    src/Client.cpp
+    src/RestClient.cpp
+    src/StatefulClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

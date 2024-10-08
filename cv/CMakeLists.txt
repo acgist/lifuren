@@ -2,15 +2,15 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/source/CV.cpp
-    src/source/Images.cpp
-    src/source/PaintClient.cpp
-    src/source/ImageDatasets.cpp
-    src/source/model/CycleGANModel.cpp
-    src/source/model/StyleGANModel.cpp
-    src/source/paint/CycleGANPaintClient.cpp
-    src/source/paint/StyleGANPaintClient.cpp
-    src/source/paint/StableDiffusionCPPPaintClient.cpp
+    src/CV.cpp
+    src/Images.cpp
+    src/PaintClient.cpp
+    src/ImageDatasets.cpp
+    src/model/CycleGANModel.cpp
+    src/model/StyleGANModel.cpp
+    src/paint/CycleGANPaintClient.cpp
+    src/paint/StyleGANPaintClient.cpp
+    src/paint/StableDiffusionCPPPaintClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
