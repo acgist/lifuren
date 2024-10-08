@@ -1,8 +1,5 @@
-/**
- * 测试代码
- * 
- * @author acgist
- */
-#include "Test.hpp"
+#include "lifuren/Test.hpp"
 
-LFR_TEST();
+LFR_TEST(
+    cost(10, [](){});
+);
