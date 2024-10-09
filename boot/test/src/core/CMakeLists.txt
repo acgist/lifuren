@@ -27,6 +27,7 @@ add_test(NAME testConfig COMMAND testConfig)
 set_target_properties(testConfig PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testConfig
+    lifurennlp
     lifurencore
 )
 

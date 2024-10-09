@@ -18,7 +18,7 @@ class EmbeddingClient;
 namespace poetrys {
 
 // 诗词符号
-const std::vector<std::string> POETRY_SIMPLE  = { "、", "，", "。", "？", "！", "；" };
+const std::vector<std::string> POETRY_SIMPLE  = { "、", "，", "。", "？", "！", "；", "：" };
 
 /**
  * 诗词
