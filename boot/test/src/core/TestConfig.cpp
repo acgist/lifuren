@@ -16,10 +16,13 @@
 
 [[maybe_unused]] static void testGeneratePoetryConfig() {
     using namespace std::literals;
-    const std::string rhythm  = "七言绝句";
+    const std::string title   = "登高";
+    const std::string rhythm  = "七言律诗";
     const std::string content = lifuren::strings::trim(R"(
-月落乌啼霜满天，江枫渔火对愁眠。
-姑苏城外寒山寺，夜半钟声到客船。
+风急天高猿啸哀，渚清沙白鸟飞回。
+无边落木萧萧下，不尽长江滚滚来。
+万里悲秋常作客，百年多病独登台。
+艰难苦恨繁霜鬓，潦倒新停浊酒杯。
     )"s);
     int fontSize    = 0;
     int segmentSize = 0;
@@ -40,9 +43,9 @@
     SPDLOG_DEBUG("诗句字数：{}", fontSize);
     SPDLOG_DEBUG("诗句段数：{}", segmentSize);
     SPDLOG_DEBUG("逐句字数：{}", lifuren::strings::join(segmentRule, ","));
-    node["rhythm"]   = "";
+    node["rhythm"]   = rhythm;
     node["alias"]    = std::vector<std::string>{};
-    node["title"]    = "";
+    node["title"]    = title;
     node["example"]  = content;
     node["fontSize"] = fontSize;
     node["segmentSize"] = segmentSize;
@@ -63,7 +66,7 @@
   segmentRule: [ {:<s} ]
   participleRule: [
   ]
-)", rhythm, rhythm, rhythm, content, fontSize, segmentSize, lifuren::strings::join(segmentRule, ", "));
+)", rhythm, rhythm, title, content, fontSize, segmentSize, lifuren::strings::join(segmentRule, ", "));
   SPDLOG_DEBUG("配置格律：\n\n{}\n", config);
 }
 

@@ -1,3 +1,17 @@
+五言绝句:
+  rhythm: 五言绝句
+  alias: []
+  title: 静夜思
+  example: |
+    床前明月光，疑是地上霜。
+    举头望明月，低头思故乡。
+  fontSize: 20
+  segmentSize: 4
+  segmentRule: [ 5, 5, 5, 5 ]
+  participleRule: [
+    2, 3, 2, 3,
+    2, 3, 2, 3
+  ]
 七言绝句:
   rhythm: 七言绝句
   alias: []
@@ -9,6 +23,42 @@
   segmentSize: 4
   segmentRule: [ 7, 7, 7, 7 ]
   participleRule: [
+    2, 2, 3, 2, 2, 3,
+    2, 2, 3, 2, 2, 3
+  ]
+五言律诗:
+  rhythm: 五言律诗
+  alias: []
+  title: 春望
+  example: |
+    国破山河在，城春草木深。
+    感时花溅泪，恨别鸟惊心。
+    烽火连三月，家书抵万金。
+    白头掻更短，浑欲不胜簪。
+  fontSize: 40
+  segmentSize: 8
+  segmentRule: [ 5, 5, 5, 5, 5, 5, 5, 5 ]
+  participleRule: [
+    2, 3, 2, 3,
+    2, 3, 2, 3,
+    2, 3, 2, 3,
+    2, 3, 2, 3
+  ]
+七言律诗:
+  rhythm: 七言律诗
+  alias: []
+  title: 登高
+  example: |
+    风急天高猿啸哀，渚清沙白鸟飞回。
+    无边落木萧萧下，不尽长江滚滚来。
+    万里悲秋常作客，百年多病独登台。
+    艰难苦恨繁霜鬓，潦倒新停浊酒杯。
+  fontSize: 56
+  segmentSize: 8
+  segmentRule: [ 7, 7, 7, 7, 7, 7, 7, 7 ]
+  participleRule: [
+    2, 2, 3, 2, 2, 3,
+    2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3
   ]

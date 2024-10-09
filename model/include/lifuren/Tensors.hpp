@@ -32,6 +32,7 @@ inline void fillRand(ggml_tensor* tensor, float mean = 0.0F, float sigma = 0.001
     std::random_device device{};
     std::mt19937 random{device()};
     std::normal_distribution<float> normal(mean, sigma);
+    // std::bind(normal, random);
     int64_t size = ggml_nelements(tensor);
     float * data = ggml_get_data_f32(tensor);
     for (int64_t i = 0; i < size; ++i) {
