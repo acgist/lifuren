@@ -48,6 +48,27 @@
     data = nullptr;
 }
 
+[[maybe_unused]] static void testResize() {
+    const size_t data_length = 256 * 256 * 3;
+    float* data = new float[data_length];
+    size_t length{ 0 };
+    lifuren::images::load(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo.png"}).string(), data, length);
+    uint8_t* input = new uint8_t[data_length];
+    std::copy(data, data + data_length, input);
+    size_t width = 200;
+    size_t height = 220;
+    uint8_t* output = new uint8_t[width * height * 3];
+    lifuren::images::resize(input, 256, 256, output, width, height);
+    lifuren::images::show(output, width, height);
+    lifuren::images::write(lifuren::files::join({lifuren::config::CONFIG.tmp, "logo_resize.png"}).string(), output, width, height);
+    delete[] data;
+    data = nullptr;
+    delete[] input;
+    input = nullptr;
+    delete[] output;
+    output = nullptr;
+}
+
 [[maybe_unused]] static void testLoad() {
     float* data = new float[256 * 256 * 3];
     size_t length{ 0 };
@@ -104,9 +125,10 @@
 }
 
 LFR_TEST(
-    testRead();
-    testWrite();
-    testLoad();
+    // testRead();
+    // testWrite();
+    testResize();
+    // testLoad();
     // testSplit();
     // testMerge();
 );

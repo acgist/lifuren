@@ -10,7 +10,6 @@
 #include "spdlog/spdlog.h"
 
 #include "stable-diffusion.h"
-#include "thirdparty/stb_image_resize.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -559,13 +558,9 @@ static sd_image_t* loadInputImage(SDParams& params) {
         const int resized_width  = params.width;
         const int resized_height = params.height;
         uint8_t* resized_image_data = new uint8_t[resized_width * resized_height * 3];
-        stbir_resize(
-            input_image_data,   width,         height,         0,
-            resized_image_data, resized_width, resized_height, 0,
-            STBIR_TYPE_UINT8, 3, STBIR_ALPHA_CHANNEL_NONE, 0,
-            STBIR_EDGE_CLAMP, STBIR_EDGE_CLAMP,
-            STBIR_FILTER_BOX, STBIR_FILTER_BOX,
-            STBIR_COLORSPACE_SRGB, nullptr
+        lifuren::images::resize(
+            input_image_data,   width,         height,
+            resized_image_data, resized_width, resized_height
         );
         delete[] input_image_data;
         input_image_data = nullptr;

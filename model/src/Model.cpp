@@ -5,8 +5,6 @@
 #include <algorithm>
 
 #include "ggml.h"
-// TODO:??
-#include "../../deps/ggml/src/ggml-impl.h"
 
 #include "spdlog/spdlog.h"
 
@@ -199,7 +197,7 @@ lifuren::Model& lifuren::Model::defineLogits() {
 lifuren::Model& lifuren::Model::defineLoss() {
     if(this->loss == nullptr) {
         this->loss = this->buildLoss();
-        ggml_set_loss(this->loss);
+        // ggml_set_loss(this->loss);
         ggml_set_output(this->loss);
         ggml_set_name(this->loss, "global.loss");
     } else {

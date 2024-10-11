@@ -37,9 +37,21 @@ bool lifuren::images::write(const std::string& path, const uint8_t* data, const 
     return cv::imwrite(path, image);
 }
 
+bool lifuren::images::resize(uint8_t* input, size_t width, size_t height, uint8_t* output, size_t output_width, size_t output_height) {
+    const size_t input_length = width * height * 3;
+    if(width == output_width && height == output_height) {
+        std::copy(input, input + input_length, output);
+        return true;
+    }
+    cv::Mat source(static_cast<int>(height),        static_cast<int>(width),        CV_8UC3, input);
+    cv::Mat target(static_cast<int>(output_height), static_cast<int>(output_width), CV_8UC3, output);
+    cv::resize(source, target, cv::Size(output_width, output_height));
+    return true;
+}
+
 void lifuren::images::show(const uint8_t* data, const size_t& width, const size_t& height, const size_t& length) {
     cv::Mat image(static_cast<int>(height), static_cast<int>(width), CV_8UC3);
-    std::memcpy(image.data, data, length);
+    std::memcpy(image.data, data, length == 0LL ? width * height * 3 : length);
     cv::imshow("lifuren_show", image);
     cv::waitKey();
 }

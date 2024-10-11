@@ -4,10 +4,12 @@ if(NOT TARGET json)
   # unset(JSON_BuildTests)
 endif()
 
+if(NOT USE_SD_GGML)
 if(NOT TARGET ggml)
   # set(GGML_CUDA ON)
   add_subdirectory(ggml)
   # unset(GGML_CUDA)
+endif()
 endif()
 
 if(NOT TARGET stable-diffusion.cpp)
