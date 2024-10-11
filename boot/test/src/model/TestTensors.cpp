@@ -23,8 +23,11 @@
     lifuren::tensors::fill(b, 1.0F);
     lifuren::tensors::fill(c, 1.0F);
     ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
-    ggml_tensor* r  = ggml_mul_mat(ctx, a, b);
-    // ggml_tensor* r  = ggml_add(ctx, ggml_mul_mat(ctx, a, b), c);
+    // ggml_tensor* r = ggml_add(ctx, a, a);
+    // ggml_tensor* r = ggml_sum_rows(ctx, a);
+    // ggml_tensor* r = ggml_mul_mat(ctx, a, b);
+    ggml_tensor* r = ggml_cross_entropy_loss(ctx, a, a);
+    // ggml_tensor* r = ggml_add(ctx, ggml_mul_mat(ctx, a, b), c);
     ggml_build_forward_expand(gf, r);
     ggml_graph_compute_with_ctx(ctx, gf, 4);
     float* rr = ggml_get_data_f32(r);
