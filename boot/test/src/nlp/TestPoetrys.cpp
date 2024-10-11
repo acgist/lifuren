@@ -126,14 +126,14 @@
     for(const auto& [k, v] : order) {
         SPDLOG_DEBUG("匹配格律：{} - {}", k, v);
     }
-    // order.clear();
-    // order.insert(order.begin(), unciCount.begin(), unciCount.end());
-    // std::sort(order.begin(), order.end(), [](const auto& a, const auto& z) {
-    //     return a.second > z.second;
-    // });
-    // for(const auto& [k, v] : order) {
-    //     SPDLOG_DEBUG("未知词格律：{} - {}", k, v);
-    // }
+    order.clear();
+    order.insert(order.begin(), unciCount.begin(), unciCount.end());
+    std::sort(order.begin(), order.end(), [](const auto& a, const auto& z) {
+        return a.second > z.second;
+    });
+    for(const auto& [k, v] : order) {
+        SPDLOG_DEBUG("未知词格律：{} - {}", k, v);
+    }
     // order.clear();
     // order.insert(order.begin(), unshiCount.begin(), unshiCount.end());
     // std::sort(order.begin(), order.end(), [](const auto& a, const auto& z) {

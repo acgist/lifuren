@@ -153,13 +153,13 @@ static std::atomic<int> share_count(0);
 static sd_ctx_t* share_sd_ctx{ nullptr };
 
 static void logCallback(sd_log_level_t level, const char* log, void* data);
-static void initSDParams(SDParams&  params, const lifuren::PaintClient::PaintOptions& options);
+static void initSDParams( SDParams& params, const lifuren::PaintClient::PaintOptions& options);
 static void printSDParams(SDParams& params);
 static bool checkSDParams(SDParams& params);
-static void setOptions(int&         target, const std::map<std::string, std::string>& options, const std::string& key);
-static void setOptions(bool&        target, const std::map<std::string, std::string>& options, const std::string& key);
-static void setOptions(float&       target, const std::map<std::string, std::string>& options, const std::string& key);
-static void setOptions(int64_t&     target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(int        & target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(bool       & target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(float      & target, const std::map<std::string, std::string>& options, const std::string& key);
+static void setOptions(int64_t    & target, const std::map<std::string, std::string>& options, const std::string& key);
 static void setOptions(std::string& target, const std::map<std::string, std::string>& options, const std::string& key);
 static int  getOptions(int count, const char** mapping, const std::map<std::string, std::string>& options, const std::string& key, const int defaultValue = 0);
 static sd_image_t* loadInputImage  (SDParams& params);
@@ -596,7 +596,7 @@ static sd_image_t* loadControlImage(SDParams& params) {
                 1.0F,
                 false
             );
-            memcpy(control_image_data, canny_data, length);
+            std::memcpy(control_image_data, canny_data, length);
             free(canny_data);
             canny_data = NULL;
         }
@@ -615,7 +615,7 @@ static void releaseImg(sd_image_t** image) {
 }
 
 static bool paintTxt2Img(SDParams& params, sd_ctx_t* sd_ctx) {
-    sd_image_t* control_image { loadControlImage(params) };
+    sd_image_t* control_image{ loadControlImage(params) };
     sd_image_t* result = txt2img(
         sd_ctx,
         params.prompt.c_str(),
@@ -643,8 +643,8 @@ static bool paintTxt2Img(SDParams& params, sd_ctx_t* sd_ctx) {
 }
 
 static bool paintImg2Img(SDParams& params, sd_ctx_t* sd_ctx) {
-    sd_image_t* input_image   { loadInputImage(params) };
-    sd_image_t* control_image { loadControlImage(params) };
+    sd_image_t* input_image  { loadInputImage(params)   };
+    sd_image_t* control_image{ loadControlImage(params) };
     sd_image_t* result = img2img(
         sd_ctx,
         *input_image,
@@ -675,7 +675,7 @@ static bool paintImg2Img(SDParams& params, sd_ctx_t* sd_ctx) {
 }
 
 static bool paintImg2Vid(SDParams& params, sd_ctx_t* sd_ctx) {
-    sd_image_t* input_image { loadInputImage(params) };
+    sd_image_t* input_image{ loadInputImage(params) };
     sd_image_t* result = img2vid(
         sd_ctx,
         *input_image,

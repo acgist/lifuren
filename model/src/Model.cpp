@@ -387,7 +387,7 @@ void lifuren::Model::train(size_t epoch, ggml_opt_context* opt_ctx) {
             accuSize += this->batchAccu(size);
         }
     }
-    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0) / batchCount;
+    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0F) / batchCount;
     const int64_t epoch_total_us = (ggml_time_us() - epoch_start_us) / 1000;
     if(this->params.classify) {
         SPDLOG_INFO("当前训练第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。", epoch, meanLoss, accuSize, count, epoch_total_us);
@@ -419,7 +419,7 @@ void lifuren::Model::val(size_t epoch) {
             accuSize += this->batchAccu(size);
         }
     }
-    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0) / batchCount;
+    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0F) / batchCount;
     const int64_t epoch_total_us = (ggml_time_us() - epoch_start_us) / 1000;
     if(this->params.classify) {
         SPDLOG_INFO("当前验证第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。", epoch, meanLoss, accuSize, count, epoch_total_us);
@@ -451,7 +451,7 @@ void lifuren::Model::test() {
             accuSize += this->batchAccu(size);
         }
     }
-    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0) / batchCount;
+    const float meanLoss = std::accumulate(loss.begin(), loss.end(), 0.0F) / batchCount;
     const int64_t epoch_total_us = (ggml_time_us() - epoch_start_us) / 1000;
     if(this->params.classify) {
         SPDLOG_INFO("当前测试损失值为：{}，正确率为：{} / {}，耗时：{}。", meanLoss, accuSize, count, epoch_total_us);
@@ -464,10 +464,10 @@ float* lifuren::Model::eval(const float* input, float* output, size_t size_data)
     if(!this->eval_gf) {
         return nullptr;
     }
-    memcpy(this->datas->data, input, std::min(sizeof(float) * size_data, ggml_nbytes(this->datas)));
+    std::memcpy(this->datas->data, input, std::min(sizeof(float) * size_data, ggml_nbytes(this->datas)));
     ggml_graph_compute_with_ctx(this->ctx_compute, this->eval_gf, this->params.thread_size);
     const float* source = ggml_get_data_f32(this->logits);
-    memcpy(output, source, sizeof(float) * size_data);
+    std::memcpy(output, source, sizeof(float) * size_data);
     return output;
 }
 

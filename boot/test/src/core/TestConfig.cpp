@@ -26,14 +26,18 @@
 
 [[maybe_unused]] static void testGeneratePoetryConfig() {
     using namespace std::literals;
-    const std::string title   = "渔歌子·荻花秋";
-    const std::string alias   = "渔父、渔父乐、渔父词";
-    const std::string rhythm  = "渔歌子";
+    const std::string title   = "满江红·无利无名";
+    const std::string alias   = "上江虹、念良游、伤春曲";
+    const std::string rhythm  = "满江红";
     const std::string content = lifuren::strings::trim(R"(
-荻花秋，潇湘夜，橘洲佳景如屏画。
-碧烟中，明月下，小艇垂纶初罢。
-水为乡，篷作舍，鱼羹稻饭常餐也。
-酒盈杯，书满架，名利不将心挂。
+无利无名，无荣无辱，无烦无恼。
+夜灯前、独歌独酌，独吟独笑。
+况值群山初雪满，又兼明月交光好。
+便假饶百岁拟如何，从他老。
+知富贵，谁能保。知功业，何时了。
+算箪瓢金玉，所争多少。
+一瞬光阴何足道，便思行乐常不早。
+待春来携酒殢东风，眠芳草。
     )"s);
     int fontSize    = 0;
     int segmentSize = 0;
