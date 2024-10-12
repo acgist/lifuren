@@ -13,10 +13,6 @@ option(ENABLE_FLTK "开启FLTK界面" ON)
 option(ENABLE_REST "开启REST接口" ON)
 option(USE_SD_GGML "使用嵌入GGML" ON)
 
-option(SD_CUBLAS       "是否编译CUDA依赖" OFF)
-option(GGML_CUDA       "是否编译CUDA依赖" OFF)
-option(JSON_BuildTests "是否编译JSON测试" OFF)
-
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
