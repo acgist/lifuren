@@ -1,7 +1,5 @@
 #include "lifuren/Layer.hpp"
 
-#include "ggml.h"
-
 lifuren::layer::Conv2d::Conv2d(
     size_t in_channels,
     size_t out_channels,
@@ -53,7 +51,12 @@ std::string lifuren::layer::Conv2d::info() {
 }
 
 ggml_tensor* lifuren::layer::Conv2d::forward(ggml_tensor* input) {
-    ggml_tensor* conv_2d_ret = ggml_conv_2d(this->ctx_compute, this->kernel, input, this->stride, this->stride, this->padding, this->padding, this->dilation, this->dilation);
+    ggml_tensor* conv_2d_ret = ggml_conv_2d(
+        this->ctx_compute, this->kernel, input,
+        this->stride,   this->stride,
+        this->padding,  this->padding,
+        this->dilation, this->dilation
+    );
     if(this->bias_) {
         return ggml_add(this->ctx_compute, conv_2d_ret, this->bias);
     }
@@ -61,11 +64,11 @@ ggml_tensor* lifuren::layer::Conv2d::forward(ggml_tensor* input) {
 }
 
 void lifuren::layer::Conv2d::defineWeight(std::map<std::string, ggml_tensor*>& weights) {
-    this->kernel = ggml_new_tensor_4d(this->ctx_compute, GGML_TYPE_F32, this->kernel_size, this->kernel_size, this->in_channels, this->out_channels);
+    this->kernel = ggml_new_tensor_4d(this->ctx_weight, GGML_TYPE_F32, this->kernel_size, this->kernel_size, this->in_channels, this->out_channels);
     weights.emplace(this->name + ".kernel", this->kernel);
     if(this->bias_) {
         // TODO: 偏置1还是计算w*h
-        this->bias = ggml_new_tensor_3d(this->ctx_compute, GGML_TYPE_F32, 1, 1, this->out_channels);
+        this->bias = ggml_new_tensor_3d(this->ctx_weight, GGML_TYPE_F32, 1, 1, this->out_channels);
         weights.emplace(this->name + ".bias", this->bias);
     }
 }

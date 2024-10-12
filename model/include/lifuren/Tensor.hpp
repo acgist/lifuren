@@ -53,6 +53,13 @@ inline void fillRange(ggml_tensor* tensor, float beg = 0.0F) {
     }
 }
 
+/**
+ * 打印张量信息
+ * 
+ * @param tensor 张量
+ */
+extern void print(const ggml_tensor* tensor);
+
 } // END OF tensor
 } // END OF lifuren
 

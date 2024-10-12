@@ -1,5 +1,5 @@
 /**
- * Layer工具
+ * Layer
  * 
  * @author acgist
  * 
@@ -14,12 +14,10 @@
 #define LFR_HEADER_MODEL_LAYER_HPP
 
 #include <map>
-#include <vector>
 #include <string>
 #include <memory>
 
-struct ggml_tensor;
-struct ggml_context;
+#include "ggml.h"
 
 namespace lifuren {
 
@@ -251,35 +249,51 @@ inline std::unique_ptr<Conv2d> conv2d(
 }
 
 /**
- * @param kernel_size 卷积核大小
+ * @param kernel_size 池化核大小
+ * @param input       输入张量
+ * @param ctx_compute 计算上下文
  * @param stride      步长
  * @param padding     填充
- * @param dilation    间隔
  * 
- * @return MaxPool2d
+ * @return 平均池化
  */
-inline void maxPool2d(
+inline ggml_tensor* avgPool2d(
     int64_t kernel_size,
-    int64_t stride   = -1,
-    int64_t padding  = 0,
-    int64_t dilation = 1
+    ggml_tensor * input,
+    ggml_context* ctx_compute,
+    int64_t stride   = 1,
+    int64_t padding  = 0
 ) {
-    // TODO
+    return ggml_pool_2d(
+        ctx_compute, input, GGML_OP_POOL_AVG,
+        kernel_size, kernel_size,
+        stride,      stride,
+        padding,     padding
+    );
 }
 
 /**
- * @param kernel_size 卷积核大小
+ * @param kernel_size 池化核大小
+ * @param input       输入张量
+ * @param ctx_compute 计算上下文
  * @param stride      步长
  * @param padding     填充
  * 
- * @return MaxPool2d
+ * @return 最大池化
  */
-inline void avgPool2d(
+inline ggml_tensor* maxPool2d(
     int64_t kernel_size,
-    int64_t stride  = -1,
-    int64_t padding = 0
+    ggml_tensor * input,
+    ggml_context* ctx_compute,
+    int64_t stride   = 1,
+    int64_t padding  = 0
 ) {
-    // TODO
+    return ggml_pool_2d(
+        ctx_compute, input, GGML_OP_POOL_MAX,
+        kernel_size, kernel_size,
+        stride,      stride,
+        padding,     padding
+    );
 }
 
 /**

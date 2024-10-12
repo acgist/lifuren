@@ -1,7 +1,5 @@
 #include "lifuren/Layer.hpp"
 
-#include "ggml.h"
-
 lifuren::layer::Linear::Linear(
     size_t in_features,
     size_t out_features,
