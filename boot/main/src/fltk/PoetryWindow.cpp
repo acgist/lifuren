@@ -23,6 +23,7 @@ static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
 static void generate(Fl_Widget*, void*);
 static void clientCallback(Fl_Widget*, void*);
+static void chooseFileCallback(Fl_Widget*, void*);
 
 lifuren::PoetryWindow::PoetryWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
@@ -123,6 +124,10 @@ void lifuren::PoetryWindow::drawElement() {
     const auto& poetryConfig = lifuren::config::CONFIG.poetry;
     lifuren::fillChoice(clientPtr, poetryConfig.clients, poetryConfig.client);
     clientPtr->callback(clientCallback, this);
+    // 选择图片
+    imageChoosePtr->callback(chooseFileCallback, imagePathPtr);
+    // 选择模型
+    modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
     // 生成诗词
     generatePtr->callback(generate, this);
     // 重绘配置
@@ -142,4 +147,13 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     auto& poetryConfig = lifuren::config::CONFIG.poetry;
     poetryConfig.client = clientPtr->text();
     windowPtr->redrawConfigElement();
+}
+
+static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
+    std::string filename = lifuren::fileChooser("选择文件", "*.{png,jpg,jpeg,ggml,gguf}");
+    if(filename.empty()) {
+        return;
+    }
+    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
+    inputPtr->value(filename.c_str());
 }

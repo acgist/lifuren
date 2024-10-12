@@ -25,8 +25,6 @@ static Fl_Input * outputPathPtr  { nullptr };
 static Fl_Button* outputChoosePtr{ nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
-static Fl_Input * poetryPromptPtr{ nullptr };
-static Fl_Button* poetrySearchPtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
@@ -56,8 +54,6 @@ lifuren::ImageWindow::~ImageWindow() {
     LFR_DELETE_PTR(outputChoosePtr);
     LFR_DELETE_PTR(generatePtr);
     LFR_DELETE_PTR(modelReleasePtr);
-    LFR_DELETE_PTR(poetryPromptPtr);
-    LFR_DELETE_PTR(poetrySearchPtr);
     LFR_DELETE_PTR(promptEditorPtr);
     LFR_DELETE_PTR(promptBufferPtr);
 }
@@ -99,23 +95,21 @@ void lifuren::ImageWindow::redrawConfigElement() {
 
 void lifuren::ImageWindow::drawElement() {
     // 绘制界面
-    poetryPromptPtr = new Fl_Input( 10,  10, 300, 30);
-    poetrySearchPtr = new Fl_Button(310, 10, 100, 30, "搜索诗词");
-    promptEditorPtr = new Fl_Text_Editor(10, 50, this->w() - 20, 100, "提示内容");
+    promptEditorPtr = new Fl_Text_Editor(10, 20, this->w() - 20, 100, "提示内容");
     promptBufferPtr = new Fl_Text_Buffer();
     promptEditorPtr->begin();
     promptEditorPtr->buffer(promptBufferPtr);
     promptEditorPtr->wrap_mode(promptEditorPtr->WRAP_AT_COLUMN, promptEditorPtr->textfont());
     promptEditorPtr->end();
-    imagePathPtr    = new Fl_Input( 70,  160, 400, 30, "图片路径");
-    imageChoosePtr  = new Fl_Button(470, 160, 100, 30, "选择图片");
-    clientPtr       = new Fl_Choice(70,  200, 200, 30, "终端名称");
-    modelPathPtr    = new Fl_Input( 70,  240, 400, 30, "模型路径");
-    modelChoosePtr  = new Fl_Button(470, 240, 100, 30, "选择模型");
-    outputPathPtr   = new Fl_Input( 70,  280, 400, 30, "输出路径");
-    outputChoosePtr = new Fl_Button(470, 280, 100, 30, "选择输出");
-    generatePtr     = new Fl_Button(70,  320, 100, 30, "生成图片");
-    modelReleasePtr = new Fl_Button(170, 320, 100, 30, "释放模型");
+    imagePathPtr    = new Fl_Input( 70,  130, 400, 30, "图片路径");
+    imageChoosePtr  = new Fl_Button(470, 130, 100, 30, "选择图片");
+    clientPtr       = new Fl_Choice(70,  170, 200, 30, "终端名称");
+    modelPathPtr    = new Fl_Input( 70,  210, 400, 30, "模型路径");
+    modelChoosePtr  = new Fl_Button(470, 210, 100, 30, "选择模型");
+    outputPathPtr   = new Fl_Input( 70,  250, 400, 30, "输出路径");
+    outputChoosePtr = new Fl_Button(470, 250, 100, 30, "选择输出");
+    generatePtr     = new Fl_Button(70,  290, 100, 30, "生成图片");
+    modelReleasePtr = new Fl_Button(170, 290, 100, 30, "释放模型");
     // 绑定事件
     // 终端名称
     const auto& imageConfig = lifuren::config::CONFIG.image;
@@ -184,8 +178,15 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     paintClient = nullptr;
 }
 
+static void clientCallback(Fl_Widget*, void* voidPtr) {
+    lifuren::ImageWindow* windowPtr = static_cast<lifuren::ImageWindow*>(voidPtr);
+    auto& imageConfig  = lifuren::config::CONFIG.image;
+    imageConfig.client = clientPtr->text();
+    windowPtr->redrawConfigElement();
+}
+
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::fileChooser("选择文件", "*.{png,jpg,jpeg}");
+    std::string filename = lifuren::fileChooser("选择文件", "*.{png,jpg,jpeg,ggml,gguf}");
     if(filename.empty()) {
         return;
     }
@@ -200,11 +201,4 @@ static void chooseDirectoryCallback(Fl_Widget*, void* voidPtr) {
     }
     Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
     inputPtr->value(filename.c_str());
-}
-
-static void clientCallback(Fl_Widget*, void* voidPtr) {
-    lifuren::ImageWindow* windowPtr = static_cast<lifuren::ImageWindow*>(voidPtr);
-    auto& imageConfig  = lifuren::config::CONFIG.image;
-    imageConfig.client = clientPtr->text();
-    windowPtr->redrawConfigElement();
 }

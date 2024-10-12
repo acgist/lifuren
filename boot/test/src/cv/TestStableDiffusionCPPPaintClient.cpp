@@ -15,10 +15,12 @@
     });
 }
 
+// ./testStableDiffusionCPPPaintClient flower /data/lifuren/ /data/stable-diffusion.cpp/build/bin/v1-5-pruned-emaonly.ckpt image.png
+
 LFR_TEST(
-    std::string model  = argc > 4 ? argv[4] : "";
-    std::string output = argc > 3 ? argv[3] : "";
-    std::string image  = argc > 2 ? argv[2] : "";
+    std::string image  = argc > 4 ? argv[4] : "";
+    std::string model  = argc > 3 ? argv[3] : "";
+    std::string output = argc > 2 ? argv[2] : "";
     std::string prompt = argc > 1 ? argv[1] : "flower";
     testSD(prompt, image, output, model);
 );
