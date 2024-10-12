@@ -6,6 +6,8 @@ add_library(
     src/Model.cpp
     src/Tensor.cpp
     src/Dataset.cpp
+    src/layer/GRU.cpp
+    src/layer/LSTM.cpp
     src/layer/Conv2d.cpp
     src/layer/Linear.cpp
     src/dataset/RawDataset.cpp

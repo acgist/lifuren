@@ -8,7 +8,7 @@
  * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-train.cpp
  * 
  * TODO:
- * 1. datas->features
+ * 1. 优化最新版的GGML
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
@@ -31,7 +31,7 @@ namespace dataset {
 }
 
 /**
- * 李夫人模型
+ * 基础模型
  * 
  * @author acgist
  */
@@ -40,22 +40,28 @@ class Model {
 public:
 
 /**
- * 初始方式
+ * 张量参数初始化方式
  */
 enum class InitType {
 
-    ZERO,
-    RAND,
-    VALUE,
+    ZERO,  // 零值
+    RAND,  // 随机（正态分布）
+    VALUE, // 默认值
 
 };
 
+/**
+ * 优化参数
+ */
 struct OptimizerParams {
 
-    size_t n_iter = 8;
+    size_t n_iter = 8; // ?
 
 };
 
+/**
+ * 模型参数
+ */
 struct ModelParams {
 
     // 学习率
@@ -71,11 +77,11 @@ struct ModelParams {
     // 分类数量
     size_t size_classify = 0LL;
     // 计算图的大小
-    size_t size_cgraph  = 16LL  * 1024;
+    size_t size_cgraph   = 16LL  * 1024;
     // 权重大小
-    size_t size_weight  = 128LL * 1024 * 1024;
+    size_t size_weight   = 128LL * 1024 * 1024;
     // 计算大小
-    size_t size_compute = 256LL * 1024 * 1024;
+    size_t size_compute  = 256LL * 1024 * 1024;
     // 优化函数参数
     OptimizerParams optimizerParams;
 
@@ -84,28 +90,24 @@ struct ModelParams {
 protected:
     // 模型参数
     ModelParams params{};
-    // 权重上下文
-    void        * buf_weight { nullptr };
-    ggml_context* ctx_weight { nullptr };
-    // 计算上下文
-    void        * buf_compute{ nullptr };
-    ggml_context* ctx_compute{ nullptr };
-    // 损失函数
-    ggml_tensor* loss  { nullptr };
-    // 目标函数
-    ggml_tensor* logits{ nullptr };
-    // 输入数据
-    ggml_tensor* datas { nullptr };
-    // 输入标签
-    ggml_tensor* labels{ nullptr };
-    // 预测结果
-    ggml_tensor* preds { nullptr };
+    // 上下文
+    void        * buf_weight { nullptr }; // 权重内存
+    ggml_context* ctx_weight { nullptr }; // 权重上下文
+    void        * buf_compute{ nullptr }; // 计算内存
+    ggml_context* ctx_compute{ nullptr }; // 计算上下文
+    // 张量
+    ggml_tensor* logits  { nullptr }; // 目标函数
+    ggml_tensor* loss    { nullptr }; // 损失函数
+    ggml_tensor* features{ nullptr }; // 输入特征
+    ggml_tensor* labels  { nullptr }; // 输入标签
+    ggml_tensor* preds   { nullptr }; // 预测结果
     // 计算图
-    ggml_cgraph* train_gf{ nullptr };
-    ggml_cgraph* train_gb{ nullptr };
-    ggml_cgraph* val_gf  { nullptr };
-    ggml_cgraph* test_gf { nullptr };
-    ggml_cgraph* eval_gf { nullptr };
+    ggml_cgraph* train_gf{ nullptr }; // 训练前向
+    ggml_cgraph* train_gb{ nullptr }; // 训练反向
+    ggml_cgraph* val_gf  { nullptr }; // 验证前向
+    ggml_cgraph* test_gf { nullptr }; // 测试前向
+    ggml_cgraph* eval_gf { nullptr }; // 推理前向
+    // 所有权重
     std::map<std::string, ggml_tensor*> weights{};
 
 public:
@@ -141,14 +143,14 @@ public:
     virtual Model& bindWeight() = 0;
     // 初始化输入
     virtual Model&       defineInput();
-    virtual ggml_tensor* buildDatas()  = 0;
-    virtual ggml_tensor* buildLabels() = 0;
+    virtual ggml_tensor* buildFeatures() = 0;
+    virtual ggml_tensor* buildLabels()   = 0;
     // 定义计算逻辑
     virtual Model&       defineLogits();
     virtual ggml_tensor* buildLogits() = 0;
     // 定义损失函数
     virtual Model&       defineLoss();
-    virtual ggml_tensor* buildLoss()   = 0;
+    virtual ggml_tensor* buildLoss() = 0;
     // 定义计算图
     virtual Model& defineCgraph();
     // 打印模型

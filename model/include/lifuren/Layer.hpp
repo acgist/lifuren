@@ -109,7 +109,7 @@ public:
 };
 
 /**
- * 线性层
+ * 线性层/全连接层
  */
 class Linear : public Layer {
 
@@ -179,9 +179,9 @@ private:
     size_t in_channels { 0 };
     size_t out_channels{ 0 };
     size_t kernel_size { 0 };
-    size_t stride      { 0 };
+    size_t stride      { 1 };
     size_t padding     { 0 };
-    size_t dilation    { 0 };
+    size_t dilation    { 1 };
     bool   bias_       { true };
 
 public:
@@ -249,54 +249,6 @@ inline std::unique_ptr<Conv2d> conv2d(
 }
 
 /**
- * @param kernel_size 池化核大小
- * @param input       输入张量
- * @param ctx_compute 计算上下文
- * @param stride      步长
- * @param padding     填充
- * 
- * @return 平均池化
- */
-inline ggml_tensor* avgPool2d(
-    int64_t kernel_size,
-    ggml_tensor * input,
-    ggml_context* ctx_compute,
-    int64_t stride   = 1,
-    int64_t padding  = 0
-) {
-    return ggml_pool_2d(
-        ctx_compute, input, GGML_OP_POOL_AVG,
-        kernel_size, kernel_size,
-        stride,      stride,
-        padding,     padding
-    );
-}
-
-/**
- * @param kernel_size 池化核大小
- * @param input       输入张量
- * @param ctx_compute 计算上下文
- * @param stride      步长
- * @param padding     填充
- * 
- * @return 最大池化
- */
-inline ggml_tensor* maxPool2d(
-    int64_t kernel_size,
-    ggml_tensor * input,
-    ggml_context* ctx_compute,
-    int64_t stride   = 1,
-    int64_t padding  = 0
-) {
-    return ggml_pool_2d(
-        ctx_compute, input, GGML_OP_POOL_MAX,
-        kernel_size, kernel_size,
-        stride,      stride,
-        padding,     padding
-    );
-}
-
-/**
  * @param input_size  ?
  * @param hidden_size ?
  * @param num_layer   ?
@@ -331,6 +283,93 @@ inline void lstm(
     bool    bias      = true,
     double  dropout   = 0.0
 ) {
+    // TODO
+}
+
+/**
+ * @param kernel_size 池化核大小
+ * @param input       输入张量
+ * @param ctx_compute 计算上下文
+ * @param stride      步长
+ * @param padding     填充
+ * 
+ * @return 平均池化
+ */
+inline ggml_tensor* avgPool2d(
+    int64_t kernel_size,
+    ggml_tensor * input,
+    ggml_context* ctx_compute,
+    int64_t stride  = 1,
+    int64_t padding = 0
+) {
+    return ggml_pool_2d(
+        ctx_compute, input, GGML_OP_POOL_AVG,
+        kernel_size, kernel_size,
+        stride,      stride,
+        padding,     padding
+    );
+}
+
+/**
+ * @param kernel_size 池化核大小
+ * @param input       输入张量
+ * @param ctx_compute 计算上下文
+ * @param stride      步长
+ * @param padding     填充
+ * 
+ * @return 最大池化
+ */
+inline ggml_tensor* maxPool2d(
+    int64_t kernel_size,
+    ggml_tensor * input,
+    ggml_context* ctx_compute,
+    int64_t stride  = 1,
+    int64_t padding = 0
+) {
+    return ggml_pool_2d(
+        ctx_compute, input, GGML_OP_POOL_MAX,
+        kernel_size, kernel_size,
+        stride,      stride,
+        padding,     padding
+    );
+}
+
+inline void flatten() {
+    // TODO
+}
+
+/**
+ * 丢弃层
+ */
+inline void dropout1d() {
+    // TODO
+}
+
+/**
+ * 丢弃层
+ */
+inline void dropout2d() {
+    // TODO
+}
+
+/**
+ * 组归一化
+ */
+inline void groupNorm() {
+    // TODO
+}
+
+/**
+ * 批标准化层
+ */
+inline void batchNorm1d() {
+    // TODO
+}
+
+/**
+ * 批标准化层
+ */
+inline void batchNorm2d() {
     // TODO
 }
 

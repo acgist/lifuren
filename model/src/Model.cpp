@@ -126,10 +126,10 @@ lifuren::Model& lifuren::Model::loadEval(const std::string& path, const std::str
         SPDLOG_DEBUG("加载模型权重：{}", name);
     }
     this->bindWeight();
-    this->datas  = ggml_graph_get_tensor(this->eval_gf, "global.datas");
-    this->labels = ggml_graph_get_tensor(this->eval_gf, "global.labels");
-    this->logits = ggml_graph_get_tensor(this->eval_gf, "global.logits");
-    this->loss   = ggml_graph_get_tensor(this->eval_gf, "global.loss");
+    this->features = ggml_graph_get_tensor(this->eval_gf, "global.features");
+    this->labels   = ggml_graph_get_tensor(this->eval_gf, "global.labels");
+    this->logits   = ggml_graph_get_tensor(this->eval_gf, "global.logits");
+    this->loss     = ggml_graph_get_tensor(this->eval_gf, "global.loss");
     return *this;
 }
 
@@ -166,12 +166,12 @@ lifuren::Model& lifuren::Model::initWeight(InitType type, float mean, float sigm
 }
 
 lifuren::Model& lifuren::Model::defineInput() {
-    if(this->datas == nullptr) {
-        this->datas = this->buildDatas();
-        ggml_set_input(this->datas);
-        ggml_set_name(this->datas, "global.datas");
+    if(this->features == nullptr) {
+        this->features = this->buildFeatures();
+        ggml_set_input(this->features);
+        ggml_set_name(this->features, "global.features");
     } else {
-        SPDLOG_WARN("重复定义输入数据");
+        SPDLOG_WARN("重复定义输入特征");
     }
     if(this->labels == nullptr) {
         this->labels = this->buildLabels();
@@ -189,7 +189,7 @@ lifuren::Model& lifuren::Model::defineLogits() {
         ggml_set_output(this->logits);
         ggml_set_name(this->logits, "global.logits");
     } else {
-        SPDLOG_WARN("重复定义计算逻辑");
+        SPDLOG_WARN("重复定义计算逻辑（目标函数）");
     }
     return *this;
 }
@@ -223,7 +223,7 @@ lifuren::Model& lifuren::Model::defineCgraph() {
             SPDLOG_DEBUG("重复定义训练反向传播计算图");
         }
     } else {
-        SPDLOG_DEBUG("没有训练数据集忽略定义训练反向传播计算图");
+        SPDLOG_DEBUG("没有训练数据集忽略定义训练前向传播计算图和训练反向传播计算图");
     }
     if(this->valDataset) {
         if(this->val_gf == nullptr) {
@@ -247,7 +247,6 @@ lifuren::Model& lifuren::Model::defineCgraph() {
     } else {
         SPDLOG_DEBUG("没有测试数据集忽略定义测试前向传播计算图");
     }
-    // 必须生成推理计算图
     if(this->eval_gf == nullptr) {
         SPDLOG_DEBUG("定义推理前向传播计算图");
         this->eval_gf = ggml_new_graph(this->ctx_compute);
@@ -377,7 +376,7 @@ void lifuren::Model::train(size_t epoch, ggml_opt_context* opt_ctx) {
     for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->trainDataset->batchGet(
             batch,
-            static_cast<float*>(this->datas->data),
+            static_cast<float*>(this->features->data),
             static_cast<float*>(this->labels->data)
         );
         enum ggml_opt_result opt_result = ggml_opt_resume_g(this->ctx_compute, opt_ctx, this->loss, this->train_gf, this->train_gb, NULL, NULL);
@@ -410,7 +409,7 @@ void lifuren::Model::val(size_t epoch) {
     for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->valDataset->batchGet(
             batch,
-            static_cast<float*>(this->datas->data),
+            static_cast<float*>(this->features->data),
             static_cast<float*>(this->labels->data)
         );
         ggml_graph_compute_with_ctx(this->ctx_compute, this->val_gf, this->params.thread_size);
@@ -442,7 +441,7 @@ void lifuren::Model::test() {
     for (size_t batch = 0; batch < batchCount; ++batch) {
         size_t size = this->testDataset->batchGet(
             batch,
-            static_cast<float*>(this->datas->data),
+            static_cast<float*>(this->features->data),
             static_cast<float*>(this->labels->data)
         );
         ggml_graph_compute_with_ctx(this->ctx_compute, this->val_gf, this->params.thread_size);
@@ -465,7 +464,7 @@ float* lifuren::Model::eval(const float* input, float* output, size_t size_data)
     if(!this->eval_gf) {
         return nullptr;
     }
-    std::memcpy(this->datas->data, input, std::min(sizeof(float) * size_data, ggml_nbytes(this->datas)));
+    std::memcpy(this->features->data, input, std::min(sizeof(float) * size_data, ggml_nbytes(this->features)));
     ggml_graph_compute_with_ctx(this->ctx_compute, this->eval_gf, this->params.thread_size);
     const float* source = ggml_get_data_f32(this->logits);
     std::memcpy(output, source, sizeof(float) * size_data);
@@ -519,6 +518,7 @@ void lifuren::Model::buildOptimizer(ggml_opt_context* opt_ctx) {
 
 size_t lifuren::Model::batchAccu(const size_t& size) {
     size_t count = 0L;
+    // TODO: ggml_argmax/ggml_count_equal
     for (size_t index = 0; index < size; ++index) {
         const float* predPos = ggml_get_data_f32(this->logits) + index * this->params.size_classify;
         const size_t predClassify = std::distance(std::max_element(predPos, predPos + this->params.classify), predPos);

@@ -34,11 +34,8 @@
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fill(input, 2.0F);
     ggml_graph_compute_with_ctx(ctx, gf, 4);
-    float* odata = ggml_get_data_f32(output);
-    SPDLOG_DEBUG("结果大小：{} - {} - {} - {}", output->ne[0], output->ne[1], output->ne[2], output->ne[3]);
-    for(int i = 0; i < ggml_nelements(output); ++i) {
-        SPDLOG_DEBUG("计算结果：{} - {}", i, odata[i]);
-    }
+    lifuren::tensor::print(output);
+    ggml_free(ctx);
 }
 
 [[maybe_unused]] static void testConv2d() {
@@ -59,6 +56,7 @@
     if(bias != nullptr) {
         lifuren::tensor::fill(bias, 1.0F);
     }
+    // ggml_tensor* input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 3, 3, 3, 2);
     ggml_tensor* input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 9, 9, 3, 10);
     ggml_tensor* output = conv2d.forward(input);
     ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
@@ -66,10 +64,9 @@
     lifuren::tensor::fill(input, 2.0F);
     ggml_graph_compute_with_ctx(ctx, gf, 4);
     float* odata = ggml_get_data_f32(output);
-    SPDLOG_DEBUG("结果大小：{} - {} - {} - {}", output->ne[0], output->ne[1], output->ne[2], output->ne[3]);
-    for(int i = 0; i < ggml_nelements(output); ++i) {
-        SPDLOG_DEBUG("计算结果：{} - {}", i, odata[i]);
-    }
+    lifuren::tensor::print(input);
+    lifuren::tensor::print(output);
+    ggml_free(ctx);
 }
 
 [[maybe_unused]] static void testAvgPool2d() {
@@ -110,7 +107,7 @@
 
 LFR_TEST(
     // testLinear();
-    // testConv2d();
+    testConv2d();
     // testAvgPool2d();
-    testMaxPool2d();
+    // testMaxPool2d();
 );

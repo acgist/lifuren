@@ -32,7 +32,7 @@ public:
         this->fc1_bias   = this->weights["fc1.bias"];
         return *this;
     };
-    ggml_tensor* buildDatas() override {
+    ggml_tensor* buildFeatures() override {
         return ggml_new_tensor_2d(this->ctx_compute, GGML_TYPE_F32, 1, this->params.batch_size);
     }
     ggml_tensor* buildLabels() override {
@@ -43,7 +43,7 @@ public:
     };
     ggml_tensor* buildLogits() override {
         return ggml_add(this->ctx_compute,
-                ggml_mul_mat(this->ctx_compute, this->fc1_weight, this->datas),
+                ggml_mul_mat(this->ctx_compute, this->fc1_weight, this->features),
                 this->fc1_bias
             );
     };

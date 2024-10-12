@@ -38,6 +38,24 @@
     ggml_free(ctx);
 }
 
+[[maybe_unused]] static void testPrint() {
+    ggml_init_params params = {
+        .mem_size   = 16 * 1024 * 1024,
+        .mem_buffer = NULL,
+        .no_alloc   = false
+    };
+    ggml_context* ctx = ggml_init(params);
+    lifuren::tensor::print(ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 4));
+    SPDLOG_DEBUG("--------");
+    lifuren::tensor::print(ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 2));
+    SPDLOG_DEBUG("--------");
+    lifuren::tensor::print(ggml_new_tensor_3d(ctx, GGML_TYPE_F32, 4, 2, 2));
+    SPDLOG_DEBUG("--------");
+    lifuren::tensor::print(ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 4, 2, 2, 2));
+    ggml_free(ctx);
+}
+
 LFR_TEST(
-    testMul();
+    // testMul();
+    testPrint();
 );

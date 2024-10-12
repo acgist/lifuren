@@ -2,7 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
-void lifuren::tensor::print(const ggml_tensor* tensor) {
+std::string lifuren::tensor::print(const ggml_tensor* tensor, const bool log) {
     int64_t i = 0;
     std::string message = "size = ";
     const float* data = ggml_get_data_f32(tensor);
@@ -19,14 +19,22 @@ void lifuren::tensor::print(const ggml_tensor* tensor) {
     message += std::to_string(d);
     message += "\n";
     for(int64_t di = 0LL; di < d; ++di) {
+        message += "{\n";
         for(int64_t ci = 0LL; ci < c; ++ci) {
+            message += " [\n";
             for(int64_t bi = 0LL; bi < b; ++bi) {
+                message += "  ";
                 for(int64_t ai = 0LL; ai < a; ++ai, ++i) {
                     message += fmt::format("{: >10.6f} ", data[i]);
                 }
                 message += '\n';
             }
+            message += " ]\n";
         }
+        message += "}\n";
     }
-    SPDLOG_DEBUG("\n\n{}", message);
+    if(log) {
+        SPDLOG_DEBUG("\n\n{}", message);
+    }
+    return message;
 }
