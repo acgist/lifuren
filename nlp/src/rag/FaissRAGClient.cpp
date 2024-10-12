@@ -11,7 +11,7 @@
 #include "faiss/IndexFlat.h"
 #include "faiss/MetaIndexes.h"
 
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
 
 static std::map<size_t, std::shared_ptr<faiss::Index>> indexDBMap{};
@@ -70,10 +70,10 @@ bool lifuren::FaissRAGClient::loadIndex() {
         this->mapping = mappingMap.at(this->id);
         this->indexDB = indexDBMap.at(this->id);
     } else {
-        const std::filesystem::path indexDBPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+        const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
         this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
         indexDBMap.emplace(this->id, this->indexDB);
-        const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
+        const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
         this->mapping = loadMapping(mappingPath);
         mappingMap.emplace(this->id, this->mapping);
     }
@@ -84,9 +84,9 @@ bool lifuren::FaissRAGClient::saveIndex() {
     if(!lifuren::RAGClient::saveIndex()) {
         return false;
     }
-    const std::filesystem::path indexDBPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+    const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
     saveIndexDB(this->indexDB.get(), indexDBPath);
-    const std::filesystem::path mappingPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
+    const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
     saveMapping(this->mapping, mappingPath);
     return true;
 }
@@ -126,7 +126,7 @@ static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::fil
 }
 
 static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
-    lifuren::files::createFolder(path.parent_path());
+    lifuren::file::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     if(stream.is_open()) {
@@ -154,6 +154,6 @@ static faiss::Index* loadIndexDB(size_t dims, const std::filesystem::path& path)
 }
 
 static void saveIndexDB(faiss::Index* index, const std::filesystem::path& path) {
-    lifuren::files::createFolder(path.parent_path());
+    lifuren::file::createFolder(path.parent_path());
     faiss::write_index(index, path.string().c_str());
 }

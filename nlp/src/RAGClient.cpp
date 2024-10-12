@@ -4,7 +4,7 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
 
 lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedding) :
@@ -17,7 +17,7 @@ lifuren::RAGClient::~RAGClient() {
 }
 
 bool lifuren::RAGClient::loadIndex() {
-    const std::filesystem::path markPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
+    const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     if(!std::filesystem::exists(markPath)) {
         this->id = lifuren::uuid();
     }
@@ -45,8 +45,8 @@ bool lifuren::RAGClient::loadIndex() {
 }
 
 bool lifuren::RAGClient::saveIndex() {
-    const std::filesystem::path markPath = lifuren::files::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
-    lifuren::files::createFolder(markPath.parent_path());
+    const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
+    lifuren::file::createFolder(markPath.parent_path());
     std::ofstream stream;
     stream.open(markPath, std::ios_base::out | std::ios_base::trunc);
     if(!stream.is_open()) {

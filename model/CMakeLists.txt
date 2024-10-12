@@ -2,16 +2,15 @@ project(lifurenmodel VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
+    src/Layer.cpp
     src/Model.cpp
-    src/Layers.cpp
+    src/Tensor.cpp
     src/Dataset.cpp
-    src/Tensors.cpp
-    src/Datasets.cpp
-    src/RawDataset.cpp
-    src/FileDataset.cpp
-    src/ShardingDataset.cpp
-    src/layers/Conv2d.cpp
-    src/layers/Linear.cpp
+    src/layer/Conv2d.cpp
+    src/layer/Linear.cpp
+    src/dataset/RawDataset.cpp
+    src/dataset/FileDataset.cpp
+    src/dataset/ShardingDataset.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

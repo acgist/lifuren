@@ -28,10 +28,10 @@
 #ifndef LFR_CHOICE_PATH
 #if _WIN32
 #define LFR_CHOICE_PATH(path) \
-lifuren::strings::replace(path, "\\", "\\\\");
+lifuren::string::replace(path, "\\", "\\\\");
 #else
 #define LFR_CHOICE_PATH(path) \
-lifuren::strings::replace(path, "/", "\\/");
+lifuren::string::replace(path, "/", "\\/");
 #endif
 #endif
 

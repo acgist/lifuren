@@ -14,8 +14,8 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Raii.hpp"
-#include "lifuren/Files.hpp"
-#include "lifuren/Images.hpp"
+#include "lifuren/File.hpp"
+#include "lifuren/Image.hpp"
 #include "lifuren/Lifuren.hpp"
 
 const char* options_rng[] {
@@ -553,12 +553,12 @@ static sd_image_t* loadInputImage(SDParams& params) {
     size_t width { 0 };
     size_t height{ 0 };
     size_t length{ 0 };
-    lifuren::images::read(params.input_path, &input_image_data, width, height, length);
+    lifuren::image::read(params.input_path, &input_image_data, width, height, length);
     if (static_cast<size_t>(params.width) != width || static_cast<size_t>(params.height) != height) {
         const int resized_width  = params.width;
         const int resized_height = params.height;
         uint8_t* resized_image_data = new uint8_t[resized_width * resized_height * 3];
-        lifuren::images::resize(
+        lifuren::image::resize(
             input_image_data,   width,         height,
             resized_image_data, resized_width, resized_height
         );
@@ -578,7 +578,7 @@ static sd_image_t* loadControlImage(SDParams& params) {
         size_t width {0};
         size_t height{0};
         size_t length{0};
-        lifuren::images::read(params.control_image_path, &control_image_data, width, height, length);
+        lifuren::image::read(params.control_image_path, &control_image_data, width, height, length);
         control_image = new sd_image_t{static_cast<uint32_t>(width), static_cast<uint32_t>(height), 3, control_image_data};
         if (params.canny_preprocess) {
             uint8_t* canny_data = preprocess_canny(
@@ -702,9 +702,9 @@ static bool writeImg(SDParams& params, size_t count, sd_image_t* result) {
         if (result[i].data == NULL) {
             continue;
         }
-        std::string output_file = lifuren::files::join({params.output_path, std::to_string(lifuren::uuid()) + "_" + std::to_string(i) + ".png"}).string();
+        std::string output_file = lifuren::file::join({params.output_path, std::to_string(lifuren::uuid()) + "_" + std::to_string(i) + ".png"}).string();
         SPDLOG_DEBUG("生成图片：{}", output_file);
-        lifuren::images::write(output_file, result[i].data, params.width, params.height);
+        lifuren::image::write(output_file, result[i].data, params.width, params.height);
         free(result[i].data);
         result[i].data = NULL;
     }

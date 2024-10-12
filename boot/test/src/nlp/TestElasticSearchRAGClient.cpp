@@ -1,11 +1,11 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/RAG.hpp"
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 
 [[maybe_unused]] static void testRAGClientIndex() {
-    lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
-    // lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
+    lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
     client.loadIndex();
     client.index("猪");
     client.index("牛");
@@ -17,8 +17,8 @@
 }
 
 [[maybe_unused]] static void testRAGClientSearch() {
-    lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
-    // lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
+    lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
     client.loadIndex();
     auto a = client.search("狗");
     for(const auto& v : a) {
@@ -34,7 +34,7 @@
 }
 
 [[maybe_unused]] static void testRAGClientTruncate() {
-    lifuren::ElasticSearchRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     client.truncateIndex();
 }

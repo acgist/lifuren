@@ -10,7 +10,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Raii.hpp"
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
 
 #include "FL/Fl.H"
@@ -61,7 +61,7 @@ std::string lifuren::fileChooser(const char* title, const char* filter, const ch
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
-            last_directory = lifuren::files::parent(filename).c_str();
+            last_directory = lifuren::file::parent(filename).c_str();
             SPDLOG_DEBUG("文件选择成功：{} - {}", title, filename);
             return filename;
         }

@@ -8,10 +8,10 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Tensors.hpp"
-#include "lifuren/Datasets.hpp"
+#include "lifuren/Tensor.hpp"
+#include "lifuren/Dataset.hpp"
 
 lifuren::Model::Model(ModelParams params) : params(params) {
 }
@@ -53,7 +53,7 @@ bool lifuren::Model::save(const std::string& path, const std::string& filename) 
         SPDLOG_WARN("保存模型失败：权重为空");
         return false;
     }
-    const std::string fullpath = lifuren::files::join({ path, filename }).string();
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
     SPDLOG_DEBUG("保存模型：{}", fullpath);
     gguf_context* gguf_ctx = gguf_init_empty();
     std::vector<const char*> wnames;
@@ -70,7 +70,7 @@ bool lifuren::Model::save(const std::string& path, const std::string& filename) 
 
 lifuren::Model& lifuren::Model::load(const std::string& path, const std::string& filename) {
     this->initContext();
-    const std::string fullpath = lifuren::files::join({ path, filename }).string();
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
     SPDLOG_DEBUG("加载模型：{}", fullpath);
     gguf_init_params params = {
         .no_alloc = false,
@@ -105,14 +105,14 @@ bool lifuren::Model::saveEval(const std::string& path, const std::string& filena
         SPDLOG_WARN("保存模型失败：预测前向传播计算图为空");
         return false;
     }
-    const std::string fullpath = lifuren::files::join({ path, filename }).string();
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
     SPDLOG_DEBUG("保存模型：{}", fullpath);
     ggml_graph_export(this->eval_gf, fullpath.c_str());
     return true;
 }
 
 lifuren::Model& lifuren::Model::loadEval(const std::string& path, const std::string& filename) {
-    const std::string fullpath = lifuren::files::join({ path, filename }).string();
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
     SPDLOG_DEBUG("加载模型：{}", fullpath);
     this->eval_gf = ggml_graph_import(fullpath.c_str(), &this->ctx_weight, &this->ctx_compute);
     if(!this->eval_gf) {
@@ -155,11 +155,11 @@ lifuren::Model& lifuren::Model::initWeight(InitType type, float mean, float sigm
     }
     if(type == InitType::RAND) {
         for(const auto& pair : this->weights) {
-            lifuren::tensors::fillRand(pair.second, mean, sigma);
+            lifuren::tensor::fillRand(pair.second, mean, sigma);
         }
     } else {
         for(const auto& pair : this->weights) {
-            lifuren::tensors::fill(pair.second, type == InitType::ZERO ? 0.0F : value);
+            lifuren::tensor::fill(pair.second, type == InitType::ZERO ? 0.0F : value);
         }
     }
     return *this;

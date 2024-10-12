@@ -6,13 +6,13 @@
 #include "ggml.h"
 
 #include "lifuren/Model.hpp"
-#include "lifuren/Layers.hpp"
-#include "lifuren/Datasets.hpp"
+#include "lifuren/Layer.hpp"
+#include "lifuren/Dataset.hpp"
 
 class LayerModel : public lifuren::Model {
 
 public:
-    std::unique_ptr<lifuren::layers::Linear> linear{ nullptr };
+    std::unique_ptr<lifuren::layer::Linear> linear{ nullptr };
 
 public:
     LayerModel(lifuren::Model::ModelParams params = {}) : Model(params) {
@@ -22,12 +22,12 @@ public:
 
 public:
     Model& defineWeight() override {
-        this->linear = lifuren::layers::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear = lifuren::layer::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
         this->linear->defineWeight(this->weights);
         return *this;
     };
     Model& bindWeight() override {
-        this->linear = lifuren::layers::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
+        this->linear = lifuren::layer::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
         this->linear->bindWeight(this->weights);
         return *this;
     };
@@ -79,7 +79,7 @@ public:
         auto v = labels[i];
         SPDLOG_DEBUG("l = {}", v);
     }
-    lifuren::datasets::RawDataset* dataset = new lifuren::datasets::RawDataset(
+    lifuren::dataset::RawDataset* dataset = new lifuren::dataset::RawDataset(
         210,
         10,
         features,

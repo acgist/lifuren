@@ -12,12 +12,12 @@
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
 
-#include "lifuren/Raii.hpp"
 #include "lifuren/RAG.hpp"
-#include "lifuren/Files.hpp"
+#include "lifuren/Raii.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Poetrys.hpp"
-#include "lifuren/Strings.hpp"
+#include "lifuren/Poetry.hpp"
+#include "lifuren/String.hpp"
 
 // 诗词内容
 static nlohmann::json           poetryJson    {};
@@ -276,7 +276,7 @@ static void autoMark(Fl_Widget*, void*) {
         return;
     }
     auto stopFile = fileIterator;
-    lifuren::poetrys::Poetry stopPoetry = *poetryIterator;
+    lifuren::poetry::Poetry stopPoetry = *poetryIterator;
     while(true) {
         ++poetryIterator;
         if(poetryIterator == poetryJson.end()) {
@@ -290,7 +290,7 @@ static void autoMark(Fl_Widget*, void*) {
             SPDLOG_WARN("诗词数据格式错误");
             break;
         }
-        lifuren::poetrys::Poetry poetry = *poetryIterator;
+        lifuren::poetry::Poetry poetry = *poetryIterator;
         if(stopFile == fileIterator && stopPoetry == poetry) {
             fl_message("所有诗词全部匹配");
             break;
@@ -317,7 +317,7 @@ static void loadFileVector(const std::string& path) {
     }
     SPDLOG_DEBUG("加载诗词目录：{}", path);
     fileVector.clear();
-    lifuren::files::listFiles(fileVector, selectMarkConfig->path, { ".json" });
+    lifuren::file::listFile(fileVector, selectMarkConfig->path, { ".json" });
     fileIterator = fileVector.begin();
     loadPoetryJson();
     matchPoetryRhythm();
@@ -330,7 +330,7 @@ static void loadPoetryJson() {
         return;
     }
     SPDLOG_DEBUG("加载诗词文件：{}", *fileIterator);
-    std::string&& json = lifuren::files::loadFile(*fileIterator);
+    std::string&& json = lifuren::file::loadFile(*fileIterator);
     poetryJson     = nlohmann::json::parse(json);
     poetryIterator = poetryJson.begin();
 }
@@ -351,7 +351,7 @@ static void matchPoetryRhythm() {
         SPDLOG_WARN("诗词数据格式错误");
         return;
     }
-    lifuren::poetrys::Poetry poetry = *poetryIterator;
+    lifuren::poetry::Poetry poetry = *poetryIterator;
     poetry.preproccess();
     SPDLOG_DEBUG("解析诗词：{} - {}", *fileIterator, poetry.title);
     // 原始内容

@@ -1,24 +1,24 @@
-add_executable(testDates TestDates.cpp)
-add_test(NAME testDates COMMAND testDates)
-set_target_properties(testDates PROPERTIES FOLDER "test-core")
+add_executable(testDate TestDate.cpp)
+add_test(NAME testDate COMMAND testDate)
+set_target_properties(testDate PROPERTIES FOLDER "test-core")
 target_link_libraries(
-    testDates
+    testDate
     lifurencore
 )
 
-add_executable(testFiles TestFiles.cpp)
-add_test(NAME testFiles COMMAND testFiles)
-set_target_properties(testFiles PROPERTIES FOLDER "test-core")
+add_executable(testFile TestFile.cpp)
+add_test(NAME testFile COMMAND testFile)
+set_target_properties(testFile PROPERTIES FOLDER "test-core")
 target_link_libraries(
-    testFiles
+    testFile
     lifurencore
 )
 
-add_executable(testYamls TestYamls.cpp)
-add_test(NAME testYamls COMMAND testYamls)
-set_target_properties(testYamls PROPERTIES FOLDER "test-core")
+add_executable(testYaml TestYaml.cpp)
+add_test(NAME testYaml COMMAND testYaml)
+set_target_properties(testYaml PROPERTIES FOLDER "test-core")
 target_link_libraries(
-    testYamls
+    testYaml
     lifurencore
 )
 
@@ -31,11 +31,11 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testStrings TestStrings.cpp)
-add_test(NAME testStrings COMMAND testStrings)
-set_target_properties(testStrings PROPERTIES FOLDER "test-core")
+add_executable(testString TestString.cpp)
+add_test(NAME testString COMMAND testString)
+set_target_properties(testString PROPERTIES FOLDER "test-core")
 target_link_libraries(
-    testStrings
+    testString
     lifurencore
 )
 

@@ -1,10 +1,10 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/RAG.hpp"
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 
 [[maybe_unused]] static void testRAGClientIndex() {
-    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     client.index("猪");
     client.index("牛");
@@ -16,7 +16,7 @@
 }
 
 [[maybe_unused]] static void testRAGClientSearch() {
-    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     auto&& a = client.search("水果");
     for(const auto& v : a) {
@@ -30,7 +30,7 @@
 }
 
 [[maybe_unused]] static void testRAGClientTruncate() {
-    lifuren::FaissRAGClient client{ lifuren::files::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     client.loadIndex();
     client.truncateIndex();
 }

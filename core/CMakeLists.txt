@@ -2,14 +2,14 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Dates.cpp
-    src/Files.cpp
-    src/Yamls.cpp
+    src/Date.cpp
+    src/File.cpp
+    src/Yaml.cpp
     src/Config.cpp
     src/Logger.cpp
     src/Rhythm.cpp
+    src/String.cpp
     src/Lifuren.cpp
-    src/Strings.cpp
     src/Exception.cpp
 )
 

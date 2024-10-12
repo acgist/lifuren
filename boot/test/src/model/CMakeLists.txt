@@ -1,3 +1,11 @@
+add_executable(testLayer TestLayer.cpp)
+add_test(NAME testLayer COMMAND testLayer)
+set_target_properties(testLayer PROPERTIES FOLDER "test-model")
+target_link_libraries(
+    testLayer
+    lifurenmodel
+)
+
 add_executable(testModel TestModel.cpp)
 add_test(NAME testModel COMMAND testModel)
 set_target_properties(testModel PROPERTIES FOLDER "test-model")
@@ -6,27 +14,19 @@ target_link_libraries(
     lifurenmodel
 )
 
-add_executable(testLayers TestLayers.cpp)
-add_test(NAME testLayers COMMAND testLayers)
-set_target_properties(testLayers PROPERTIES FOLDER "test-model")
+add_executable(testTensor TestTensor.cpp)
+add_test(NAME testTensor COMMAND testTensor)
+set_target_properties(testTensor PROPERTIES FOLDER "test-model")
 target_link_libraries(
-    testLayers
+    testTensor
     lifurenmodel
 )
 
-add_executable(testTensors TestTensors.cpp)
-add_test(NAME testTensors COMMAND testTensors)
-set_target_properties(testTensors PROPERTIES FOLDER "test-model")
+add_executable(testDataset TestDataset.cpp)
+add_test(NAME testDataset COMMAND testDataset)
+set_target_properties(testDataset PROPERTIES FOLDER "test-model")
 target_link_libraries(
-    testTensors
-    lifurenmodel
-)
-
-add_executable(testDatasets TestDatasets.cpp)
-add_test(NAME testDatasets COMMAND testDatasets)
-set_target_properties(testDatasets PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testDatasets
+    testDataset
     lifurencv
     lifurennlp
     lifurenmodel

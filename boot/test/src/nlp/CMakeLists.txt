@@ -14,11 +14,11 @@ target_link_libraries(
     lifurennlp
 )
 
-add_executable(testPoetrys TestPoetrys.cpp)
-add_test(NAME testPoetrys COMMAND testPoetrys)
-set_target_properties(testPoetrys PROPERTIES FOLDER "test-nlp")
+add_executable(testPoetry TestPoetry.cpp)
+add_test(NAME testPoetry COMMAND testPoetry)
+set_target_properties(testPoetry PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
-    testPoetrys
+    testPoetry
     lifurennlp
 )
 

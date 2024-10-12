@@ -1,23 +1,23 @@
-#include "lifuren/Datasets.hpp"
+#include "lifuren/Dataset.hpp"
 
-lifuren::datasets::Dataset::Dataset(size_t batchSize) : batchSize(batchSize) {
+lifuren::dataset::Dataset::Dataset(size_t batchSize) : batchSize(batchSize) {
 }
 
-lifuren::datasets::Dataset::Dataset(size_t count, size_t batchSize) : count(count), batchSize(batchSize) {
+lifuren::dataset::Dataset::Dataset(size_t count, size_t batchSize) : count(count), batchSize(batchSize) {
 }
 
-lifuren::datasets::Dataset::~Dataset() {
+lifuren::dataset::Dataset::~Dataset() {
 }
 
-const size_t& lifuren::datasets::Dataset::getCount() const {
+const size_t& lifuren::dataset::Dataset::getCount() const {
     return this->count;
 }
 
-const size_t& lifuren::datasets::Dataset::getBatchSize() const {
+const size_t& lifuren::dataset::Dataset::getBatchSize() const {
     return this->batchSize;
 }
 
-size_t lifuren::datasets::Dataset::getBatchCount() const {
+size_t lifuren::dataset::Dataset::getBatchCount() const {
     if(this->count % this->batchSize == 0) {
         return this->count / this->batchSize;
     } else {

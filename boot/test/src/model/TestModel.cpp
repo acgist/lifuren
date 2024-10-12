@@ -5,7 +5,7 @@
 #include "ggml.h"
 
 #include "lifuren/Model.hpp"
-#include "lifuren/Datasets.hpp"
+#include "lifuren/Dataset.hpp"
 
 class SimpleModel : public lifuren::Model {
 
@@ -82,7 +82,7 @@ public:
         auto v = labels[i];
         SPDLOG_DEBUG("l = {}", v);
     }
-    lifuren::datasets::RawDataset* dataset = new lifuren::datasets::RawDataset{
+    lifuren::dataset::RawDataset* dataset = new lifuren::dataset::RawDataset{
         210,
         10,
         features,

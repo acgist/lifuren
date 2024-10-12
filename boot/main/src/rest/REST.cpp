@@ -10,7 +10,7 @@
 
 #include "nlohmann/json.hpp"
 
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
 
 httplib::Server lifuren::httpServer;
@@ -128,7 +128,7 @@ static void restGetFavicon() {
     lifuren::httpServer.Get("/favicon.ico", [](const httplib::Request& request, httplib::Response& response) {
         char * data  { nullptr };
         size_t length{ 0LL };
-        lifuren::files::loadFile(lifuren::config::baseFile("../images/favicon.ico"), &data, length);
+        lifuren::file::loadFile(lifuren::config::baseFile("../images/favicon.ico"), &data, length);
         if(length == 0LL) {
             return;
         }

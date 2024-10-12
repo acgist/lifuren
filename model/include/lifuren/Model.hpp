@@ -26,7 +26,7 @@ struct ggml_opt_context;
 
 namespace lifuren {
 
-namespace datasets {
+namespace dataset {
     class Dataset;
 }
 
@@ -110,11 +110,11 @@ protected:
 
 public:
     // 训练数据集
-    std::unique_ptr<lifuren::datasets::Dataset> trainDataset{ nullptr };
+    std::unique_ptr<lifuren::dataset::Dataset> trainDataset{ nullptr };
     // 验证数据集
-    std::unique_ptr<lifuren::datasets::Dataset> valDataset  { nullptr };
+    std::unique_ptr<lifuren::dataset::Dataset> valDataset  { nullptr };
     // 测试数据集
-    std::unique_ptr<lifuren::datasets::Dataset> testDataset { nullptr };
+    std::unique_ptr<lifuren::dataset::Dataset> testDataset { nullptr };
 
 public:
     Model(ModelParams params);

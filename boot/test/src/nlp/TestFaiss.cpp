@@ -6,7 +6,7 @@
 #include "faiss/IndexFlat.h"
 #include "faiss/MetaIndexes.h"
 
-#include "lifuren/Files.hpp"
+#include "lifuren/File.hpp"
 
 [[maybe_unused]] static void testSearch() {
     faiss::IndexFlatL2 db(3);
@@ -66,7 +66,7 @@
     };
     int64_t i[] { 1, 2, 3, 4 };
     map.add_with_ids(4, a, i);
-    const std::string file = lifuren::files::join({lifuren::config::CONFIG.tmp, "faiss.db"}).string();
+    const std::string file = lifuren::file::join({lifuren::config::CONFIG.tmp, "faiss.db"}).string();
     faiss::write_index(&map, file.c_str());
     auto load = faiss::read_index(file.c_str());
     assert(load->ntotal == db.ntotal);

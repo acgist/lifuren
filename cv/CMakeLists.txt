@@ -3,9 +3,9 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/CV.cpp
-    src/Images.cpp
+    src/Image.cpp
     src/PaintClient.cpp
-    src/ImageDatasets.cpp
+    src/ImageDataset.cpp
     src/model/CycleGANModel.cpp
     src/model/StyleGANModel.cpp
     src/paint/CycleGANPaintClient.cpp
