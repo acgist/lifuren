@@ -1,7 +1,5 @@
 #include "lifuren/Tensor.hpp"
 
-#include "fmt/format.h"
-
 #include "spdlog/spdlog.h"
 
 std::string lifuren::tensor::print(const ggml_tensor* tensor, const bool log) {
