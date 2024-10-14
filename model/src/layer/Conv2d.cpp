@@ -1,5 +1,7 @@
 #include "lifuren/Layer.hpp"
 
+#include "fmt/format.h"
+
 lifuren::layer::Conv2d::Conv2d(
     size_t in_channels,
     size_t out_channels,
@@ -46,8 +48,8 @@ lifuren::layer::Conv2d::Conv2d(
 lifuren::layer::Conv2d::~Conv2d() {
 }
 
-std::string lifuren::layer::Conv2d::info() {
-    return this->name + " => in = " + std::to_string(this->in_channels) + " out = " + std::to_string(this->out_channels) + " k = " + std::to_string(this->kernel_size);
+std::string lifuren::layer::Conv2d::info() const {
+    return fmt::format("{} => in = {} out = {} k = {}", this->name, this->in_channels, this->out_channels, this->kernel_size);
 }
 
 ggml_tensor* lifuren::layer::Conv2d::forward(ggml_tensor* input) {
@@ -73,7 +75,7 @@ void lifuren::layer::Conv2d::defineWeight(std::map<std::string, ggml_tensor*>& w
     }
 }
 
-void lifuren::layer::Conv2d::bindWeight(std::map<std::string, ggml_tensor*>& weights) {
+void lifuren::layer::Conv2d::bindWeight(const std::map<std::string, ggml_tensor*>& weights) {
     this->bindWeight(weights, this->name + ".kernel", &this->kernel);
     if(this->bias_) {
         this->bindWeight(weights, this->name + ".bias", &this->bias);

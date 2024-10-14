@@ -1,7 +1,5 @@
 #include "lifuren/Layer.hpp"
 
-#include "ggml.h"
-
 #include "spdlog/spdlog.h"
 
 lifuren::layer::Layer::Layer(
@@ -17,7 +15,7 @@ lifuren::layer::Layer::Layer(
 lifuren::layer::Layer::~Layer() {
 }
 
-std::string lifuren::layer::Layer::info() {
+std::string lifuren::layer::Layer::info() const {
     return this->name;
 }
 
@@ -25,7 +23,7 @@ ggml_tensor* lifuren::layer::Layer::operator()(ggml_tensor* input) {
     return this->forward(input);
 }
 
-void lifuren::layer::Layer::bindWeight(std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor) {
+void lifuren::layer::Layer::bindWeight(const std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor) {
     auto iterator = weights.find(key);
     if(iterator == weights.end()) {
         SPDLOG_WARN("绑定权重失败：{}", key);

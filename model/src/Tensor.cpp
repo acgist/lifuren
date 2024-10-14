@@ -1,24 +1,23 @@
 #include "lifuren/Tensor.hpp"
 
+#include "fmt/format.h"
+
 #include "spdlog/spdlog.h"
 
 std::string lifuren::tensor::print(const ggml_tensor* tensor, const bool log) {
-    int64_t i = 0;
-    std::string message = "size = ";
-    const float* data = ggml_get_data_f32(tensor);
+    std::string message;
     const int64_t& a = tensor->ne[0];
-    message += std::to_string(a);
-    message += " * ";
     const int64_t& b = tensor->ne[1];
-    message += std::to_string(b);
-    message += " * ";
     const int64_t& c = tensor->ne[2];
-    message += std::to_string(c);
-    message += " * ";
     const int64_t& d = tensor->ne[3];
-    message += std::to_string(d);
-    message += "\n";
-    for(int64_t di = 0LL; di < d; ++di) {
+    message += fmt::format(R"(
+dims         = {} * {} * {} * {}
+nbytes       = {}
+nelements    = {}
+element_size = {}
+)", d, c, b, a, ggml_nbytes(tensor), ggml_nelements(tensor), ggml_element_size(tensor));
+    const float* data = ggml_get_data_f32(tensor);
+    for(int64_t i = 0LL, di = 0LL; di < d; ++di) {
         message += "{\n";
         for(int64_t ci = 0LL; ci < c; ++ci) {
             message += " [\n";
@@ -34,7 +33,7 @@ std::string lifuren::tensor::print(const ggml_tensor* tensor, const bool log) {
         message += "}\n";
     }
     if(log) {
-        SPDLOG_DEBUG("\n\n{}", message);
+        SPDLOG_DEBUG("\n{}", message);
     }
     return message;
 }

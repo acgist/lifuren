@@ -24,6 +24,17 @@ inline void fill(ggml_tensor* tensor, float value = 0.0F) {
 
 /**
  * @param tensor 张量
+ * @param value  填充
+ */
+inline void fill(ggml_tensor* tensor, const float* value) {
+    GGML_ASSERT(tensor->type == GGML_TYPE_F32);
+    int64_t size = ggml_nelements(tensor);
+    float * data = ggml_get_data_f32(tensor);
+    std::copy_n(value, size, data);
+}
+
+/**
+ * @param tensor 张量
  * @param mean   均值
  * @param sigma  方差
  */
@@ -42,14 +53,16 @@ inline void fillRand(ggml_tensor* tensor, float mean = 0.0F, float sigma = 0.001
 
 /**
  * @param tensor 张量
- * @param beg    开始
+ * @param begin  开始
+ * @param delta  增量
  */
-inline void fillRange(ggml_tensor* tensor, float beg = 0.0F) {
+inline void fillRange(ggml_tensor* tensor, float begin = 0.0F, const float delta = 1.0F) {
     GGML_ASSERT(tensor->type == GGML_TYPE_F32);
     int64_t size = ggml_nelements(tensor);
     float * data = ggml_get_data_f32(tensor);
     for(int i = 0; i < size; ++i) {
-        data[i] = beg + i;
+        data[i] = begin;
+        begin  += delta;
     }
 }
 

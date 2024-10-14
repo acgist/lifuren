@@ -3,12 +3,19 @@
  * 
  * @author acgist
  * 
+ * 参考资料：
+ * 
  * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.h
  * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.cpp
  * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-train.cpp
  * 
+ * https://pytorch.org/docs/stable/nn.html
+ * 
  * https://github.com/pytorch/pytorch/blob/main/torch/csrc/
  * https://github.com/pytorch/pytorch/tree/main/torch/csrc/api/include/torch/nn/functional/
+ * 
+ * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/
+ * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/Loss.cpp
  */
 #ifndef LFR_HEADER_MODEL_LAYER_HPP
 #define LFR_HEADER_MODEL_LAYER_HPP
@@ -24,60 +31,109 @@ namespace lifuren {
 namespace loss {
 
 /**
- * BCELoss
+ * L1Loss
+ * https://pytorch.org/docs/stable/generated/torch.nn.L1Loss.html#torch.nn.L1Loss
  * 
- * 二分类任务
+ * 回归任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void bceLoss() {
-    // TODO: 实现
+inline ggml_tensor* l1Loss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
+    return ggml_mean(ctx, ggml_transpose(ctx, ggml_abs(ctx, ggml_sub(ctx, source, target))));
 }
 
 /**
- * NLLLoss
+ * BCELoss
+ * https://pytorch.org/docs/stable/generated/torch.nn.BCELoss.html#torch.nn.BCELoss
  * 
- * 多分类任务
+ * 二分类任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void nllLoss() {
-    // TODO: 实现
+inline ggml_tensor* bceLoss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
+    ggml_tensor* s1 = ggml_div(ctx, source, source);
+    ggml_tensor* t1 = ggml_div(ctx, target, target);
+    return ggml_mean(ctx, ggml_transpose(ctx, ggml_neg(ctx, ggml_add(
+        ctx,
+        ggml_mul(ctx, target, ggml_log(ctx, source)),
+        ggml_mul(ctx, ggml_add(ctx, t1, ggml_neg(ctx, target)), ggml_log(ctx, ggml_add(ctx, s1, ggml_neg(ctx, source))))
+    ))));
 }
 
 /**
  * MSELoss
+ * https://pytorch.org/docs/stable/generated/torch.nn.MSELoss.html#torch.nn.MSELoss
  * 
  * 回归任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void mseLoss() {
-    // TODO: 实现
+inline ggml_tensor* mseLoss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
+    return ggml_mean(ctx, ggml_transpose(ctx, ggml_sqr(ctx, ggml_sub(ctx, source, target))));
 }
 
 /**
- * FocalLoss
+ * NLLLoss
+ * https://pytorch.org/docs/stable/generated/torch.nn.NLLLoss.html#torch.nn.NLLLoss
  * 
- * 检测任务
- * 二分类任务
+ * 多分类任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void focalLoss() {
+inline ggml_tensor* nllLoss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
     // TODO: 实现
+    return nullptr;
 }
 
 /**
  * SmoothL1Loss
+ * https://pytorch.org/docs/stable/generated/torch.nn.SmoothL1Loss.html#torch.nn.SmoothL1Loss
  * 
  * 回归任务
  * 检测任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void smoothL1Loss() {
+inline ggml_tensor* smoothL1Loss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
     // TODO: 实现
+    return nullptr;
 }
 
 /**
  * CrossEntropyLoss
+ * https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss
  * 
  * 分割任务
  * 多分类任务
+ * 
+ * @param ctx    计算上下文
+ * @param source 原始数据
+ * @param target 目标数据
+ * 
+ * @return 损失函数
  */
-inline void crossEntropyLoss() {
-    // TODO: 实现
+inline ggml_tensor* crossEntropyLoss(ggml_context* ctx, ggml_tensor* source, ggml_tensor* target) {
+    return ggml_cross_entropy_loss(ctx, source, target);
 }
 
 }
@@ -90,21 +146,21 @@ namespace layer {
 class Layer {
 
 protected:
-    ggml_context* ctx_weight { nullptr };
-    ggml_context* ctx_compute{ nullptr };
-    std::string name;
+    ggml_context* ctx_weight { nullptr }; // 权重上下文
+    ggml_context* ctx_compute{ nullptr }; // 计算上下文
+    std::string name;                     // 名称
 
 public:
-    Layer(ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "");
+    Layer(ggml_context* ctx_weight, ggml_context* ctx_compute, const std::string& name = "layer");
     virtual ~Layer();
 
 public:
-    virtual std::string  info();
+    virtual std::string  info() const;
     virtual ggml_tensor* forward   (ggml_tensor* input) = 0;
     virtual ggml_tensor* operator()(ggml_tensor* input);
-    virtual void defineWeight(std::map<std::string, ggml_tensor*>& weights) = 0;
-    virtual void bindWeight  (std::map<std::string, ggml_tensor*>& weights) = 0;
-    virtual void bindWeight  (std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor);
+    virtual void defineWeight(      std::map<std::string, ggml_tensor*>& weights) = 0;
+    virtual void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) = 0;
+    virtual void bindWeight  (const std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor);
 
 };
 
@@ -114,11 +170,11 @@ public:
 class Linear : public Layer {
 
 private:
-    ggml_tensor* weight{ nullptr };
-    ggml_tensor* bias  { nullptr };
-    size_t in_features { 0 };
-    size_t out_features{ 0 };
-    bool   bias_       { true };
+    ggml_tensor* weight{ nullptr }; // 权重
+    ggml_tensor* bias  { nullptr }; // 偏置
+    size_t in_features { 0 };       // 输入特征大小
+    size_t out_features{ 0 };       // 输出特征大小
+    bool   bias_       { true };    // 是否添加偏置
 
 public:
     Linear(
@@ -140,10 +196,10 @@ public:
 
 public:
     using Layer::bindWeight;
-    std::string info() override;
+    std::string info() const override;
     ggml_tensor* forward(ggml_tensor* input) override;
-    void defineWeight(std::map<std::string, ggml_tensor*>& weights) override;
-    void bindWeight  (std::map<std::string, ggml_tensor*>& weights) override;
+    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
 
 };
 
@@ -174,15 +230,15 @@ inline std::unique_ptr<Linear> linear(
 class Conv2d : public Layer {
 
 private:
-    ggml_tensor* kernel{ nullptr };
-    ggml_tensor* bias  { nullptr };
-    size_t in_channels { 0 };
-    size_t out_channels{ 0 };
-    size_t kernel_size { 0 };
-    size_t stride      { 1 };
-    size_t padding     { 0 };
-    size_t dilation    { 1 };
-    bool   bias_       { true };
+    ggml_tensor* kernel{ nullptr }; // 卷积核
+    ggml_tensor* bias  { nullptr }; // 偏置
+    size_t in_channels { 0 };       // 输入通道大小
+    size_t out_channels{ 0 };       // 输出通道大小
+    size_t kernel_size { 0 };       // 卷积核大小
+    size_t stride      { 1 };       // 步长
+    size_t padding     { 0 };       // 填充
+    size_t dilation    { 1 };       // 间隔
+    bool   bias_       { true };    // 是否添加偏置
 
 public:
     Conv2d(
@@ -212,10 +268,10 @@ public:
 
 public:
     using Layer::bindWeight;
-    std::string info() override;
+    std::string info() const override;
     ggml_tensor* forward(ggml_tensor* input) override;
-    void defineWeight(std::map<std::string, ggml_tensor*>& weights) override;
-    void bindWeight  (std::map<std::string, ggml_tensor*>& weights) override;
+    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
 
 };
 

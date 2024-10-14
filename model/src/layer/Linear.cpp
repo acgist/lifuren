@@ -1,5 +1,7 @@
 #include "lifuren/Layer.hpp"
 
+#include "fmt/format.h"
+
 lifuren::layer::Linear::Linear(
     size_t in_features,
     size_t out_features,
@@ -29,8 +31,8 @@ lifuren::layer::Linear::Linear(
 lifuren::layer::Linear::~Linear() {
 }
 
-std::string lifuren::layer::Linear::info() {
-    return this->name + " => in = " + std::to_string(this->in_features) + " out = " + std::to_string(this->out_features);
+std::string lifuren::layer::Linear::info() const {
+    return fmt::format("{} => in = {} out = {}", this->name, this->in_features, this->out_features);
 }
 
 ggml_tensor* lifuren::layer::Linear::forward(ggml_tensor* input) {
@@ -50,7 +52,7 @@ void lifuren::layer::Linear::defineWeight(std::map<std::string, ggml_tensor*>& w
     }
 }
 
-void lifuren::layer::Linear::bindWeight(std::map<std::string, ggml_tensor*>& weights) {
+void lifuren::layer::Linear::bindWeight(const std::map<std::string, ggml_tensor*>& weights) {
     this->bindWeight(weights, this->name + ".weight", &this->weight);
     if(this->bias_) {
         this->bindWeight(weights, this->name + ".bias", &this->bias);

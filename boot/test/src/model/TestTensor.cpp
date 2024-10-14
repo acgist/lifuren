@@ -46,11 +46,8 @@
     };
     ggml_context* ctx = ggml_init(params);
     lifuren::tensor::print(ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 4));
-    SPDLOG_DEBUG("--------");
     lifuren::tensor::print(ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 2));
-    SPDLOG_DEBUG("--------");
     lifuren::tensor::print(ggml_new_tensor_3d(ctx, GGML_TYPE_F32, 4, 2, 2));
-    SPDLOG_DEBUG("--------");
     lifuren::tensor::print(ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 4, 2, 2, 2));
     ggml_free(ctx);
 }

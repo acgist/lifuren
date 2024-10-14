@@ -6,6 +6,8 @@
 
 #include "ggml.h"
 
+#include "fmt/format.h"
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
