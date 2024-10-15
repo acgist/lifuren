@@ -107,8 +107,6 @@ protected:
     ggml_cgraph* val_gf  { nullptr }; // 验证前向
     ggml_cgraph* test_gf { nullptr }; // 测试前向
     ggml_cgraph* eval_gf { nullptr }; // 推理前向
-    // 所有权重
-    std::map<std::string, ggml_tensor*> weights{};
 
 public:
     // 训练数据集
@@ -123,8 +121,8 @@ public:
     virtual ~Model();
 
 protected:
-    // 加载上下文
-    void initContext();
+    void initCtxWeight();
+    void initCtxCompute();
 
 public:
     // 训练模型保存加载
@@ -140,7 +138,7 @@ public:
     // 初始化权重
     virtual Model& initWeight(InitType type = InitType::RAND, float mean = 0.0F, float sigma = 0.001F, float value = 0.0F);
     // 绑定权重
-    virtual Model& bindWeight() = 0;
+    virtual Model& bindWeight(const std::map<std::string, ggml_tensor*> weights) = 0;
     // 初始化输入
     virtual Model&       defineInput();
     virtual ggml_tensor* buildFeatures() = 0;
@@ -168,7 +166,7 @@ public:
     // 模型预测
     virtual std::vector<size_t> evalClassify(const float* input, size_t size_data);
     // 训练验证
-    virtual void trainAndVal();
+    virtual void trainValAndTest(const bool val = true, const bool test = true);
     // 优化函数
     virtual void buildOptimizer(ggml_opt_context* opt_ctx);
     // 正确数量

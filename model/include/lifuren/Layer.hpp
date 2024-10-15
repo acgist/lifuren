@@ -21,8 +21,9 @@
 #define LFR_HEADER_MODEL_LAYER_HPP
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
+#include <functional>
 
 #include "ggml.h"
 
@@ -160,9 +161,12 @@ public:
     virtual std::string  info() const;
     virtual ggml_tensor* forward   (ggml_tensor* input) = 0;
     virtual ggml_tensor* operator()(ggml_tensor* input);
-    virtual void defineWeight(      std::map<std::string, ggml_tensor*>& weights) = 0;
+    virtual ggml_tensor* operator[](const char* name);
+    virtual void initWeight(std::function<void(ggml_tensor*)> function);
+    virtual void defineWeight() = 0;
+    virtual void defineWeight(const std::string& name, ggml_tensor* weight) const;
     virtual void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) = 0;
-    virtual void bindWeight  (const std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor);
+    virtual void bindWeight  (const std::map<std::string, ggml_tensor*>& weights, const std::string& name, ggml_tensor** tensor);
 
 };
 
@@ -198,10 +202,11 @@ public:
     ~Linear();
 
 public:
+    using Layer::defineWeight;
     using Layer::bindWeight;
     std::string info() const override;
     ggml_tensor* forward(ggml_tensor* input) override;
-    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void defineWeight() override;
     void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
 
 };
@@ -271,10 +276,11 @@ public:
     ~Conv2d();
 
 public:
+    using Layer::defineWeight;
     using Layer::bindWeight;
     std::string info() const override;
     ggml_tensor* forward(ggml_tensor* input) override;
-    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void defineWeight() override;
     void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
 
 };
@@ -351,10 +357,11 @@ public:
     ~GRU();
 
 public:
+    using Layer::defineWeight;
     using Layer::bindWeight;
     std::string info() const override;
     ggml_tensor* forward(ggml_tensor* input) override;
-    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void defineWeight() override;
     void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
 
 };
@@ -462,6 +469,14 @@ inline ggml_tensor* maxPool2d(
         stride,      stride,
         padding,     padding
     );
+}
+
+/**
+ * 
+ */
+inline void defineWeight(const char* name, ggml_tensor* weight, ggml_context* ctx) {
+    ggml_set_name(weight, name);
+    ggml_set_param(ctx, weight);
 }
 
 /**

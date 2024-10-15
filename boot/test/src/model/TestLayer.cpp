@@ -13,11 +13,10 @@
     };
     ggml_context* ctx = ggml_init(params);
     auto gru = lifuren::layer::gru(2, 4, ctx, ctx);
-    std::map<std::string, ggml_tensor*> weights;
-    gru->defineWeight(weights);
-    for(const auto& [n, w] : weights) {
+    gru->defineWeight();
+    gru->initWeight([](auto w) {
         lifuren::tensor::fill(w, 1.0F);
-    }
+    });
     ggml_tensor* input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 2, 10);
     ggml_tensor* output = gru->forward(input);
     ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
@@ -40,10 +39,9 @@
     // lifuren::layer::Linear linear(5, 1, ctx, "fc1");
     // lifuren::layer::Linear linear(5, 2, ctx, "fc1");
     // lifuren::layer::Linear linear(5, 4, ctx, "fc1");
-    std::map<std::string, ggml_tensor*> weights;
-    linear.defineWeight(weights);
-    ggml_tensor* weight = weights["fc1.weight"];
-    ggml_tensor* bias   = weights["fc1.bias"];
+    linear.defineWeight();
+    ggml_tensor* weight = linear["fc1.weight"];
+    ggml_tensor* bias   = linear["fc1.bias"];
     // ggml_set_param(ctx, weight);
     // ggml_set_param(ctx, bias);
     lifuren::tensor::fillRange(weight, 2);
@@ -69,10 +67,9 @@
     };
     ggml_context* ctx = ggml_init(params);
     lifuren::layer::Conv2d conv2d(3, 4, 3, ctx);
-    std::map<std::string, ggml_tensor*> weights;
-    conv2d.defineWeight(weights);
-    ggml_tensor* kernel = weights["conv2d.kernel"];
-    ggml_tensor* bias   = weights["conv2d.bias"];
+    conv2d.defineWeight();
+    ggml_tensor* kernel = conv2d["conv2d.kernel"];
+    ggml_tensor* bias   = conv2d["conv2d.bias"];
     // ggml_set_param(ctx, kernel);
     // ggml_set_param(ctx, bias);
     lifuren::tensor::fillRange(kernel, 2);

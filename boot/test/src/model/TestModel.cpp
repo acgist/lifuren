@@ -5,6 +5,7 @@
 #include "ggml.h"
 
 #include "lifuren/Model.hpp"
+#include "lifuren/Layer.hpp"
 #include "lifuren/Dataset.hpp"
 
 class SimpleModel : public lifuren::Model {
@@ -23,13 +24,13 @@ public:
     Model& defineWeight() override {
         this->fc1_weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
         this->fc1_bias   = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, 1);
-        this->weights.emplace("fc1.weight", this->fc1_weight);
-        this->weights.emplace("fc1.bias",   this->fc1_bias);
+        lifuren::layer::defineWeight("fc1.weight", this->fc1_weight, this->ctx_compute);
+        lifuren::layer::defineWeight("fc1.bias",   this->fc1_bias,   this->ctx_compute);
         return *this;
     };
-    Model& bindWeight() override {
-        this->fc1_weight = this->weights["fc1.weight"];
-        this->fc1_bias   = this->weights["fc1.bias"];
+    Model& bindWeight(const std::map<std::string, ggml_tensor*> weights) override {
+        this->fc1_weight = weights.find("fc1.weight")->second;
+        this->fc1_bias   = weights.find("fc1.bias")->second;
         return *this;
     };
     ggml_tensor* buildFeatures() override {
@@ -56,11 +57,11 @@ public:
         .epoch_count = 64,
     };
     SimpleModel save{params};
-    save.define().print().save(lifuren::config::CONFIG.tmp);
-    // save.define().print().saveEval(lifuren::config::CONFIG.tmp);
+    // save.define().print().save(lifuren::config::CONFIG.tmp);
+    save.define().print().saveEval(lifuren::config::CONFIG.tmp);
     SimpleModel load{params};
-    load.load(lifuren::config::CONFIG.tmp).print();
-    // load.loadEval(lifuren::config::CONFIG.tmp).print();
+    // load.load(lifuren::config::CONFIG.tmp).print();
+    load.loadEval(lifuren::config::CONFIG.tmp).print();
 }
 
 [[maybe_unused]] static void testLine() {
@@ -95,14 +96,14 @@ public:
     };
     lifuren::Model::ModelParams params {
         .batch_size  = 10,
-        .epoch_count = 64,
+        .epoch_count = 256,
         .optimizerParams = optParams
     };
     SimpleModel save{ params };
     save.trainDataset.reset(dataset);
     save.define();
     // save.print();
-    save.trainAndVal();
+    save.trainValAndTest();
     float data[] { 3.2 };
     float target[1];
     // w * 15.4 + 4 + rand

@@ -43,12 +43,12 @@ ggml_tensor* lifuren::layer::Linear::forward(ggml_tensor* input) {
     return mul_mat_ret;
 }
 
-void lifuren::layer::Linear::defineWeight(std::map<std::string, ggml_tensor*>& weights) {
+void lifuren::layer::Linear::defineWeight() {
     this->weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->in_features, this->out_features);
-    weights.emplace(this->name + ".weight", this->weight);
+    this->defineWeight(this->name + ".weight", this->weight);
     if(this->bias_) {
         this->bias = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->out_features);
-        weights.emplace(this->name + ".bias", this->bias);
+        this->defineWeight(this->name + ".bias", this->bias);
     }
 }
 

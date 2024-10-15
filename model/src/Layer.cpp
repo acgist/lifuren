@@ -23,11 +23,27 @@ ggml_tensor* lifuren::layer::Layer::operator()(ggml_tensor* input) {
     return this->forward(input);
 }
 
-void lifuren::layer::Layer::bindWeight(const std::map<std::string, ggml_tensor*>& weights, const std::string& key, ggml_tensor** tensor) {
-    auto iterator = weights.find(key);
+ggml_tensor* lifuren::layer::Layer::operator[](const char* name) {
+    return ggml_get_tensor(this->ctx_weight, name);
+}
+
+void lifuren::layer::Layer::initWeight(std::function<void(ggml_tensor*)> function) {
+    auto weight = ggml_get_first_tensor(this->ctx_weight);
+    while(weight) {
+        function(weight);
+        weight = ggml_get_next_tensor(this->ctx_weight, weight);
+    }
+}
+
+void lifuren::layer::Layer::defineWeight(const std::string& name, ggml_tensor* weight) const {
+    lifuren::layer::defineWeight(name.c_str(), weight, this->ctx_compute);
+}
+
+ void lifuren::layer::Layer::bindWeight(const std::map<std::string, ggml_tensor*>& weights, const std::string& name, ggml_tensor** tensor) {
+    const auto iterator = weights.find(name);
     if(iterator == weights.end()) {
-        SPDLOG_WARN("绑定权重失败：{}", key);
+        SPDLOG_WARN("权重无效：{}", name);
         return;
     }
     *tensor = iterator->second;
-}
+ }

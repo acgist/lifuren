@@ -98,41 +98,41 @@ ggml_tensor* lifuren::layer::GRU::forward(ggml_tensor* input) {
     return y;
 }
 
-void lifuren::layer::GRU::defineWeight(std::map<std::string, ggml_tensor*>& weights) {
+void lifuren::layer::GRU::defineWeight() {
     // 更新门
     this->w_xz = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
     this->w_hz = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    weights.emplace(this->name + ".w_xz", this->w_xz);
-    weights.emplace(this->name + ".w_hz", this->w_hz);
+    this->defineWeight(this->name + ".w_xz", this->w_xz);
+    this->defineWeight(this->name + ".w_hz", this->w_hz);
     // 重置门
     this->w_xr = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
     this->w_hr = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    weights.emplace(this->name + ".w_xr", this->w_xr);
-    weights.emplace(this->name + ".w_hr", this->w_hr);
+    this->defineWeight(this->name + ".w_xr", this->w_xr);
+    this->defineWeight(this->name + ".w_hr", this->w_hr);
     // 候选隐状态
     this->w_xh = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
     this->w_hh = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    weights.emplace(this->name + ".w_xh", this->w_xh);
-    weights.emplace(this->name + ".w_hh", this->w_hh);
+    this->defineWeight(this->name + ".w_xh", this->w_xh);
+    this->defineWeight(this->name + ".w_hh", this->w_hh);
     // 隐藏状态
     this->h = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->batch_size);
-    weights.emplace(this->name + ".h", this->h);
+    this->defineWeight(this->name + ".h", this->h);
     // 输出
     this->w_hq = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    weights.emplace(this->name + ".w_hq", this->w_hq);
+    this->defineWeight(this->name + ".w_hq", this->w_hq);
     if(this->bias_) {
         // 更新门
         this->b_z = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        weights.emplace(this->name + ".b_z", this->b_z);
+        this->defineWeight(this->name + ".b_z", this->b_z);
         // 重置门
         this->b_r = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        weights.emplace(this->name + ".b_r", this->b_r);
+        this->defineWeight(this->name + ".b_r", this->b_r);
         // 候选隐状态
         this->b_h = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        weights.emplace(this->name + ".b_h", this->b_h);
+        this->defineWeight(this->name + ".b_h", this->b_h);
         // 输出
         this->b_q = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        weights.emplace(this->name + ".b_q", this->b_q);
+        this->defineWeight(this->name + ".b_q", this->b_q);
     }
 }
 

@@ -4,6 +4,9 @@
 
 std::string lifuren::tensor::print(const ggml_tensor* tensor, const bool log) {
     std::string message;
+    if(tensor == nullptr) {
+        return message;
+    }
     const int64_t& a = tensor->ne[0];
     const int64_t& b = tensor->ne[1];
     const int64_t& c = tensor->ne[2];

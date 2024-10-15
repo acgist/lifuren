@@ -65,13 +65,13 @@ ggml_tensor* lifuren::layer::Conv2d::forward(ggml_tensor* input) {
     return conv_2d_ret;
 }
 
-void lifuren::layer::Conv2d::defineWeight(std::map<std::string, ggml_tensor*>& weights) {
+void lifuren::layer::Conv2d::defineWeight() {
     this->kernel = ggml_new_tensor_4d(this->ctx_weight, GGML_TYPE_F32, this->kernel_size, this->kernel_size, this->in_channels, this->out_channels);
-    weights.emplace(this->name + ".kernel", this->kernel);
+    this->defineWeight(this->name + ".kernel", this->kernel);
     if(this->bias_) {
         // TODO: 偏置1还是计算w*h
         this->bias = ggml_new_tensor_3d(this->ctx_weight, GGML_TYPE_F32, 1, 1, this->out_channels);
-        weights.emplace(this->name + ".bias", this->bias);
+        this->defineWeight(this->name + ".bias", this->bias);
     }
 }
 

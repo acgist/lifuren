@@ -7,6 +7,7 @@
 
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
+#include "lifuren/Tensor.hpp"
 #include "lifuren/Dataset.hpp"
 
 class LayerModel : public lifuren::Model {
@@ -23,12 +24,12 @@ public:
 public:
     Model& defineWeight() override {
         this->linear = lifuren::layer::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
-        this->linear->defineWeight(this->weights);
+        this->linear->defineWeight();
         return *this;
     };
-    Model& bindWeight() override {
+    Model& bindWeight(const std::map<std::string, ggml_tensor*> weights) override {
         this->linear = lifuren::layer::linear(1, 1, this->ctx_weight, this->ctx_compute, "linear");
-        this->linear->bindWeight(this->weights);
+        this->linear->bindWeight(weights);
         return *this;
     };
     ggml_tensor* buildFeatures() override {
@@ -39,7 +40,7 @@ public:
     };
     ggml_tensor* buildLoss() override {
         // return ggml_sum(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
-        return ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels));
+        return ggml_sum(this->ctx_compute, ggml_abs(this->ctx_compute, ggml_sub(this->ctx_compute, this->logits, this->labels)));
     };
     ggml_tensor* buildLogits() override {
         return this->linear->forward(this->features);
@@ -53,11 +54,11 @@ public:
         .epoch_count = 64,
     };
     LayerModel save{params};
-    save.define().print().save(lifuren::config::CONFIG.tmp);
-    // save.define().print().saveEval(lifuren::config::CONFIG.tmp);
+    // save.define().print().save(lifuren::config::CONFIG.tmp);
+    save.define().print().saveEval(lifuren::config::CONFIG.tmp);
     LayerModel load{params};
-    load.load(lifuren::config::CONFIG.tmp).print();
-    // load.loadEval(lifuren::config::CONFIG.tmp).print();
+    // load.load(lifuren::config::CONFIG.tmp).print();
+    load.loadEval(lifuren::config::CONFIG.tmp).print();
 }
 
 [[maybe_unused]] static void testLine() {
@@ -92,23 +93,46 @@ public:
     };
     lifuren::Model::ModelParams params {
         .batch_size  = 10,
-        .epoch_count = 64,
+        .epoch_count = 256,
+        // .epoch_count = 1024,
         .optimizerParams = optParams
     };
     LayerModel save{params};
+    save.trainDataset.reset(dataset);
     save.define();
     // save.print();
-    save.trainDataset.reset(dataset);
-    save.trainAndVal();
+    save.trainValAndTest(false, false);
     float data[] { 3.2 };
     float target[1];
     // w * 15.4 + 4 + rand
     float* pred = save.eval(data, target, 1);
     SPDLOG_DEBUG("当前预测：{}", *pred);
     SPDLOG_DEBUG("当前权重：{}", save.linear->info());
+    lifuren::tensor::print((*save.linear)["linear.weight"]);
+    lifuren::tensor::print((*save.linear)["linear.bias"]);
+    save.save(lifuren::config::CONFIG.tmp);
+    save.saveEval(lifuren::config::CONFIG.tmp);
+}
+
+[[maybe_unsed]] static void testLoad() {
+    LayerModel model{
+        // {
+        //     .batch_size  = 10,
+        //     .thread_size = 1
+        // }
+    };
+    model.load(lifuren::config::CONFIG.tmp);
+    // model.loadEval(lifuren::config::CONFIG.tmp);
+    model.print();
+    float data[] { 3.2 };
+    float target[1];
+    // w * 15.4 + 4 + rand
+    float* pred = model.eval(data, target, 1);
+    SPDLOG_DEBUG("当前预测：{}", *pred);
 }
 
 LFR_TEST(
     testLine();
+    // testLoad();
     // testSaveLoad();
 );
