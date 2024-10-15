@@ -12,13 +12,35 @@
         .no_alloc   = false
     };
     ggml_context* ctx = ggml_init(params);
-    auto gru = lifuren::layer::gru(2, 4, ctx, ctx);
+    auto gru = lifuren::layer::gru(2, 4, 10, ctx, ctx);
     gru->defineWeight();
     gru->initWeight([](auto w) {
         lifuren::tensor::fill(w, 1.0F);
     });
     ggml_tensor* input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 2, 10);
     ggml_tensor* output = gru->forward(input);
+    ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
+    ggml_build_forward_expand(gf, output);
+    lifuren::tensor::fill(input, 2.0F);
+    ggml_graph_compute_with_ctx(ctx, gf, 4);
+    lifuren::tensor::print(output);
+    ggml_free(ctx);
+}
+
+[[maybe_unused]] static void testLSTM() {
+    struct ggml_init_params params = {
+        .mem_size   = 16 * 1024 * 1024,
+        .mem_buffer = NULL,
+        .no_alloc   = false
+    };
+    ggml_context* ctx = ggml_init(params);
+    auto lstm = lifuren::layer::lstm(2, 4, 10, ctx, ctx);
+    lstm->defineWeight();
+    lstm->initWeight([](auto w) {
+        lifuren::tensor::fill(w, 1.0F);
+    });
+    ggml_tensor* input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 2, 10);
+    ggml_tensor* output = lstm->forward(input);
     ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fill(input, 2.0F);
@@ -175,7 +197,8 @@
 }
 
 LFR_TEST(
-    testGRU();
+    // testGRU();
+    testLSTM();
     // testLinear();
     // testConv2d();
     // testAvgPool2d();

@@ -114,7 +114,7 @@ public:
     save.saveEval(lifuren::config::CONFIG.tmp);
 }
 
-[[maybe_unsed]] static void testLoad() {
+[[maybe_unused]] static void testLoad() {
     LayerModel model{
         // {
         //     .batch_size  = 10,

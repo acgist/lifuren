@@ -322,12 +322,11 @@ inline std::unique_ptr<Conv2d> conv2d(
 class GRU : public Layer {
 
 private:
-    size_t input_size;         // 输入特征大小
-    size_t hidden_size;        // 隐藏特征大小
-    size_t batch_size{ 10 };    // 批处理大小
-    size_t num_layer { 1 };    // 层数
-    double  dropout  { 0.0 };  // 丢弃概率
-    bool    bias_    { true }; // 是否添加偏置
+    size_t input_size;        // 输入特征大小
+    size_t hidden_size;       // 隐藏特征大小
+    size_t batch_size{ 1 };   // 批处理大小
+    double dropout  { 0.0 };  // 丢弃概率
+    bool   bias_    { true }; // 是否添加偏置
     ggml_tensor* w_xz{ nullptr }, * w_hz{ nullptr }, * b_z{ nullptr }; // 更新门参数
     ggml_tensor* w_xr{ nullptr }, * w_hr{ nullptr }, * b_r{ nullptr }; // 重置门参数
     ggml_tensor* w_xh{ nullptr }, * w_hh{ nullptr }, * b_h{ nullptr }; // 候选隐状态参数
@@ -338,21 +337,21 @@ public:
     GRU(
         size_t input_size,
         size_t hidden_size,
+        size_t batch_size,
         ggml_context* ctx,
         const std::string& name = "gru",
-        size_t num_layer = 1,
-        double dropout   = 0.0,
-        bool   bias      = true
+        const double dropout    = 0.0,
+        const bool   bias       = true
     );
     GRU(
         size_t input_size,
         size_t hidden_size,
+        size_t batch_size,
         ggml_context* ctx_weight,
         ggml_context* ctx_compute,
         const std::string& name = "gru",
-        size_t num_layer = 1,
-        double dropout   = 0.0,
-        bool   bias      = true
+        const double dropout    = 0.0,
+        const bool   bias       = true
     );
     ~GRU();
 
@@ -369,10 +368,10 @@ public:
 /**
  * @param input_size  输入特征大小
  * @param hidden_size 隐藏特征大小
+ * @param batch_size  批处理大小
  * @param ctx_weight  权重上下文
  * @param ctx_compute 计算上下文
  * @param name        名称
- * @param num_layer   层数
  * @param dropout     丢弃概率
  * @param bias        是否添加偏置
  * 
@@ -381,14 +380,14 @@ public:
 inline std::unique_ptr<GRU> gru(
     size_t input_size,
     size_t hidden_size,
+    size_t batch_size,
     ggml_context* ctx_weight,
     ggml_context* ctx_compute,
     const std::string& name = "gru",
-    size_t num_layer = 1,
-    double  dropout  = 0.0,
-    bool    bias     = true
+    const double  dropout   = 0.0,
+    const bool    bias      = true
 ) {
-    return std::make_unique<GRU>(input_size, hidden_size, ctx_weight, ctx_compute, name, num_layer, dropout, bias);
+    return std::make_unique<GRU>(input_size, hidden_size, batch_size, ctx_weight, ctx_compute, name, dropout, bias);
 }
 
 /**
@@ -398,25 +397,74 @@ inline std::unique_ptr<GRU> gru(
  */
 class LSTM : public Layer {
 
+private:
+    size_t input_size;        // 输入特征大小
+    size_t hidden_size;       // 隐藏特征大小
+    size_t batch_size{ 1 };   // 批处理大小
+    double dropout  { 0.0 };  // 丢弃概率
+    bool   bias_    { true }; // 是否添加偏置
+    ggml_tensor* w_xi{ nullptr }, * w_hi{ nullptr }, * b_i{ nullptr }; // 输入门参数
+    ggml_tensor* w_xf{ nullptr }, * w_hf{ nullptr }, * b_f{ nullptr }; // 遗忘门参数
+    ggml_tensor* w_xo{ nullptr }, * w_ho{ nullptr }, * b_o{ nullptr }; // 输出门参数
+    ggml_tensor* w_xc{ nullptr }, * w_hc{ nullptr }, * b_c{ nullptr }; // 候选记忆元参数
+    ggml_tensor                   * w_hq{ nullptr }, * b_q{ nullptr }; // 输出层参数
+    ggml_tensor* h{ nullptr }, * c{ nullptr }; // 隐藏状态
+
+public:
+    LSTM(
+        size_t input_size,
+        size_t hidden_size,
+        size_t batch_size,
+        ggml_context* ctx,
+        const std::string& name = "lstm",
+        const double dropout    = 0.0,
+        const bool   bias       = true
+    );
+    LSTM(
+        size_t input_size,
+        size_t hidden_size,
+        size_t batch_size,
+        ggml_context* ctx_weight,
+        ggml_context* ctx_compute,
+        const std::string& name = "lstm",
+        const double dropout    = 0.0,
+        const bool   bias       = true
+    );
+    ~LSTM();
+
+public:
+    using Layer::defineWeight;
+    using Layer::bindWeight;
+    std::string info() const override;
+    ggml_tensor* forward(ggml_tensor* input) override;
+    void defineWeight() override;
+    void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
+
 };
 
 /**
- * @param input_size  ?
- * @param hidden_size ?
- * @param num_layer   ?
- * @param bias        ?
- * @param dropout     ?
+ * @param input_size  输入特征大小
+ * @param hidden_size 隐藏特征大小
+ * @param batch_size  批处理大小
+ * @param ctx_weight  权重上下文
+ * @param ctx_compute 计算上下文
+ * @param name        名称
+ * @param dropout     丢弃概率
+ * @param bias        是否添加偏置
  * 
  * @return LSTM
  */
-inline void lstm(
+inline std::unique_ptr<LSTM> lstm(
     size_t input_size,
     size_t hidden_size,
-    size_t num_layer = 1,
-    bool    bias     = true,
-    double  dropout  = 0.0
+    size_t batch_size,
+    ggml_context* ctx_weight,
+    ggml_context* ctx_compute,
+    const std::string& name = "lstm",
+    const double  dropout   = 0.0,
+    const bool    bias      = true
 ) {
-    // TODO
+    return std::make_unique<LSTM>(input_size, hidden_size, batch_size, ctx_weight, ctx_compute, name, dropout, bias);
 }
 
 /**
