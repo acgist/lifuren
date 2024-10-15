@@ -5,6 +5,29 @@
 #include "lifuren/Layer.hpp"
 #include "lifuren/Tensor.hpp"
 
+[[maybe_unused]] static void testGRU() {
+    struct ggml_init_params params = {
+        .mem_size   = 16 * 1024 * 1024,
+        .mem_buffer = NULL,
+        .no_alloc   = false
+    };
+    ggml_context* ctx = ggml_init(params);
+    auto gru = lifuren::layer::gru(2, 4, ctx, ctx);
+    std::map<std::string, ggml_tensor*> weights;
+    gru->defineWeight(weights);
+    for(const auto& [n, w] : weights) {
+        lifuren::tensor::fill(w, 1.0F);
+    }
+    ggml_tensor* input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 2, 10);
+    ggml_tensor* output = gru->forward(input);
+    ggml_cgraph* gf = ggml_new_graph_custom(ctx, 1024, true);
+    ggml_build_forward_expand(gf, output);
+    lifuren::tensor::fill(input, 2.0F);
+    ggml_graph_compute_with_ctx(ctx, gf, 4);
+    lifuren::tensor::print(output);
+    ggml_free(ctx);
+}
+
 [[maybe_unused]] static void testLinear() {
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
@@ -136,10 +159,30 @@
     ggml_free(ctx);
 }
 
+[[maybe_unused]] static void testFlatten() {
+    struct ggml_init_params params = {
+        .mem_size   = 16 * 1024 * 1024,
+        .mem_buffer = NULL,
+        .no_alloc   = false
+    };
+    ggml_context* ctx    = ggml_init(params);
+    ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 5, 5);
+    ggml_tensor * output = lifuren::layer::flatten(ctx, input);
+    ggml_cgraph * gf     = ggml_new_graph_custom(ctx, 1024, true);
+    ggml_build_forward_expand(gf, output);
+    lifuren::tensor::fillRange(input, 0);
+    ggml_graph_compute_with_ctx(ctx, gf, 4);
+    lifuren::tensor::print(input);
+    lifuren::tensor::print(output);
+    ggml_free(ctx);
+}
+
 LFR_TEST(
+    testGRU();
     // testLinear();
     // testConv2d();
     // testAvgPool2d();
     // testMaxPool2d();
-    testLoss();
+    // testLoss();
+    // testFlatten();
 );

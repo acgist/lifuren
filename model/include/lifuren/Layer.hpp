@@ -142,6 +142,8 @@ namespace layer {
 
 /**
  * Layer
+ * 
+ * TODO: reset_weights?
  */
 class Layer {
 
@@ -166,6 +168,7 @@ public:
 
 /**
  * 线性层/全连接层
+ * https://pytorch.org/docs/stable/generated/torch.nn.Linear.html#torch.nn.Linear
  */
 class Linear : public Layer {
 
@@ -226,6 +229,7 @@ inline std::unique_ptr<Linear> linear(
 
 /**
  * 卷积层
+ * https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html#torch.nn.Conv2d
  */
 class Conv2d : public Layer {
 
@@ -305,23 +309,89 @@ inline std::unique_ptr<Conv2d> conv2d(
 }
 
 /**
- * @param input_size  ?
- * @param hidden_size ?
- * @param num_layer   ?
- * @param bias        ?
- * @param dropout     ?
+ * GRU
+ * https://zh.d2l.ai/chapter_recurrent-modern/gru.html
+ * https://pytorch.org/docs/stable/generated/torch.nn.GRU.html#torch.nn.GRU
+ */
+class GRU : public Layer {
+
+private:
+    size_t input_size;         // 输入特征大小
+    size_t hidden_size;        // 隐藏特征大小
+    size_t batch_size{ 10 };    // 批处理大小
+    size_t num_layer { 1 };    // 层数
+    double  dropout  { 0.0 };  // 丢弃概率
+    bool    bias_    { true }; // 是否添加偏置
+    ggml_tensor* w_xz{ nullptr }, * w_hz{ nullptr }, * b_z{ nullptr }; // 更新门参数
+    ggml_tensor* w_xr{ nullptr }, * w_hr{ nullptr }, * b_r{ nullptr }; // 重置门参数
+    ggml_tensor* w_xh{ nullptr }, * w_hh{ nullptr }, * b_h{ nullptr }; // 候选隐状态参数
+    ggml_tensor                   * w_hq{ nullptr }, * b_q{ nullptr }; // 输出层参数
+    ggml_tensor* h{ nullptr }; // 隐藏状态
+
+public:
+    GRU(
+        size_t input_size,
+        size_t hidden_size,
+        ggml_context* ctx,
+        const std::string& name = "gru",
+        size_t num_layer = 1,
+        double dropout   = 0.0,
+        bool   bias      = true
+    );
+    GRU(
+        size_t input_size,
+        size_t hidden_size,
+        ggml_context* ctx_weight,
+        ggml_context* ctx_compute,
+        const std::string& name = "gru",
+        size_t num_layer = 1,
+        double dropout   = 0.0,
+        bool   bias      = true
+    );
+    ~GRU();
+
+public:
+    using Layer::bindWeight;
+    std::string info() const override;
+    ggml_tensor* forward(ggml_tensor* input) override;
+    void defineWeight(      std::map<std::string, ggml_tensor*>& weights) override;
+    void bindWeight  (const std::map<std::string, ggml_tensor*>& weights) override;
+
+};
+
+/**
+ * @param input_size  输入特征大小
+ * @param hidden_size 隐藏特征大小
+ * @param ctx_weight  权重上下文
+ * @param ctx_compute 计算上下文
+ * @param name        名称
+ * @param num_layer   层数
+ * @param dropout     丢弃概率
+ * @param bias        是否添加偏置
  * 
  * @return GRU
  */
-inline void gru(
-    int64_t input_size,
-    int64_t hidden_size,
-    int64_t num_layer = 1,
-    bool    bias      = true,
-    double  dropout   = 0.0
+inline std::unique_ptr<GRU> gru(
+    size_t input_size,
+    size_t hidden_size,
+    ggml_context* ctx_weight,
+    ggml_context* ctx_compute,
+    const std::string& name = "gru",
+    size_t num_layer = 1,
+    double  dropout  = 0.0,
+    bool    bias     = true
 ) {
-    // TODO
+    return std::make_unique<GRU>(input_size, hidden_size, ctx_weight, ctx_compute, name, num_layer, dropout, bias);
 }
+
+/**
+ * LSTM
+ * https://zh.d2l.ai/chapter_recurrent-modern/lstm.html
+ * https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html#torch.nn.LSTM
+ */
+class LSTM : public Layer {
+
+};
 
 /**
  * @param input_size  ?
@@ -333,16 +403,18 @@ inline void gru(
  * @return LSTM
  */
 inline void lstm(
-    int64_t input_size,
-    int64_t hidden_size,
-    int64_t num_layer = 1,
-    bool    bias      = true,
-    double  dropout   = 0.0
+    size_t input_size,
+    size_t hidden_size,
+    size_t num_layer = 1,
+    bool    bias     = true,
+    double  dropout  = 0.0
 ) {
     // TODO
 }
 
 /**
+ * https://pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d
+ * 
  * @param kernel_size 池化核大小
  * @param input       输入张量
  * @param ctx_compute 计算上下文
@@ -352,11 +424,11 @@ inline void lstm(
  * @return 平均池化
  */
 inline ggml_tensor* avgPool2d(
-    int64_t kernel_size,
+    size_t kernel_size,
     ggml_tensor * input,
     ggml_context* ctx_compute,
-    int64_t stride  = 1,
-    int64_t padding = 0
+    size_t stride  = 1,
+    size_t padding = 0
 ) {
     return ggml_pool_2d(
         ctx_compute, input, GGML_OP_POOL_AVG,
@@ -367,6 +439,8 @@ inline ggml_tensor* avgPool2d(
 }
 
 /**
+ * https://pytorch.org/docs/stable/generated/torch.nn.MaxPool2d.html#torch.nn.MaxPool2d
+ * 
  * @param kernel_size 池化核大小
  * @param input       输入张量
  * @param ctx_compute 计算上下文
@@ -376,11 +450,11 @@ inline ggml_tensor* avgPool2d(
  * @return 最大池化
  */
 inline ggml_tensor* maxPool2d(
-    int64_t kernel_size,
+    size_t kernel_size,
     ggml_tensor * input,
     ggml_context* ctx_compute,
-    int64_t stride  = 1,
-    int64_t padding = 0
+    size_t stride  = 1,
+    size_t padding = 0
 ) {
     return ggml_pool_2d(
         ctx_compute, input, GGML_OP_POOL_MAX,
@@ -390,8 +464,16 @@ inline ggml_tensor* maxPool2d(
     );
 }
 
-inline void flatten() {
-    // TODO
+/**
+ * https://pytorch.org/docs/stable/generated/torch.nn.Flatten.html#torch.nn.Flatten
+ * 
+ * @param ctx    计算上下文
+ * @param tensor 张量
+ * 
+ * @return 结果
+ */
+inline ggml_tensor* flatten(ggml_context* ctx, ggml_tensor* tensor) {
+    return ggml_view_1d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3], 0);
 }
 
 /**
