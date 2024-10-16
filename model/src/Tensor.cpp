@@ -21,11 +21,10 @@ element_size = {}
     const float* data = ggml_get_data_f32(tensor);
     if(d == 1LL && c == 1L && b == 1L) {
         for(int64_t ai = 0LL; ai < a; ++ai) {
-            message += fmt::format(" {: >10.6f}\n", data[ai]);
+            message += fmt::format("{: >10.6f}\n", data[ai]);
         }
     } else if(d == 1LL && c == 1L) {
         for(int64_t ai = 0LL; ai < a; ++ai) {
-            message += " ";
             for(int64_t bi = 0LL; bi < b; ++bi) {
                 message += fmt::format("{: >10.6f} ", data[
                     b * ai +

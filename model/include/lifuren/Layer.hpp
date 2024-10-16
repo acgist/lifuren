@@ -558,23 +558,42 @@ inline void defineWeight(const char* name, ggml_tensor* weight, ggml_context* ct
  * 
  * @param ctx        计算上下文
  * @param tensor     张量
- * @param batch_size 批量大小
  * 
  * @return 结果
  */
-inline ggml_tensor* flatten(ggml_context* ctx, ggml_tensor* tensor, const size_t& batch_size = 0LL) {
-    if(batch_size == 0LL) {
-        return ggml_reshape_1d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3]);
-    } else {
-        // tensor-ne[3] == batch_size
-        return ggml_reshape_2d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3] / batch_size, batch_size);
+inline ggml_tensor* flatten(ggml_context* ctx, ggml_tensor* tensor) {
+    return ggml_reshape_1d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3]);
+}
+
+inline ggml_tensor* reshape(
+    ggml_context* ctx, ggml_tensor* tensor,
+    const size_t& a = 1LL,
+    const size_t& b = 1LL,
+    const size_t& c = 1LL,
+    const size_t& d = 1LL
+) {
+    if(d == 1LL && c == 1LL && b == 1LL) {
+        return ggml_reshape_1d(ctx, tensor, a);
     }
+    if(d == 1LL && c == 1LL) {
+        return ggml_reshape_2d(ctx, tensor, a, b);
+    }
+    if(d == 1LL) {
+        return ggml_reshape_3d(ctx, tensor, a, b, c);
+    }
+    return ggml_reshape_4d(ctx, tensor, a, b, c, d);
 }
 
-inline ggml_tensor* permute() {
-}
-
-inline ggml_tensor* reshape() {
+inline ggml_tensor* permute(
+    ggml_context* ctx, ggml_tensor* tensor,
+    const size_t& a = 0LL,
+    const size_t& b = 1LL,
+    const size_t& c = 2LL,
+    const size_t& d = 3LL
+) {
+    // 参数libtorch相反
+    // return ggml_permute(ctx, tensor, a, b, c, d);
+    return ggml_cont(ctx, ggml_permute(ctx, tensor, a, b, c, d));
 }
 
 /**

@@ -1,9 +1,14 @@
 #include "lifuren/Test.hpp"
 
+#include <fstream>
+
 #include "ggml.h"
 
+#include "lifuren/File.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Tensor.hpp"
+
+#include "opencv2/opencv.hpp"
 
 [[maybe_unused]] static void testGRU() {
     struct ggml_init_params params = {
@@ -184,19 +189,30 @@
         .mem_buffer = NULL,
         .no_alloc   = false
     };
+    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
+    // torch::Tensor tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte);
     ggml_context* ctx    = ggml_init(params);
+    // ggml_tensor * input  = ggml_new_tensor_3d(ctx, GGML_TYPE_F32, image.rows, image.cols, 3);
     // ggml_tensor * input  = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 24);
-    // ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 6);
+    ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 6);
     // ggml_tensor * input  = ggml_new_tensor_3d(ctx, GGML_TYPE_F32, 4, 2, 3);
-    ggml_tensor * input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 3, 2, 2, 2);
+    // ggml_tensor * input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 3, 2, 2, 2);
+    // ggml_tensor * input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 2, 3, 4, 5);
     // ggml_tensor * output = lifuren::function::flatten(ctx, input);
-    ggml_tensor * output = ggml_cont(ctx, input);
+    // ggml_tensor * output = lifuren::function::reshape(ctx, input, 4, 6);
+    // ggml_tensor * output = lifuren::function::permute(ctx, input, 1, 2, 0);
+    ggml_tensor * output = lifuren::function::permute(ctx, input, 1, 0);
+    // ggml_tensor * output = ggml_cont(ctx, input);
     ggml_cgraph * gf     = ggml_new_graph_custom(ctx, 1024, true);
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fillRange(input, 0);
+    // std::copy(image.data, image.data + image.rows * image.cols * 3, static_cast<float*>(input->data));
     ggml_graph_compute_with_ctx(ctx, gf, 4);
-    lifuren::tensor::print(input);
-    lifuren::tensor::print(output);
+    std::ofstream out;
+    out.open(lifuren::file::join({lifuren::config::CONFIG.tmp, "ggml.data"}));
+    out << lifuren::tensor::print(input);
+    out << lifuren::tensor::print(output);
+    out.close();
     ggml_free(ctx);
 }
 
