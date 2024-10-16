@@ -61,6 +61,7 @@ ggml_tensor* lifuren::layer::Conv2d::forward(ggml_tensor* input) {
     );
     if(this->bias_) {
         return ggml_add(this->ctx_compute, conv_2d_ret, this->bias);
+        // return ggml_add_inplace(this->ctx_compute, conv_2d_ret, this->bias);
     }
     return conv_2d_ret;
 }

@@ -1,6 +1,9 @@
 /**
  * Layer
  * 
+ * 提供常用Layer
+ * 提供常用矩阵变换
+ * 
  * @author acgist
  * 
  * 参考资料：
@@ -26,6 +29,23 @@
 #include <functional>
 
 #include "ggml.h"
+
+#ifndef LFR_BIND_WEIGHT
+#define LFR_BIND_WEIGHT(weight_name) \
+this->bindWeight(weights, this->name + "." + #weight_name, &this->weight_name);
+#endif
+
+#ifndef LFR_DEFINE_LAYER_1D
+#define LFR_DEFINE_LAYER_1D(weight_name, size)                                       \
+this->weight_name = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->size); \
+this->defineWeight(this->name + "." + #weight_name, this->weight_name);
+#endif
+
+#ifndef LFR_DEFINE_LAYER_2D
+#define LFR_DEFINE_LAYER_2D(weight_name, i_size, o_size)                                             \
+this->weight_name = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->i_size, this->o_size); \
+this->defineWeight(this->name + "." + #weight_name, this->weight_name);
+#endif
 
 namespace lifuren {
 
@@ -137,7 +157,7 @@ inline ggml_tensor* crossEntropyLoss(ggml_context* ctx, ggml_tensor* source, ggm
     return ggml_cross_entropy_loss(ctx, source, target);
 }
 
-}
+} // END OF loss
 
 namespace layer {
 
@@ -331,7 +351,7 @@ private:
     ggml_tensor* w_xr{ nullptr }, * w_hr{ nullptr }, * b_r{ nullptr }; // 重置门参数
     ggml_tensor* w_xh{ nullptr }, * w_hh{ nullptr }, * b_h{ nullptr }; // 候选隐状态参数
     ggml_tensor                   * w_hq{ nullptr }, * b_q{ nullptr }; // 输出层参数
-    ggml_tensor* h{ nullptr }; // 隐藏状态
+    ggml_tensor                   * h   { nullptr };                   // 隐藏状态
 
 public:
     GRU(
@@ -408,7 +428,7 @@ private:
     ggml_tensor* w_xo{ nullptr }, * w_ho{ nullptr }, * b_o{ nullptr }; // 输出门参数
     ggml_tensor* w_xc{ nullptr }, * w_hc{ nullptr }, * b_c{ nullptr }; // 候选记忆元参数
     ggml_tensor                   * w_hq{ nullptr }, * b_q{ nullptr }; // 输出层参数
-    ggml_tensor* h{ nullptr }, * c{ nullptr }; // 隐藏状态
+    ggml_tensor                   * h   { nullptr }, * c  { nullptr }; // 隐藏状态
 
 public:
     LSTM(
@@ -467,6 +487,10 @@ inline std::unique_ptr<LSTM> lstm(
     return std::make_unique<LSTM>(input_size, hidden_size, batch_size, ctx_weight, ctx_compute, name, dropout, bias);
 }
 
+} // END OF layer
+
+namespace function {
+
 /**
  * https://pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html#torch.nn.AvgPool2d
  * 
@@ -520,7 +544,9 @@ inline ggml_tensor* maxPool2d(
 }
 
 /**
- * 
+ * @param name   名称
+ * @param weight 权重
+ * @param ctx    上下文
  */
 inline void defineWeight(const char* name, ggml_tensor* weight, ggml_context* ctx) {
     ggml_set_name(weight, name);
@@ -530,13 +556,25 @@ inline void defineWeight(const char* name, ggml_tensor* weight, ggml_context* ct
 /**
  * https://pytorch.org/docs/stable/generated/torch.nn.Flatten.html#torch.nn.Flatten
  * 
- * @param ctx    计算上下文
- * @param tensor 张量
+ * @param ctx        计算上下文
+ * @param tensor     张量
+ * @param batch_size 批量大小
  * 
  * @return 结果
  */
-inline ggml_tensor* flatten(ggml_context* ctx, ggml_tensor* tensor) {
-    return ggml_view_1d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3], 0);
+inline ggml_tensor* flatten(ggml_context* ctx, ggml_tensor* tensor, const size_t& batch_size = 0LL) {
+    if(batch_size == 0LL) {
+        return ggml_reshape_1d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3]);
+    } else {
+        // tensor-ne[3] == batch_size
+        return ggml_reshape_2d(ctx, tensor, tensor->ne[0] * tensor->ne[1] * tensor->ne[2] * tensor->ne[3] / batch_size, batch_size);
+    }
+}
+
+inline ggml_tensor* permute() {
+}
+
+inline ggml_tensor* reshape() {
 }
 
 /**
@@ -574,7 +612,7 @@ inline void batchNorm2d() {
     // TODO
 }
 
-} // END layer
-} // END lifuren
+} // END OF function
+} // END OF lifuren
 
 #endif // LFR_HEADER_MODEL_LAYER_HPP

@@ -77,11 +77,11 @@ struct ModelParams {
     // 分类数量
     size_t size_classify = 0LL;
     // 计算图的大小
-    size_t size_cgraph   = 16LL  * 1024;
+    size_t size_cgraph   = 2LL   * 1024;
     // 权重大小
-    size_t size_weight   = 128LL * 1024 * 1024;
+    size_t size_weight   = 256LL * 1024 * 1024;
     // 计算大小
-    size_t size_compute  = 256LL * 1024 * 1024;
+    size_t size_compute  = 512LL * 1024 * 1024;
     // 优化函数参数
     OptimizerParams optimizerParams;
 

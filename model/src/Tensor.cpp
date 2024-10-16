@@ -16,22 +16,61 @@ dims         = {} * {} * {} * {}
 nbytes       = {}
 nelements    = {}
 element_size = {}
-)", d, c, b, a, ggml_nbytes(tensor), ggml_nelements(tensor), ggml_element_size(tensor));
+
+)", a, b, c, d, ggml_nbytes(tensor), ggml_nelements(tensor), ggml_element_size(tensor));
     const float* data = ggml_get_data_f32(tensor);
-    for(int64_t i = 0LL, di = 0LL; di < d; ++di) {
-        message += "{\n";
-        for(int64_t ci = 0LL; ci < c; ++ci) {
-            message += " [\n";
-            for(int64_t bi = 0LL; bi < b; ++bi) {
-                message += "  ";
-                for(int64_t ai = 0LL; ai < a; ++ai, ++i) {
-                    message += fmt::format("{: >10.6f} ", data[i]);
-                }
-                message += '\n';
-            }
-            message += " ]\n";
+    if(d == 1LL && c == 1L && b == 1L) {
+        for(int64_t ai = 0LL; ai < a; ++ai) {
+            message += fmt::format(" {: >10.6f}\n", data[ai]);
         }
-        message += "}\n";
+    } else if(d == 1LL && c == 1L) {
+        for(int64_t ai = 0LL; ai < a; ++ai) {
+            message += " ";
+            for(int64_t bi = 0LL; bi < b; ++bi) {
+                message += fmt::format("{: >10.6f} ", data[
+                    b * ai +
+                        bi
+                ]);
+            }
+            message += '\n';
+        }
+    } else if(d == 1LL) {
+        for(int64_t ai = 0LL; ai < a; ++ai) {
+            message += "{\n";
+                for(int64_t bi = 0LL; bi < b; ++bi) {
+                    message += " ";
+                    for(int64_t ci = 0LL; ci < c; ++ci) {
+                        message += fmt::format("{: >10.6f} ", data[
+                                b * c * ai +
+                                    c * bi +
+                                        ci
+                        ]);
+                    }
+                    message += '\n';
+                }
+            message += fmt::format("{} ({},.,.)\n", "}", ai);
+        }
+    } else {
+        for(int64_t bi = 0LL; bi < b; ++bi) {
+            message += "{\n";
+            for(int64_t ai = 0LL; ai < a; ++ai) {
+                message += " [\n";
+                for(int64_t ci = 0LL; ci < c; ++ci) {
+                    message += "  ";
+                    for(int64_t di = 0LL; di < d; ++di) {
+                        message += fmt::format("{: >10.6f} ", data[
+                            b * c * d * ai +
+                                c * d * bi +
+                                    d * ci +
+                                        di
+                        ]);
+                    }
+                    message += '\n';
+                }
+                message += fmt::format(" ] ({},{},.,.)\n", ai, bi);
+            }
+            message += "}\n";
+        }
     }
     if(log) {
         SPDLOG_DEBUG("\n{}", message);

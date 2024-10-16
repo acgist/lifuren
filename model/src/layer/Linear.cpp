@@ -39,6 +39,7 @@ ggml_tensor* lifuren::layer::Linear::forward(ggml_tensor* input) {
     ggml_tensor* mul_mat_ret = ggml_mul_mat(this->ctx_compute, this->weight, input);
     if(this->bias_) {
         return ggml_add(this->ctx_compute, mul_mat_ret, this->bias);
+        // return ggml_add_inplace(this->ctx_compute, mul_mat_ret, this->bias);
     }
     return mul_mat_ret;
 }

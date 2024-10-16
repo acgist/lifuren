@@ -86,8 +86,6 @@ ggml_tensor* lifuren::layer::LSTM::forward(ggml_tensor* input) {
         )
     );
     // C = F * C + I * C_tilda
-        ggml_mul(this->ctx_compute, f, this->c);
-        ggml_mul(this->ctx_compute, i, c_tilda);
     ggml_tensor* c = ggml_add(this->ctx_compute,
         ggml_mul(this->ctx_compute, f, this->c),
         ggml_mul(this->ctx_compute, i, c_tilda)
@@ -109,70 +107,54 @@ ggml_tensor* lifuren::layer::LSTM::forward(ggml_tensor* input) {
 
 void lifuren::layer::LSTM::defineWeight() {
     // 输入门
-    this->w_xi = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hi = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xi", this->w_xi);
-    this->defineWeight(this->name + ".w_hi", this->w_hi);
+    LFR_DEFINE_LAYER_2D(w_xi, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hi, hidden_size, hidden_size)
     // 遗忘门
-    this->w_xf = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hf = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xf", this->w_xf);
-    this->defineWeight(this->name + ".w_hf", this->w_hf);
+    LFR_DEFINE_LAYER_2D(w_xf, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hf, hidden_size, hidden_size)
     // 输出门
-    this->w_xo = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_ho = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xo", this->w_xo);
-    this->defineWeight(this->name + ".w_ho", this->w_ho);
+    LFR_DEFINE_LAYER_2D(w_xo, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_ho, hidden_size, hidden_size)
     // 候选记忆元
-    this->w_xc = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hc = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xc", this->w_xc);
-    this->defineWeight(this->name + ".w_hc", this->w_hc);
+    LFR_DEFINE_LAYER_2D(w_xc, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hc, hidden_size, hidden_size)
     // 输出层
-    this->w_hq = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_hq", this->w_hq);
+    LFR_DEFINE_LAYER_2D(w_hq, hidden_size, hidden_size)
     // 隐藏状态
-    this->h = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->batch_size);
-    this->defineWeight(this->name + ".h", this->h);
-    this->c = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->batch_size);
-    this->defineWeight(this->name + ".c", this->c);
+    LFR_DEFINE_LAYER_2D(h, hidden_size, batch_size)
+    LFR_DEFINE_LAYER_2D(c, hidden_size, batch_size)
     if(this->bias_) {
         // 输入门
-        this->b_i = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_i", this->b_i);
+        LFR_DEFINE_LAYER_1D(b_i, hidden_size)
         // 遗忘门
-        this->b_f = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_f", this->b_f);
+        LFR_DEFINE_LAYER_1D(b_f, hidden_size)
         // 输出门
-        this->b_o = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_o", this->b_o);
+        LFR_DEFINE_LAYER_1D(b_o, hidden_size)
         // 候选记忆元
-        this->b_c = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_c", this->b_c);
+        LFR_DEFINE_LAYER_1D(b_c, hidden_size)
         // 输出层
-        this->b_q = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_q", this->b_q);
+        LFR_DEFINE_LAYER_1D(b_q, hidden_size)
     }
 }
 
 
 void lifuren::layer::LSTM::bindWeight(const std::map<std::string, ggml_tensor*>& weights) {
-    this->bindWeight(weights, this->name + ".w_xi", & this->w_xi);
-    this->bindWeight(weights, this->name + ".w_hi", & this->w_hi);
-    this->bindWeight(weights, this->name + ".w_xf", & this->w_xf);
-    this->bindWeight(weights, this->name + ".w_hf", & this->w_hf);
-    this->bindWeight(weights, this->name + ".w_xo", & this->w_xo);
-    this->bindWeight(weights, this->name + ".w_ho", & this->w_ho);
-    this->bindWeight(weights, this->name + ".w_xc", & this->w_xc);
-    this->bindWeight(weights, this->name + ".w_hc", & this->w_hc);
-    this->bindWeight(weights, this->name + ".w_hq", & this->w_hq);
-    this->bindWeight(weights, this->name + ".h", & this->h);
-    this->bindWeight(weights, this->name + ".c", & this->c);
+    LFR_BIND_WEIGHT(w_xi)
+    LFR_BIND_WEIGHT(w_hi)
+    LFR_BIND_WEIGHT(w_xf)
+    LFR_BIND_WEIGHT(w_hf)
+    LFR_BIND_WEIGHT(w_xo)
+    LFR_BIND_WEIGHT(w_ho)
+    LFR_BIND_WEIGHT(w_xc)
+    LFR_BIND_WEIGHT(w_hc)
+    LFR_BIND_WEIGHT(w_hq)
+    LFR_BIND_WEIGHT(h)
+    LFR_BIND_WEIGHT(c)
     if(this->bias_) {
-        this->bindWeight(weights, this->name + ".b_i", & this->b_i);
-        this->bindWeight(weights, this->name + ".b_f", & this->b_f);
-        this->bindWeight(weights, this->name + ".b_o", & this->b_o);
-        this->bindWeight(weights, this->name + ".b_c", & this->b_c);
-        this->bindWeight(weights, this->name + ".b_q", & this->b_q);
+        LFR_BIND_WEIGHT(b_i)
+        LFR_BIND_WEIGHT(b_f)
+        LFR_BIND_WEIGHT(b_o)
+        LFR_BIND_WEIGHT(b_c)
+        LFR_BIND_WEIGHT(b_q)
     }
 }

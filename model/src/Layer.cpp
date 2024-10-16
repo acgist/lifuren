@@ -36,7 +36,7 @@ void lifuren::layer::Layer::initWeight(std::function<void(ggml_tensor*)> functio
 }
 
 void lifuren::layer::Layer::defineWeight(const std::string& name, ggml_tensor* weight) const {
-    lifuren::layer::defineWeight(name.c_str(), weight, this->ctx_compute);
+    lifuren::function::defineWeight(name.c_str(), weight, this->ctx_compute);
 }
 
  void lifuren::layer::Layer::bindWeight(const std::map<std::string, ggml_tensor*>& weights, const std::string& name, ggml_tensor** tensor) {

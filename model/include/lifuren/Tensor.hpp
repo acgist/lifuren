@@ -1,5 +1,9 @@
 /**
- * 矩阵工具
+ * Tensor
+ * 
+ * 矩阵填充
+ * 
+ * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_TENSOR_HPP
 #define LFR_HEADER_MODEL_TENSOR_HPP

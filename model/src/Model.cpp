@@ -161,7 +161,7 @@ lifuren::Model& lifuren::Model::loadEval(const std::string& path, const std::str
 }
 
 lifuren::Model& lifuren::Model::define(const InitType type, float mean, float sigma, float value) {
-    this->initWeight();
+    this->initCtxWeight();
     this->initCtxCompute();
     this->defineWeight();
     this->initWeight(type, mean, sigma, value);

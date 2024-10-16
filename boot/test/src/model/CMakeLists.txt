@@ -14,6 +14,22 @@ target_link_libraries(
     lifurenmodel
 )
 
+add_executable(testGender TestGender.cpp)
+add_test(NAME testGender COMMAND testGender)
+set_target_properties(testGender PROPERTIES FOLDER "test-model")
+target_link_libraries(
+    testGender
+    lifurenmodel
+)
+
+add_executable(testLinear TestLinear.cpp)
+add_test(NAME testLinear COMMAND testLinear)
+set_target_properties(testLinear PROPERTIES FOLDER "test-model")
+target_link_libraries(
+    testLinear
+    lifurenmodel
+)
+
 add_executable(testTensor TestTensor.cpp)
 add_test(NAME testTensor COMMAND testTensor)
 set_target_properties(testTensor PROPERTIES FOLDER "test-model")
@@ -29,13 +45,5 @@ target_link_libraries(
     testDataset
     lifurencv
     lifurennlp
-    lifurenmodel
-)
-
-add_executable(testLayerModel TestLayerModel.cpp)
-add_test(NAME testLayerModel COMMAND testLayerModel)
-set_target_properties(testLayerModel PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testLayerModel
     lifurenmodel
 )

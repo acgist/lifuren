@@ -100,55 +100,43 @@ ggml_tensor* lifuren::layer::GRU::forward(ggml_tensor* input) {
 
 void lifuren::layer::GRU::defineWeight() {
     // 更新门
-    this->w_xz = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hz = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xz", this->w_xz);
-    this->defineWeight(this->name + ".w_hz", this->w_hz);
+    LFR_DEFINE_LAYER_2D(w_xz, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hz, hidden_size, hidden_size)
     // 重置门
-    this->w_xr = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hr = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xr", this->w_xr);
-    this->defineWeight(this->name + ".w_hr", this->w_hr);
+    LFR_DEFINE_LAYER_2D(w_xr, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hr, hidden_size, hidden_size)
     // 候选隐状态
-    this->w_xh = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->input_size,  this->hidden_size);
-    this->w_hh = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_xh", this->w_xh);
-    this->defineWeight(this->name + ".w_hh", this->w_hh);
+    LFR_DEFINE_LAYER_2D(w_xh, input_size,  hidden_size)
+    LFR_DEFINE_LAYER_2D(w_hh, hidden_size, hidden_size)
     // 输出层
-    this->w_hq = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->hidden_size);
-    this->defineWeight(this->name + ".w_hq", this->w_hq);
+    LFR_DEFINE_LAYER_2D(w_hq, hidden_size, hidden_size)
     // 隐藏状态
-    this->h = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size, this->batch_size);
-    this->defineWeight(this->name + ".h", this->h);
+    LFR_DEFINE_LAYER_2D(h, hidden_size, batch_size)
     if(this->bias_) {
         // 更新门
-        this->b_z = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_z", this->b_z);
+        LFR_DEFINE_LAYER_1D(b_z, hidden_size)
         // 重置门
-        this->b_r = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_r", this->b_r);
+        LFR_DEFINE_LAYER_1D(b_r, hidden_size)
         // 候选隐状态
-        this->b_h = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_h", this->b_h);
+        LFR_DEFINE_LAYER_1D(b_h, hidden_size)
         // 输出层
-        this->b_q = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, this->hidden_size);
-        this->defineWeight(this->name + ".b_q", this->b_q);
+        LFR_DEFINE_LAYER_1D(b_q, hidden_size)
     }
 }
 
 void lifuren::layer::GRU::bindWeight(const std::map<std::string, ggml_tensor*>& weights) {
-    this->bindWeight(weights, this->name + ".w_xz", & this->w_xz);
-    this->bindWeight(weights, this->name + ".w_hz", & this->w_hz);
-    this->bindWeight(weights, this->name + ".w_xr", & this->w_xr);
-    this->bindWeight(weights, this->name + ".w_hr", & this->w_hr);
-    this->bindWeight(weights, this->name + ".w_xh", & this->w_xh);
-    this->bindWeight(weights, this->name + ".w_hh", & this->w_hh);
-    this->bindWeight(weights, this->name + ".w_hq", & this->w_hq);
-    this->bindWeight(weights, this->name + ".h", & this->h);
+    LFR_BIND_WEIGHT(w_xz)
+    LFR_BIND_WEIGHT(w_hz)
+    LFR_BIND_WEIGHT(w_xr)
+    LFR_BIND_WEIGHT(w_hr)
+    LFR_BIND_WEIGHT(w_xh)
+    LFR_BIND_WEIGHT(w_hh)
+    LFR_BIND_WEIGHT(w_hq)
+    LFR_BIND_WEIGHT(h)
     if(this->bias_) {
-        this->bindWeight(weights, this->name + ".b_z", & this->b_z);
-        this->bindWeight(weights, this->name + ".b_r", & this->b_r);
-        this->bindWeight(weights, this->name + ".b_h", & this->b_h);
-        this->bindWeight(weights, this->name + ".b_q", & this->b_q);
+        LFR_BIND_WEIGHT(b_z)
+        LFR_BIND_WEIGHT(b_r)
+        LFR_BIND_WEIGHT(b_h)
+        LFR_BIND_WEIGHT(b_q)
     }
 }

@@ -10,15 +10,15 @@
 #include "lifuren/Tensor.hpp"
 #include "lifuren/Dataset.hpp"
 
-class LayerModel : public lifuren::Model {
+class LinearModel : public lifuren::Model {
 
 public:
     std::unique_ptr<lifuren::layer::Linear> linear{ nullptr };
 
 public:
-    LayerModel(lifuren::Model::ModelParams params = {}) : Model(params) {
+    LinearModel(lifuren::Model::ModelParams params = {}) : Model(params) {
     }
-    ~LayerModel() {
+    ~LinearModel() {
     }
 
 public:
@@ -53,10 +53,10 @@ public:
         .batch_size  = 1,
         .epoch_count = 64,
     };
-    LayerModel save{params};
+    LinearModel save{params};
     // save.define().print().save(lifuren::config::CONFIG.tmp);
     save.define().print().saveEval(lifuren::config::CONFIG.tmp);
-    LayerModel load{params};
+    LinearModel load{params};
     // load.load(lifuren::config::CONFIG.tmp).print();
     load.loadEval(lifuren::config::CONFIG.tmp).print();
 }
@@ -72,14 +72,14 @@ public:
         features[index] = weight(rand);
         labels  [index] = features[index] * 15.4 + 4 + bias(rand);
     }
-    for(int i = 0; i < 210; ++i) {
-        auto v = features[i];
-        SPDLOG_DEBUG("d = {}", v);
-    }
-    for(int i = 0; i < 210; ++i) {
-        auto v = labels[i];
-        SPDLOG_DEBUG("l = {}", v);
-    }
+    // for(int i = 0; i < 210; ++i) {
+    //     auto v = features[i];
+    //     SPDLOG_DEBUG("d = {}", v);
+    // }
+    // for(int i = 0; i < 210; ++i) {
+    //     auto v = labels[i];
+    //     SPDLOG_DEBUG("l = {}", v);
+    // }
     lifuren::dataset::RawDataset* dataset = new lifuren::dataset::RawDataset(
         210,
         10,
@@ -97,7 +97,7 @@ public:
         // .epoch_count = 1024,
         .optimizerParams = optParams
     };
-    LayerModel save{params};
+    LinearModel save{params};
     save.trainDataset.reset(dataset);
     save.define();
     // save.print();
@@ -110,12 +110,12 @@ public:
     SPDLOG_DEBUG("当前权重：{}", save.linear->info());
     lifuren::tensor::print((*save.linear)["linear.weight"]);
     lifuren::tensor::print((*save.linear)["linear.bias"]);
-    save.save(lifuren::config::CONFIG.tmp);
-    save.saveEval(lifuren::config::CONFIG.tmp);
+    // save.save(lifuren::config::CONFIG.tmp);
+    // save.saveEval(lifuren::config::CONFIG.tmp);
 }
 
 [[maybe_unused]] static void testLoad() {
-    LayerModel model{
+    LinearModel model{
         // {
         //     .batch_size  = 10,
         //     .thread_size = 1

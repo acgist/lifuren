@@ -119,7 +119,7 @@
     };
     ggml_context* ctx    = ggml_init(params);
     ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 5, 5);
-    ggml_tensor * output = lifuren::layer::avgPool2d(2, input, ctx);
+    ggml_tensor * output = lifuren::function::avgPool2d(2, input, ctx);
     ggml_cgraph * gf     = ggml_new_graph_custom(ctx, 1024, true);
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fillRange(input, 0);
@@ -137,7 +137,7 @@
     };
     ggml_context* ctx    = ggml_init(params);
     ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 5, 5);
-    ggml_tensor * output = lifuren::layer::maxPool2d(2, input, ctx);
+    ggml_tensor * output = lifuren::function::maxPool2d(2, input, ctx);
     ggml_cgraph * gf     = ggml_new_graph_custom(ctx, 1024, true);
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fillRange(input, 0);
@@ -178,15 +178,19 @@
     ggml_free(ctx);
 }
 
-[[maybe_unused]] static void testFlatten() {
+[[maybe_unused]] static void testFunction() {
     struct ggml_init_params params = {
         .mem_size   = 16 * 1024 * 1024,
         .mem_buffer = NULL,
         .no_alloc   = false
     };
     ggml_context* ctx    = ggml_init(params);
-    ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 5, 5);
-    ggml_tensor * output = lifuren::layer::flatten(ctx, input);
+    // ggml_tensor * input  = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 24);
+    // ggml_tensor * input  = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 4, 6);
+    // ggml_tensor * input  = ggml_new_tensor_3d(ctx, GGML_TYPE_F32, 4, 2, 3);
+    ggml_tensor * input  = ggml_new_tensor_4d(ctx, GGML_TYPE_F32, 3, 2, 2, 2);
+    // ggml_tensor * output = lifuren::function::flatten(ctx, input);
+    ggml_tensor * output = ggml_cont(ctx, input);
     ggml_cgraph * gf     = ggml_new_graph_custom(ctx, 1024, true);
     ggml_build_forward_expand(gf, output);
     lifuren::tensor::fillRange(input, 0);
@@ -198,11 +202,11 @@
 
 LFR_TEST(
     // testGRU();
-    testLSTM();
+    // testLSTM();
     // testLinear();
     // testConv2d();
     // testAvgPool2d();
     // testMaxPool2d();
     // testLoss();
-    // testFlatten();
+    testFunction();
 );
