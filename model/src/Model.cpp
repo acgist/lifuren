@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "ggml.h"
+#include "ggml-backend.h"
 
 #include "spdlog/spdlog.h"
 

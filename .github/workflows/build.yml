@@ -21,9 +21,6 @@ jobs:
           cd ./json
           git switch -c v3.11.2
           cd ../
-          ################################ ggml
-          cd ./ggml
-          cd ../
           ################################ faiss
           sudo apt  install libfaiss-dev -y
           apt-cache madison libfaiss-dev
@@ -69,6 +66,9 @@ jobs:
           ################################ Chinese-Word-Vectors
           # cd ./Chinese-Word-Vectors
           # cd ../
+          ################################ libtorch
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.4.1%2Bcpu.zip
+          unzip libtorch-cxx11-abi-shared-with-deps-2.4.1+cpu.zip
       - name: Deploy lifuren
         run: |
           pwd

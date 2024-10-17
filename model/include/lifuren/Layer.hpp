@@ -586,13 +586,12 @@ inline ggml_tensor* reshape(
 
 inline ggml_tensor* permute(
     ggml_context* ctx, ggml_tensor* tensor,
-    const size_t& a = 0LL,
-    const size_t& b = 1LL,
-    const size_t& c = 2LL,
-    const size_t& d = 3LL
+    const int& a = 0,
+    const int& b = 1,
+    const int& c = 2,
+    const int& d = 3
 ) {
     // 参数libtorch相反
-    // return ggml_permute(ctx, tensor, a, b, c, d);
     return ggml_cont(ctx, ggml_permute(ctx, tensor, a, b, c, d));
 }
 

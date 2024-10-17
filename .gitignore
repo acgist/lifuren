@@ -17,4 +17,5 @@ deps/faiss
 deps/opencv
 deps/spdlog
 deps/yaml-cpp
+deps/libtorch
 deps/cpp-httplib

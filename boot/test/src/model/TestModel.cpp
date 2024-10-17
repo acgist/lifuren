@@ -24,8 +24,8 @@ public:
     Model& defineWeight() override {
         this->fc1_weight = ggml_new_tensor_2d(this->ctx_weight, GGML_TYPE_F32, 1, 1);
         this->fc1_bias   = ggml_new_tensor_1d(this->ctx_weight, GGML_TYPE_F32, 1);
-        lifuren::layer::defineWeight("fc1.weight", this->fc1_weight, this->ctx_compute);
-        lifuren::layer::defineWeight("fc1.bias",   this->fc1_bias,   this->ctx_compute);
+        lifuren::function::defineWeight("fc1.weight", this->fc1_weight, this->ctx_compute);
+        lifuren::function::defineWeight("fc1.bias",   this->fc1_bias,   this->ctx_compute);
         return *this;
     };
     Model& bindWeight(const std::map<std::string, ggml_tensor*> weights) override {
