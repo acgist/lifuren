@@ -15,8 +15,8 @@
  * 
  * @author acgist
  */
-#ifndef LFR_HEADER_MODEL_POETRY_HPP
-#define LFR_HEADER_MODEL_POETRY_HPP
+#ifndef LFR_HEADER_MODEL_POETRY_MODEL_HPP
+#define LFR_HEADER_MODEL_POETRY_MODEL_HPP
 
 #include "lifuren/Model.hpp"
 #include "lifuren/Config.hpp"
@@ -81,4 +81,4 @@ class WanyueRNNModel {
 
 }
 
-#endif // LFR_HEADER_MODEL_POETRY_HPP
+#endif // LFR_HEADER_MODEL_POETRY_MODEL_HPP

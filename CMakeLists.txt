@@ -11,7 +11,6 @@ endif()
 option(ENABLE_TEST "打开测试"     ON)
 option(ENABLE_FLTK "开启FLTK界面" ON)
 option(ENABLE_REST "开启REST接口" ON)
-option(USE_SD_GGML "使用嵌入GGML" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 
@@ -81,6 +80,17 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 
+set(
+    CMAKE_PREFIX_PATH
+    ${CMAKE_PREFIX_PATH}
+    deps/libtorch
+)
+
+# include_directories(
+#     deps/libtorch/include
+#     deps/libtorch/include/torch/csrc/api/include
+# )
+
 if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
@@ -93,14 +103,14 @@ if(CMAKE_HOST_WIN32)
         deps/cpp-httplib
     )
 
-    include_directories(
-        deps/fltk/include
-        deps/faiss/include
-        deps/opencv/include
-        deps/spdlog/include
-        deps/yaml-cpp/include
-        deps/cpp-httplib/include
-    )
+    # include_directories(
+    #     deps/fltk/include
+    #     deps/faiss/include
+    #     deps/opencv/include
+    #     deps/spdlog/include
+    #     deps/yaml-cpp/include
+    #     deps/cpp-httplib/include
+    # )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
@@ -122,12 +132,15 @@ if(CMAKE_HOST_WIN32)
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/bin/*.dll")
     endif()
 
+    file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
+
     find_package(libpng        REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()
 
 find_package(FLTK     REQUIRED)
 find_package(faiss    REQUIRED)
+find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(OpenMP   REQUIRED)
 find_package(spdlog   REQUIRED)

@@ -1,180 +1,318 @@
 /**
  * 模型
  * 
- * @author acgist
- * 
- * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.h
- * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-common.cpp
- * https://github.com/ggerganov/ggml/blob/master/examples/mnist/mnist-train.cpp
- * 
  * TODO:
- * 1. 优化最新版的GGML
+ * 1. CPU/GPU = model or dataset .to(this->device).to(torch::kF32)
+ * 
+ * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
 
-#include <map>
 #include <memory>
 #include <string>
 #include <thread>
-#include <vector>
 
-struct ggml_cgraph;
-struct ggml_tensor;
-struct ggml_context;
-struct ggml_opt_context;
+#include "fmt/ostream.h"
+
+#include "torch/torch.h"
+#include "torch/script.h"
+
+#include "spdlog/spdlog.h"
+
+#include "lifuren/File.hpp"
+#include "lifuren/Logger.hpp"
+
+LFR_FORMAT_LOG_STREAM(at::Tensor)
 
 namespace lifuren {
-
-namespace dataset {
-    class Dataset;
-}
-
-/**
- * 基础模型
- * 
- * @author acgist
- */
-class Model {
-
-public:
-
-/**
- * 张量参数初始化方式
- */
-enum class InitType {
-
-    ZERO,  // 零值
-    RAND,  // 随机（正态分布）
-    VALUE, // 默认值
-
-};
-
-/**
- * 优化参数
- */
-struct OptimizerParams {
-
-    size_t n_iter = 8; // ?
-
-};
 
 /**
  * 模型参数
  */
 struct ModelParams {
 
-    // 学习率
-    float lr = 0.001F;
-    // 批量大小
-    size_t batch_size  = 100;
-    // 训练次数
-    size_t epoch_count = 128;
-    // 线程数量
-    size_t thread_size = std::thread::hardware_concurrency();
-    // 分类模型
-    bool classify = false;
-    // 分类数量
-    size_t size_classify = 0LL;
-    // 计算图的大小
-    size_t size_cgraph   = 2LL   * 1024;
-    // 权重大小
-    size_t size_weight   = 256LL * 1024 * 1024;
-    // 计算大小
-    size_t size_compute  = 512LL * 1024 * 1024;
-    // 优化函数参数
-    OptimizerParams optimizerParams;
+    int8_t      device     { 0      }; // 计算设备：torch::DeviceType::CPU
+    float       lr         { 0.001F }; // 学习率
+    size_t      batch_size { 100LL  }; // 批量大小
+    size_t      epoch_count{ 128LL  }; // 训练次数
+    bool        classify   { false  }; // 分类任务
+    bool        check_point{ false  }; // 保存快照
+    size_t      check_index{ 0LL    }; // 快照索引
+    std::string check_path { "./"   }; // 快照路径
+    size_t      thread_size{ std::thread::hardware_concurrency() }; // 线程数量
 
 };
 
+/**
+ * 模型
+ * 
+ * @param D 数据集
+ * @param O 模型输出
+ * @param I 模型输入
+ * @param L 损失函数
+ * @param M 模型定义
+ * 
+ * @author acgist
+ */
+template<typename D, typename O, typename I, typename L, typename M>
+class Model {
+
 protected:
-    // TODO: backend
     // 模型参数
     ModelParams params{};
-    // 上下文
-    void        * buf_weight { nullptr }; // 权重内存
-    ggml_context* ctx_weight { nullptr }; // 权重上下文
-    void        * buf_compute{ nullptr }; // 计算内存
-    ggml_context* ctx_compute{ nullptr }; // 计算上下文
-    // 张量
-    ggml_tensor* logits  { nullptr }; // 目标函数
-    ggml_tensor* loss    { nullptr }; // 损失函数
-    ggml_tensor* features{ nullptr }; // 输入特征
-    ggml_tensor* labels  { nullptr }; // 输入标签
-    ggml_tensor* preds   { nullptr }; // 预测结果
-    // 计算图
-    ggml_cgraph* train_gf{ nullptr }; // 训练前向
-    ggml_cgraph* train_gb{ nullptr }; // 训练反向
-    ggml_cgraph* val_gf  { nullptr }; // 验证前向
-    ggml_cgraph* test_gf { nullptr }; // 测试前向
-    ggml_cgraph* eval_gf { nullptr }; // 推理前向
+    // 数据集
+    D trainDataset{ nullptr };
+    D valDataset  { nullptr };
+    D testDataset { nullptr };
+    // 模型
+    M model{ nullptr };
+    // 损失函数
+    L loss { nullptr };
+    // 优化函数
+    std::shared_ptr<torch::optim::Optimizer> optimizer{ nullptr };
 
 public:
-    // 训练数据集
-    std::unique_ptr<lifuren::dataset::Dataset> trainDataset{ nullptr };
-    // 验证数据集
-    std::unique_ptr<lifuren::dataset::Dataset> valDataset  { nullptr };
-    // 测试数据集
-    std::unique_ptr<lifuren::dataset::Dataset> testDataset { nullptr };
-
-public:
-    Model(ModelParams params);
+    Model(ModelParams params = {});
     virtual ~Model();
 
-protected:
-    void initCtxWeight();
-    void initCtxCompute();
-
 public:
-    // 训练模型保存加载
-    virtual bool   save(const std::string& path = "./", const std::string& filename = "lifuren.gguf");
-    virtual Model& load(const std::string& path = "./", const std::string& filename = "lifuren.gguf");
-    // 预测模型保存加载
-    virtual bool   saveEval(const std::string& path = "./", const std::string& filename = "lifuren.ggml");
-    virtual Model& loadEval(const std::string& path = "./", const std::string& filename = "lifuren.ggml");
+    // 模型保存
+    virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
+    // 模型加载
+    virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     // 定义模型
-    virtual Model& define(InitType type = InitType::RAND, float mean = 0.0F, float sigma = 0.001F, float value = 0.0F);
-    // 定义权重
-    virtual Model& defineWeight() = 0;
-    // 初始化权重
-    virtual Model& initWeight(InitType type = InitType::RAND, float mean = 0.0F, float sigma = 0.001F, float value = 0.0F);
-    // 绑定权重
-    virtual Model& bindWeight(const std::map<std::string, ggml_tensor*> weights) = 0;
-    // 初始化输入
-    virtual Model&       defineInput();
-    virtual ggml_tensor* buildFeatures() = 0;
-    virtual ggml_tensor* buildLabels()   = 0;
-    // 定义计算逻辑
-    virtual Model&       defineLogits();
-    virtual ggml_tensor* buildLogits() = 0;
-    // 定义损失函数
-    virtual Model&       defineLoss();
-    virtual ggml_tensor* buildLoss() = 0;
-    // 定义计算图
-    virtual Model& defineCgraph();
+    virtual bool define();
     // 打印模型
-    virtual Model& print();
-    virtual Model& print(const char* name, const ggml_cgraph* cgraph, std::string& message);
-    virtual Model& print(const char* from, const ggml_tensor* tensor, std::string& message);
+    virtual void print();
     // 训练模型
-    virtual void train(size_t epoch, ggml_opt_context* opt_ctx);
+    virtual void train(size_t epoch);
     // 验证模型
-    virtual void val(size_t epoch);
+    virtual void val  (size_t epoch);
     // 测试模型
-    virtual void test();
-    // 模型预测
-    virtual float* eval(const float* input, float* output, size_t size_data);
-    // 模型预测
-    virtual std::vector<size_t> evalClassify(const float* input, size_t size_data);
+    virtual void test ();
     // 训练验证
     virtual void trainValAndTest(const bool val = true, const bool test = true);
-    // 优化函数
-    virtual void buildOptimizer(ggml_opt_context* opt_ctx);
-    // 正确数量
-    virtual size_t batchAccu(const size_t& size);
+    // 模型预测
+    virtual O eval(I i) = 0;
+
+protected:
+    // 定义数据集
+    virtual bool defineDataset() = 0;
+    // 定义模型实现
+    virtual bool defineModel() = 0;
+    // 定义损失函数
+    virtual L defineLoss() = 0;
+    // 定义优化函数
+    virtual std::shared_ptr<torch::optim::Optimizer> defineOptimizer() = 0;
 
 };
 
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+lifuren::Model<D, O, I, L, M>::Model(lifuren::ModelParams params) : params(params) {
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+lifuren::Model<D, O, I, L, M>::~Model() {
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+bool lifuren::Model<D, O, I, L, M>::save(const std::string& path, const std::string& filename) {
+    if(!this->model) {
+        SPDLOG_WARN("保存模型没有定义");
+        return false;
+    }
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
+    SPDLOG_DEBUG("保存模型：{}", fullpath);
+    torch::save(this->model, fullpath);
+    return true;
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+bool lifuren::Model<D, O, I, L, M>::load(const std::string& path, const std::string& filename) {
+    const std::string fullpath = lifuren::file::join({ path, filename }).string();
+    SPDLOG_DEBUG("加载模型：{}", fullpath);
+    torch::load(this->model, fullpath);
+    return true;
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+bool lifuren::Model<D, O, I, L, M>::define() {
+    this->defineDataset();
+    this->defineModel();
+    return true;
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+void lifuren::Model<D, O, I, L, M>::print() {
+    // for(const auto& value : this->model->modules()) {
+    //     SPDLOG_DEBUG("modules: {}", value);
+    // }
+    // for(const auto& value : this->model->named_modules()) {
+    //     SPDLOG_DEBUG("named_modules: {} = {}", value.key(), value.value());
+    // }
+    for(const auto& value : this->model->parameters()) {
+        SPDLOG_DEBUG("parameters: {}", value);
+    }
+    for(const auto& value : this->model->named_parameters()) {
+        SPDLOG_DEBUG("named_parameters: {} = {}", value.key(), value.value());
+    }
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+void lifuren::Model<D, O, I, L, M>::train(size_t epoch) {
+    if(!this->trainDataset) {
+        SPDLOG_WARN("无效的训练数据集");
+        return;
+    }
+    this->model->train();
+    double accu_val = 0.0;
+    double loss_val = 0.0;
+    size_t count = 0LL;
+    size_t batch_count = 0LL;
+    auto a = std::chrono::system_clock::now();
+    for (const auto& batch : *this->trainDataset) {
+        auto data   = batch.data;
+        auto target = batch.target.squeeze();
+        torch::Tensor pred = this->model->forward(data);
+        torch::Tensor loss = this->loss->forward(pred, target);
+        this->optimizer->zero_grad();
+        loss.backward();
+        this->optimizer->step();
+        if(this->params.classify) {
+            auto accu = pred.argmax(1).eq(target).sum();
+            accu_val += accu.template item<float>();
+        }
+        loss_val += loss.template item<float>();
+        ++batch_count;
+        count += this->trainDataset->options().batch_size;
+    }
+    auto z = std::chrono::system_clock::now();
+    if(this->params.classify) {
+        SPDLOG_INFO(
+            "当前训练第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            epoch,
+            loss_val / batch_count,
+            accu_val,
+            count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    } else {
+        SPDLOG_INFO(
+            "当前训练第 {} 轮，损失值为：{}，耗时：{}。",
+            epoch,
+            loss_val / batch_count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    }
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+void lifuren::Model<D, O, I, L, M>::val(size_t epoch) {
+    if(!this->valDataset) {
+        SPDLOG_WARN("无效的验证数据集");
+        return;
+    }
+    this->model->eval();
+    double accu_val = 0.0;
+    double loss_val = 0.0;
+    size_t count = 0LL;
+    size_t batch_count = 0LL;
+    auto a = std::chrono::system_clock::now();
+    for (auto& batch : *this->valDataset) {
+        auto data   = batch.data;
+        auto target = batch.target.squeeze();
+        torch::Tensor pred = this->model->forward(data);
+        torch::Tensor loss = this->loss->forward(pred, target);
+        if(this->params.classify) {
+            auto accu = pred.argmax(1).eq(target).sum();
+            accu_val += accu.template item<float>();
+        }
+        loss_val += loss.template item<float>();
+        ++batch_count;
+        count += this->trainDataset->options().batch_size;
+    }
+    auto z = std::chrono::system_clock::now();
+    if(this->params.classify) {
+        SPDLOG_INFO(
+            "当前验证第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            epoch,
+            loss_val / batch_count,
+            accu_val,
+            count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    } else {
+        SPDLOG_INFO(
+            "当前验证第 {} 轮，损失值为：{}，耗时：{}。",
+            epoch,
+            loss_val / batch_count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    }
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+void lifuren::Model<D, O, I, L, M>::test() {
+    if(!this->testDataset) {
+        SPDLOG_WARN("无效的测试数据集");
+        return;
+    }
+    this->model->eval();
+    double accu_val = 0.0;
+    double loss_val = 0.0;
+    size_t count = 0LL;
+    size_t batch_count = 0LL;
+    auto a = std::chrono::system_clock::now();
+    for (auto& batch : *this->testDataset) {
+        auto data   = batch.data;
+        auto target = batch.target.squeeze();
+        torch::Tensor pred = this->model->forward(data);
+        torch::Tensor loss = this->loss->forward(pred, target);
+        if(this->params.classify) {
+            auto accu = pred.argmax(1).eq(target).sum();
+            accu_val += accu.template item<float>();
+        }
+        loss_val += loss.template item<float>();
+        ++batch_count;
+        count += this->trainDataset->options().batch_size;
+    }
+    auto z = std::chrono::system_clock::now();
+    if(this->params.classify) {
+        SPDLOG_INFO(
+            "当前测试损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            loss_val / batch_count,
+            accu_val,
+            count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    } else {
+        SPDLOG_INFO(
+            "当前测试损失值为：{}，耗时：{}。",
+            loss_val / batch_count,
+            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
+        );
+    }
+}
+
+template<typename D, typename O, typename I, typename L, typename M>
+void lifuren::Model<D, O, I, L, M>::trainValAndTest(const bool val, const bool test) {
+    this->defineLoss();
+    this->defineOptimizer();
+    auto a = std::chrono::system_clock::now();
+    for (size_t epoch = 0LL; epoch < this->params.epoch_count; ++epoch) {
+        this->train(epoch);
+        if(val) {
+            this->val(epoch);
+        }
+    }
+    if(test) {
+        this->test();
+    }
+    auto z = std::chrono::system_clock::now();
+    SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
 }
 
 #endif // LFR_HEADER_MODEL_MODEL_HPP

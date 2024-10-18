@@ -1,7 +1,8 @@
 /**
- * 数据集工具
+ * Dataset
  * 
- * TODO: GPU加速
+ * TODO:
+ * csv
  * 
  * @author acgist
  */
@@ -9,177 +10,105 @@
 #define LFR_HEADER_MODEL_DATASET_HPP
 
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 #include <functional>
 
+#include "torch/torch.h"
+
 namespace lifuren {
 namespace dataset {
 
-/**
- * 数据集
- */
-class Dataset {
-
-protected:
-    // 数据总量
-    size_t count;
-    // 批次数量
-    size_t batchSize;
-
-public:
-    /**
-     * @param batchSize 批次数量
-     */
-    Dataset(size_t batchSize);
-    /**
-     * @param count     数据总量
-     * @param batchSize 批次数量
-     */
-    Dataset(size_t count, size_t batchSize);
-    virtual ~Dataset();
-
-public:
-    /**
-     * @return 数据重量
-     */
-    virtual const size_t& getCount() const;
-    /**
-     * @return 批次数量
-     */
-    virtual const size_t& getBatchSize() const;
-    /**
-     * @return 批次总数
-     */
-    virtual size_t getBatchCount() const;
-    /**
-     * @param batch    批次
-     * @param features 数据
-     * @param labels   标签
-     * 
-     * @return 剩余数据数量
-     */
-    virtual size_t batchGet(size_t batch, float* features, float* labels) const = 0;
-
-};
-
-/**
- * 共享数据集
- */
-class ShardingDataset : public Dataset {
+class RawDataset : public torch::data::Dataset<RawDataset> {
 
 private:
-    // 原始数据集
-    std::shared_ptr<Dataset> source{ nullptr };
-    // 索引映射
-    std::map<size_t, size_t> indexMapping{};
+    std::vector<float> labels;
+    std::vector<std::vector<float>> features;
+
+public:
+    RawDataset(const std::vector<float>& labels, const std::vector<std::vector<float>>& features);
+    virtual ~RawDataset();
 
 public:
     /**
-     * @param source       原始数据集
-     * @param indexMapping 索引映射
+     * @return 数据集大小
      */
-    ShardingDataset(
-        std::shared_ptr<Dataset> source,
-        std::map<size_t, size_t> indexMapping
-    );
-    ~ShardingDataset();
-
-public:
-    inline size_t batchGet(size_t batch, float* features) const {
-        if(!this->source) {
-            return 0LL;
-        }
-        return this->source->batchGet(this->indexMapping.at(batch), features, nullptr);
-    }
-    inline size_t batchGet(size_t batch, float* features, float* labels) const override {
-        if(!this->source) {
-            return 0LL;
-        }
-       return this->source->batchGet(this->indexMapping.at(batch), features, labels);
-    }
-
-public:
+    torch::optional<size_t> size() const override;
     /**
-     * @param source    原始数据集
-     * @param valIndex  验证数据集索引
-     * @param valCount  验证数据集总量
-     * @param testIndex 测试数据集索引
-     * @param testCount 测试数据集总量
+     * @param index 文件索引
      * 
-     * @return [train, val, test]
+     * @return Tensor
      */
-    static std::tuple<ShardingDataset, ShardingDataset, ShardingDataset> make(
-        std::shared_ptr<Dataset> source,
-        size_t valIndex  = 0,
-        size_t valCount  = 1,
-        size_t testIndex = 1,
-        size_t testCount = 0
-    );
+    torch::data::Example<> get(size_t index) override;
 
 };
 
-using SharingDataset = ShardingDataset;
-
-/**
- * Raw数据集
- */
-class RawDataset : public Dataset {
-
-public:
-    // 特征
-    float* features{ nullptr };
-    // 特征长度
-    size_t feature_size{ 0 };
-    // 标签
-    float* labels{ nullptr };
-    // 标签长度
-    size_t label_size{ 0 };
-
-public:
-    RawDataset(size_t count, size_t batchSize, float* features, size_t feature_size, float* labels, size_t label_size);
-    ~RawDataset();
-    
-public:
-    virtual size_t batchGet(size_t batch, float* features, float* labels) const override;
-
-};
-
-/**
- * 文件数据集
- */
-class FileDataset : public Dataset {
+class FileDataset : public torch::data::Dataset<FileDataset> {
 
 private:
-    // 特征
-    std::vector<std::vector<float>> features{};
-    // 标签
-    std::vector<float> labels{};
+    // 文件标签
+    std::vector<torch::Tensor> labels;
+    // 文件路径
+    std::vector<std::string> features;
     // 文件转换
-    std::function<void(const std::string&, std::vector<std::vector<float>>&)> transform{ nullptr };
+    std::function<torch::Tensor(const std::string&)> transform{ nullptr };
 
 public:
     /**
      * @param path      数据路径
      * @param exts      文件后缀
+     * @param classify  标签映射
      * @param transform 文件转换
-     * @param mapping   标签映射
      */
     FileDataset(
-        const size_t& batchSize,
         const std::string& path,
         const std::vector<std::string>& exts,
-        std::function<void(const std::string&, std::vector<std::vector<float>>&)> transform,
-        const std::map<std::string, float>& mapping = {},
-        bool shuffle = true
+        const std::map<std::string, float>& classify,
+        const std::function<torch::Tensor(const std::string&)> transform = nullptr
     );
-    ~FileDataset();
+    /**
+     * @param path      数据路径
+     * @param exts      文件后缀
+     * @param mapping   标签映射
+     * @param transform 文件转换
+     */
+    FileDataset(
+        const std::string& path,
+        const std::vector<std::string>& exts,
+        const std::function<torch::Tensor(const std::string&)> mapping,
+        const std::function<torch::Tensor(const std::string&)> transform = nullptr
+    );
+    virtual ~FileDataset();
 
 public:
-    virtual size_t batchGet(size_t batch, float* features, float* labels) const override;
+    /**
+     * @return 数据集大小
+     */
+    torch::optional<size_t> size() const override;
+    /**
+     * @param index 文件索引
+     * 
+     * @return Tensor
+     */
+    torch::data::Example<> get(size_t index) override;
 
 };
+
+inline auto loadRawDataset(
+    const size_t& batch_size,
+    const std::vector<float>& labels,
+    const std::vector<std::vector<float>>& features
+) -> decltype(auto) {
+    auto dataset = lifuren::dataset::RawDataset(labels, features).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+using RawDatasetLoader = std::invoke_result<
+    decltype(&lifuren::dataset::loadRawDataset),
+    const size_t&,
+    const std::vector<float>&,
+    const std::vector<std::vector<float>>&
+>::type;
 
 } // END OF dataset
 } // END OF lifuren

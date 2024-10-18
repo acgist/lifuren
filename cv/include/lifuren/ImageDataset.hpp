@@ -28,27 +28,25 @@ namespace lifuren::dataset {
 inline auto loadImageFileDataset(
     const int& width,
     const int& height,
-    const size_t& batch_size,
+    const size_t batch_size,
     const std::string& path,
     const std::string& image_type,
-    const std::map<std::string, float>& mapping,
+    const std::map<std::string, float>& classify,
     const std::function<void(const cv::Mat&)> transform = nullptr
 ) -> decltype(auto) {
-    return lifuren::dataset::FileDataset(
-        batch_size,
+    auto dataset = lifuren::dataset::FileDataset(
         path,
         { image_type },
-        [width, height, transform](const std::string& file, std::vector<std::vector<float>>& features) {
+        classify,
+        [width, height, transform] (const std::string& file) -> torch::Tensor {
+            size_t length{ 0 };
             std::vector<float> feature;
             feature.resize(width * height * 3);
-            size_t length{ 0 };
             lifuren::image::load(file, feature.data(), length, width, height, transform);
-            if(length > 0LL) {
-                features.push_back(std::move(feature));
-            }
-        },
-        mapping
-    );
+            return torch::from_blob(feature.data(), { height, width, 3 }, torch::kByte).permute({2, 0, 1});
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
 using ImageFileDatasetLoader = std::invoke_result<
@@ -62,6 +60,6 @@ using ImageFileDatasetLoader = std::invoke_result<
     const std::function<void(const cv::Mat&)>
 >::type;
 
-} // END OF lifuren
+} // END OF lifuren::dataset
 
 #endif // END OF LFR_HEADER_CV_IMAGE_DATASET_HPP

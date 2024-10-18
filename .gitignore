@@ -16,6 +16,6 @@ deps/fltk
 deps/faiss
 deps/opencv
 deps/spdlog
-deps/yaml-cpp
 deps/libtorch
+deps/yaml-cpp
 deps/cpp-httplib

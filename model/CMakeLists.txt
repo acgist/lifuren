@@ -6,13 +6,8 @@ add_library(
     src/Model.cpp
     src/Tensor.cpp
     src/Dataset.cpp
-    src/layer/GRU.cpp
-    src/layer/LSTM.cpp
-    src/layer/Conv2d.cpp
-    src/layer/Linear.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp
-    src/dataset/ShardingDataset.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
@@ -20,8 +15,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore
-    ggml
     ${OpenCV_LIBS}
+    ${TORCH_LIBRARIES}
 )
 
 target_include_directories(

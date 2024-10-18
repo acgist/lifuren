@@ -64,7 +64,7 @@ void lifuren::image::load(
     const size_t& height,
     const std::function<void(const cv::Mat&)> transform
 ) {
-    const cv::Mat image = cv::imread(path);
+    cv::Mat image = cv::imread(path);
     if(image.total() <= 0LL) {
         SPDLOG_WARN("图片读取失败：{}", path);
         return;

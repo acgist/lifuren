@@ -51,25 +51,26 @@ extern bool fillRhythm(const int& dims, std::vector<std::vector<float>>& vector,
 }
 
 /**
- * @param batchSize 批量大小
- * @param path      文件目录
- * @param length    向量大小
+ * @param batch_size 批量大小
+ * @param path       文件目录
+ * @param length     向量大小
  * 
  * @return 诗词数据集
  */
 inline auto loadPoetryFileDataset(
-    const size_t& batchSize,
+    const size_t& batch_size,
     const std::string& path,
     const lifuren::EmbeddingClient* client
 ) -> decltype(auto) {
-    return lifuren::dataset::FileDataset(
-        batchSize,
+    auto dataset = lifuren::dataset::FileDataset(
         path,
         { ".model" },
-        [&client](const std::string& file, std::vector<std::vector<float>>& features) {
+        [&client](const std::string& file) {
             // TODO: 加载embedding.model
+            return torch::Tensor{};
         }
-    );
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
 using PoetryFileDatasetLoader = std::invoke_result<

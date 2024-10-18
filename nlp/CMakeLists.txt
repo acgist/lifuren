@@ -20,14 +20,14 @@ add_library(
     src/model/LiduRNNModel.cpp
     src/model/SuxinRNNModel.cpp
     src/model/WanyueRNNModel.cpp
-    src/poetize/ShifoRNNPoetizeClient.cpp
-    src/poetize/ShimoRNNPoetizeClient.cpp
-    src/poetize/ShiguiRNNPoetizeClient.cpp
-    src/poetize/ShixianRNNPoetizeClient.cpp
-    src/poetize/ShishengRNNPoetizeClient.cpp
-    src/poetize/LiduRNNPoetizeClient.cpp
-    src/poetize/SuxinRNNPoetizeClient.cpp
-    src/poetize/WanyueRNNPoetizeClient.cpp
+    src/client/ShifoRNNPoetizeClient.cpp
+    src/client/ShimoRNNPoetizeClient.cpp
+    src/client/ShiguiRNNPoetizeClient.cpp
+    src/client/ShixianRNNPoetizeClient.cpp
+    src/client/ShishengRNNPoetizeClient.cpp
+    src/client/LiduRNNPoetizeClient.cpp
+    src/client/SuxinRNNPoetizeClient.cpp
+    src/client/WanyueRNNPoetizeClient.cpp
     src/embedding/OllamaEmbeddingClient.cpp
     src/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )

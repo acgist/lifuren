@@ -70,10 +70,10 @@
 }
 
 [[maybe_unused]] static void testLoad() {
-    float* data = new float[256 * 256 * 3];
+    float* data = new float[512 * 512 * 3];
     size_t length{ 0 };
-    lifuren::image::load(lifuren::file::join({lifuren::config::CONFIG.tmp, "logo.png"}).string(), data, length);
-    cv::Mat image(256, 256, CV_8UC3);
+    lifuren::image::load(lifuren::file::join({lifuren::config::CONFIG.tmp, "logo.png"}).string(), data, length, 512, 512);
+    cv::Mat image(512, 512, CV_8UC3);
     // std::copy(data, data + length, image.data);
     std::transform(data, data + length, image.data, [](const auto& v) { return static_cast<uchar>(v); });
     lifuren::image::show(image.data, image.cols, image.rows, image.total() * image.elemSize());
@@ -127,8 +127,8 @@
 LFR_TEST(
     // testRead();
     // testWrite();
-    testResize();
-    // testLoad();
+    // testResize();
+    testLoad();
     // testSplit();
     // testMerge();
 );

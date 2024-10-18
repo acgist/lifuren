@@ -260,6 +260,18 @@ public:
 
 };
 
+/**
+ * 模型终端
+ */
+template<typename O, typename I>
+class ModelClient {
+
+public:
+    virtual void train()   = 0;
+    virtual O    eval(I i) = 0;
+
+};
+
 } // END OF lifuren
 
 #endif // END OF LFR_HEADER_CLIENT_CLIENT_HPP
