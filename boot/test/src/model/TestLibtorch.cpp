@@ -2,9 +2,9 @@
 
 #include <functional>
 
-#include "fmt/ostream.h"
-
 #include "torch/torch.h"
+
+#include "spdlog/fmt/ostr.h"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor);
 
@@ -29,6 +29,6 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 }
 
 LFR_TEST(
-    // testPrint();
+    testPrint();
     testTensor();
 );

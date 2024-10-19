@@ -6,8 +6,6 @@ add_library(
     src/Image.cpp
     src/PaintClient.cpp
     src/ImageDataset.cpp
-    src/model/CycleGANModel.cpp
-    src/model/StyleGANModel.cpp
     src/client/CycleGANPaintClient.cpp
     src/client/StyleGANPaintClient.cpp
     src/client/StableDiffusionCPPPaintClient.cpp

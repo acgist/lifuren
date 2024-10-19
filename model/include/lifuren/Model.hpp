@@ -12,13 +12,13 @@
 #include <memory>
 #include <string>
 #include <thread>
-
-#include "fmt/ostream.h"
+#include <concepts>
 
 #include "torch/torch.h"
 #include "torch/script.h"
 
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Logger.hpp"
@@ -44,6 +44,14 @@ struct ModelParams {
 
 };
 
+// 损失函数
+template<typename T>
+concept L = std::derived_from<T, torch::nn::Module>;
+
+// 模型结构
+template<typename T>
+concept M = std::derived_from<T, torch::nn::Module>;
+
 /**
  * 模型
  * 
@@ -51,7 +59,7 @@ struct ModelParams {
  * @param O 模型输出
  * @param I 模型输入
  * @param L 损失函数
- * @param M 模型定义
+ * @param M 模型结构
  * 
  * @author acgist
  */
@@ -59,21 +67,16 @@ template<typename D, typename O, typename I, typename L, typename M>
 class Model {
 
 protected:
-    // 模型参数
-    ModelParams params{};
-    // 数据集
-    D trainDataset{ nullptr };
-    D valDataset  { nullptr };
-    D testDataset { nullptr };
-    // 模型
-    M model{ nullptr };
-    // 损失函数
-    L loss { nullptr };
-    // 优化函数
-    std::shared_ptr<torch::optim::Optimizer> optimizer{ nullptr };
+    ModelParams params{};      // 模型参数
+    D trainDataset{ nullptr }; // 训练数据集
+    D valDataset  { nullptr }; // 验证数据集
+    D testDataset { nullptr }; // 测试数据集
+    L loss        { nullptr }; // 损失函数
+    M model       { nullptr }; // 模型结构
+    std::shared_ptr<torch::optim::Optimizer> optimizer{ nullptr }; // 优化函数
 
 public:
-    Model(ModelParams params = {});
+    Model(L loss, M model, ModelParams params = {});
     virtual ~Model();
 
 public:
@@ -88,10 +91,10 @@ public:
     // 训练模型
     virtual void train(size_t epoch);
     // 验证模型
-    virtual void val  (size_t epoch);
+    virtual void val(size_t epoch);
     // 测试模型
-    virtual void test ();
-    // 训练验证
+    virtual void test();
+    // 训练验证测试模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);
     // 模型预测
     virtual O eval(I i) = 0;
@@ -99,10 +102,6 @@ public:
 protected:
     // 定义数据集
     virtual bool defineDataset() = 0;
-    // 定义模型实现
-    virtual bool defineModel() = 0;
-    // 定义损失函数
-    virtual L defineLoss() = 0;
     // 定义优化函数
     virtual std::shared_ptr<torch::optim::Optimizer> defineOptimizer() = 0;
 
@@ -111,7 +110,14 @@ protected:
 }
 
 template<typename D, typename O, typename I, typename L, typename M>
-lifuren::Model<D, O, I, L, M>::Model(lifuren::ModelParams params) : params(params) {
+lifuren::Model<D, O, I, L, M>::Model(
+    L loss,
+    M model,
+    lifuren::ModelParams params
+) : loss(loss),
+    model(model),
+    params(params)
+{
 }
 
 template<typename D, typename O, typename I, typename L, typename M>
@@ -140,9 +146,11 @@ bool lifuren::Model<D, O, I, L, M>::load(const std::string& path, const std::str
 
 template<typename D, typename O, typename I, typename L, typename M>
 bool lifuren::Model<D, O, I, L, M>::define() {
-    this->defineDataset();
-    this->defineModel();
-    return true;
+    if(this->defineDataset()) {
+        this->optimizer = this->defineOptimizer();
+        return true;
+    }
+    return false;
 }
 
 template<typename D, typename O, typename I, typename L, typename M>
@@ -299,8 +307,6 @@ void lifuren::Model<D, O, I, L, M>::test() {
 
 template<typename D, typename O, typename I, typename L, typename M>
 void lifuren::Model<D, O, I, L, M>::trainValAndTest(const bool val, const bool test) {
-    this->defineLoss();
-    this->defineOptimizer();
     auto a = std::chrono::system_clock::now();
     for (size_t epoch = 0LL; epoch < this->params.epoch_count; ++epoch) {
         this->train(epoch);

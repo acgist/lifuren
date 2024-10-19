@@ -10,7 +10,7 @@
 #include "lifuren/PoetryDataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
-#include "fmt/ostream.h"
+#include "spdlog/fmt/ostr.h"
 
 #include "torch/torch.h"
 
@@ -76,14 +76,8 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
             { "woman", 0.0F }
         }
     );
-    auto data = data_loader->begin();
-    SPDLOG_DEBUG("图片数量：{}", data->size());
-    auto&& [
-        feature,
-        label
-    ] = data->at(0);
-    SPDLOG_DEBUG("图片特征：\n{}", feature);
-    SPDLOG_DEBUG("图片标签：\n{}", label);
+    SPDLOG_DEBUG("图片特征：\n{}", data_loader->begin()->data);
+    SPDLOG_DEBUG("图片标签：\n{}", data_loader->begin()->target);
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
