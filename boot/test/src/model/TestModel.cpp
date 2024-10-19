@@ -37,7 +37,7 @@ public:
     bool defineDataset() override {
         std::random_device device;
         std::mt19937 rand(device());
-        std::normal_distribution<> nd(10, 2);
+        std::normal_distribution<float> nd(10.0F, 2.0F);
         std::vector<float> labels;
         std::vector<std::vector<float>> features;
         labels.reserve(100);
@@ -50,7 +50,7 @@ public:
             });
             features.push_back(feature);
         }
-        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5, labels, features));
+        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
         return true;
     }
     std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {

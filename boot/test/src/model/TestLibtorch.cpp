@@ -26,6 +26,7 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
     SPDLOG_DEBUG("\n{}", a.flatten());
     SPDLOG_DEBUG("\n{}", a.reshape({6, 4}));
     SPDLOG_DEBUG("\n{}", a.permute({1, 0}));
+    SPDLOG_DEBUG("\n{}", torch::tensor({1.0F, 2.0F, 3.0F}, torch::kFloat32));
 }
 
 LFR_TEST(

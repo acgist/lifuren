@@ -183,7 +183,7 @@ void lifuren::Model<D, O, I, L, M>::train(size_t epoch) {
     auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
         auto data   = batch.data;
-        auto target = batch.target.squeeze();
+        auto target = batch.target;
         torch::Tensor pred = this->model->forward(data);
         torch::Tensor loss = this->loss->forward(pred, target);
         this->optimizer->zero_grad();
@@ -231,7 +231,7 @@ void lifuren::Model<D, O, I, L, M>::val(size_t epoch) {
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->valDataset) {
         auto data   = batch.data;
-        auto target = batch.target.squeeze();
+        auto target = batch.target;
         torch::Tensor pred = this->model->forward(data);
         torch::Tensor loss = this->loss->forward(pred, target);
         if(this->params.classify) {
@@ -276,7 +276,7 @@ void lifuren::Model<D, O, I, L, M>::test() {
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->testDataset) {
         auto data   = batch.data;
-        auto target = batch.target.squeeze();
+        auto target = batch.target;
         torch::Tensor pred = this->model->forward(data);
         torch::Tensor loss = this->loss->forward(pred, target);
         if(this->params.classify) {
