@@ -11,7 +11,7 @@ add_test(NAME testGender COMMAND testGender)
 set_target_properties(testGender PROPERTIES FOLDER "test-model")
 target_link_libraries(
     testGender
-    lifurenmodel
+    lifurencv
 )
 
 add_executable(testLinear TestLinear.cpp)

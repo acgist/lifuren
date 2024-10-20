@@ -31,7 +31,9 @@ TORCH_MODULE(LinearModule);
 class LinearModel : public lifuren::Model<lifuren::dataset::RawDatasetLoader, float, torch::Tensor, torch::nn::MSELoss, LinearModule> {
 
 public:
-    LinearModel(lifuren::ModelParams params = {}) : Model(torch::nn::MSELoss{}, LinearModule{}, params) {
+    LinearModel(lifuren::ModelParams params = {
+        .batch_size = 10LL
+    }) : Model(torch::nn::MSELoss{}, LinearModule{}, params) {
     }
     virtual ~LinearModel() {
     }
@@ -52,7 +54,7 @@ public:
             features.push_back(std::vector<float>{ f });
             labels.push_back(15.4 * f + 4 + b(rand));
         }
-        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
+        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;
     }
     std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {
@@ -77,23 +79,17 @@ public:
 }
 
 [[maybe_unused]] static void testLoad() {
-    // LinearModel model{
-    //     // {
-    //     //     .batch_size  = 10,
-    //     //     .thread_size = 1
-    //     // }
-    // };
+    LinearModel model;
+    model.define();
+    model.load();
     // model.load(lifuren::config::CONFIG.tmp);
-    // // model.loadEval(lifuren::config::CONFIG.tmp);
-    // model.print();
-    // float data[] { 3.2 };
-    // float target[1];
-    // // w * 15.4 + 4 + rand
-    // float* pred = model.eval(data, target, 1);
-    // SPDLOG_DEBUG("当前预测：{}", *pred);
+    model.print();
+    // w * 15.4 + 4 + r
+    float pred = model.eval(torch::tensor({3.0F}, torch::kFloat32));
+    SPDLOG_DEBUG("当前预测：{}", pred);
 }
 
 LFR_TEST(
-    testLine();
-    // testLoad();
+    // testLine();
+    testLoad();
 );

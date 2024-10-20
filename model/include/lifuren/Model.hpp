@@ -2,7 +2,8 @@
  * 模型
  * 
  * TODO:
- * 1. CPU/GPU = model or dataset .to(this->device).to(torch::kF32)
+ * 1. CPU/GPU = model->to(this->device);
+ * 2. CPU/GPU = dataset.to(this->device).to(torch::kF32)
  * 
  * @author acgist
  */
@@ -24,6 +25,7 @@
 #include "lifuren/Logger.hpp"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor)
+LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 namespace lifuren {
 
@@ -139,6 +141,10 @@ bool lifuren::Model<D, O, I, L, M>::save(const std::string& path, const std::str
 template<typename D, typename O, typename I, typename L, typename M>
 bool lifuren::Model<D, O, I, L, M>::load(const std::string& path, const std::string& filename) {
     const std::string fullpath = lifuren::file::join({ path, filename }).string();
+    if(!lifuren::file::exists(fullpath)) {
+        SPDLOG_WARN("模型文件无效：{}", fullpath);
+        return false;
+    }
     SPDLOG_DEBUG("加载模型：{}", fullpath);
     torch::load(this->model, fullpath);
     return true;
@@ -182,8 +188,11 @@ void lifuren::Model<D, O, I, L, M>::train(size_t epoch) {
     size_t batch_count = 0LL;
     auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
+        // TODO: 定义转换
         auto data   = batch.data;
-        auto target = batch.target;
+        auto target = batch.target.squeeze().to(torch::kInt64);
+        // SPDLOG_DEBUG("data = \n{}",   data.sizes());
+        // SPDLOG_DEBUG("target = \n{}", target.sizes());
         torch::Tensor pred = this->model->forward(data);
         torch::Tensor loss = this->loss->forward(pred, target);
         this->optimizer->zero_grad();
@@ -308,14 +317,18 @@ void lifuren::Model<D, O, I, L, M>::test() {
 template<typename D, typename O, typename I, typename L, typename M>
 void lifuren::Model<D, O, I, L, M>::trainValAndTest(const bool val, const bool test) {
     auto a = std::chrono::system_clock::now();
-    for (size_t epoch = 0LL; epoch < this->params.epoch_count; ++epoch) {
-        this->train(epoch);
-        if(val) {
-            this->val(epoch);
+    try {
+        for (size_t epoch = 0LL; epoch < this->params.epoch_count; ++epoch) {
+            this->train(epoch);
+            if(val) {
+                this->val(epoch);
+            }
         }
-    }
-    if(test) {
-        this->test();
+        if(test) {
+            this->test();
+        }
+    } catch(const std::exception& e) {
+        SPDLOG_ERROR("训练异常：{}", e.what());
     }
     auto z = std::chrono::system_clock::now();
     SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
