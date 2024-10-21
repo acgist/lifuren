@@ -3,6 +3,7 @@
  * 
  * @author acgist
  */
+#include "lifuren/CLI.hpp"
 #if LFR_ENABLE_REST
 #include "lifuren/REST.hpp"
 #endif
@@ -69,7 +70,12 @@ int main(const int argc, const char* const argv[]) {
     lifuren::logger::init();
     lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
-    launch();
+    if(lifuren::cli(argc, argv)) {
+        // -
+    } else {
+        // 使用命令行时忽略其他模式
+        launch();
+    }
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();
     return 0;

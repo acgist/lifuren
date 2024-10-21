@@ -95,7 +95,7 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
     // features = nullptr;
 }
 
-[[maybe_unused]] static void testPoetryEmbeddingReadWrite() {
+[[maybe_unused]] static void testPoetryEmbeddingFile() {
     std::vector<std::vector<float>> ww{ { 1.0F, 2.0F, 3.0F, 4.0F } };
     std::ofstream out;
     out.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
@@ -111,9 +111,9 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 }
 
 LFR_TEST(
-    testRawDataset();
+    // testRawDataset();
     // testFileDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
-    // testPoetryEmbeddingReadWrite();
+    testPoetryEmbeddingFile();
 );

@@ -28,20 +28,20 @@ std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::getRAGTask(const st
 
 std::shared_ptr<lifuren::RAGTaskRunner> lifuren::RAGService::runRAGTask(const std::string& path) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    const auto& rag       = lifuren::config::CONFIG.rag;
-    const auto& embedding = lifuren::config::CONFIG.embedding;
-    RAGTask task {
-        .rag       = rag.type,
-        .path      = path,
-        .embedding = embedding.type,
-    };
     const auto iterator = this->taskMap.find(path);
     if(iterator != this->taskMap.end()) {
         SPDLOG_DEBUG("RAG任务已经添加：{}", path);
         return iterator->second;
     }
+    const auto& rag       = lifuren::config::CONFIG.rag;
+    const auto& embedding = lifuren::config::CONFIG.embedding;
+    RAGTask task{
+        .rag       = rag.type,
+        .path      = path,
+        .embedding = embedding.type,
+    };
     const auto runner = std::make_shared<lifuren::RAGTaskRunner>(task);
-    if(runner->id <= 0LL || runner->stop || runner->finish) {
+    if(runner->id <= 0 || runner->stop || runner->finish) {
         SPDLOG_WARN("添加RAG任务失败：{}", path);
         return nullptr;
     } else if(runner->startExecute()) {
@@ -61,6 +61,7 @@ bool lifuren::RAGService::stopRAGTask(const std::string& path) const {
         SPDLOG_DEBUG("RAG任务已经结束：{}", path);
         return true;
     }
+    // 任务结束不要直接移除，等待线程结束自动移除。
     SPDLOG_DEBUG("结束RAG任务：{}", path);
     iterator->second->stop = true;
     return true;

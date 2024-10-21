@@ -1,5 +1,7 @@
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
+aux_source_directory(src/cli/ CLI_FILES)
+
 if(ENABLE_FLTK)
     message(STATUS "开启FLTK界面")
     add_definitions(-DLFR_ENABLE_FLTK=true)
@@ -16,6 +18,7 @@ endif()
 add_executable(
     ${PROJECT_NAME}
     src/Main.cpp
+    ${CLI_FILES}
     ${FLTK_FILES}
     ${REST_FILES}
 )

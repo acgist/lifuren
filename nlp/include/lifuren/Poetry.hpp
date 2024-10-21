@@ -28,10 +28,10 @@ class Poetry {
 public:
     // 标题
     std::string title;
+    // 格律
+    std::string rhythmic;
     // 作者
     std::string author;
-    // 格律
-    std::string rhythm;
     // 原始段落
     std::string segment;
     // 朴素段落：没有符号
@@ -47,7 +47,7 @@ public:
     // 格律指针：不要释放（全局资源）
     lifuren::config::Rhythm* rhythmPtr = nullptr;
     // JSON解析
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythm, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Poetry, title, author, rhythmic, segment, simpleSegment, participleSegment, paragraphs, simpleParagraphs, participleParagraphs);
 
 public:
     /**

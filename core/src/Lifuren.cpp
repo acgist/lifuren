@@ -22,10 +22,10 @@ size_t lifuren::uuid() noexcept {
     }
     size_t id = 100000000000000 * (localtime->tm_year + 1900) +
                 1000000000000   * (localtime->tm_mon  +    1) +
-                10000000000     * localtime->tm_mday          +
-                100000000       * localtime->tm_hour          +
-                1000000         * localtime->tm_min           +
-                10000           * localtime->tm_sec           +
+                10000000000     *  localtime->tm_mday         +
+                100000000       *  localtime->tm_hour         +
+                1000000         *  localtime->tm_min          +
+                10000           *  localtime->tm_sec          +
                 i;
     return id;
 }

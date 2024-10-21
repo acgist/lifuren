@@ -40,6 +40,14 @@ extern bool read(std::ifstream& stream, std::vector<std::vector<float>>& vector)
 extern void write(std::ofstream& stream, const std::vector<std::vector<float>>& vector);
 
 /**
+ * @param stream 文件流
+ * @param flag   结束标记
+ */
+inline void writeEnd(std::ofstream& stream, const short& flag) {
+    stream.write(reinterpret_cast<const char*>(&flag), sizeof(flag));
+}
+
+/**
  * @param dims   向量维度
  * @param vector 向量数据
  * @param rhythm 诗词格律

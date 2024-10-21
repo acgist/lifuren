@@ -7,7 +7,10 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
 
-lifuren::RAGClient::RAGClient(const std::string& path, const std::string& embedding) :
+lifuren::RAGClient::RAGClient(
+    const std::string& path,
+    const std::string& embedding
+) :
     path(path),
     embeddingClient(lifuren::EmbeddingClient::getClient(embedding))
 {
@@ -20,12 +23,13 @@ bool lifuren::RAGClient::loadIndex() {
     const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     if(!std::filesystem::exists(markPath)) {
         this->id = lifuren::uuid();
+        return true;
     }
     std::ifstream stream;
     stream.open(markPath, std::ios_base::in);
     if(!stream.is_open()) {
         SPDLOG_WARN("RAG索引文件打开失败：{}", markPath.string());
-        this->id = lifuren::uuid();
+        this->id = 0;
         stream.close();
         return false;
     }
@@ -34,7 +38,7 @@ bool lifuren::RAGClient::loadIndex() {
         if(line.empty()) {
             continue;
         }
-        if(this->id == 0LL) {
+        if(this->id == 0) {
             this->id = std::atoll(line.c_str());
         } else {
             this->doneFile.emplace(line);
@@ -44,7 +48,7 @@ bool lifuren::RAGClient::loadIndex() {
     return true;
 }
 
-bool lifuren::RAGClient::saveIndex() {
+bool lifuren::RAGClient::saveIndex() const {
     const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
     lifuren::file::createFolder(markPath.parent_path());
     std::ofstream stream;
@@ -85,7 +89,7 @@ bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {
     return false;
 }
 
-std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, const int size) const {
+std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, const uint8_t size) const {
     return this->search(std::move(this->embeddingClient->getVector(prompt)), size);
 }
 

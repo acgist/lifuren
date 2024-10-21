@@ -28,9 +28,10 @@
 
 ## 代码规范
 
+* 工具类不要用前缀后缀
 * 宏定义开头必须使用`LFR_`
-* 尽量使用智能指针，避免使用传统指针。
-* 类和结构体直接使用命名空间`lifuren`
-* 头文件宏定义`LFR_HEADER_module_path_filename_HPP`
-* 工具类不要用前缀后缀，除了变量之外，方法、类名避免使用复数。
+* 尽量使用智能指针和避免使用裸指针
+* 除了变量之外避免使用复数（方法、类名）
+* 在可能出现溢出的地方使用`LL`/`ULL`后缀
+* 头文件宏定义`LFR_HEADER_MODULE_PATH_FILENAME_HPP`
 * 全局方法必须使用命名空间`lifuren::module | lifuren::filename`

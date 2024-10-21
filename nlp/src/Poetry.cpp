@@ -6,12 +6,11 @@
 #include "lifuren/EmbeddingClient.hpp"
 
 lifuren::poetry::Poetry& lifuren::poetry::Poetry::preproccess() {
-    if(this->title.empty() && !this->rhythm.empty()) {
-        this->title = this->rhythm;
-    } else if(!this->title.empty() && this->rhythm.empty()) {
-        this->rhythm = this->title;
-    } else {
-        //
+    if(this->title.empty() && !this->rhythmic.empty()) {
+        this->title = this->rhythmic;
+    }
+    if(!this->title.empty() && this->rhythmic.empty()) {
+        this->rhythmic = this->title;
     }
     const std::string&& content = lifuren::string::join(this->paragraphs, "");
     this->simpleParagraphs = lifuren::string::split(content, lifuren::poetry::POETRY_SIMPLE);
@@ -40,8 +39,8 @@ bool lifuren::poetry::Poetry::matchRhythm() {
             if(this->title.empty()) {
                 this->title = rhythmRef.title;
             }
-            if(this->rhythm.empty()) {
-                this->rhythm = rhythmRef.rhythm;
+            if(this->rhythmic.empty()) {
+                this->rhythmic = rhythmRef.rhythm;
             }
             break;
         }

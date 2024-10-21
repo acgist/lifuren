@@ -22,13 +22,12 @@
         SPDLOG_DEBUG("当前进度：{}", ptr->percent());
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    SPDLOG_DEBUG("任务完成");
-    service.taskCount();
+    SPDLOG_DEBUG("剩余任务数量：{}", service.taskCount());
     service.stopRAGTask(lifuren::config::CONFIG.tmp);
     service.removeRAGTask(lifuren::config::CONFIG.tmp);
 }
 
 LFR_TEST(
-    testRAGTaskRunner();
-    // testRAGService();
+    // testRAGTaskRunner();
+    testRAGService();
 );

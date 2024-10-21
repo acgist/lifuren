@@ -15,7 +15,7 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
 
 static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client);
-static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const int& size, std::shared_ptr<lifuren::RestClient> client);
+static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const uint8_t& size, std::shared_ptr<lifuren::RestClient> client);
 
 lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path, const std::string& embedding) :RAGClient(path, embedding) {
     const auto& elasticsearchConfig = lifuren::config::CONFIG.elasticsearch;
@@ -32,7 +32,7 @@ std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& pro
     return vector;
 }
 
-std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const int size) const {
+std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const uint8_t size) const {
     return ::search(this->id, prompt, size, this->restClient);
 }
 
@@ -96,7 +96,7 @@ static bool index(const size_t& id, const std::string& content, const std::vecto
     return client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
 }
 
-static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const int& size, std::shared_ptr<lifuren::RestClient> client) {
+static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const uint8_t& size, std::shared_ptr<lifuren::RestClient> client) {
     const nlohmann::json body = {
         { "knn", {
             { "k"             , size     },

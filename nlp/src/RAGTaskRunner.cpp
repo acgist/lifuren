@@ -113,8 +113,8 @@ bool lifuren::RAGTaskRunner::execute() {
     lifuren::file::listFile(files, this->task.path, { ".json" });
     this->fileCount = files.size();
     SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
-    size_t count = 0LL; // 处理成功诗词总数
-    size_t total = 0LL; // 累计读取诗词总数
+    size_t count = 0; // 处理成功诗词总数
+    size_t total = 0; // 累计读取诗词总数
     for(const auto& file : files) {
         if(this->stop) {
             break;
@@ -163,7 +163,7 @@ bool lifuren::RAGTaskRunner::execute() {
         this->percentCallback(this->percent(), true);
     }
     SPDLOG_DEBUG("累计处理诗词数量：{} / {}", count, total);
-    stream.write(reinterpret_cast<const char*>(&lifuren::dataset::poetry::END_OF_DATASET), sizeof(lifuren::dataset::poetry::END_OF_DATASET));
+    lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);
     stream.close();
     return true;
 }

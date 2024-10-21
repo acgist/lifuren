@@ -41,7 +41,7 @@ class RAGClient : public RAGSearchClient {
 
 public:
     // 唯一标识
-    size_t id = 0LL;
+    size_t id = 0;
 
 protected:
     // 文档路径
@@ -63,7 +63,7 @@ public:
     // 加载索引
     virtual bool loadIndex();
     // 保存索引
-    virtual bool saveIndex();
+    virtual bool saveIndex() const;
     // 清空索引
     virtual bool truncateIndex();
     /**
@@ -83,8 +83,8 @@ public:
      */
     virtual std::vector<float> index(const std::string& prompt) = 0;
     
-    virtual std::vector<std::string> search(const std::string& prompt,        const int size = 4) const override;
-    virtual std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override = 0;
+    virtual std::vector<std::string> search(const std::string& prompt,        const uint8_t size = 4) const override;
+    virtual std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override = 0;
 
 public:
     /**
@@ -130,9 +130,9 @@ public:
 public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
-    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
     bool loadIndex() override;
-    bool saveIndex() override;
+    bool saveIndex() const override;
     bool truncateIndex() override;
 
 };
@@ -159,7 +159,7 @@ public:
 public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
-    std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const override;
+    std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
     bool loadIndex() override;
     bool truncateIndex() override;
 

@@ -41,7 +41,7 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     return vector;
 }
 
-std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const int size) const {
+std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const uint8_t size) const {
     const int faiss_n = 1;
     std::vector<float> data;
     data.resize(faiss_n * size);
@@ -80,7 +80,7 @@ bool lifuren::FaissRAGClient::loadIndex() {
     return true;
 }
 
-bool lifuren::FaissRAGClient::saveIndex() {
+bool lifuren::FaissRAGClient::saveIndex() const {
     if(!lifuren::RAGClient::saveIndex()) {
         return false;
     }

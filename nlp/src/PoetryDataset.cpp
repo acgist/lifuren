@@ -21,13 +21,14 @@ void lifuren::dataset::poetry::write(std::ofstream& stream, const std::vector<st
         stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
         stream.write(reinterpret_cast<const char*>(v.data()), sizeof(float) * size);
     });
-    stream.write(reinterpret_cast<const char*>(&lifuren::dataset::poetry::END_OF_POETRY), sizeof(lifuren::dataset::poetry::END_OF_POETRY));
+    lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_POETRY);
 }
 
 bool lifuren::dataset::poetry::fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm) {
     if(rhythm == nullptr) {
         return false;
     }
+    // TODO: 平仄维度
     if(dims < rhythm->fontSize) {
         SPDLOG_WARN("诗词长度超过向量维度：{} - {} - {}", rhythm->rhythm, rhythm->fontSize, dims);
         return false;

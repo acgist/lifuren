@@ -29,7 +29,6 @@ target_link_libraries(
     testDataset
     lifurencv
     lifurennlp
-    lifurenmodel
 )
 
 add_executable(testLibtorch TestLibtorch.cpp)

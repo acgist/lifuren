@@ -79,14 +79,14 @@ public:
      * 
      * @return 文档内容
      */
-    virtual std::vector<std::string> search(const std::string& prompt, const int size = 4) const = 0;
+    virtual std::vector<std::string> search(const std::string& prompt, const uint8_t size = 4) const = 0;
     /**
      * @param prompt 搜索向量
      * @param size   结果数量
      * 
      * @return 文档内容
      */
-    virtual std::vector<std::string> search(const std::vector<float>& prompt, const int size = 4) const = 0;
+    virtual std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const = 0;
 
 };
 
