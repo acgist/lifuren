@@ -6,6 +6,7 @@ add_library(
     src/Model.cpp
     src/Tensor.cpp
     src/Dataset.cpp
+    src/dataset/CsvDataset.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp
 )

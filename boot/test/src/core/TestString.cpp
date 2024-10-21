@@ -137,6 +137,14 @@
     assert("12测434" == value);
 }
 
+[[maybe_unused]] static void testIsNumeric() {
+    assert(lifuren::string::isNumeric("1.1"));
+    assert(lifuren::string::isNumeric("100"));
+    assert(lifuren::string::isNumeric("0.100"));
+    assert(!lifuren::string::isNumeric("100D"));
+    assert(!lifuren::string::isNumeric("100 00"));
+}
+
 LFR_TEST(
     testJoin();
     testSplit();
@@ -147,4 +155,5 @@ LFR_TEST(
     testSubstr();
     testToChars();
     testReplace();
+    testIsNumeric();
 );

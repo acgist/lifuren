@@ -2,6 +2,10 @@
 
 #include <random>
 
+#include "torch/torch.h"
+
+#include "spdlog/fmt/ostr.h"
+
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
@@ -10,11 +14,13 @@
 #include "lifuren/PoetryDataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
-#include "spdlog/fmt/ostr.h"
-
-#include "torch/torch.h"
-
 LFR_FORMAT_LOG_STREAM(at::Tensor);
+
+[[maybe_unused]] static void testCsvDataset() {
+    auto loader = lifuren::dataset::loadCsvDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "train.csv"}).string());
+    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data);
+    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target);
+}
 
 [[maybe_unused]] static void testRawDataset() {
     std::random_device device;
@@ -65,7 +71,7 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 }
 
 [[maybe_unused]] static void testLoadImageFileDataset() {
-    auto data_loader = lifuren::dataset::loadImageFileDataset(
+    auto loader = lifuren::dataset::loadImageFileDataset(
         200,
         200,
         5,
@@ -76,23 +82,16 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
             { "woman", 0.0F }
         }
     );
-    SPDLOG_DEBUG("图片特征：\n{}", data_loader->begin()->data);
-    SPDLOG_DEBUG("图片标签：\n{}", data_loader->begin()->target);
+    SPDLOG_DEBUG("图片特征：\n{}", loader->begin()->data);
+    SPDLOG_DEBUG("图片标签：\n{}", loader->begin()->target);
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
-    // // auto client = lifuren::EmbeddingClient::getClient("ollama");
-    // auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
-    // auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
-    // // auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "poetry", "data"}).string(), client.get());
-    // float* features = new float[300 * 5] { 0.0F };
-    // loader.batchGet(3, features, nullptr);
-    // auto pos = std::find_if(features, features + 1500, [](const auto& v) { return v == 0.0F; });
-    // size_t distance = std::distance(features, pos);
-    // SPDLOG_DEBUG("POS = {}", distance);
-    // std::copy(features, features + 1500, std::ostream_iterator<float>(std::cout, " "));
-    // delete features;
-    // features = nullptr;
+    // auto client = lifuren::EmbeddingClient::getClient("ollama");
+    auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
+    auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
+    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data);
+    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target);
 }
 
 [[maybe_unused]] static void testPoetryEmbeddingFile() {
@@ -111,9 +110,10 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 }
 
 LFR_TEST(
+    testCsvDataset();
     // testRawDataset();
     // testFileDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
-    testPoetryEmbeddingFile();
+    // testPoetryEmbeddingFile();
 );

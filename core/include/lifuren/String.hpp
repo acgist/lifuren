@@ -6,6 +6,7 @@
 #ifndef LFR_HEADER_CORE_STRING_HPP
 #define LFR_HEADER_CORE_STRING_HPP
 
+#include <regex>
 #include <cctype>
 #include <string>
 #include <vector>
@@ -40,6 +41,11 @@ std::string join(const T& values, const std::string& delim = "") {
         }
     }
     return ret.str();
+}
+
+inline bool isNumeric(const std::string& v) {
+    std::regex regex(R"(^(\-|\+)?[0-9]+(\.[0-9]+)?$)");
+    return std::regex_match(v, regex);
 }
 
 /**
