@@ -6,9 +6,9 @@ add_library(
     src/Image.cpp
     src/PaintClient.cpp
     src/ImageDataset.cpp
-    src/client/CycleGANPaintClient.cpp
-    src/client/StyleGANPaintClient.cpp
-    src/client/StableDiffusionCPPPaintClient.cpp
+    src/paint/CycleGANPaintClient.cpp
+    src/paint/StyleGANPaintClient.cpp
+    src/paint/StableDiffusionCPPPaintClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

@@ -12,14 +12,14 @@ add_library(
     src/EmbeddingClient.cpp
     src/rag/FaissRAGClient.cpp
     src/rag/ElasticSearchRAGClient.cpp
-    src/client/ShifoPoetizeClient.cpp
-    src/client/ShimoPoetizeClient.cpp
-    src/client/ShiguiPoetizeClient.cpp
-    src/client/ShixianPoetizeClient.cpp
-    src/client/ShishengPoetizeClient.cpp
-    src/client/LiduPoetizeClient.cpp
-    src/client/SuxinPoetizeClient.cpp
-    src/client/WanyuePoetizeClient.cpp
+    src/poetize/ShifoPoetizeClient.cpp
+    src/poetize/ShimoPoetizeClient.cpp
+    src/poetize/ShiguiPoetizeClient.cpp
+    src/poetize/ShixianPoetizeClient.cpp
+    src/poetize/ShishengPoetizeClient.cpp
+    src/poetize/LiduPoetizeClient.cpp
+    src/poetize/SuxinPoetizeClient.cpp
+    src/poetize/WanyuePoetizeClient.cpp
     src/embedding/OllamaEmbeddingClient.cpp
     src/embedding/ChineseWordVectorsEmbeddingClient.cpp
 )

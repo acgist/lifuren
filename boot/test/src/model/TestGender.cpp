@@ -56,7 +56,7 @@ public:
     torch::Tensor forward(torch::Tensor x) {
         x = this->features->forward(x);
         x = this->avgPool->forward(x);
-        x = torch::flatten(x, 1);
+        x = x.flatten();
         x = this->classifier->forward(x);
         return torch::log_softmax(x, 1);
     }
@@ -93,8 +93,8 @@ public:
         return true;
     }
     std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {
-        return std::make_shared<torch::optim::SGD>(this->model->parameters(), this->params.lr);
-        // return std::make_shared<torch::optim::Adam>(this->model->parameters(), this->params.lr);
+        // return std::make_shared<torch::optim::SGD>(this->model->parameters(), this->params.lr);
+        return std::make_shared<torch::optim::Adam>(this->model->parameters(), this->params.lr);
     }
     float eval(std::string i) {
          cv::Mat image = cv::imread(i);

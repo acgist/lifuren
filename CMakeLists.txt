@@ -1,4 +1,13 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.22.2)
+
+#[[
+    李夫人
+    北方有佳人，绝世而独立。
+    一顾倾人城，再顾倾人国。
+    宁不知倾城与倾国，佳人难再得。
+    https://gitee.com/acgist/lifuren
+    https://github.com/acgist/lifuren
+]]
 
 # https://cmake.org/cmake/help/latest/
 
@@ -13,6 +22,8 @@ option(ENABLE_FLTK "开启FLTK界面" ON)
 option(ENABLE_REST "开启REST接口" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
+
+set(HEADER_DIR include/)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -34,13 +45,18 @@ if(CMAKE_HOST_UNIX)
     endif()
 elseif(CMAKE_HOST_WIN32)
     if(MSVC)
+        # TODO: 使用C23/C++23
         set(CMAKE_C_STANDARD 17)
         set(CMAKE_CXX_STANDARD 20)
         # https://learn.microsoft.com/zh-cn/cpp/build/reference/compiler-options-listed-by-category
         # /wd4804 = 忽略告警
         # /wd4819 = 忽略告警
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /std:c++20 /wd4804 /wd4819")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20 /wd4804 /wd4819")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /std:c++20")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /wd4804 /wd4819")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4804 /wd4819")
+        # set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /Ob2")
+        # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Ob2")
         add_compile_options("/utf-8")
         add_compile_options("/Zc:__cplusplus")
     else()
@@ -54,15 +70,13 @@ message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
-    message(STATUS "C_FLAGS: ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+    message(STATUS "C_FLAGS : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
     message(STATUS "C++FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
 else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
-    message(STATUS "C_FLAGS: ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
-    message(STATUS "C++_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+    message(STATUS "C_FLAGS : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+    message(STATUS "C++FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
-
-set(HEADER_DIR include/)
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
