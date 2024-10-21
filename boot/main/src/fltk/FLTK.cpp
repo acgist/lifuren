@@ -124,7 +124,7 @@ void lifuren::Window::init() {
 }
 
 void lifuren::Window::icon() {
-    Fl_PNG_Image iconImage(lifuren::config::baseFile("../images/logo.png").c_str());
+    Fl_PNG_Image iconImage(lifuren::config::baseFile("./logo.png").c_str());
     this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
     Fl_Window::default_icon(this->iconImagePtr);
 }

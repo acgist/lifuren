@@ -7,10 +7,10 @@
 #include "lifuren/File.hpp"
 
 [[maybe_unused]] static void testRAGTaskRunner() {
-    lifuren::RAGTask task {
+    lifuren::RAGTask task{
         .rag       = "elasticsearch",
-        .embedding = "ollama",
         .path      = lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(),
+        .embedding = "ollama",
     };
     lifuren::RAGTaskRunner runner{ task };
 }
@@ -29,6 +29,6 @@
 }
 
 LFR_TEST(
-    // testRAGTaskRunner();
-    testRAGService();
+    testRAGTaskRunner();
+    // testRAGService();
 );

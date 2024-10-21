@@ -27,10 +27,10 @@ struct RAGTask {
     
     // RAG方式：faiss|elasticsearch
     std::string rag;
-    // 词嵌入方式：ollama|chinese-word-vectors
-    std::string embedding;
     // 文档路径
     std::string path;
+    // 词嵌入方式：ollama|chinese-word-vectors
+    std::string embedding;
 
 };
 
@@ -89,12 +89,20 @@ public:
 public:
     /**
      * @param rag       RAG类型
-     * @param embedding 词嵌入方式
      * @param path      文档路径
+     * @param embedding 词嵌入方式
      * 
      * @return RAG终端
      */
-    static std::unique_ptr<lifuren::RAGClient> getClient(const std::string& rag, const std::string& embedding, const std::string& path);
+    static std::unique_ptr<lifuren::RAGClient> getClient(const std::string& rag, const std::string& path, const std::string& embedding);
+    /**
+     * @param task RAG任务
+     * 
+     * @return RAG终端
+     */
+    static inline std::unique_ptr<lifuren::RAGClient> getClient(const RAGTask& task) {
+        return RAGClient::getClient(task.rag, task.path, task.embedding);
+    }
 
 };
 

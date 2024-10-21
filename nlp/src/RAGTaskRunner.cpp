@@ -7,15 +7,17 @@
 #include "nlohmann/json.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Poetry.hpp"
 #include "lifuren/String.hpp"
 #include "lifuren/PoetryDataset.hpp"
 
+// 诗词嵌入
 static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client);
 
-lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) :
+lifuren::RAGTaskRunner::RAGTaskRunner(
+    lifuren::RAGTask task
+) :
     task(task),
-    ragClient(lifuren::RAGClient::getClient(task.rag, task.embedding, task.path))
+    ragClient(lifuren::RAGClient::getClient(task))
 {
     if(!this->ragClient) {
         this->stop   = true;
@@ -25,6 +27,7 @@ lifuren::RAGTaskRunner::RAGTaskRunner(lifuren::RAGTask task) :
     }
     if(this->ragClient->loadIndex()) {
         this->id = this->ragClient->id;
+        SPDLOG_DEBUG("RAG任务准备就绪：{} - {}", this->id, task.path);
     } else {
         this->stop   = true;
         this->finish = true;
@@ -62,6 +65,7 @@ bool lifuren::RAGTaskRunner::startExecute() {
         this->stop   = true;
         this->finish = true;
         this->ragClient->saveIndex();
+        // 移除RAG任务
         lifuren::RAGService::getInstance().removeRAGTask(this->task.path);
     });
     this->thread->detach();
@@ -95,10 +99,7 @@ bool lifuren::RAGTaskRunner::execute() {
         SPDLOG_WARN("RAG任务目录无效：{}", this->task.path);
         return false;
     }
-    std::vector<std::string> paths;
-    lifuren::file::listFile(paths, this->task.path, { ".json" });
-    this->fileCount = paths.size();
-    SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
+    // 打开Embedding文件
     const std::filesystem::path embeddingPath = lifuren::file::join({ this->task.path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::EMBEDDING_MODEL_FILE });
     lifuren::file::createFolder(embeddingPath.parent_path());
     std::ofstream stream;
@@ -108,33 +109,40 @@ bool lifuren::RAGTaskRunner::execute() {
         stream.close();
         return false;
     }
+    std::vector<std::string> files;
+    lifuren::file::listFile(files, this->task.path, { ".json" });
+    this->fileCount = files.size();
+    SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
     size_t count = 0LL; // 处理成功诗词总数
     size_t total = 0LL; // 累计读取诗词总数
-    for(const auto& path : paths) {
+    for(const auto& file : files) {
         if(this->stop) {
             break;
         }
-        if(!lifuren::file::isFile(path)) {
-            SPDLOG_DEBUG("RAG任务跳过其他文件：{}", path);
+        if(!lifuren::file::isFile(file)) {
+            SPDLOG_DEBUG("RAG任务跳过其他文件：{}", file);
             continue;
         }
-        if(this->ragClient->doneFileEmplace(path)) {
-            SPDLOG_DEBUG("RAG任务跳过已经处理过的文件：{}", path);
+        if(this->ragClient->doneFileEmplace(file)) {
+            SPDLOG_DEBUG("RAG任务跳过已经处理过的文件：{}", file);
             continue;
         }
-        SPDLOG_DEBUG("RAG任务处理文件：{}", path);
-        const std::string&& content = lifuren::file::loadFile(path);
+        SPDLOG_DEBUG("RAG任务处理文件：{}", file);
+        const std::string&& content = lifuren::file::loadFile(file);
         if(content.empty()) {
+            SPDLOG_WARN("RAG任务文件内容为空：{}", file);
             continue;
         }
         const nlohmann::json&& poetries = nlohmann::json::parse(content);
         for(const auto& poetry : poetries) {
             ++total;
-            // TODO: 是否等待处理完成
             if(this->stop) {
+                // 注意这里直接跳出提前结束导致数据缺失
+                // 如果需要保证数据完整建议不要直接跳出
                 break;
             }
             if(poetry.empty() || !poetry.is_object()) {
+                SPDLOG_WARN("RAG任务文件格式错误：{}", file);
                 continue;
             }
             if(embedding(poetry, stream, this->ragClient.get())) {
@@ -143,7 +151,7 @@ bool lifuren::RAGTaskRunner::execute() {
                     SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
                 }
             } else {
-                // 失败
+                // SPDLOG_WARN("RAG任务嵌入失败：{}", file);
             }
         }
         ++this->doneFileCount;
@@ -165,7 +173,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
     lifuren::poetry::Poetry poetry = json;
     poetry.preproccess();
     if(!poetry.matchRhythm()) {
-        SPDLOG_WARN("没有匹配格律：{}", poetry.title);
+        SPDLOG_WARN("诗词没有格律：{}", poetry.title);
         return false;
     }
     std::vector<std::string> words;
@@ -180,11 +188,12 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
         return false;
     }
     if(words.empty()) {
+        SPDLOG_WARN("诗词分词失败：{}", poetry.title);
         return false;
     }
     // TODO: 平仄维度向量=音调
-    std::vector<std::vector<float>> ret;
     size_t padding = 0;
+    std::vector<std::vector<float>> ret;
     if(lifuren::dataset::poetry::fillRhythm(ragClient->getDims(), ret, poetry.rhythmPtr)) {
         // 分段字数
         // 分词字数

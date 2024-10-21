@@ -189,7 +189,7 @@ static void deleteCallback(Fl_Widget*, void* voidPtr) {
         fl_message("任务正在执行请先停止然后删除");
         return;
     }
-    const auto client = lifuren::RAGClient::getClient(lifuren::config::CONFIG.rag.type, lifuren::config::CONFIG.embedding.type, pathPtr->text());
+    const auto client = lifuren::RAGClient::getClient(lifuren::config::CONFIG.rag.type, pathPtr->text(), lifuren::config::CONFIG.embedding.type);
     if(client) {
         client->truncateIndex();
     }

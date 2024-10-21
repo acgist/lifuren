@@ -60,6 +60,7 @@ std::string lifuren::file::loadFile(const std::string& path) {
     }
     std::string line;
     std::string lines;
+    // TODO: 优化速度
     while(std::getline(input, line)) {
         lines += line + '\n';
     }

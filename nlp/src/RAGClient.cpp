@@ -89,7 +89,7 @@ std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, c
     return this->search(std::move(this->embeddingClient->getVector(prompt)), size);
 }
 
-std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getClient(const std::string& rag, const std::string& embedding, const std::string& path) {
+std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getClient(const std::string& rag, const std::string& path, const std::string& embedding) {
     if(rag == "faiss" || rag == "Faiss") {
         return std::make_unique<lifuren::FaissRAGClient>(path, embedding);
     } else if(rag == "elasticsearch" || rag == "ElasticSearch") {
