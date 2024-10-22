@@ -7,7 +7,13 @@
 #include "lifuren/File.hpp"
 #include "lifuren/String.hpp"
 
+// 列是不是全是数值：排除空白
+static std::map<size_t, bool> digtType;
+// 列的数据类型总量：排除空白
+static std::map<size_t, std::map<std::string, size_t>> enumType;
+
 static std::vector<std::vector<std::string>> loadCSV(const std::string& path);
+
 static void loadCSV(
     const std::string&path,
     const size_t& startRow,
@@ -40,6 +46,15 @@ torch::data::Example<> lifuren::dataset::CsvDataset::get(size_t index) {
         this->features[index],
         this->labels[index]
     };
+}
+
+torch::Tensor lifuren::dataset::CsvDataset::getFeature(size_t index) {
+    return this->features[index];
+}
+
+void lifuren::dataset::CsvDataset::reset() {
+    digtType.clear();
+    enumType.clear();
 }
 
 static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
@@ -89,33 +104,33 @@ void loadCSV(
     if(rows.empty()) {
         return;
     }
-    std::map<size_t, bool> allNumber; // 列是不是全是数值：排除空白
-    std::map<size_t, std::map<std::string, size_t>> type; // 列的数据类型总量：排除空白
     const size_t rowSize = rows.size();
     const size_t colSize = rows[0].size();
-    labels.reserve(rowSize - startRow);
-    features.reserve(rowSize - startRow);
-    for(size_t col = startCol; col < colSize; ++col) {
-        allNumber[col] = true;
-        for(size_t row = startRow; row < rowSize; ++row) {
-            const auto& cols = rows[row];
-            const auto& v    = cols[col];
-            auto& typeMapping = type[col];
-            auto iterator = typeMapping.find(v);
-            if(iterator == typeMapping.end()) {
-                // 0 = 空白
-                typeMapping.emplace(v, typeMapping.size());
-            }
-            if(v.empty() || v == unknow) {
-            } else if(lifuren::string::isNumeric(v)) {
-            } else {
-                allNumber[col] = false;
+    if(digtType.empty() && enumType.empty()) {
+        for(size_t col = startCol; col < colSize; ++col) {
+            digtType[col] = true;
+            for(size_t row = startRow; row < rowSize; ++row) {
+                const auto& cols = rows[row];
+                const auto& v    = cols[col];
+                auto& typeMapping = enumType[col];
+                auto iterator = typeMapping.find(v);
+                if(iterator == typeMapping.end()) {
+                    // 0 = 空白
+                    typeMapping.emplace(v, typeMapping.size());
+                }
+                if(v.empty() || v == unknow) {
+                } else if(lifuren::string::isNumeric(v)) {
+                } else {
+                    digtType[col] = false;
+                }
             }
         }
     }
-    const size_t labelPos = labelCol < 0 ? colSize + labelCol : labelCol;
     size_t lSize = 0;
     size_t fSize = 0;
+    labels.reserve(rowSize - startRow);
+    features.reserve(rowSize - startRow);
+    const size_t labelPos = labelCol < 0 ? colSize + labelCol : labelCol;
     for(size_t row = startRow; row < rowSize; ++row) {
         std::vector<float> label;
         std::vector<float> feature;
@@ -125,19 +140,23 @@ void loadCSV(
             const auto& cols = rows[row];
             const auto& v    = cols[col];
             auto& ref = col == labelPos ? label : feature;
-            if(allNumber[col]) {
-                float data = 0.0F;
+            if(digtType[col]) {
                 if(v.empty() || v == unknow) {
+                    ref.push_back(0.0F);
                 } else {
-                    data = std::atof(v.c_str());
+                    ref.push_back(std::atof(v.c_str()));
                 }
-                ref.push_back(data);
             } else {
                 // 如果训练数据类型不足可能导致正确率低
-                auto& typeRef = type[col];
+                auto& typeRef = enumType[col];
                 const size_t oldSize = ref.size();
                 ref.resize(oldSize + typeRef.size(), 0.0F);
-                ref[oldSize + typeRef[v]] = 1.0F;
+                auto iterator = typeRef.find(v);
+                if(iterator == typeRef.end()) {
+                    SPDLOG_WARN("数据枚举无效：{} - {} - {}", row, col, v);
+                } else {
+                    ref[oldSize + iterator->second] = 1.0F;
+                }
             }
         }
         labels.push_back(std::move(torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone()));

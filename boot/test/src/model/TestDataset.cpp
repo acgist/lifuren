@@ -18,8 +18,11 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 
 [[maybe_unused]] static void testCsvDataset() {
     auto loader = lifuren::dataset::loadCsvDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "train.csv"}).string());
-    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data);
-    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target);
+    SPDLOG_DEBUG("CSV特征：\n{}", loader->begin()->data);
+    SPDLOG_DEBUG("CSV标签：\n{}", loader->begin()->target);
+    auto testDataset = lifuren::dataset::CsvDataset(lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "test.csv"}).string());
+    SPDLOG_DEBUG("CSV特征：\n{}", testDataset.getFeature(0));
+    SPDLOG_DEBUG("CSV特征：\n{}", testDataset.getFeature(1));
 }
 
 [[maybe_unused]] static void testRawDataset() {

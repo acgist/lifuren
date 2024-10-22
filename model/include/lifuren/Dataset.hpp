@@ -44,11 +44,19 @@ public:
      */
     torch::optional<size_t> size() const override;
     /**
-     * @param index 文件索引
+     * @param index 索引
      * 
      * @return Tensor
      */
     torch::data::Example<> get(size_t index) override;
+    /**
+     * @param index 索引
+     */
+    torch::Tensor getFeature(size_t index);
+
+public:
+    // 重置标记
+    static void reset();
 
 };
 
@@ -73,7 +81,7 @@ public:
      */
     torch::optional<size_t> size() const override;
     /**
-     * @param index 文件索引
+     * @param index 索引
      * 
      * @return Tensor
      */
@@ -139,7 +147,7 @@ public:
      */
     torch::optional<size_t> size() const override;
     /**
-     * @param index 文件索引
+     * @param index 索引
      * 
      * @return Tensor
      */
