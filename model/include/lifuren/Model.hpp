@@ -217,7 +217,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
-            "当前训练第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            "当前训练第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
             epoch,
             loss_val / batch_count,
             accu_val,
@@ -226,7 +226,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
         );
     } else {
         SPDLOG_INFO(
-            "当前训练第 {} 轮，损失值为：{}，耗时：{}。",
+            "当前训练第 {} 轮，损失值为：{:.6f}，耗时：{}。",
             epoch,
             loss_val / batch_count,
             std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
@@ -262,7 +262,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
-            "当前验证第 {} 轮，损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            "当前验证第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
             epoch,
             loss_val / batch_count,
             accu_val,
@@ -271,7 +271,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
         );
     } else {
         SPDLOG_INFO(
-            "当前验证第 {} 轮，损失值为：{}，耗时：{}。",
+            "当前验证第 {} 轮，损失值为：{:.6f}，耗时：{}。",
             epoch,
             loss_val / batch_count,
             std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
@@ -307,7 +307,7 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
     auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
-            "当前测试损失值为：{}，正确率为：{} / {}，耗时：{}。",
+            "当前测试损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
             loss_val / batch_count,
             accu_val,
             data_val,
@@ -315,7 +315,7 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
         );
     } else {
         SPDLOG_INFO(
-            "当前测试损失值为：{}，耗时：{}。",
+            "当前测试损失值为：{:.6f}，耗时：{}。",
             loss_val / batch_count,
             std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
         );
