@@ -49,9 +49,9 @@ static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
         stream.close();
         return {};
     }
-    int size  = 0;
-    int index = 0;
-    int jndex = 0;
+    size_t size  = 0;
+    size_t index = 0;
+    size_t jndex = 0;
     std::string line;
     std::vector<std::vector<std::string>> ret;
     while(std::getline(stream, line)) {
@@ -68,6 +68,7 @@ static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
         }
         data.push_back(line.substr(index, line.length() - index));
         ret.push_back(data);
+        size = data.size();
     }
     stream.close();
     return ret;
@@ -111,9 +112,13 @@ void loadCSV(
         }
     }
     const size_t labelPos = labelCol < 0 ? colSize + labelCol : labelCol;
+    size_t lSize = 0;
+    size_t fSize = 0;
     for(size_t row = startRow; row < rowSize; ++row) {
         std::vector<float> label;
         std::vector<float> feature;
+        label.reserve(lSize);
+        feature.reserve(fSize);
         for(size_t col = startCol; col < colSize; ++col) {
             const auto& cols = rows[row];
             const auto& v    = cols[col];
@@ -135,5 +140,7 @@ void loadCSV(
         }
         labels.push_back(std::move(torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone()));
         features.push_back(std::move(torch::from_blob(feature.data(), { static_cast<int>(feature.size()) }, torch::kFloat32).clone()));
+        lSize = label.size();
+        fSize = feature.size();
     }
 }
