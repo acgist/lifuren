@@ -128,12 +128,12 @@ bool lifuren::RAGTaskRunner::execute() {
             continue;
         }
         SPDLOG_DEBUG("RAG任务处理文件：{}", file);
-        const std::string&& content = lifuren::file::loadFile(file);
+        const std::string content = std::move(lifuren::file::loadFile(file));
         if(content.empty()) {
             SPDLOG_WARN("RAG任务文件内容为空：{}", file);
             continue;
         }
-        const nlohmann::json&& poetries = nlohmann::json::parse(content);
+        const nlohmann::json poetries = std::move(nlohmann::json::parse(content));
         for(const auto& poetry : poetries) {
             ++total;
             if(this->stop) {
@@ -178,7 +178,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
     }
     std::vector<std::string> words;
     if(participle == "char" || participle == "CHAR") {
-        auto&& ret = lifuren::string::toChars(poetry.simpleSegment);
+        auto ret = std::move(lifuren::string::toChars(poetry.simpleSegment));
         words.insert(words.end(), ret.begin(), ret.end());
     } else if(participle == "rhythm" || participle == "RHYTHM") {
         poetry.participle();

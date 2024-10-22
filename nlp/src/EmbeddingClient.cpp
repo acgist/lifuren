@@ -24,8 +24,8 @@ std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(co
 /**
  * 1. 累加法
  * 2. 平均法
- * 3. TF-IDF加权平均法
- * 4. ISF嵌入法
+ * 3. ISF嵌入法
+ * 4. TF-IDF加权平均法
  */
 std::vector<float> lifuren::EmbeddingClient::getVector(const std::vector<std::string>& prompts) const {
     if(prompts.empty()) {
@@ -35,7 +35,7 @@ std::vector<float> lifuren::EmbeddingClient::getVector(const std::vector<std::st
     std::vector<float> ret;
     ret.reserve(dims);
     for(const auto& prompt : prompts) {
-        const std::vector<float>&& vec = this->getVector(prompt);
+        const std::vector<float> vec = std::move(this->getVector(prompt));
         if(vec.empty()) {
             SPDLOG_WARN("没有嵌入向量：{}", prompt);
             continue;

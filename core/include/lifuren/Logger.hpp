@@ -67,6 +67,15 @@ extern void init();
  */
 extern void shutdown();
 
+namespace opencv {
+
+/**
+ * 加载OpenCV日志
+ */
+extern void init();
+
+} // END OF cv
+
 } // END OF logger
 } // END OF lifuren
 

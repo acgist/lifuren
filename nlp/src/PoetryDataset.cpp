@@ -43,7 +43,7 @@ bool lifuren::dataset::poetry::fillRhythm(const int& dims, std::vector<std::vect
     std::for_each(rhythm->participleRule.begin(), rhythm->participleRule.end(), [pos = 0, &participleRule](const auto& index) mutable {
         participleRule[pos += index] = 1.0F;
     });
-    vector.push_back(segmentRule);
-    vector.push_back(participleRule);
+    vector.push_back(std::move(segmentRule));
+    vector.push_back(std::move(participleRule));
     return true;
 }

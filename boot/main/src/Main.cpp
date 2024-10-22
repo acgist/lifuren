@@ -68,6 +68,7 @@ int main(const int argc, const char* const argv[]) {
         std::exit(-9999);
     });
     lifuren::logger::init();
+    lifuren::logger::opencv::init();
     lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
     if(lifuren::cli(argc, argv)) {

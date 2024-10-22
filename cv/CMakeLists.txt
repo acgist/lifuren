@@ -2,8 +2,8 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/CV.cpp
     src/Image.cpp
+    src/OpenCV.cpp
     src/PaintClient.cpp
     src/ImageDataset.cpp
     src/paint/CycleGANPaintClient.cpp
@@ -15,9 +15,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
 target_link_libraries(
     ${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    stable-diffusion
     lifurenmodel
     lifurenclient
-    stable-diffusion
 )
 
 target_include_directories(

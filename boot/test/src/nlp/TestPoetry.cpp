@@ -54,7 +54,8 @@
     assert(diff == poetry);
 }
 
-[[maybe_unused]] static void testMatchDataset() {
+// 统计诗词匹配数量
+[[maybe_unused]] static void testDataset() {
     std::vector<std::string> files;
     lifuren::file::listFile(files, lifuren::config::CONFIG.mark.begin()->path, { ".json" });
     int64_t fSize    = 0LL;
@@ -148,6 +149,6 @@
 }
 
 LFR_TEST(
-    // testPoetry();
-    testMatchDataset();
+    testPoetry();
+    // testDataset();
 );

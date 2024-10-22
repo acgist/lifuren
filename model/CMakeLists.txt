@@ -16,7 +16,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore
-    ${OpenCV_LIBS}
     ${TORCH_LIBRARIES}
 )
 
