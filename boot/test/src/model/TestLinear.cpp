@@ -28,12 +28,14 @@ public:
 
 TORCH_MODULE(LinearModule);
 
-class LinearModel : public lifuren::Model<lifuren::dataset::RawDatasetLoader, float, torch::Tensor, torch::nn::MSELoss, LinearModule> {
+class LinearModel : public lifuren::Model<lifuren::dataset::RawDatasetLoader, float, torch::Tensor, torch::nn::MSELoss, LinearModule, torch::optim::SGD> {
 
 public:
     LinearModel(lifuren::ModelParams params = {
-        .batch_size = 10LL
-    }) : Model(torch::nn::MSELoss{}, LinearModule{}, params) {
+        .lr = 0.001F,
+        .batch_size = 10,
+        .epoch_count = 256
+    }) : Model(params) {
     }
     virtual ~LinearModel() {
     }
@@ -46,20 +48,16 @@ public:
         std::normal_distribution<float> b(0.5, 0.2);
         std::vector<float> labels;
         std::vector<std::vector<float>> features;
-        labels.reserve(100);
-        features.reserve(100);
+        labels.reserve(200);
+        features.reserve(200);
         // w * 15.4 + 4 + r
-        for(int index = 0; index < 100; ++index) {
+        for(int index = 0; index < 200; ++index) {
             float f = w(rand);
-            features.push_back(std::vector<float>{ f });
             labels.push_back(15.4 * f + 4 + b(rand));
+            features.push_back(std::vector<float>{ f });
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;
-    }
-    std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {
-        return std::make_shared<torch::optim::SGD>(this->model->parameters(), this->params.lr);
-        // return std::make_shared<torch::optim::Adam>(this->model->parameters(), this->params.lr);
     }
     float eval(torch::Tensor i) {
         auto o = this->model->forward(i);
@@ -72,7 +70,7 @@ public:
     LinearModel linear;
     linear.define();
     linear.trainValAndTest(false, false);
-    float pred = linear.eval(torch::tensor({3.0F}, torch::kFloat32));
+    float pred = linear.eval(torch::tensor({ 3.0F }, torch::kFloat32));
     SPDLOG_DEBUG("当前预测：{}", pred);
     linear.print();
     linear.save();
@@ -85,11 +83,11 @@ public:
     // model.load(lifuren::config::CONFIG.tmp);
     model.print();
     // w * 15.4 + 4 + r
-    float pred = model.eval(torch::tensor({3.0F}, torch::kFloat32));
+    float pred = model.eval(torch::tensor({ 3.0F }, torch::kFloat32));
     SPDLOG_DEBUG("当前预测：{}", pred);
 }
 
 LFR_TEST(
-    // testLine();
-    testLoad();
+    testLine();
+    // testLoad();
 );

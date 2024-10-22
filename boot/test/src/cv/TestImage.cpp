@@ -1,6 +1,5 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/CV.hpp"
 #include "lifuren/File.hpp"
 #include "lifuren/Image.hpp"
 

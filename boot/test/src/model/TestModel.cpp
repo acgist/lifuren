@@ -25,10 +25,10 @@ public:
 
 TORCH_MODULE(SimpleModule);
 
-class SimpleModel : public lifuren::Model<lifuren::dataset::RawDatasetLoader, float, torch::Tensor, torch::nn::MSELoss, SimpleModule> {
+class SimpleModel : public lifuren::Model<lifuren::dataset::RawDatasetLoader, float, torch::Tensor, torch::nn::MSELoss, SimpleModule, torch::optim::Adam> {
 
 public:
-    SimpleModel(lifuren::ModelParams params = {}) : Model(torch::nn::MSELoss{}, SimpleModule{}, params) {
+    SimpleModel(lifuren::ModelParams params = {}) : Model(params) {
     }
     virtual ~SimpleModel() {
     }
@@ -52,9 +52,6 @@ public:
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
         return true;
-    }
-    std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {
-        return std::make_shared<torch::optim::Adam>(this->model->parameters(), this->params.lr);
     }
     float eval(torch::Tensor i) {
         auto o = this->model->forward(i);

@@ -23,6 +23,8 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
     // torch::Tensor a = torch::rand({4, 6});
     SPDLOG_DEBUG("\n{}", a);
     SPDLOG_DEBUG("\n{}", a.t());
+    SPDLOG_DEBUG("\n{}", a.numel());
+    SPDLOG_DEBUG("\n{}", a.element_size());
     SPDLOG_DEBUG("\n{}", a.flatten());
     SPDLOG_DEBUG("\n{}", a.reshape({6, 4}));
     SPDLOG_DEBUG("\n{}", a.permute({1, 0}));
@@ -52,6 +54,6 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
 
 LFR_TEST(
     // testPrint();
-    // testTensor();
-    testNorm();
+    testTensor();
+    // testNorm();
 );

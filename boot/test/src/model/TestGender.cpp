@@ -56,7 +56,7 @@ public:
     torch::Tensor forward(torch::Tensor x) {
         x = this->features->forward(x);
         x = this->avgPool->forward(x);
-        x = x.flatten();
+        x = x.flatten(1);
         x = this->classifier->forward(x);
         return torch::log_softmax(x, 1);
     }
@@ -67,14 +67,16 @@ public:
 
 TORCH_MODULE(GenderModule);
 
-class GenderModel : public lifuren::Model<lifuren::dataset::ImageFileDatasetLoader, float, std::string, torch::nn::CrossEntropyLoss, GenderModule> {
+class GenderModel : public lifuren::Model<lifuren::dataset::ImageFileDatasetLoader, float, std::string, torch::nn::CrossEntropyLoss, GenderModule, torch::optim::Adam> {
 
 public:
     GenderModel(lifuren::ModelParams params = {
         .batch_size = 10LL,
         .epoch_count = 10LL,
         .classify = true
-    }) : Model(torch::nn::CrossEntropyLoss{}, GenderModule{}, params) {
+    }) : Model(params, [](auto tensor) {
+        return tensor.squeeze().to(torch::kInt64);
+    }) {
     }
     virtual ~GenderModel() {
     }
@@ -92,12 +94,8 @@ public:
         this->trainDataset = std::move(lifuren::dataset::loadImageFileDataset(200, 200, this->params.batch_size, path_train, ".jpg", mapping));
         return true;
     }
-    std::shared_ptr<torch::optim::Optimizer> defineOptimizer() override {
-        // return std::make_shared<torch::optim::SGD>(this->model->parameters(), this->params.lr);
-        return std::make_shared<torch::optim::Adam>(this->model->parameters(), this->params.lr);
-    }
     float eval(std::string i) {
-         cv::Mat image = cv::imread(i);
+        cv::Mat image = cv::imread(i);
         cv::resize(image, image, cv::Size(200, 200));
         torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kF32).div(255.0);
         auto prediction = this->model->forward(image_tensor);

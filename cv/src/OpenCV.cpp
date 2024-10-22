@@ -1,6 +1,6 @@
 #include "lifuren/Logger.hpp"
 
-#include "opencv2/opencv.hpp"
+#include "opencv2/core/utils/logger.hpp"
 
 void lifuren::logger::opencv::init() {
     #if defined(_DEBUG) || !defined(NDEBUG)
