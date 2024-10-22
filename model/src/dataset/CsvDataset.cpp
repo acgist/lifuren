@@ -66,7 +66,9 @@ static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
             data.push_back(line.substr(index, jndex - index));
             index = jndex + 1;
         }
-        data.push_back(line.substr(index, line.length() - index));
+        if(line.length() > index) {
+            data.push_back(line.substr(index, line.length() - index));
+        }
         ret.push_back(data);
         size = data.size();
     }
