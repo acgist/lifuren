@@ -8,7 +8,7 @@ static std::mutex mutex;
 size_t lifuren::uuid() noexcept {
     static int index = 0;
     const static int MIN_INDEX = 0;
-    const static int MAX_INDEX = 9999;
+    const static int MAX_INDEX = 10000;
     auto timePoint = std::chrono::system_clock::now();
     auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
     auto localtime = std::localtime(&timestamp);
@@ -16,7 +16,7 @@ size_t lifuren::uuid() noexcept {
     {
         std::lock_guard<std::mutex> lock(mutex);
         i = index;
-        if(++index > MAX_INDEX) {
+        if(++index >= MAX_INDEX) {
             index = MIN_INDEX;
         }
     }

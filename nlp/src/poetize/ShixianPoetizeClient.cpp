@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::ShixianRNNPoetizeClient::ShixianRNNPoetizeClient() {
+lifuren::ShixianPoetizeClient::ShixianPoetizeClient() {
 }
 
-lifuren::ShixianRNNPoetizeClient::~ShixianRNNPoetizeClient() {
+lifuren::ShixianPoetizeClient::~ShixianPoetizeClient() {
 }

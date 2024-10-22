@@ -10,6 +10,10 @@
     client.index("猪");
     client.index("牛");
     client.index("马");
+    client.index("马");
+    client.index("马");
+    client.index("桃子");
+    client.index("桃子");
     client.index("桃子");
     client.index("苹果");
     client.index("李子");

@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::WanyueRNNPoetizeClient::WanyueRNNPoetizeClient() {
+lifuren::WanyuePoetizeClient::WanyuePoetizeClient() {
 }
 
-lifuren::WanyueRNNPoetizeClient::~WanyueRNNPoetizeClient() {
+lifuren::WanyuePoetizeClient::~WanyuePoetizeClient() {
 }

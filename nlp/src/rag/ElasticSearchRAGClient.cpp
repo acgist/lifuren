@@ -1,6 +1,3 @@
-/**
- * https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
- */
 #include "lifuren/RAG.hpp"
 
 // TODO: GCC/G++ 13+
@@ -10,12 +7,15 @@
 
 #include "nlohmann/json.hpp"
 
-static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
-static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client, size_t dims);
-static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
+// 避免单次重复索引
+static std::set<std::string> promptSet;
 
-static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client);
-static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const uint8_t& size, std::shared_ptr<lifuren::RestClient> client);
+// 检测索引
+static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
+// 创建索引
+static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> client, size_t dims);
+// 删除索引
+static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
 
 lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path, const std::string& embedding) :RAGClient(path, embedding) {
     const auto& elasticsearchConfig = lifuren::config::CONFIG.elasticsearch;
@@ -24,16 +24,48 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
 }
 
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
+    promptSet.clear();
 }
 
 std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& prompt) {
-    const auto&& vector = this->embeddingClient->getVector(prompt);
-    ::index(this->id, prompt, vector, this->restClient);
+    const auto vector = std::move(this->embeddingClient->getVector(prompt));
+    if(promptSet.contains(prompt)) {
+        return vector;
+    }
+    promptSet.insert(prompt);
+    const nlohmann::json body = {
+        { "vector" , vector },
+        { "content", prompt }
+    };
+    this->restClient->postJson("/" + std::to_string(this->id) + "/_doc", body.dump());
     return vector;
 }
 
 std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vector<float>& prompt, const uint8_t size) const {
-    return ::search(this->id, prompt, size, this->restClient);
+    const nlohmann::json body = {
+        { "knn", {
+            { "k"             ,  size    },
+            { "field"         , "vector" },
+            { "query_vector"  ,  prompt  },
+            { "num_candidates",  100     },
+        } }
+    };
+    const auto response = std::move(this->restClient->postJson("/" + std::to_string(this->id) + "/_search", body.dump()));
+    if(!response) {
+        return {};
+    }
+    const nlohmann::json data = std::move(nlohmann::json::parse(response.body));
+    if(data.find("hits") == data.end()) {
+        return {};
+    }
+    const nlohmann::json& hits = data["hits"];
+    std::vector<std::string> ret;
+    ret.reserve(hits["total"]["value"].get<int>());
+    const nlohmann::json& docs = hits["hits"];
+    for(const auto& doc : docs) {
+        ret.push_back(doc["_source"]["content"].get<std::string>());
+    }
+    return ret;
 }
 
 bool lifuren::ElasticSearchRAGClient::loadIndex() {
@@ -68,14 +100,14 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
             { "properties", {
                 { "vector", {
                     { "type",       "dense_vector" },
-                    { "dims",       dims           },
-                    { "index",      true           },
+                    { "dims",        dims          },
+                    { "index",       true          },
                     { "similarity", "l2_norm"      }
                 } },
                 { "content", {
                     { "type" , "text" },
-                    { "index", false  },
-                    { "store", true   }
+                    { "index",  false },
+                    { "store",  true  }
                 } }
             } }
         } }
@@ -84,41 +116,6 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
 }
 
 static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
+    SPDLOG_DEBUG("删除ElasticSearch索引：{}", id);
     return client->del("/" + std::to_string(id));
-}
-
-static bool index(const size_t& id, const std::string& content, const std::vector<float>& vector, std::shared_ptr<lifuren::RestClient> client) {
-    // TODO: 是否需要重复验证
-    const nlohmann::json body = {
-        { "vector" , vector  },
-        { "content", content }
-    };
-    return client->postJson("/" + std::to_string(id) + "/_doc", body.dump());
-}
-
-static std::vector<std::string> search(const size_t& id, const std::vector<float>& vector, const uint8_t& size, std::shared_ptr<lifuren::RestClient> client) {
-    const nlohmann::json body = {
-        { "knn", {
-            { "k"             , size     },
-            { "field"         , "vector" },
-            { "query_vector"  , vector   },
-            { "num_candidates", 100      },
-        } }
-    };
-    const auto&& response = client->postJson("/" + std::to_string(id) + "/_search", body.dump());
-    if(!response) {
-        return {};
-    }
-    nlohmann::json data = nlohmann::json::parse(response.body);
-    if(data.find("hits") == data.end()) {
-        return {};
-    }
-    nlohmann::json& hits = data["hits"];
-    std::vector<std::string> ret;
-    ret.reserve(hits["total"]["value"].get<int>());
-    nlohmann::json& docs = hits["hits"];
-    for(const auto& doc : docs) {
-        ret.push_back(doc["_source"]["content"].get<std::string>());
-    }
-    return ret;
 }

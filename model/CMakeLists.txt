@@ -2,10 +2,10 @@ project(lifurenmodel VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Layer.cpp
-    src/Model.cpp
-    src/Tensor.cpp
-    src/Dataset.cpp
+    # src/Layer.cpp
+    # src/Model.cpp
+    # src/Tensor.cpp
+    # src/Dataset.cpp
     src/dataset/CsvDataset.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp

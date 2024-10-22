@@ -1,6 +1,3 @@
-/**
- * https://github.com/ollama/ollama/blob/main/docs/api.md
- */
 #include "lifuren/EmbeddingClient.hpp"
 
 #include "spdlog/spdlog.h"
@@ -23,17 +20,17 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
         { "model", embeddingConfig.model },
         { "input", prompt                }
     };
-    const auto&& response = this->restClient->postJson(embeddingConfig.path, body.dump());
+    const auto response = std::move(this->restClient->postJson(embeddingConfig.path, body.dump()));
     if(!response) {
         return {};
     }
-    nlohmann::json data = nlohmann::json::parse(response.body);
+    nlohmann::json data = std::move(nlohmann::json::parse(response.body));
     auto iterator = data.find("embeddings");
     if(iterator == data.end()) {
         return {};
     }
-    auto embeddings = iterator->get<std::vector<std::vector<float>>>();
-    if(embeddings.size() == 0LL || embeddings.size() > 1LL) {
+    const auto embeddings = std::move(iterator->get<std::vector<std::vector<float>>>());
+    if(embeddings.size() != 1) {
         SPDLOG_WARN("Ollama词嵌入返回错误：{}", prompt);
         return {};
     }

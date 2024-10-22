@@ -29,88 +29,88 @@ public:
 /**
  * 诗佛终端
  */
-class ShifoRNNPoetizeClient : public PoetizeClient {
+class ShifoPoetizeClient : public PoetizeClient {
 
 public:
-    ShifoRNNPoetizeClient();
-    virtual ~ShifoRNNPoetizeClient();
+    ShifoPoetizeClient();
+    virtual ~ShifoPoetizeClient();
 
 };
 
 /**
  * 诗魔终端
  */
-class ShimoRNNPoetizeClient : public PoetizeClient {
+class ShimoPoetizeClient : public PoetizeClient {
 
 public:
-    ShimoRNNPoetizeClient();
-    virtual ~ShimoRNNPoetizeClient();
+    ShimoPoetizeClient();
+    virtual ~ShimoPoetizeClient();
 
 };
 
 /**
  * 诗鬼终端
  */
-class ShiguiRNNPoetizeClient : public PoetizeClient {
+class ShiguiPoetizeClient : public PoetizeClient {
 
 public:
-    ShiguiRNNPoetizeClient();
-    virtual ~ShiguiRNNPoetizeClient();
+    ShiguiPoetizeClient();
+    virtual ~ShiguiPoetizeClient();
 
 };
 
 /**
  * 诗仙终端
  */
-class ShixianRNNPoetizeClient : public PoetizeClient {
+class ShixianPoetizeClient : public PoetizeClient {
 
 public:
-    ShixianRNNPoetizeClient();
-    virtual ~ShixianRNNPoetizeClient();
+    ShixianPoetizeClient();
+    virtual ~ShixianPoetizeClient();
 
 };
 
 /**
  * 诗圣终端
  */
-class ShishengRNNPoetizeClient : public PoetizeClient {
+class ShishengPoetizeClient : public PoetizeClient {
 
 public:
-    ShishengRNNPoetizeClient();
-    virtual ~ShishengRNNPoetizeClient();
+    ShishengPoetizeClient();
+    virtual ~ShishengPoetizeClient();
 
 };
 
 /**
  * 李杜终端
  */
-class LiduRNNPoetizeClient : public PoetizeClient {
+class LiduPoetizeClient : public PoetizeClient {
 
 public:
-    LiduRNNPoetizeClient();
-    virtual ~LiduRNNPoetizeClient();
+    LiduPoetizeClient();
+    virtual ~LiduPoetizeClient();
 
 };
 
 /**
  * 苏辛终端
  */
-class SuxinRNNPoetizeClient : public PoetizeClient {
+class SuxinPoetizeClient : public PoetizeClient {
 
 public:
-    SuxinRNNPoetizeClient();
-    virtual ~SuxinRNNPoetizeClient();
+    SuxinPoetizeClient();
+    virtual ~SuxinPoetizeClient();
 
 };
 
 /**
  * 婉约终端
  */
-class WanyueRNNPoetizeClient : public PoetizeClient {
+class WanyuePoetizeClient : public PoetizeClient {
 
 public:
-    WanyueRNNPoetizeClient();
-    virtual ~WanyueRNNPoetizeClient();
+    WanyuePoetizeClient();
+    virtual ~WanyuePoetizeClient();
 
 };
 

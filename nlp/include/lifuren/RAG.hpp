@@ -36,11 +36,15 @@ struct RAGTask {
 
 /**
  * RAG终端
+ * 
+ * 注意：
+ *  1. 只能保证单次索引提示不会重复
+ *  2. 多次索引提示建议先删除再重建
  */
 class RAGClient : public RAGSearchClient {
 
 public:
-    // 唯一标识
+    // RAG文档ID
     size_t id = 0;
 
 protected:
@@ -100,7 +104,7 @@ public:
      * 
      * @return RAG终端
      */
-    static inline std::unique_ptr<lifuren::RAGClient> getClient(const RAGTask& task) {
+    inline static std::unique_ptr<lifuren::RAGClient> getClient(const RAGTask& task) {
         return RAGClient::getClient(task.rag, task.path, task.embedding);
     }
 
@@ -110,6 +114,7 @@ public:
  * FaissRAG终端
  * 
  * https://github.com/facebookresearch/faiss
+ * https://github.com/facebookresearch/faiss/tree/main/tutorial/cpp
  */
 class FaissRAGClient : public RAGClient {
 
@@ -125,7 +130,7 @@ public:
      * @param embedding 词嵌入方式
      */
     FaissRAGClient(const std::string& path, const std::string& embedding);
-    ~FaissRAGClient();
+    virtual ~FaissRAGClient();
 
 public:
     using RAGClient::search;
@@ -141,6 +146,7 @@ public:
  * ElasticSearchRAG终端
  * 
  * https://github.com/elastic/elasticsearch
+ * https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
  */
 class ElasticSearchRAGClient : public RAGClient {
 
@@ -154,7 +160,7 @@ public:
      * @param embedding 词嵌入方式
      */
     ElasticSearchRAGClient(const std::string& path, const std::string& embedding);
-    ~ElasticSearchRAGClient();
+    virtual ~ElasticSearchRAGClient();
 
 public:
     using RAGClient::search;
@@ -175,7 +181,7 @@ public:
 class RAGTaskRunner {
 
 public:
-    size_t id   = 0LL;   // 索引标识
+    size_t id   = 0;     // 索引标识
     bool stop   = false; // 是否停止
     bool finish = false; // 是否完成
 

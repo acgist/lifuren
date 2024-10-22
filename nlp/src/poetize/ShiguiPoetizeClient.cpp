@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::ShiguiRNNPoetizeClient::ShiguiRNNPoetizeClient() {
+lifuren::ShiguiPoetizeClient::ShiguiPoetizeClient() {
 }
 
-lifuren::ShiguiRNNPoetizeClient::~ShiguiRNNPoetizeClient() {
+lifuren::ShiguiPoetizeClient::~ShiguiPoetizeClient() {
 }

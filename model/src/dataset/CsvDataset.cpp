@@ -12,17 +12,8 @@ static std::map<size_t, bool> digtType;
 // 列的数据类型总量：排除空白
 static std::map<size_t, std::map<std::string, size_t>> enumType;
 
+// 加载文件
 static std::vector<std::vector<std::string>> loadCSV(const std::string& path);
-
-static void loadCSV(
-    const std::string&path,
-    const size_t& startRow,
-    const size_t& startCol,
-    const int   & labelCol,
-    const std::string& unknow,
-    std::vector<torch::Tensor>& labels,
-    std::vector<torch::Tensor>& features
-);
 
 lifuren::dataset::CsvDataset::CsvDataset(
     const std::string& path,
@@ -31,7 +22,7 @@ lifuren::dataset::CsvDataset::CsvDataset(
     const int   & labelCol,
     const std::string& unknow
 ) {
-    loadCSV(path, startRow, startCol, labelCol, unknow, this->labels, this->features);
+    loadCSV(path, this->labels, this->features, startRow, startCol, labelCol, unknow);
 }
 
 lifuren::dataset::CsvDataset::~CsvDataset() {
@@ -48,13 +39,85 @@ torch::data::Example<> lifuren::dataset::CsvDataset::get(size_t index) {
     };
 }
 
-torch::Tensor lifuren::dataset::CsvDataset::getFeature(size_t index) {
-    return this->features[index];
-}
-
 void lifuren::dataset::CsvDataset::reset() {
     digtType.clear();
     enumType.clear();
+}
+
+void lifuren::dataset::CsvDataset::loadCSV(
+    const std::string& path,
+    std::vector<torch::Tensor>& labels,
+    std::vector<torch::Tensor>& features,
+    const size_t& startRow,
+    const size_t& startCol,
+    const int   & labelCol,
+    const std::string& unknow
+) {
+    const auto rows = std::move(::loadCSV(path));
+    if(rows.empty()) {
+        return;
+    }
+    const size_t rowSize = rows.size();
+    const size_t colSize = rows[0].size();
+    // 解析数据类型
+    if(digtType.empty() && enumType.empty()) {
+        for(size_t col = startCol; col < colSize; ++col) {
+            digtType[col] = true;
+            for(size_t row = startRow; row < rowSize; ++row) {
+                const auto& cols = rows[row];
+                const auto& v    = cols[col];
+                auto& typeMapping = enumType[col];
+                auto iterator = typeMapping.find(v);
+                if(iterator == typeMapping.end()) {
+                    typeMapping.emplace(v, typeMapping.size());
+                }
+                if(v.empty() || v == unknow) {
+                } else if(lifuren::string::isNumeric(v)) {
+                } else {
+                    digtType[col] = false;
+                }
+            }
+        }
+    }
+    size_t lSize = 0;
+    size_t fSize = 0;
+    labels.reserve(rowSize - startRow);
+    features.reserve(rowSize - startRow);
+    const size_t labelPos = labelCol < 0 ? colSize + labelCol : labelCol;
+    // 解析数据内容
+    for(size_t row = startRow; row < rowSize; ++row) {
+        std::vector<float> label;
+        std::vector<float> feature;
+        label.reserve(lSize);
+        feature.reserve(fSize);
+        for(size_t col = startCol; col < colSize; ++col) {
+            const auto& cols = rows[row];
+            const auto& v    = cols[col];
+            auto& ref = col == labelPos ? label : feature;
+            if(digtType[col]) {
+                if(v.empty() || v == unknow) {
+                    ref.push_back(0.0F);
+                } else {
+                    ref.push_back(std::atof(v.c_str()));
+                }
+            } else {
+                // one-hot
+                auto& typeRef = enumType[col];
+                const size_t oldSize = ref.size();
+                ref.resize(oldSize + typeRef.size(), 0.0F);
+                auto iterator = typeRef.find(v);
+                if(iterator == typeRef.end()) {
+                    SPDLOG_WARN("数据枚举无效：{} - {} - {}", row, col, v);
+                } else {
+                    ref[oldSize + iterator->second] = 1.0F;
+                }
+            }
+        }
+        labels.push_back(std::move(torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone()));
+        features.push_back(std::move(torch::from_blob(feature.data(), { static_cast<int>(feature.size()) }, torch::kFloat32).clone()));
+        lSize = label.size();
+        fSize = feature.size();
+    }
 }
 
 static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
@@ -89,79 +152,4 @@ static std::vector<std::vector<std::string>> loadCSV(const std::string& path) {
     }
     stream.close();
     return ret;
-}
-
-void loadCSV(
-    const std::string&path,
-    const size_t& startRow,
-    const size_t& startCol,
-    const int   & labelCol,
-    const std::string& unknow,
-    std::vector<torch::Tensor>& labels,
-    std::vector<torch::Tensor>& features
-) {
-    const auto rows = std::move(loadCSV(path));
-    if(rows.empty()) {
-        return;
-    }
-    const size_t rowSize = rows.size();
-    const size_t colSize = rows[0].size();
-    if(digtType.empty() && enumType.empty()) {
-        for(size_t col = startCol; col < colSize; ++col) {
-            digtType[col] = true;
-            for(size_t row = startRow; row < rowSize; ++row) {
-                const auto& cols = rows[row];
-                const auto& v    = cols[col];
-                auto& typeMapping = enumType[col];
-                auto iterator = typeMapping.find(v);
-                if(iterator == typeMapping.end()) {
-                    // 0 = 空白
-                    typeMapping.emplace(v, typeMapping.size());
-                }
-                if(v.empty() || v == unknow) {
-                } else if(lifuren::string::isNumeric(v)) {
-                } else {
-                    digtType[col] = false;
-                }
-            }
-        }
-    }
-    size_t lSize = 0;
-    size_t fSize = 0;
-    labels.reserve(rowSize - startRow);
-    features.reserve(rowSize - startRow);
-    const size_t labelPos = labelCol < 0 ? colSize + labelCol : labelCol;
-    for(size_t row = startRow; row < rowSize; ++row) {
-        std::vector<float> label;
-        std::vector<float> feature;
-        label.reserve(lSize);
-        feature.reserve(fSize);
-        for(size_t col = startCol; col < colSize; ++col) {
-            const auto& cols = rows[row];
-            const auto& v    = cols[col];
-            auto& ref = col == labelPos ? label : feature;
-            if(digtType[col]) {
-                if(v.empty() || v == unknow) {
-                    ref.push_back(0.0F);
-                } else {
-                    ref.push_back(std::atof(v.c_str()));
-                }
-            } else {
-                // 如果训练数据类型不足可能导致正确率低
-                auto& typeRef = enumType[col];
-                const size_t oldSize = ref.size();
-                ref.resize(oldSize + typeRef.size(), 0.0F);
-                auto iterator = typeRef.find(v);
-                if(iterator == typeRef.end()) {
-                    SPDLOG_WARN("数据枚举无效：{} - {} - {}", row, col, v);
-                } else {
-                    ref[oldSize + iterator->second] = 1.0F;
-                }
-            }
-        }
-        labels.push_back(std::move(torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone()));
-        features.push_back(std::move(torch::from_blob(feature.data(), { static_cast<int>(feature.size()) }, torch::kFloat32).clone()));
-        lSize = label.size();
-        fSize = feature.size();
-    }
 }

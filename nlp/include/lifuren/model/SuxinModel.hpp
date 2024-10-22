@@ -11,7 +11,7 @@ namespace lifuren {
 /**
  * 苏辛模型
  */
-class SuxinRNNModel {
+class SuxinModel {
 };
 
 }

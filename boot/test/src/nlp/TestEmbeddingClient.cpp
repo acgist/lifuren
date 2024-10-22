@@ -4,15 +4,21 @@
 
 [[maybe_unused]] static void testOllamaEmbedding() {
     lifuren::OllamaEmbeddingClient client{};
-    const auto&& vector = client.getVector("李夫人");
-    SPDLOG_DEBUG("v length = {}", vector.size());
+    const auto v = std::move(client.getVector("李夫人"));
+    SPDLOG_DEBUG("v length = {}", v.size());
 }
 
 [[maybe_unused]] static void testChineseWordVectorsEmbedding() {
-    lifuren::ChineseWordVectorsEmbeddingClient client{};
-    auto v = client.getVector("中");
-    // auto v = client.getVector({ "李", "夫", "人"});
-    SPDLOG_DEBUG("v length = {}", v.size());
+    // lifuren::ChineseWordVectorsEmbeddingClient ref{};
+    {
+        lifuren::ChineseWordVectorsEmbeddingClient client{};
+        auto v = std::move(client.getVector("中"));
+        // auto v = std::move(client.getVector({ "李", "夫", "人"}));
+        SPDLOG_DEBUG("v length = {}", v.size());
+    }
+    SPDLOG_DEBUG("释放1");
+    SPDLOG_DEBUG("释放2");
+    SPDLOG_DEBUG("释放3");
 }
 
 LFR_TEST(

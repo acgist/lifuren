@@ -54,6 +54,7 @@ public:
  * Ollama词嵌入终端
  * 
  * https://github.com/ollama/ollama
+ * https://github.com/ollama/ollama/blob/main/docs/api.md
  */
 class OllamaEmbeddingClient : public EmbeddingClient {
 
@@ -74,7 +75,7 @@ public:
 /**
  * Chinese-Word-Vectors词嵌入终端
  * 
- * 项目地址：https://github.com/Embedding/Chinese-Word-Vectors
+ * https://github.com/Embedding/Chinese-Word-Vectors
  */
 class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
 

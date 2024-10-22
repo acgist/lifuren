@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::ShimoRNNPoetizeClient::ShimoRNNPoetizeClient() {
+lifuren::ShimoPoetizeClient::ShimoPoetizeClient() {
 }
 
-lifuren::ShimoRNNPoetizeClient::~ShimoRNNPoetizeClient() {
+lifuren::ShimoPoetizeClient::~ShimoPoetizeClient() {
 }

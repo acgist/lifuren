@@ -1,6 +1,3 @@
-/**
- * https://github.com/Embedding/Chinese-Word-Vectors
- */
 #include "lifuren/EmbeddingClient.hpp"
 
 #include <map>
@@ -13,11 +10,16 @@
 
 #include "spdlog/spdlog.h"
 
+// 锁
 static std::mutex mutex;
+// 共享数量
 static std::atomic<int> share_count(0);
+// 提示向量
 static std::unordered_map<std::string, std::vector<float>> vectors;
 
+// 加载向量
 static void initVectors();
+// 加载向量
 static void loadVectors(const std::string& path);
 
 lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient() {

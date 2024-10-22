@@ -1,6 +1,3 @@
-/**
- * https://github.com/facebookresearch/faiss/tree/main/tutorial/cpp
- */
 #include "lifuren/RAG.hpp"
 
 #include <fstream>
@@ -14,40 +11,62 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
 
+// 避免单次重复索引
+static std::set<std::string> promptSet;
+
+// 公用一个锁不考虑并发
+static std::mutex mutex;
+// 向量数量
+const static int faiss_n = 1;
+
+// RAG仓库ID = Faiss向量库
 static std::map<size_t, std::shared_ptr<faiss::Index>> indexDBMap{};
-// TODO: 使用short代替size_t
+// RAG仓库ID = <提示ID = 提示>
 static std::map<size_t, std::shared_ptr<std::map<size_t, std::string>>> mappingMap{};
 
+// 加载提示映射
 static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::filesystem::path& path);
+// 保存提示映射
 static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path);
 
+// 加载Faiss向量库
 static faiss::Index* loadIndexDB(size_t dims, const std::filesystem::path& path);
+// 保存Faiss向量库
 static void saveIndexDB(faiss::Index* index, const std::filesystem::path& path);
 
-lifuren::FaissRAGClient::FaissRAGClient(const std::string& path, const std::string& embedding) : RAGClient(path, embedding) {
+lifuren::FaissRAGClient::FaissRAGClient(
+    const std::string& path,
+    const std::string& embedding
+) : RAGClient(path, embedding) {
 }
 
 lifuren::FaissRAGClient::~FaissRAGClient() {
+    promptSet.clear();
 }
 
 std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
-    // TODO: 是否需要重复验证
-    // TODO: 验证一秒钟会不会超过一万
-    const int faiss_n = 1;
-    const int64_t id = lifuren::uuid();
-    const std::vector<float>&& vector = this->embeddingClient->getVector(prompt);
-    this->mapping->emplace(id, prompt);
-    this->indexDB->add_with_ids(faiss_n, vector.data(), &id);
+    const std::vector<float> vector = std::move(this->embeddingClient->getVector(prompt));
+    if(promptSet.contains(prompt)) {
+        return vector;
+    }
+    promptSet.insert(prompt);
+    const int64_t id = lifuren::uuid(); {
+        std::lock_guard<std::mutex> lock(mutex);
+        this->mapping->emplace(id, prompt);
+        this->indexDB->add_with_ids(faiss_n, vector.data(), &id);
+    }
     return vector;
 }
 
 std::vector<std::string> lifuren::FaissRAGClient::search(const std::vector<float>& prompt, const uint8_t size) const {
-    const int faiss_n = 1;
-    std::vector<float> data;
-    data.resize(faiss_n * size);
+    std::vector<float> distance;
+    distance.resize(faiss_n * size);
     std::vector<int64_t> idx;
     idx.resize(faiss_n * size);
-    this->indexDB->search(faiss_n, prompt.data(), size, data.data(), idx.data());
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        this->indexDB->search(faiss_n, prompt.data(), size, distance.data(), idx.data());
+    }
     std::vector<std::string> ret;
     ret.reserve(size);
     for(int index = 0; index < size; ++index) {
@@ -65,17 +84,25 @@ bool lifuren::FaissRAGClient::loadIndex() {
     if(!lifuren::RAGClient::loadIndex()) {
         return false;
     }
-    // TODO: 异步加载
     if(mappingMap.contains(this->id)) {
         this->mapping = mappingMap.at(this->id);
         this->indexDB = indexDBMap.at(this->id);
     } else {
-        const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
-        this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
-        indexDBMap.emplace(this->id, this->indexDB);
-        const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-        this->mapping = loadMapping(mappingPath);
-        mappingMap.emplace(this->id, this->mapping);
+        // 异步加载
+        std::unique_lock<std::mutex> lock(mutex);
+        std::condition_variable condition;
+        std::thread loadThread([this, &condition]() {
+            std::lock_guard<std::mutex> lock(mutex);
+            condition.notify_one();
+            const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+            this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
+            indexDBMap.emplace(this->id, this->indexDB);
+            const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
+            this->mapping = loadMapping(mappingPath);
+            mappingMap.emplace(this->id, this->mapping);
+        });
+        loadThread.detach();
+        condition.wait(lock);
     }
     return true;
 }
@@ -84,18 +111,24 @@ bool lifuren::FaissRAGClient::saveIndex() const {
     if(!lifuren::RAGClient::saveIndex()) {
         return false;
     }
-    const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
-    saveIndexDB(this->indexDB.get(), indexDBPath);
-    const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-    saveMapping(this->mapping, mappingPath);
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+        saveIndexDB(this->indexDB.get(), indexDBPath);
+        const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
+        saveMapping(this->mapping, mappingPath);
+    }
     return true;
 }
 
 bool lifuren::FaissRAGClient::truncateIndex() {
-    this->mapping->clear();
-    this->indexDB->reset();
-    mappingMap.erase(this->id);
-    indexDBMap.erase(this->id);
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        this->mapping->clear();
+        this->indexDB->reset();
+        mappingMap.erase(this->id);
+        indexDBMap.erase(this->id);
+    }
     return lifuren::RAGClient::truncateIndex();
 }
 
@@ -107,7 +140,7 @@ static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::fil
     std::ifstream stream;
     stream.open(path, std::ios_base::in | std::ios_base::binary);
     if(stream.is_open()) {
-        size_t  id     = 0LL;
+        size_t  id     = 0;
         uint8_t length = 0;
         while(stream >> id && stream >> length) {
             std::string word;

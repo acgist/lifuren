@@ -7,6 +7,7 @@
 #define LFR_HEADER_MODEL_DATASET_HPP
 
 #include <map>
+#include <limits>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -29,6 +30,13 @@ private:
     std::vector<torch::Tensor> features;
 
 public:
+    /**
+     * @param path     文件路径
+     * @param startRow 开始行
+     * @param startCol 开始列
+     * @param labelCol 结束列
+     * @param unknow   未知值
+     */
     CsvDataset(
         const std::string& path,
         const size_t& startRow =  1,
@@ -46,17 +54,41 @@ public:
     /**
      * @param index 索引
      * 
-     * @return Tensor
+     * @return 数据
      */
     torch::data::Example<> get(size_t index) override;
-    /**
-     * @param index 索引
-     */
-    torch::Tensor getFeature(size_t index);
 
 public:
-    // 重置标记
+    // 重置标记：类型、枚举
     static void reset();
+    /**
+     * @param path     文件路径
+     * @param labels   标签
+     * @param features 特征
+     * @param startRow 开始行
+     * @param startCol 开始列
+     * @param labelCol 结束列
+     * @param unknow   未知值
+     */
+    static void loadCSV(
+        const std::string& path,
+        std::vector<torch::Tensor>& labels,
+        std::vector<torch::Tensor>& features,
+        const size_t& startRow =  1,
+        const size_t& startCol =  1,
+        const int   & labelCol = -1,
+        const std::string& unknow = "NA"
+    );
+    /**
+     * @param path   文件路径
+     * @param vector 向量
+     */
+    inline static void loadCSV(
+        const std::string& path,
+        std::vector<torch::Tensor>& vector
+    ) {
+        loadCSV(path, vector, vector, 1, 1, std::numeric_limits<int>::max());
+    }
 
 };
 
@@ -72,7 +104,11 @@ private:
     std::vector<std::vector<float>> features;
 
 public:
-    RawDataset(const std::vector<float>& labels, const std::vector<std::vector<float>>& features);
+    /**
+     * @param labels   标签
+     * @param features 特征
+     */
+    RawDataset(std::vector<float>& labels, std::vector<std::vector<float>>& features);
     virtual ~RawDataset();
 
 public:
@@ -83,7 +119,7 @@ public:
     /**
      * @param index 索引
      * 
-     * @return Tensor
+     * @return 数据
      */
     torch::data::Example<> get(size_t index) override;
 
@@ -149,7 +185,7 @@ public:
     /**
      * @param index 索引
      * 
-     * @return Tensor
+     * @return 数据
      */
     torch::data::Example<> get(size_t index) override;
 
@@ -157,7 +193,7 @@ public:
 
 inline auto loadCsvDataset(
     const size_t& batch_size,
-    const std::string path,
+    const std::string& path,
     const size_t& startRow =  1,
     const size_t& startCol =  1,
     const int   & labelCol = -1,
@@ -179,8 +215,8 @@ using CsvDatasetLoader = std::invoke_result<
 
 inline auto loadRawDataset(
     const size_t& batch_size,
-    const std::vector<float>& labels,
-    const std::vector<std::vector<float>>& features
+    std::vector<float>& labels,
+    std::vector<std::vector<float>>& features
 ) -> decltype(auto) {
     auto dataset = lifuren::dataset::RawDataset(labels, features).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
@@ -189,8 +225,8 @@ inline auto loadRawDataset(
 using RawDatasetLoader = std::invoke_result<
     decltype(&lifuren::dataset::loadRawDataset),
     const size_t&,
-    const std::vector<float>&,
-    const std::vector<std::vector<float>>&
+    std::vector<float>&,
+    std::vector<std::vector<float>>&
 >::type;
 
 } // END OF dataset

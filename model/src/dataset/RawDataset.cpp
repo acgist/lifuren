@@ -1,8 +1,8 @@
 #include "lifuren/Dataset.hpp"
 
 lifuren::dataset::RawDataset::RawDataset(
-    const std::vector<float>& labels,
-    const std::vector<std::vector<float>>& features
+    std::vector<float>& labels,
+    std::vector<std::vector<float>>& features
 ) : labels(std::move(labels)), features(std::move(features)) {
 }
 

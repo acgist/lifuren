@@ -15,14 +15,16 @@
 #include "lifuren/EmbeddingClient.hpp"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor);
+LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 [[maybe_unused]] static void testCsvDataset() {
     auto loader = lifuren::dataset::loadCsvDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "train.csv"}).string());
-    SPDLOG_DEBUG("CSV特征：\n{}", loader->begin()->data);
-    SPDLOG_DEBUG("CSV标签：\n{}", loader->begin()->target);
-    auto testDataset = lifuren::dataset::CsvDataset(lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "test.csv"}).string());
-    SPDLOG_DEBUG("CSV特征：\n{}", testDataset.getFeature(0));
-    SPDLOG_DEBUG("CSV特征：\n{}", testDataset.getFeature(1));
+    SPDLOG_DEBUG("CSV特征：\n{}", loader->begin()->data.sizes());
+    SPDLOG_DEBUG("CSV标签：\n{}", loader->begin()->target.sizes());
+    std::vector<torch::Tensor> features;
+    lifuren::dataset::CsvDataset::loadCSV(lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "test.csv"}).string(), features);
+    SPDLOG_DEBUG("CSV特征：\n{}", features[0].sizes());
+    SPDLOG_DEBUG("CSV特征：\n{}", features[1].sizes());
 }
 
 [[maybe_unused]] static void testRawDataset() {
@@ -42,13 +44,13 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
         features.push_back(feature);
     }
     lifuren::dataset::RawDataset dataset(labels, features);
-    SPDLOG_DEBUG("数据数量：{}", dataset.size().value());
-    auto&& [
+    SPDLOG_DEBUG("RAW数量：{}", dataset.size().value());
+    auto [
         feature,
         label
-    ] = dataset.get(0);
-    SPDLOG_DEBUG("数据特征：\n{}", feature);
-    SPDLOG_DEBUG("数据标签：\n{}", label);
+    ] = std::move(dataset.get(0));
+    SPDLOG_DEBUG("RAW特征：\n{}", feature);
+    SPDLOG_DEBUG("RAW标签：\n{}", label);
 }
 
 [[maybe_unused]] static void testFileDataset() {
@@ -65,10 +67,10 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
         }
     );
     SPDLOG_DEBUG("文件数量：{}", dataset.size().value());
-    auto&& [
+    auto [
         feature,
         label
-    ] = dataset.get(0);
+    ] = std::move(dataset.get(0));
     SPDLOG_DEBUG("文件特征：\n{}", feature);
     SPDLOG_DEBUG("文件标签：\n{}", label);
 }

@@ -6,14 +6,6 @@ target_link_libraries(
     lifurennlp
 )
 
-add_executable(testFaiss TestFaiss.cpp)
-add_test(NAME testFaiss COMMAND testFaiss)
-set_target_properties(testFaiss PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testFaiss
-    lifurennlp
-)
-
 add_executable(testPoetry TestPoetry.cpp)
 add_test(NAME testPoetry COMMAND testPoetry)
 set_target_properties(testPoetry PROPERTIES FOLDER "test-nlp")

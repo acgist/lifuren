@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::SuxinRNNPoetizeClient::SuxinRNNPoetizeClient() {
+lifuren::SuxinPoetizeClient::SuxinPoetizeClient() {
 }
 
-lifuren::SuxinRNNPoetizeClient::~SuxinRNNPoetizeClient() {
+lifuren::SuxinPoetizeClient::~SuxinPoetizeClient() {
 }

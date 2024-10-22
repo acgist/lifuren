@@ -27,7 +27,7 @@ lifuren::dataset::FileDataset::FileDataset(
             std::vector<std::string> files;
             lifuren::file::listFile(files, path.string(), exts);
             for(const auto& file : files) {
-                this->features.push_back(transform(file));
+                this->features.push_back(std::move(transform(file)));
             }
             this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(path.filename().string()), torch::kFloat32));
         } else {

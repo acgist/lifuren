@@ -1,7 +1,7 @@
 #include "lifuren/PoetizeClient.hpp"
 
-lifuren::ShifoRNNPoetizeClient::ShifoRNNPoetizeClient() {
+lifuren::ShifoPoetizeClient::ShifoPoetizeClient() {
 }
 
-lifuren::ShifoRNNPoetizeClient::~ShifoRNNPoetizeClient() {
+lifuren::ShifoPoetizeClient::~ShifoPoetizeClient() {
 }

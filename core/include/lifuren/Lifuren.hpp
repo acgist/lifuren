@@ -10,6 +10,8 @@
 namespace lifuren {
 
 /**
+ * 注意：一秒钟的并发不能超过一万
+ * 
  * @return ID(yyyyMMddHHmmssxxxx)
  */
 extern size_t uuid() noexcept;
