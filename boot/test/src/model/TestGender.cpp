@@ -15,47 +15,44 @@
 class GenderModuleImpl : public torch::nn::Module {
 
 public:
-    torch::nn::Sequential        features{ nullptr };   // 卷积层
-    torch::nn::AdaptiveAvgPool2d avgPool{ nullptr };    // 池化层
-    torch::nn::Sequential        classifier{ nullptr }; // 全连接层
+    torch::nn::Sequential feature   { nullptr }; // 卷积层
+    torch::nn::Sequential pool      { nullptr }; // 池化层
+    torch::nn::Sequential classifier{ nullptr }; // 全连接层
 
 public:
     GenderModuleImpl() {
         // 卷积
-        torch::nn::Sequential features;
-        // - 1
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 4, 3)));
-        features->push_back(torch::nn::BatchNorm2d(4));
-        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
-        features->push_back(torch::nn::BatchNorm2d(8));
-        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        features->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
-        // // - 2
-        // features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
-        // features->push_back(torch::nn::BatchNorm2d(8));
-        // features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
-        // features->push_back(torch::nn::BatchNorm2d(8));
-        // features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // features->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
-        this->features = register_module("features", features);
+        torch::nn::Sequential feature;
+        feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 4, 3)));
+        feature->push_back(torch::nn::BatchNorm2d(4));
+        feature->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(4, 8, 3)));
+        feature->push_back(torch::nn::BatchNorm2d(8));
+        feature->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
+        this->feature = register_module("feature", feature);
         // 池化
-        this->avgPool = register_module("avgPool", torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(32)));
+        torch::nn::Sequential pool;
+        // pool->push_back(torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(32)));
+        pool->push_back(torch::nn::AdaptiveMaxPool2d(torch::nn::AdaptiveMaxPool2dOptions(32)));
+        this->pool = register_module("pool", pool);
         // 分类
         torch::nn::Sequential classifier;
-        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(8 * 32 * 32, 1024)));
+        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(8 * 32 * 32, 2048)));
         classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
         // classifier->push_back(torch::nn::Dropout());
-        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(1024, 256)));
+        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(2048, 512)));
         classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
         // classifier->push_back(torch::nn::Dropout());
-        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(256, 2)));
+        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(512, 128)));
+        classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        // classifier->push_back(torch::nn::Dropout());
+        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(128, 2)));
         this->classifier = register_module("classifier", classifier);
     }
     torch::Tensor forward(torch::Tensor x) {
-        x = this->features->forward(x);
-        x = this->avgPool->forward(x);
+        x = this->feature->forward(x);
+        x = this->pool->forward(x);
         x = x.flatten(1);
         x = this->classifier->forward(x);
         return torch::log_softmax(x, 1);
@@ -71,9 +68,9 @@ class GenderModel : public lifuren::Model<lifuren::dataset::ImageFileDatasetLoad
 
 public:
     GenderModel(lifuren::ModelParams params = {
-        .batch_size = 10LL,
+        .batch_size  = 10LL,
         .epoch_count = 10LL,
-        .classify = true
+        .classify    = true
     }) : Model(params, [](auto tensor) {
         return tensor.squeeze().to(torch::kInt64);
     }) {
