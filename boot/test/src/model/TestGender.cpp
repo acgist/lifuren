@@ -70,7 +70,10 @@ public:
     GenderModel(lifuren::ModelParams params = {
         .batch_size  = 10LL,
         .epoch_count = 10LL,
-        .classify    = true
+        .classify    = true,
+        .check_point = true,
+        .check_path  = lifuren::config::CONFIG.tmp,
+        .model_name  = "gender",
     }) : Model(params, [](auto tensor) {
         return tensor.squeeze().to(torch::kInt64);
     }) {

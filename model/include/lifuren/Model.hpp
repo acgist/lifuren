@@ -1,10 +1,6 @@
 /**
  * 模型
  * 
- * TODO:
- * 1. CPU/GPU = model->to(this->device);
- * 2. CPU/GPU = dataset.to(this->device).to(torch::kF32)
- * 
  * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
@@ -39,9 +35,8 @@ struct ModelParams {
     size_t      epoch_count{ 128LL  }; // 训练次数
     bool        classify   { false  }; // 分类任务
     bool        check_point{ false  }; // 保存快照
-    size_t      check_index{ 0LL    }; // 快照索引
     std::string check_path { "./"   }; // 快照路径
-    // TODO: 快照
+    std::string model_name { "lifuren" }; // 模型名称
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     size_t thread_size{ std::thread::hardware_concurrency() }; // 线程数量
 
@@ -78,15 +73,15 @@ protected:
     L loss        { nullptr }; // 损失函数
     M model       { nullptr }; // 模型结构
     std::unique_ptr<P> optimizer{ nullptr }; // 优化函数
-    std::function<torch::Tensor(torch::Tensor)> labelTransform   = nullptr; // 标签转换
-    std::function<torch::Tensor(torch::Tensor)> featureTransform = nullptr; // 特征转换
+    std::function<torch::Tensor(torch::Tensor)> labelTransform  { nullptr }; // 标签转换
+    std::function<torch::Tensor(torch::Tensor)> featureTransform{ nullptr }; // 特征转换
 
 public:
     Model(
         ModelParams params = {},
-        std::function<torch::Tensor(torch::Tensor)> labelTransform = nullptr,
+        std::function<torch::Tensor(torch::Tensor)> labelTransform   = nullptr,
         std::function<torch::Tensor(torch::Tensor)> featureTransform = nullptr,
-        L loss = {},
+        L loss  = {},
         M model = {}
     );
     virtual ~Model();
@@ -167,6 +162,8 @@ bool lifuren::Model<D, O, I, L, M, P>::load(const std::string& path, const std::
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 bool lifuren::Model<D, O, I, L, M, P>::define() {
+    // TODO: GPU
+    // this->model->to(this->params.device);
     return this->defineDataset();
 }
 
@@ -199,6 +196,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     size_t batch_count = 0;
     auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
+        // TODO: GPU
         auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
         auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
         torch::Tensor pred = this->model->forward(data);
@@ -247,6 +245,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     size_t batch_count = 0;
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->valDataset) {
+        // TODO: GPU
         auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
         auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
         torch::Tensor pred = this->model->forward(data);
@@ -292,6 +291,7 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
     size_t batch_count = 0;
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->testDataset) {
+        // TODO: GPU
         auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
         auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
         torch::Tensor pred = this->model->forward(data);
@@ -330,6 +330,9 @@ void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const boo
             this->train(epoch);
             if(val) {
                 this->val(epoch);
+            }
+            if(this->params.check_point) {
+                this->save(this->params.check_path, this->params.model_name + std::to_string(epoch) + ".pt");
             }
         }
         if(test) {
