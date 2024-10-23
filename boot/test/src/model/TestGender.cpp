@@ -24,32 +24,32 @@ public:
         // 卷积
         torch::nn::Sequential features;
         // - 1
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 8, 3)));
+        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 4, 3)));
+        features->push_back(torch::nn::BatchNorm2d(4));
+        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
         features->push_back(torch::nn::BatchNorm2d(8));
         features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 16, 3)));
-        features->push_back(torch::nn::BatchNorm2d(16));
-        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
         features->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
-        // - 2
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 3)));
-        features->push_back(torch::nn::BatchNorm2d(16));
-        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 3)));
-        features->push_back(torch::nn::BatchNorm2d(16));
-        features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        features->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
+        // // - 2
+        // features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
+        // features->push_back(torch::nn::BatchNorm2d(8));
+        // features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        // features->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3)));
+        // features->push_back(torch::nn::BatchNorm2d(8));
+        // features->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        // features->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         this->features = register_module("features", features);
         // 池化
         this->avgPool = register_module("avgPool", torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(32)));
         // 分类
         torch::nn::Sequential classifier;
-        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(16 * 32 * 32, 1024)));
+        classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(8 * 32 * 32, 1024)));
         classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        classifier->push_back(torch::nn::Dropout());
+        // classifier->push_back(torch::nn::Dropout());
         classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(1024, 256)));
         classifier->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        classifier->push_back(torch::nn::Dropout());
+        // classifier->push_back(torch::nn::Dropout());
         classifier->push_back(torch::nn::Linear(torch::nn::LinearOptions(256, 2)));
         this->classifier = register_module("classifier", classifier);
     }
@@ -100,10 +100,10 @@ public:
         torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kF32).div(255.0);
         auto prediction = this->model->forward(image_tensor);
         prediction = torch::softmax(prediction, 1);
-        std::cout << "预测结果：" << prediction << "\n";
+        SPDLOG_DEBUG("预测结果：{}", prediction);
         auto class_id = prediction.argmax(1);
         int class_val = class_id.item<int>();
-        printf("预测结果：%d - %f", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
+        SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
         return class_val;
     }
 
@@ -112,8 +112,8 @@ public:
 [[maybe_unused]] static void testGender() {
     GenderModel linear;
     linear.define();
-    linear.trainValAndTest(false, false);
-    float pred = linear.eval(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.jpg"}).string());
+    linear.trainValAndTest(true, false);
+    float pred = linear.eval(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
     SPDLOG_DEBUG("当前预测：{}", pred);
     // linear.print();
     // linear.save();
