@@ -14,6 +14,14 @@ target_link_libraries(
     lifurennlp
 )
 
+add_executable(testNLPModel TestNLPModel.cpp)
+add_test(NAME testNLPModel COMMAND testNLPModel)
+set_target_properties(testNLPModel PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testNLPModel
+    lifurennlp
+)
+
 add_executable(testFaissRAGClient TestFaissRAGClient.cpp)
 add_test(NAME testFaissRAGClient COMMAND testFaissRAGClient)
 set_target_properties(testFaissRAGClient PROPERTIES FOLDER "test-nlp")

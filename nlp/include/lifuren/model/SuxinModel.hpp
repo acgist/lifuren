@@ -12,6 +12,7 @@ namespace lifuren {
  * 苏辛模型
  */
 class SuxinModel {
+    // TODO: 实现
 };
 
 }

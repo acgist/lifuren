@@ -9,6 +9,7 @@
 namespace lifuren {
 
 class CycleGANModel {
+    // TODO: 实现
 };
 
 }

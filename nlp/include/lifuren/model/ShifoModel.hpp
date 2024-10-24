@@ -12,6 +12,7 @@ namespace lifuren {
  * 诗佛模型
  */
 class ShifoModel {
+    // TODO: 实现
 };
 
 }

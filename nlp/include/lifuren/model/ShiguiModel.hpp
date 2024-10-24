@@ -12,6 +12,7 @@ namespace lifuren {
  * 诗鬼模型
  */
 class ShiguiModel {
+    // TODO: 实现
 };
 
 }

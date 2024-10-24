@@ -12,6 +12,7 @@ namespace lifuren {
  * 诗魔模型
  */
 class ShimoModel {
+    // TODO: 实现
 };
 
 }

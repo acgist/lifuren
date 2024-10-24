@@ -2,6 +2,8 @@
  * 模型
  * 
  * @author acgist
+ * 
+ * TODO: GPU
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
@@ -73,14 +75,10 @@ protected:
     L loss        { nullptr }; // 损失函数
     M model       { nullptr }; // 模型结构
     std::unique_ptr<P> optimizer{ nullptr }; // 优化函数
-    std::function<torch::Tensor(torch::Tensor)> labelTransform  { nullptr }; // 标签转换
-    std::function<torch::Tensor(torch::Tensor)> featureTransform{ nullptr }; // 特征转换
 
 public:
     Model(
         ModelParams params = {},
-        std::function<torch::Tensor(torch::Tensor)> labelTransform   = nullptr,
-        std::function<torch::Tensor(torch::Tensor)> featureTransform = nullptr,
         L loss  = {},
         M model = {}
     );
@@ -97,10 +95,15 @@ public:
     virtual void print();
     // 训练模型
     virtual void train(size_t epoch);
+    virtual void train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
     // 验证模型
     virtual void val(size_t epoch);
+    virtual void val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
     // 测试模型
     virtual void test();
+    virtual void test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
+    // 数据逻辑
+    virtual void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
     // 训练验证测试模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);
     // 模型预测
@@ -117,13 +120,9 @@ protected:
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 lifuren::Model<D, O, I, L, M, P>::Model(
     lifuren::ModelParams params,
-    std::function<torch::Tensor(torch::Tensor)> labelTransform,
-    std::function<torch::Tensor(torch::Tensor)> featureTransform,
     L loss,
     M model
 ) : params(params),
-    labelTransform(labelTransform),
-    featureTransform(featureTransform),
     loss(loss),
     model(model)
 {
@@ -144,6 +143,7 @@ bool lifuren::Model<D, O, I, L, M, P>::save(const std::string& path, const std::
     }
     const std::string fullpath = lifuren::file::join({ path, filename }).string();
     SPDLOG_DEBUG("保存模型：{}", fullpath);
+    this->model->eval();
     torch::save(this->model, fullpath);
     return true;
 }
@@ -169,12 +169,6 @@ bool lifuren::Model<D, O, I, L, M, P>::define() {
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::print() {
-    // for(const auto& value : this->model->modules()) {
-    //     SPDLOG_DEBUG("modules: {}", value);
-    // }
-    // for(const auto& value : this->model->named_modules()) {
-    //     SPDLOG_DEBUG("named_modules: {} = {}", value.key(), value.value());
-    // }
     for(const auto& value : this->model->parameters()) {
         SPDLOG_DEBUG("parameters: {}", value);
     }
@@ -184,23 +178,29 @@ void lifuren::Model<D, O, I, L, M, P>::print() {
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
+void lifuren::Model<D, O, I, L, M, P>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    pred = std::move(this->model->forward(feature));
+    loss = std::move(this->loss->forward(pred, label));
+}
+
+template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
     }
-    this->model->train();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
+    this->model->train();
     auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
-        // TODO: GPU
-        auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
-        auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
-        torch::Tensor pred = this->model->forward(data);
-        torch::Tensor loss = this->loss->forward(pred, target);
+        torch::Tensor pred;
+        torch::Tensor loss;
+        torch::Tensor data   = batch.data;
+        torch::Tensor target = batch.target;
+        this->train(data, target, pred, loss);
         this->optimizer->zero_grad();
         loss.backward();
         this->optimizer->step();
@@ -233,23 +233,28 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
+void lifuren::Model<D, O, I, L, M, P>::train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    this->logic(feature, label, pred, loss);
+}
+
+template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     if(!this->valDataset) {
         SPDLOG_WARN("无效的验证数据集");
         return;
     }
-    this->model->eval();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
+    this->model->eval();
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->valDataset) {
-        // TODO: GPU
-        auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
-        auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
-        torch::Tensor pred = this->model->forward(data);
-        torch::Tensor loss = this->loss->forward(pred, target);
+        torch::Tensor pred;
+        torch::Tensor loss;
+        torch::Tensor data   = batch.data;
+        torch::Tensor target = batch.target;
+        this->val(data, target, pred, loss);
         if(this->params.classify) {
             auto accu = pred.argmax(1).eq(target).sum();
             accu_val += accu.template item<int>();
@@ -279,23 +284,28 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
+void lifuren::Model<D, O, I, L, M, P>::val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    this->logic(feature, label, pred, loss);
+}
+
+template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::test() {
     if(!this->testDataset) {
         SPDLOG_WARN("无效的测试数据集");
         return;
     }
-    this->model->eval();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
+    this->model->eval();
     auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->testDataset) {
-        // TODO: GPU
-        auto data   = featureTransform ? featureTransform(batch.data) : batch.data;
-        auto target = labelTransform   ? labelTransform(batch.target) : batch.target;
-        torch::Tensor pred = this->model->forward(data);
-        torch::Tensor loss = this->loss->forward(pred, target);
+        torch::Tensor pred;
+        torch::Tensor loss;
+        torch::Tensor data   = batch.data;
+        torch::Tensor target = batch.target;
+        this->test(data, target, pred, loss);
         if(this->params.classify) {
             auto accu = pred.argmax(1).eq(target).sum();
             accu_val += accu.template item<int>();
@@ -323,6 +333,11 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
+void lifuren::Model<D, O, I, L, M, P>::test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    this->logic(feature, label, pred, loss);
+}
+
+template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const bool test) {
     auto a = std::chrono::system_clock::now();
     try {
@@ -332,7 +347,7 @@ void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const boo
                 this->val(epoch);
             }
             if(this->params.check_point) {
-                this->save(this->params.check_path, this->params.model_name + std::to_string(epoch) + ".pt");
+                this->save(this->params.check_path, this->params.model_name + "-" + std::to_string(epoch + 1) + ".pt");
             }
         }
         if(test) {

@@ -9,6 +9,7 @@
 namespace lifuren {
 
 class StyleGANModel {
+    // TODO: 实现
 };
 
 }

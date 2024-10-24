@@ -6,6 +6,14 @@ target_link_libraries(
     lifurencv
 )
 
+add_executable(testCVModel TestCVModel.cpp)
+add_test(NAME testCVModel COMMAND testCVModel)
+set_target_properties(testCVModel PROPERTIES FOLDER "test-cv")
+target_link_libraries(
+    testCVModel
+    lifurencv
+)
+
 add_executable(testStableDiffusionCPPPaintClient TestStableDiffusionCPPPaintClient.cpp)
 add_test(NAME testStableDiffusionCPPPaintClient COMMAND testStableDiffusionCPPPaintClient)
 set_target_properties(testStableDiffusionCPPPaintClient PROPERTIES FOLDER "test-cv")

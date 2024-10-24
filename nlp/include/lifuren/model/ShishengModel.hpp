@@ -12,6 +12,7 @@ namespace lifuren {
  * 诗圣模型
  */
 class ShishengModel {
+    // TODO: 实现
 };
 
 }
