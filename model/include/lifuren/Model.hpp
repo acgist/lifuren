@@ -4,6 +4,8 @@
  * @author acgist
  * 
  * TODO: GPU
+ * 
+ * https://pytorch.org/cppdocs/
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
@@ -14,12 +16,12 @@
 #include <concepts>
 
 #include "torch/torch.h"
-#include "torch/script.h"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Torch.hpp"
 #include "lifuren/Logger.hpp"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor)
@@ -122,13 +124,15 @@ lifuren::Model<D, O, I, L, M, P>::Model(
     lifuren::ModelParams params,
     L loss,
     M model
-) : params(params),
-    loss(loss),
-    model(model)
+) : params(std::move(params)),
+    loss(std::move(loss)),
+    model(std::move(model))
 {
     if(this->model) {
         this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
     }
+    lifuren::setDevice(this->params.device);
+    SPDLOG_DEBUG("当前计算设备：{}", torch::DeviceTypeName(this->params.device));
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
@@ -162,8 +166,7 @@ bool lifuren::Model<D, O, I, L, M, P>::load(const std::string& path, const std::
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 bool lifuren::Model<D, O, I, L, M, P>::define() {
-    // TODO: GPU
-    // this->model->to(this->params.device);
+    this->model->to(this->params.device);
     return this->defineDataset();
 }
 
@@ -194,7 +197,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->train();
-    auto a = std::chrono::system_clock::now();
+    const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
         torch::Tensor pred;
         torch::Tensor loss;
@@ -212,7 +215,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
         loss_val += loss.template item<float>();
         ++batch_count;
     }
-    auto z = std::chrono::system_clock::now();
+    const auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
             "当前训练第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
@@ -248,7 +251,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto a = std::chrono::system_clock::now();
+    const auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->valDataset) {
         torch::Tensor pred;
         torch::Tensor loss;
@@ -263,7 +266,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
         loss_val += loss.template item<float>();
         ++batch_count;
     }
-    auto z = std::chrono::system_clock::now();
+    const auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
             "当前验证第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
@@ -299,7 +302,7 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto a = std::chrono::system_clock::now();
+    const auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->testDataset) {
         torch::Tensor pred;
         torch::Tensor loss;
@@ -314,7 +317,7 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
         loss_val += loss.template item<float>();
         ++batch_count;
     }
-    auto z = std::chrono::system_clock::now();
+    const auto z = std::chrono::system_clock::now();
     if(this->params.classify) {
         SPDLOG_INFO(
             "当前测试损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
@@ -339,7 +342,7 @@ void lifuren::Model<D, O, I, L, M, P>::test(torch::Tensor& feature, torch::Tenso
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const bool test) {
-    auto a = std::chrono::system_clock::now();
+    const auto a = std::chrono::system_clock::now();
     try {
         for (size_t epoch = 0; epoch < this->params.epoch_count; ++epoch) {
             this->train(epoch);
@@ -356,7 +359,7 @@ void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const boo
     } catch(const std::exception& e) {
         SPDLOG_ERROR("训练异常：{}", e.what());
     }
-    auto z = std::chrono::system_clock::now();
+    const auto z = std::chrono::system_clock::now();
     SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
 }
 

@@ -76,7 +76,7 @@ class GenderModel : public lifuren::Model<
 
 public:
     GenderModel(lifuren::ModelParams params = {
-        .lr          = 0.01F,
+        .lr          = 0.001F,
         .batch_size  = 10LL,
         .epoch_count = 64LL,
         .classify    = true,

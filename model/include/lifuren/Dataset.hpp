@@ -24,6 +24,8 @@ namespace dataset {
 class CsvDataset : public torch::data::Dataset<CsvDataset> {
 
 private:
+    // 计算设备
+    torch::DeviceType device{ torch::DeviceType::CPU };
     // 标签
     std::vector<torch::Tensor> labels;
     // 特征
@@ -74,6 +76,7 @@ public:
         const std::string& path,
         std::vector<torch::Tensor>& labels,
         std::vector<torch::Tensor>& features,
+        torch::DeviceType device = torch::DeviceType::CPU,
         const size_t& startRow =  1,
         const size_t& startCol =  1,
         const int   & labelCol = -1,
@@ -85,9 +88,10 @@ public:
      */
     inline static void loadCSV(
         const std::string& path,
-        std::vector<torch::Tensor>& vector
+        std::vector<torch::Tensor>& vector,
+        torch::DeviceType device = torch::DeviceType::CPU
     ) {
-        loadCSV(path, vector, vector, 1, 1, std::numeric_limits<int>::max());
+        loadCSV(path, vector, vector, device, 1, 1, std::numeric_limits<int>::max());
     }
 
 };
@@ -98,6 +102,8 @@ public:
 class RawDataset : public torch::data::Dataset<RawDataset> {
 
 private:
+    // 计算设备
+    torch::DeviceType device{ torch::DeviceType::CPU };
     // 标签
     std::vector<float> labels;
     // 特征
@@ -131,6 +137,8 @@ public:
 class FileDataset : public torch::data::Dataset<FileDataset> {
 
 private:
+    // 计算设备
+    torch::DeviceType device{ torch::DeviceType::CPU };
     // 标签
     std::vector<torch::Tensor> labels;
     // 特征

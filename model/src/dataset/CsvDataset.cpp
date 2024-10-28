@@ -5,6 +5,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Torch.hpp"
 #include "lifuren/String.hpp"
 
 // 列是不是全是数值：排除空白
@@ -22,7 +23,8 @@ lifuren::dataset::CsvDataset::CsvDataset(
     const int   & labelCol,
     const std::string& unknow
 ) {
-    loadCSV(path, this->labels, this->features, startRow, startCol, labelCol, unknow);
+    lifuren::setDevice(this->device);
+    loadCSV(path, this->labels, this->features, this->device, startRow, startCol, labelCol, unknow);
 }
 
 lifuren::dataset::CsvDataset::~CsvDataset() {
@@ -48,6 +50,7 @@ void lifuren::dataset::CsvDataset::loadCSV(
     const std::string& path,
     std::vector<torch::Tensor>& labels,
     std::vector<torch::Tensor>& features,
+    torch::DeviceType device,
     const size_t& startRow,
     const size_t& startCol,
     const int   & labelCol,
@@ -113,8 +116,8 @@ void lifuren::dataset::CsvDataset::loadCSV(
                 }
             }
         }
-        labels.push_back(std::move(torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone()));
-        features.push_back(std::move(torch::from_blob(feature.data(), { static_cast<int>(feature.size()) }, torch::kFloat32).clone()));
+        labels.push_back(  std::move(torch::from_blob(label.data(),   { static_cast<int>(label.size()) },   torch::kFloat32).clone().to(device)));
+        features.push_back(std::move(torch::from_blob(feature.data(), { static_cast<int>(feature.size()) }, torch::kFloat32).clone().to(device)));
         lSize = label.size();
         fSize = feature.size();
     }

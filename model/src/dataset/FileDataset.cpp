@@ -3,11 +3,13 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Torch.hpp"
 
 lifuren::dataset::FileDataset::FileDataset(
     std::vector<torch::Tensor>& labels,
     std::vector<torch::Tensor>& features
 ) : labels(std::move(labels)), features(std::move(features)) {
+    lifuren::setDevice(this->device);
 }
 
 lifuren::dataset::FileDataset::FileDataset(
@@ -20,6 +22,7 @@ lifuren::dataset::FileDataset::FileDataset(
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
+    lifuren::setDevice(this->device);
     auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
     for(const auto& entry : iterator) {
         const auto path = entry.path();
@@ -45,6 +48,7 @@ lifuren::dataset::FileDataset::FileDataset(
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
+    lifuren::setDevice(this->device);
     std::vector<std::string> files;
     lifuren::file::listFile(files, path, exts);
     for(const auto& file : files) {
