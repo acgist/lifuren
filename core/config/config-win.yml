@@ -7,10 +7,9 @@ http-server:
   port: 8080
 # 图片页面配置
 image:
-  client: stable-diffusion-cpp
+  client: paint-cycle-gan
   output: D:\tmp\lifuren\image
   clients:
-    - stable-diffusion-cpp
     - paint-cycle-gan
     - paint-style-gan
 # 诗词页面配置
@@ -91,8 +90,4 @@ paint-cycle-gan:
 # paint-style-gan配置
 paint-style-gan:
   model: D:\tmp\lifuren\model\paint-style-gan.model
-# stable-diffusion-cpp配置
-stable-diffusion-cpp:
-  model: D:\tmp\lifuren\stable-diffusion-cpp\v1-5-pruned-emaonly.ckpt
-  options: {}
   

@@ -97,22 +97,6 @@ public:
 
 };
 
-/**
- * StableDiffusionCPP终端
- * 
- * https://github.com/leejet/stable-diffusion.cpp
- */
-class StableDiffusionCPPPaintClient : public PaintClient {
-
-public:
-    StableDiffusionCPPPaintClient();
-    virtual ~StableDiffusionCPPPaintClient();
-
-public:
-    bool paint(const PaintOptions& options, PaintClient::PaintCallback callback = nullptr) override;
-
-};
-
 } // END OF lifuren
 
 #endif // END OF LFR_HEADER_CV_PAINT_CLIENT_HPP

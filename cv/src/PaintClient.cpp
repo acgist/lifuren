@@ -7,9 +7,7 @@ lifuren::PaintClient::~PaintClient() {
 }
 
 std::unique_ptr<lifuren::PaintClient> lifuren::PaintClient::getClient(const std::string& client) {
-    if(client == lifuren::config::CONFIG_STABLE_DIFFUSION_CPP) {
-        return std::make_unique<lifuren::StableDiffusionCPPPaintClient>();
-    } else if(client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
+    if(client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
         return std::make_unique<lifuren::CycleGANPaintClient>();
     } else if(client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
         return std::make_unique<lifuren::StyleGANPaintClient>();

@@ -24,6 +24,9 @@ static Fl_Button* imageChoosePtr { nullptr };
 static Fl_Input * outputPathPtr  { nullptr };
 static Fl_Button* outputChoosePtr{ nullptr };
 static Fl_Button* generatePtr    { nullptr };
+static Fl_Button* trainPtr       { nullptr };
+static Fl_Button* finetunePtr    { nullptr };
+static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 static Fl_Text_Buffer* promptBufferPtr{ nullptr };
 static Fl_Text_Editor* promptEditorPtr{ nullptr };
@@ -61,10 +64,7 @@ lifuren::ImageWindow::~ImageWindow() {
 void lifuren::ImageWindow::saveConfig() {
     auto& imageConfig = lifuren::config::CONFIG.image;
     imageConfig.output = outputPathPtr->value();
-    if(imageConfig.client == lifuren::config::CONFIG_STABLE_DIFFUSION_CPP) {
-        auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
-        stableDiffusionCPP.model = modelPathPtr->value();
-    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
+    if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
         auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
         paintCycleGAN.model = modelPathPtr->value();
     } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
@@ -79,10 +79,7 @@ void lifuren::ImageWindow::saveConfig() {
 void lifuren::ImageWindow::redrawConfigElement() {
     const auto& imageConfig = lifuren::config::CONFIG.image;
     outputPathPtr->value(imageConfig.output.c_str());
-    if(imageConfig.client == lifuren::config::CONFIG_STABLE_DIFFUSION_CPP) {
-        const auto& stableDiffusionCPP = lifuren::config::CONFIG.stableDiffusionCPP;
-        modelPathPtr->value(stableDiffusionCPP.model.c_str());
-    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
+    if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
         const auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
         modelPathPtr->value(paintCycleGAN.model.c_str());
     } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
@@ -109,7 +106,10 @@ void lifuren::ImageWindow::drawElement() {
     outputPathPtr   = new Fl_Input( 70,  250, 400, 30, "输出路径");
     outputChoosePtr = new Fl_Button(470, 250, 100, 30, "选择输出");
     generatePtr     = new Fl_Button(70,  290, 100, 30, "生成图片");
-    modelReleasePtr = new Fl_Button(170, 290, 100, 30, "释放模型");
+    trainPtr        = new Fl_Button(170, 290, 100, 30, "训练模型");
+    finetunePtr     = new Fl_Button(240, 290, 100, 30, "模型微调");
+    quantizationPtr = new Fl_Button(310, 290, 100, 30, "模型量化");
+    modelReleasePtr = new Fl_Button(380, 290, 100, 30, "释放模型");
     // 绑定事件
     // 终端名称
     const auto& imageConfig = lifuren::config::CONFIG.image;

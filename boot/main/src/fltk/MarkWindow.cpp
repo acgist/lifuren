@@ -109,8 +109,8 @@ void lifuren::MarkWindow::drawElement() {
     autoMarkPtr = new Fl_Button(210, 50, 100, 30, "匹配格律");
     imagePtr    = new Fl_Button(310, 50, 100, 30, "匹配图片");
     ragTaskPtr  = new Fl_Button(410, 50, 100, 30, "诗词嵌入");
-    modelPtr    = new Fl_Button(510, 50, 100, 30, "训练诗词模型");
-    sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调图片模型");
+    modelPtr    = new Fl_Button(510, 50, 100, 30, "训练模型");
+    sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调模型");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceBufferPtr  = new Fl_Text_Buffer();

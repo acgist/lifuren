@@ -63,7 +63,6 @@ extern const std::string CONFIG_POETIZE_SUXIN_RNN;
 extern const std::string CONFIG_POETIZE_WANYUE_RNN;
 extern const std::string CONFIG_PAINT_CYCLE_GAN;
 extern const std::string CONFIG_PAINT_STYLE_GAN;
-extern const std::string CONFIG_STABLE_DIFFUSION_CPP;
 
 // 全局配置：config.yml
 extern lifuren::config::Config CONFIG;
@@ -203,18 +202,6 @@ struct ChineseWordVectorsConfig {
 };
 
 /**
- * stable-diffusion-cpp配置
- */
-struct StableDiffusionCPPConfig {
-
-    // 模型路径
-    std::string model;
-    // 默认参数
-    std::map<std::string, std::string> options{};
-
-};
-
-/**
  * 通用设置
  */
 class Config {
@@ -241,7 +228,6 @@ public:
     lifuren::config::ModelConfig poetizeWanyueRNN  {};
     lifuren::config::ModelConfig paintCycleGAN     {};
     lifuren::config::ModelConfig paintSytleGAN     {};
-    lifuren::config::StableDiffusionCPPConfig stableDiffusionCPP{};
 
 public:
     Config();

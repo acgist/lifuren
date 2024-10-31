@@ -268,7 +268,7 @@ class ModelClient {
 
 public:
     virtual void train()   = 0;
-    virtual O    eval(I i) = 0;
+    virtual O    pred(I i) = 0;
 
 };
 

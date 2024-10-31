@@ -15,18 +15,19 @@ jobs:
           git submodule update --init --recursive
           cd ./deps
           ################################ fltk
-          sudo apt  install libfltk1.3-dev -y
+          sudo  apt install libfltk1.3-dev -y
           apt-cache madison libfltk1.3-dev
           ################################ json
           cd ./json
           git switch -c v3.11.2
           cd ../
           ################################ faiss
-          sudo apt  install libfaiss-dev -y
+          sudo  apt install libfaiss-dev -y
           apt-cache madison libfaiss-dev
           ################################ spdlog
-          # sudo apt  install libspdlog-dev -y
+          # sudo  apt install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
+          # fmt
           git clone https://github.com/fmtlib/fmt.git
           cd fmt
           git switch -c 10.2.0
@@ -35,6 +36,7 @@ jobs:
           make -j 8
           sudo make install
           cd ../../
+          # spdlog
           git clone https://github.com/gabime/spdlog.git
           cd spdlog
           git switch -c v1.12.0
@@ -44,17 +46,18 @@ jobs:
           sudo make install
           cd ../../
           ################################ opencv
-          sudo apt  install libopencv-dev -y
+          sudo  apt install libopencv-dev -y
           apt-cache madison libopencv-dev
           ################################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.4.1%2Bcpu.zip
           unzip libtorch-cxx11-abi-shared-with-deps-2.4.1+cpu.zip
           ################################ yaml-cpp
-          sudo apt  install libyaml-cpp-dev -y
+          sudo  apt install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev
           ################################ cpp-httplib
-          # sudo apt  install libcpp-httplib-dev -y
+          # sudo  apt install libcpp-httplib-dev -y
           # apt-cache madison libcpp-httplib-dev
+          # cpp-httplib
           git clone https://github.com/yhirose/cpp-httplib.git
           cd cpp-httplib
           git switch -c v0.16.2
@@ -63,9 +66,6 @@ jobs:
           make -j 8
           sudo make install
           cd ../../
-          ################################ stable-diffusion.cpp
-          # cd ./stable-diffusion.cpp
-          # cd ../
       - name: Deploy lifuren
         run: |
           pwd

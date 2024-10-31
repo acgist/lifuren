@@ -8,7 +8,6 @@ add_library(
     src/ImageDataset.cpp
     src/paint/CycleGANPaintClient.cpp
     src/paint/StyleGANPaintClient.cpp
-    src/paint/StableDiffusionCPPPaintClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
@@ -16,7 +15,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 target_link_libraries(
     ${PROJECT_NAME}
     ${OpenCV_LIBS}
-    stable-diffusion
     lifurenmodel
     lifurenclient
 )

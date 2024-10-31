@@ -105,7 +105,7 @@ public:
         label = std::move(label.squeeze().to(torch::kInt64));
         Model::logic(feature, label, pred, loss);
     }
-    float eval(std::string i) {
+    float pred(std::string i) {
         cv::Mat image = cv::imread(i);
         cv::resize(image, image, cv::Size(200, 200));
         torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kF32).div(255.0);
@@ -124,7 +124,7 @@ public:
     GenderModel linear;
     linear.define();
     linear.trainValAndTest(true, false);
-    float pred = linear.eval(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
+    float pred = linear.pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
     SPDLOG_DEBUG("当前预测：{}", pred);
     // linear.print();
     // linear.save();

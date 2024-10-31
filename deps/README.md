@@ -12,7 +12,6 @@
 |libtorch|2.4.1|https://github.com/pytorch/pytorch|模型训练推理框架|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|YAML工具|
 |cpp-httplib|0.16.2|https://github.com/yhirose/cpp-httplib|HTTP工具|
-|stable-diffusion.cpp|master|https://github.com/leejet/stable-diffusion.cpp|StableDiffusion绘画工具|
 
 ## 服务
 

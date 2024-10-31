@@ -14,10 +14,10 @@
 static Fl_Button* markButtonPtr  { nullptr };
 static Fl_Button* imageButtonPtr { nullptr };
 static Fl_Button* poetryButtonPtr{ nullptr };
+static Fl_Button* audioButtonPtr { nullptr };
+static Fl_Button* videoButtonPtr { nullptr };
 static Fl_Button* aboutButtonPtr { nullptr };
 static Fl_Button* reloadButtonPtr{ nullptr };
-static Fl_Button* finetuneButtonPtr     { nullptr };
-static Fl_Button* quantizationButtonPtr { nullptr };
 
 static lifuren::MarkWindow  * markWindowPtr  { nullptr };
 static lifuren::ImageWindow * imageWindowPtr { nullptr };
@@ -68,19 +68,17 @@ lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_PTR(aboutButtonPtr);
     LFR_DELETE_PTR(aboutWindowPtr);
     LFR_DELETE_PTR(reloadButtonPtr);
-    LFR_DELETE_PTR(finetuneButtonPtr);
-    LFR_DELETE_PTR(quantizationButtonPtr);
 }
 
 void lifuren::MainWindow::drawElement() {
     // 绘制界面
-    markButtonPtr         = new Fl_Button(20,                      10,             this->w() - 40,     80, "诗词标记");
-    imageButtonPtr        = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "图片生成");
-    poetryButtonPtr       = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "诗词生成");
-    aboutButtonPtr        = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
-    reloadButtonPtr       = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
-    finetuneButtonPtr     = new Fl_Button(20,                      this->h() - 40, 120,                30, "模型微调");
-    quantizationButtonPtr = new Fl_Button(140,                     this->h() - 40, 120,                30, "模型量化");
+    markButtonPtr   = new Fl_Button(20,                      10,             this->w() - 40,     80, "诗词标记");
+    imageButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "图片生成");
+    poetryButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "诗词生成");
+    audioButtonPtr  = new Fl_Button(20,                      190,            LFR_HALF_WIDTH(60), 80, "音频生成");
+    videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 190,            LFR_HALF_WIDTH(60), 80, "视频生成");
+    aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
+    reloadButtonPtr = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
     // 大小修改
     this->resizable(this);
     // 绑定事件
@@ -88,16 +86,6 @@ void lifuren::MainWindow::drawElement() {
     imageButtonPtr->callback(imageCallback, this);
     poetryButtonPtr->callback(poetryCallback, this);
     aboutButtonPtr->callback(aboutCallback, this);
-    // 模型微调
-    finetuneButtonPtr->callback([](Fl_Widget*, void*) {
-        const int ret = fl_open_uri("https://gitee.com/acgist/lifuren/tree/master/docs/optimize");
-        SPDLOG_DEBUG("打开模型微调：{}", ret);
-    }, this);
-    // 模型量化
-    quantizationButtonPtr->callback([](Fl_Widget*, void*) {
-        const int ret = fl_open_uri("https://gitee.com/acgist/lifuren/tree/master/docs/optimize");
-        SPDLOG_DEBUG("打开模型量化：{}", ret);
-    }, this);
     // 加载配置
     reloadButtonPtr->callback([](Fl_Widget*, void*) {
         lifuren::config::loadConfig();

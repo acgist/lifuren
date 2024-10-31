@@ -77,7 +77,6 @@ const std::string lifuren::config::CONFIG_POETIZE_SUXIN_RNN    = "poetize-suxin-
 const std::string lifuren::config::CONFIG_POETIZE_WANYUE_RNN   = "poetize-wanyue-rnn";
 const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN      = "paint-cycle-gan";
 const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN      = "paint-style-gan";
-const std::string lifuren::config::CONFIG_STABLE_DIFFUSION_CPP = "stable-diffusion-cpp";
 
 lifuren::config::Config lifuren::config::CONFIG{};
 
@@ -191,11 +190,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.paintCycleGAN, yaml, model, model, std::string);
     } else if(lifuren::config::CONFIG_PAINT_STYLE_GAN == name) {
         LFR_CONFIG_YAML_GETTER(config.paintSytleGAN, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_STABLE_DIFFUSION_CPP == name) {
-        LFR_CONFIG_YAML_GETTER(config.stableDiffusionCPP, yaml, model, model, std::string);
-        std::map<std::string, std::string> map;
-        LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
-        config.stableDiffusionCPP.options.insert(map.begin(), map.end());
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -333,12 +327,6 @@ static YAML::Node toYaml() {
         YAML::Node paintSytleGAN;
         LFR_CONFIG_YAML_SETTER(paintSytleGAN, config.paintSytleGAN, model, model);
         yaml[lifuren::config::CONFIG_PAINT_STYLE_GAN] = paintSytleGAN;
-    }
-    {
-        YAML::Node stableDiffusionCPP;
-        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, model,   model);
-        LFR_CONFIG_YAML_SETTER(stableDiffusionCPP, config.stableDiffusionCPP, options, options);
-        yaml[lifuren::config::CONFIG_STABLE_DIFFUSION_CPP] = stableDiffusionCPP;
     }
     return yaml;
 }

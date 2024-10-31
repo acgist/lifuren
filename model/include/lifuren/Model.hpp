@@ -109,7 +109,7 @@ public:
     // 训练验证测试模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);
     // 模型预测
-    virtual O eval(I i) = 0;
+    virtual O pred(I i) = 0;
 
 protected:
     // 定义数据集
@@ -219,7 +219,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     if(this->params.classify) {
         SPDLOG_INFO(
             "当前训练第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
-            epoch,
+            epoch + 1,
             loss_val / batch_count,
             accu_val,
             data_val,
@@ -228,7 +228,7 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     } else {
         SPDLOG_INFO(
             "当前训练第 {} 轮，损失值为：{:.6f}，耗时：{}。",
-            epoch,
+            epoch + 1,
             loss_val / batch_count,
             std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
         );
@@ -270,7 +270,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     if(this->params.classify) {
         SPDLOG_INFO(
             "当前验证第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
-            epoch,
+            epoch + 1,
             loss_val / batch_count,
             accu_val,
             data_val,
@@ -279,7 +279,7 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     } else {
         SPDLOG_INFO(
             "当前验证第 {} 轮，损失值为：{:.6f}，耗时：{}。",
-            epoch,
+            epoch + 1,
             loss_val / batch_count,
             std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
         );
