@@ -6,8 +6,12 @@ add_library(
     src/OpenCV.cpp
     src/PaintClient.cpp
     src/ImageDataset.cpp
+    src/act/GuanhanqinActClient.cpp
+    src/act/TangxianzuActClient.cpp
     src/paint/CycleGANPaintClient.cpp
     src/paint/StyleGANPaintClient.cpp
+    src/compose/ShikuangComposeClient.cpp
+    src/compose/LiguinianComposeClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

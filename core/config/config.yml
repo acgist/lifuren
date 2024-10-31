@@ -5,6 +5,13 @@ config:
 http-server:
   host: 0.0.0.0
   port: 8080
+# 音频页面配置
+audio:
+  client: compose-shikuang
+  output: /data/lifuren/audio
+  clients:
+    - compose-shikuang
+    - compose-liguinian
 # 图片页面配置
 image:
   client: paint-cycle-gan
@@ -12,6 +19,13 @@ image:
   clients:
     - paint-cycle-gan
     - paint-style-gan
+# 图片页面配置
+video:
+  client: act-guanhanqin
+  output: /data/lifuren/video
+  clients:
+    - act-guanhanqin
+    - act-tangxianzu
 # 诗词页面配置
 poetry:
   client: poetize-shixian-rnn
@@ -90,4 +104,16 @@ paint-cycle-gan:
 # paint-style-gan配置
 paint-style-gan:
   model: /data/lifuren/model/paint-style-gan.model
+# compose-shikuang配置
+compose-shikuang:
+  model: /data/lifuren/model/compose-shikuang.model
+# compose-liguinian配置
+compose-liguinian:
+  model: /data/lifuren/model/compose-liguinian.model
+# act-guanhanqin配置
+act-guanhanqin:
+  model: /data/lifuren/model/act-guanhanqin.model
+# act-tangxianzu配置
+act-tangxianzu:
+  model: /data/lifuren/model/act-tangxianzu.model
   

@@ -139,6 +139,29 @@ protected:
 };
 
 /**
+ * 音频生成窗口
+ */
+class AudioWindow : public Window, public Configuration {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    AudioWindow(int width, int height, const char* title = "音频内容生成");
+    virtual ~AudioWindow();
+
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+    
+protected:
+    virtual void drawElement() override;
+
+};
+
+/**
  * 图片生成窗口
  */
 class ImageWindow : public Window, public Configuration {
@@ -151,6 +174,29 @@ public:
      */
     ImageWindow(int width, int height, const char* title = "图片内容生成");
     virtual ~ImageWindow();
+
+public:
+    virtual void saveConfig() override;
+    virtual void redrawConfigElement() override;
+    
+protected:
+    virtual void drawElement() override;
+
+};
+
+/**
+ * 视频生成窗口
+ */
+class VideoWindow : public Window, public Configuration {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    VideoWindow(int width, int height, const char* title = "视频内容生成");
+    virtual ~VideoWindow();
 
 public:
     virtual void saveConfig() override;

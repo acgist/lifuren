@@ -59,7 +59,9 @@ int         lifuren::config::httpServerPort = 8080;
 
 const std::string lifuren::config::CONFIG_CONFIG               = "config";
 const std::string lifuren::config::CONFIG_HTTP_SERVER          = "http-server";
+const std::string lifuren::config::CONFIG_AUDIO                = "audio";
 const std::string lifuren::config::CONFIG_IMAGE                = "image";
+const std::string lifuren::config::CONFIG_VIDEO                = "video";
 const std::string lifuren::config::CONFIG_POETRY               = "poetry";
 const std::string lifuren::config::CONFIG_MARK                 = "mark";
 const std::string lifuren::config::CONFIG_RAG                  = "rag";
@@ -77,6 +79,10 @@ const std::string lifuren::config::CONFIG_POETIZE_SUXIN_RNN    = "poetize-suxin-
 const std::string lifuren::config::CONFIG_POETIZE_WANYUE_RNN   = "poetize-wanyue-rnn";
 const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN      = "paint-cycle-gan";
 const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN      = "paint-style-gan";
+const std::string lifuren::config::CONFIG_COMPOSE_SHIKUANG     = "compose-shikuang";
+const std::string lifuren::config::CONFIG_COMPOSE_LIGUINIAN    = "compose-liguinian";
+const std::string lifuren::config::CONFIG_ACT_GUANHANQIN       = "act-guanhanqin";
+const std::string lifuren::config::CONFIG_ACT_TANGXIANZU       = "act-tangxianzu";
 
 lifuren::config::Config lifuren::config::CONFIG{};
 
@@ -119,6 +125,15 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(port) {
             lifuren::config::httpServerPort = port.as<int>();
         }
+    } else if(lifuren::config::CONFIG_AUDIO == name) {
+        LFR_CONFIG_YAML_GETTER(config.audio, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(config.audio, yaml, output, output, std::string);
+        const YAML::Node& clients = yaml["clients"];
+        if(clients) {
+            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
+                config.audio.clients.emplace(client.template as<std::string>());
+            });
+        }
     } else if(lifuren::config::CONFIG_IMAGE == name) {
         LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
         LFR_CONFIG_YAML_GETTER(config.image, yaml, output, output, std::string);
@@ -126,6 +141,15 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
                 config.image.clients.emplace(client.template as<std::string>());
+            });
+        }
+    } else if(lifuren::config::CONFIG_VIDEO == name) {
+        LFR_CONFIG_YAML_GETTER(config.video, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(config.video, yaml, output, output, std::string);
+        const YAML::Node& clients = yaml["clients"];
+        if(clients) {
+            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
+                config.video.clients.emplace(client.template as<std::string>());
             });
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
@@ -190,6 +214,14 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.paintCycleGAN, yaml, model, model, std::string);
     } else if(lifuren::config::CONFIG_PAINT_STYLE_GAN == name) {
         LFR_CONFIG_YAML_GETTER(config.paintSytleGAN, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_COMPOSE_SHIKUANG == name) {
+        LFR_CONFIG_YAML_GETTER(config.composeShikuang, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_COMPOSE_LIGUINIAN == name) {
+        LFR_CONFIG_YAML_GETTER(config.composeLiguinian, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_ACT_GUANHANQIN == name) {
+        LFR_CONFIG_YAML_GETTER(config.actGuanhanqin, yaml, model, model, std::string);
+    } else if(lifuren::config::CONFIG_ACT_TANGXIANZU == name) {
+        LFR_CONFIG_YAML_GETTER(config.actTangxianzu, yaml, model, model, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -210,6 +242,17 @@ static YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_HTTP_SERVER] = http;
     }
     {
+        YAML::Node audio;
+        LFR_CONFIG_YAML_SETTER(audio, config.audio, client, client);
+        LFR_CONFIG_YAML_SETTER(audio, config.audio, output, output);
+        YAML::Node clients;
+        std::for_each(config.audio.clients.begin(), config.audio.clients.end(), [&clients](auto& v) {
+            clients.push_back(v);
+        });
+        audio["clients"] = clients;
+        yaml[lifuren::config::CONFIG_AUDIO] = audio;
+    }
+    {
         YAML::Node image;
         LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
         LFR_CONFIG_YAML_SETTER(image, config.image, output, output);
@@ -219,6 +262,17 @@ static YAML::Node toYaml() {
         });
         image["clients"] = clients;
         yaml[lifuren::config::CONFIG_IMAGE] = image;
+    }
+    {
+        YAML::Node video;
+        LFR_CONFIG_YAML_SETTER(video, config.video, client, client);
+        LFR_CONFIG_YAML_SETTER(video, config.video, output, output);
+        YAML::Node clients;
+        std::for_each(config.video.clients.begin(), config.video.clients.end(), [&clients](auto& v) {
+            clients.push_back(v);
+        });
+        video["clients"] = clients;
+        yaml[lifuren::config::CONFIG_VIDEO] = video;
     }
     {
         YAML::Node poetry;
@@ -327,6 +381,26 @@ static YAML::Node toYaml() {
         YAML::Node paintSytleGAN;
         LFR_CONFIG_YAML_SETTER(paintSytleGAN, config.paintSytleGAN, model, model);
         yaml[lifuren::config::CONFIG_PAINT_STYLE_GAN] = paintSytleGAN;
+    }
+    {
+        YAML::Node composeShikuang;
+        LFR_CONFIG_YAML_SETTER(composeShikuang, config.composeShikuang, model, model);
+        yaml[lifuren::config::CONFIG_COMPOSE_SHIKUANG] = composeShikuang;
+    }
+    {
+        YAML::Node composeLiguinian;
+        LFR_CONFIG_YAML_SETTER(composeLiguinian, config.composeLiguinian, model, model);
+        yaml[lifuren::config::CONFIG_COMPOSE_LIGUINIAN] = composeLiguinian;
+    }
+    {
+        YAML::Node actGuanhanqin;
+        LFR_CONFIG_YAML_SETTER(actGuanhanqin, config.actGuanhanqin, model, model);
+        yaml[lifuren::config::CONFIG_ACT_GUANHANQIN] = actGuanhanqin;
+    }
+    {
+        YAML::Node actTangxianzu;
+        LFR_CONFIG_YAML_SETTER(actTangxianzu, config.actTangxianzu, model, model);
+        yaml[lifuren::config::CONFIG_ACT_TANGXIANZU] = actTangxianzu;
     }
     return yaml;
 }

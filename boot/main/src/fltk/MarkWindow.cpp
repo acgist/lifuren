@@ -35,10 +35,10 @@ static Fl_Button* deletePtr  { nullptr };
 static Fl_Button* prevPtr    { nullptr };
 static Fl_Button* nextPtr    { nullptr };
 static Fl_Button* autoMarkPtr{ nullptr };
-static Fl_Button* imagePtr   { nullptr };
 static Fl_Button* ragTaskPtr { nullptr };
-static Fl_Button* modelPtr   { nullptr };
-static Fl_Button* sdModelPtr { nullptr };
+static Fl_Button* trainPtr   { nullptr };
+static Fl_Button* finetunePtr{ nullptr };
+static Fl_Button* quantizationPtr{ nullptr };
 
 static Fl_Text_Buffer*  sourceBufferPtr { nullptr };
 static Fl_Text_Display* sourceDisplayPtr{ nullptr };
@@ -80,10 +80,10 @@ lifuren::MarkWindow::~MarkWindow() {
     LFR_DELETE_PTR(prevPtr);
     LFR_DELETE_PTR(nextPtr);
     LFR_DELETE_PTR(autoMarkPtr);
-    LFR_DELETE_PTR(imagePtr);
-    LFR_DELETE_PTR(modelPtr);
-    LFR_DELETE_PTR(sdModelPtr);
     LFR_DELETE_PTR(ragTaskPtr);
+    LFR_DELETE_PTR(trainPtr);
+    LFR_DELETE_PTR(finetunePtr);
+    LFR_DELETE_PTR(quantizationPtr);
     LFR_DELETE_PTR(sourceDisplayPtr);
     LFR_DELETE_PTR(sourceBufferPtr);
     LFR_DELETE_PTR(rhythmDisplayPtr);
@@ -107,10 +107,10 @@ void lifuren::MarkWindow::drawElement() {
     prevPtr     = new Fl_Button(10,  50, 100, 30, "上首诗词");
     nextPtr     = new Fl_Button(110, 50, 100, 30, "下首诗词");
     autoMarkPtr = new Fl_Button(210, 50, 100, 30, "匹配格律");
-    imagePtr    = new Fl_Button(310, 50, 100, 30, "匹配图片");
-    ragTaskPtr  = new Fl_Button(410, 50, 100, 30, "诗词嵌入");
-    modelPtr    = new Fl_Button(510, 50, 100, 30, "训练模型");
-    sdModelPtr  = new Fl_Button(610, 50, 100, 30, "微调模型");
+    ragTaskPtr  = new Fl_Button(310, 50, 100, 30, "诗词嵌入");
+    trainPtr    = new Fl_Button(410, 50, 100, 30, "训练模型");
+    finetunePtr = new Fl_Button(510, 50, 100, 30, "模型微调");
+    quantizationPtr = new Fl_Button(610, 50, 100, 30, "模型量化");
     // 诗词
     sourceDisplayPtr = new Fl_Text_Display(10, 110, (this->w() - 40) / 3, this->h() - 120, "诗词");
     sourceBufferPtr  = new Fl_Text_Buffer();
@@ -157,7 +157,7 @@ void lifuren::MarkWindow::drawElement() {
     // 建立索引
     ragTaskPtr->callback(ragTaskCallback, this);
     // 训练模型
-    modelPtr->callback(modelCallback, this);
+    trainPtr->callback(modelCallback, this);
 }
 
 static void newCallback(Fl_Widget*, void* voidPtr) {

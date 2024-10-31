@@ -20,12 +20,16 @@ static Fl_Button* aboutButtonPtr { nullptr };
 static Fl_Button* reloadButtonPtr{ nullptr };
 
 static lifuren::MarkWindow  * markWindowPtr  { nullptr };
+static lifuren::AudioWindow * audioWindowPtr { nullptr };
 static lifuren::ImageWindow * imageWindowPtr { nullptr };
+static lifuren::VideoWindow * videoWindowPtr { nullptr };
 static lifuren::PoetryWindow* poetryWindowPtr{ nullptr };
 static lifuren::AboutWindow * aboutWindowPtr { nullptr };
 
 static void markCallback  (Fl_Widget*, void*);
+static void audioCallback (Fl_Widget*, void*);
 static void imageCallback (Fl_Widget*, void*);
+static void videoCallback (Fl_Widget*, void*);
 static void poetryCallback(Fl_Widget*, void*);
 static void aboutCallback (Fl_Widget*, void*);
 
@@ -61,8 +65,12 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Wind
 lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_PTR(markButtonPtr);
     LFR_DELETE_PTR(markWindowPtr);
+    LFR_DELETE_PTR(audioButtonPtr);
+    LFR_DELETE_PTR(audioWindowPtr);
     LFR_DELETE_PTR(imageButtonPtr);
     LFR_DELETE_PTR(imageWindowPtr);
+    LFR_DELETE_PTR(videoButtonPtr);
+    LFR_DELETE_PTR(videoWindowPtr);
     LFR_DELETE_PTR(poetryButtonPtr);
     LFR_DELETE_PTR(poetryWindowPtr);
     LFR_DELETE_PTR(aboutButtonPtr);
@@ -83,7 +91,9 @@ void lifuren::MainWindow::drawElement() {
     this->resizable(this);
     // 绑定事件
     markButtonPtr->callback(markCallback, this);
+    audioButtonPtr->callback(audioCallback, this);
     imageButtonPtr->callback(imageCallback, this);
+    videoButtonPtr->callback(videoCallback, this);
     poetryButtonPtr->callback(poetryCallback, this);
     aboutButtonPtr->callback(aboutCallback, this);
     // 加载配置
@@ -94,6 +104,8 @@ void lifuren::MainWindow::drawElement() {
 
 // 定义窗口
 LFR_BUTTON_CALLBACK_FUNCTION(markCallback,   MarkWindow,   markWindowPtr,   LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(audioCallback,  AudioWindow,  audioWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(imageCallback,  ImageWindow,  imageWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
+LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(poetryCallback, PoetryWindow, poetryWindowPtr, LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  512,              256);

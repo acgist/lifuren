@@ -45,7 +45,9 @@ const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件
 // 全局配置名称
 extern const std::string CONFIG_CONFIG;
 extern const std::string CONFIG_HTTP_SERVER;
+extern const std::string CONFIG_AUDIO;
 extern const std::string CONFIG_IMAGE;
+extern const std::string CONFIG_VIDEO;
 extern const std::string CONFIG_POETRY;
 extern const std::string CONFIG_MARK;
 extern const std::string CONFIG_RAG;
@@ -63,6 +65,10 @@ extern const std::string CONFIG_POETIZE_SUXIN_RNN;
 extern const std::string CONFIG_POETIZE_WANYUE_RNN;
 extern const std::string CONFIG_PAINT_CYCLE_GAN;
 extern const std::string CONFIG_PAINT_STYLE_GAN;
+extern const std::string CONFIG_COMPOSE_SHIKUANG;
+extern const std::string CONFIG_COMPOSE_LIGUINIAN;
+extern const std::string CONFIG_ACT_GUANHANQIN;
+extern const std::string CONFIG_ACT_TANGXIANZU;
 
 // 全局配置：config.yml
 extern lifuren::config::Config CONFIG;
@@ -112,9 +118,37 @@ struct EmbeddingClientConfig {
 };
 
 /**
+ * 音频页面配置
+ */
+struct AudioConfig {
+
+    // 终端名称
+    std::string client;
+    // 输出目录
+    std::string output;
+    // 终端列表
+    std::set<std::string> clients;
+
+};
+
+/**
  * 图片页面配置
  */
 struct ImageConfig {
+
+    // 终端名称
+    std::string client;
+    // 输出目录
+    std::string output;
+    // 终端列表
+    std::set<std::string> clients;
+
+};
+
+/**
+ * 视频页面配置
+ */
+struct VideoConfig {
 
     // 终端名称
     std::string client;
@@ -210,7 +244,9 @@ public:
     // 基础配置
     std::string tmp;
     // 复合配置
+    lifuren::config::AudioConfig  audio {};
     lifuren::config::ImageConfig  image {};
+    lifuren::config::VideoConfig  video {};
     lifuren::config::PoetryConfig poetry{};
     std::list<lifuren::config::MarkConfig> mark{};
     lifuren::config::RAGConfig       rag       {};
@@ -228,6 +264,10 @@ public:
     lifuren::config::ModelConfig poetizeWanyueRNN  {};
     lifuren::config::ModelConfig paintCycleGAN     {};
     lifuren::config::ModelConfig paintSytleGAN     {};
+    lifuren::config::ModelConfig composeShikuang   {};
+    lifuren::config::ModelConfig composeLiguinian  {};
+    lifuren::config::ModelConfig actGuanhanqin     {};
+    lifuren::config::ModelConfig actTangxianzu     {};
 
 public:
     Config();

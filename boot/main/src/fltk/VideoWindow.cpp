@@ -19,8 +19,8 @@
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * modelPathPtr   { nullptr };
 static Fl_Button* modelChoosePtr { nullptr };
-static Fl_Input * imagePathPtr   { nullptr };
-static Fl_Button* imageChoosePtr { nullptr };
+static Fl_Input * videoPathPtr   { nullptr };
+static Fl_Button* videoChoosePtr { nullptr };
 static Fl_Input * outputPathPtr  { nullptr };
 static Fl_Button* outputChoosePtr{ nullptr };
 static Fl_Button* generatePtr    { nullptr };
@@ -41,18 +41,18 @@ static void clientCallback(Fl_Widget*, void*);
 static void chooseFileCallback(Fl_Widget*, void*);
 static void chooseDirectoryCallback(Fl_Widget*, void*);
 
-lifuren::ImageWindow::ImageWindow(int width, int height, const char* title) : Window(width, height, title) {
+lifuren::VideoWindow::VideoWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
 
-lifuren::ImageWindow::~ImageWindow() {
+lifuren::VideoWindow::~VideoWindow() {
     // 保存配置
     this->saveConfig();
     // 释放资源
     LFR_DELETE_PTR(clientPtr);
     LFR_DELETE_PTR(modelPathPtr);
     LFR_DELETE_PTR(modelChoosePtr);
-    LFR_DELETE_PTR(imagePathPtr);
-    LFR_DELETE_PTR(imageChoosePtr);
+    LFR_DELETE_PTR(videoPathPtr);
+    LFR_DELETE_PTR(videoChoosePtr);
     LFR_DELETE_PTR(outputPathPtr);
     LFR_DELETE_PTR(outputChoosePtr);
     LFR_DELETE_PTR(generatePtr);
@@ -64,36 +64,36 @@ lifuren::ImageWindow::~ImageWindow() {
     LFR_DELETE_PTR(promptBufferPtr);
 }
 
-void lifuren::ImageWindow::saveConfig() {
-    auto& imageConfig = lifuren::config::CONFIG.image;
-    imageConfig.output = outputPathPtr->value();
-    if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
-        auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
-        paintCycleGAN.model = modelPathPtr->value();
-    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
-        auto& paintSytleGAN = lifuren::config::CONFIG.paintSytleGAN;
-        paintSytleGAN.model = modelPathPtr->value();
+void lifuren::VideoWindow::saveConfig() {
+    auto& videoConfig = lifuren::config::CONFIG.video;
+    videoConfig.output = outputPathPtr->value();
+    if(videoConfig.client == lifuren::config::CONFIG_ACT_GUANHANQIN) {
+        auto& actGuanhanqin = lifuren::config::CONFIG.actGuanhanqin;
+        actGuanhanqin.model = modelPathPtr->value();
+    } else if(videoConfig.client == lifuren::config::CONFIG_ACT_TANGXIANZU) {
+        auto& actTangxianzu = lifuren::config::CONFIG.actTangxianzu;
+        actTangxianzu.model = modelPathPtr->value();
     } else {
-        SPDLOG_WARN("不支持的绘画终端：{}", imageConfig.client);
+        SPDLOG_WARN("不支持的绘画终端：{}", videoConfig.client);
     }
     lifuren::Configuration::saveConfig();
 }
 
-void lifuren::ImageWindow::redrawConfigElement() {
-    const auto& imageConfig = lifuren::config::CONFIG.image;
-    outputPathPtr->value(imageConfig.output.c_str());
-    if(imageConfig.client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
-        const auto& paintCycleGAN = lifuren::config::CONFIG.paintCycleGAN;
-        modelPathPtr->value(paintCycleGAN.model.c_str());
-    } else if(imageConfig.client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
-        const auto& paintSytleGAN = lifuren::config::CONFIG.paintSytleGAN;
-        modelPathPtr->value(paintSytleGAN.model.c_str());
+void lifuren::VideoWindow::redrawConfigElement() {
+    const auto& videoConfig = lifuren::config::CONFIG.video;
+    outputPathPtr->value(videoConfig.output.c_str());
+    if(videoConfig.client == lifuren::config::CONFIG_ACT_GUANHANQIN) {
+        const auto& actGuanhanqin = lifuren::config::CONFIG.actGuanhanqin;
+        modelPathPtr->value(actGuanhanqin.model.c_str());
+    } else if(videoConfig.client == lifuren::config::CONFIG_ACT_TANGXIANZU) {
+        const auto& actTangxianzu = lifuren::config::CONFIG.actTangxianzu;
+        modelPathPtr->value(actTangxianzu.model.c_str());
     } else {
         modelPathPtr->value("");
     }
 }
 
-void lifuren::ImageWindow::drawElement() {
+void lifuren::VideoWindow::drawElement() {
     // 绘制界面
     promptEditorPtr = new Fl_Text_Editor(10, 20, this->w() - 20, 100, "提示内容");
     promptBufferPtr = new Fl_Text_Buffer();
@@ -101,30 +101,30 @@ void lifuren::ImageWindow::drawElement() {
     promptEditorPtr->buffer(promptBufferPtr);
     promptEditorPtr->wrap_mode(promptEditorPtr->WRAP_AT_COLUMN, promptEditorPtr->textfont());
     promptEditorPtr->end();
-    imagePathPtr    = new Fl_Input( 70,  130, 400, 30, "图片路径");
-    imageChoosePtr  = new Fl_Button(470, 130, 100, 30, "选择图片");
+    videoPathPtr    = new Fl_Input( 70,  130, 400, 30, "视频路径");
+    videoChoosePtr  = new Fl_Button(470, 130, 100, 30, "选择视频");
     clientPtr       = new Fl_Choice(70,  170, 200, 30, "终端名称");
     modelPathPtr    = new Fl_Input( 70,  210, 400, 30, "模型路径");
     modelChoosePtr  = new Fl_Button(470, 210, 100, 30, "选择模型");
     outputPathPtr   = new Fl_Input( 70,  250, 400, 30, "输出路径");
     outputChoosePtr = new Fl_Button(470, 250, 100, 30, "选择输出");
-    generatePtr     = new Fl_Button(70,  290, 100, 30, "生成图片");
+    generatePtr     = new Fl_Button(70,  290, 100, 30, "生成视频");
     trainPtr        = new Fl_Button(170, 290, 100, 30, "训练模型");
     finetunePtr     = new Fl_Button(270, 290, 100, 30, "模型微调");
     quantizationPtr = new Fl_Button(370, 290, 100, 30, "模型量化");
     modelReleasePtr = new Fl_Button(470, 290, 100, 30, "释放模型");
     // 绑定事件
     // 终端名称
-    const auto& imageConfig = lifuren::config::CONFIG.image;
-    lifuren::fillChoice(clientPtr, imageConfig.clients, imageConfig.client);
+    const auto& videoConfig = lifuren::config::CONFIG.video;
+    lifuren::fillChoice(clientPtr, videoConfig.clients, videoConfig.client);
     clientPtr->callback(clientCallback, this);
-    // 选择图片
-    imageChoosePtr->callback(chooseFileCallback, imagePathPtr);
+    // 选择视频
+    videoChoosePtr->callback(chooseFileCallback, videoPathPtr);
     // 选择模型
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
     // 选择输出
     outputChoosePtr->callback(chooseDirectoryCallback, outputPathPtr);
-    // 生成图片
+    // 生成视频
     generatePtr->callback(generate, this);
     // 释放模型
     modelReleasePtr->callback(modelReleaseCallback, this);
@@ -151,21 +151,6 @@ static void generate(Fl_Widget*, void*) {
         }
     }
     std::thread thread([]() {
-        lifuren::PaintClient::PaintOptions options;
-        options.mode   = std::strlen(imagePathPtr->value()) == 0LL ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG;
-        options.image  = imagePathPtr->value();
-        options.prompt = promptBufferPtr->text();
-        #if defined(_DEBUG) || !defined(NDEBUG)
-        options.steps  = 1;
-        #endif
-        paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
-            if(finish) {
-                fl_message("绘制完成");
-            } else {
-                // 进度
-            }
-            return true;
-        });
     });
     thread.detach();
 }
@@ -175,21 +160,21 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
         return;
     }
     if(paintClient->isRunning()) {
-        fl_message("当前正在进行生成图片任务");
+        fl_message("当前正在进行生成视频任务");
         return;
     }
     paintClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
-    lifuren::ImageWindow* windowPtr = static_cast<lifuren::ImageWindow*>(voidPtr);
-    auto& imageConfig  = lifuren::config::CONFIG.image;
-    imageConfig.client = clientPtr->text();
+    lifuren::VideoWindow* windowPtr = static_cast<lifuren::VideoWindow*>(voidPtr);
+    auto& videoConfig  = lifuren::config::CONFIG.video;
+    videoConfig.client = clientPtr->text();
     windowPtr->redrawConfigElement();
 }
 
 static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::fileChooser("选择文件", "*.{png,jpg,jpeg,pt}");
+    std::string filename = lifuren::fileChooser("选择文件", "*.{mp4,pt}");
     if(filename.empty()) {
         return;
     }
