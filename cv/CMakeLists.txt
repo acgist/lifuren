@@ -2,10 +2,13 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
+    src/Audio.cpp
     src/Image.cpp
+    src/Video.cpp
     src/OpenCV.cpp
+    src/ActClient.cpp
     src/PaintClient.cpp
-    src/ImageDataset.cpp
+    src/ComposeClient.cpp
     src/act/GuanhanqinActClient.cpp
     src/act/TangxianzuActClient.cpp
     src/paint/CycleGANPaintClient.cpp

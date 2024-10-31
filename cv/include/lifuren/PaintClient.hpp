@@ -17,29 +17,12 @@ class PaintClient : public StatefulClient {
 
 public:
 
-enum class Mode {
-    TXT2IMG,
-    IMG2IMG,
-    IMG2VID,
-    CONVERT,
-};
-
 struct PaintOptions {
-    Mode mode = Mode::TXT2IMG;
 
     std::string image;
-    std::string video;
     std::string model;
-    std::string prompt;
     std::string output;
     
-    size_t seed   = 42;
-    size_t count  = 1;
-    size_t steps  = 30;
-    size_t width  = 512;
-    size_t height = 512;
-
-    bool color = true;
 };
 
 public:

@@ -14,7 +14,7 @@
 
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/PaintClient.hpp"
+#include "lifuren/ActClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * modelPathPtr   { nullptr };
@@ -33,7 +33,7 @@ static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
 static std::mutex mutex;
 
-static std::unique_ptr<lifuren::PaintClient> paintClient{ nullptr };
+static std::unique_ptr<lifuren::ActClient> actClient{ nullptr };
 
 static void generate(Fl_Widget*, void*);
 static void modelReleaseCallback(Fl_Widget*, void*);
@@ -139,13 +139,13 @@ static void generate(Fl_Widget*, void*) {
     }
     {
         std::lock_guard<std::mutex> lock(mutex);
-        if(paintClient && paintClient->isRunning()) {
+        if(actClient && actClient->isRunning()) {
             fl_message("上次绘画任务没有完成");
             return;
         }
         // TODO: 模型切换是否自动释放模型
-        paintClient = lifuren::PaintClient::getClient(clientPtr->text());
-        if(!paintClient) {
+        actClient = lifuren::ActClient::getClient(clientPtr->text());
+        if(!actClient) {
             fl_message("不支持的终端");
             return;
         }
@@ -156,14 +156,14 @@ static void generate(Fl_Widget*, void*) {
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
-    if(!paintClient) {
+    if(!actClient) {
         return;
     }
-    if(paintClient->isRunning()) {
+    if(actClient->isRunning()) {
         fl_message("当前正在进行生成视频任务");
         return;
     }
-    paintClient = nullptr;
+    actClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {

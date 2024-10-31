@@ -152,11 +152,8 @@ static void generate(Fl_Widget*, void*) {
     }
     std::thread thread([]() {
         lifuren::PaintClient::PaintOptions options;
-        options.mode   = std::strlen(imagePathPtr->value()) == 0LL ? lifuren::PaintClient::Mode::TXT2IMG : lifuren::PaintClient::Mode::IMG2IMG;
         options.image  = imagePathPtr->value();
-        options.prompt = promptBufferPtr->text();
         #if defined(_DEBUG) || !defined(NDEBUG)
-        options.steps  = 1;
         #endif
         paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
             if(finish) {
