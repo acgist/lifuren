@@ -1,21 +1,25 @@
+/**
+ * FLTK主界面
+ * 
+ * 主要功能入口
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
+ */
 #include "lifuren/FLTK.hpp"
-
-#include "spdlog/spdlog.h"
 
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 
-#include "FL/fl_ask.H"
-#include "FL/filename.H"
-#include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Shared_Image.H"
 
 static Fl_Button* markButtonPtr  { nullptr };
-static Fl_Button* imageButtonPtr { nullptr };
-static Fl_Button* poetryButtonPtr{ nullptr };
 static Fl_Button* audioButtonPtr { nullptr };
+static Fl_Button* imageButtonPtr { nullptr };
 static Fl_Button* videoButtonPtr { nullptr };
+static Fl_Button* poetryButtonPtr{ nullptr };
 static Fl_Button* aboutButtonPtr { nullptr };
 static Fl_Button* reloadButtonPtr{ nullptr };
 
@@ -32,13 +36,14 @@ static void imageCallback (Fl_Widget*, void*);
 static void videoCallback (Fl_Widget*, void*);
 static void poetryCallback(Fl_Widget*, void*);
 static void aboutCallback (Fl_Widget*, void*);
+static void reloadCallback(Fl_Widget*, void*);
 
 // 窗口宽度
 #ifndef LFR_HALF_WIDTH
 #define LFR_HALF_WIDTH(padding) (this->w() - padding) / 2
 #endif
 
-// 回调函数声明
+// 回调函数
 #ifndef LFR_BUTTON_CALLBACK_FUNCTION
 #define LFR_BUTTON_CALLBACK_FUNCTION(methodName, WindowName, windowPtr, width, height) \
     static void methodName(Fl_Widget*, void* voidPtr) {                                \
@@ -81,25 +86,22 @@ lifuren::MainWindow::~MainWindow() {
 void lifuren::MainWindow::drawElement() {
     // 绘制界面
     markButtonPtr   = new Fl_Button(20,                      10,             this->w() - 40,     80, "诗词标记");
-    imageButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "图片生成");
-    poetryButtonPtr = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "诗词生成");
+    poetryButtonPtr = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "诗词生成");
+    imageButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "图片生成");
     audioButtonPtr  = new Fl_Button(20,                      190,            LFR_HALF_WIDTH(60), 80, "音频生成");
     videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 190,            LFR_HALF_WIDTH(60), 80, "视频生成");
-    aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
     reloadButtonPtr = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
+    aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
     // 大小修改
     this->resizable(this);
     // 绑定事件
-    markButtonPtr->callback(markCallback, this);
-    audioButtonPtr->callback(audioCallback, this);
-    imageButtonPtr->callback(imageCallback, this);
-    videoButtonPtr->callback(videoCallback, this);
+    markButtonPtr  ->callback(markCallback  , this);
+    audioButtonPtr ->callback(audioCallback , this);
+    imageButtonPtr ->callback(imageCallback , this);
+    videoButtonPtr ->callback(videoCallback , this);
     poetryButtonPtr->callback(poetryCallback, this);
-    aboutButtonPtr->callback(aboutCallback, this);
-    // 加载配置
-    reloadButtonPtr->callback([](Fl_Widget*, void*) {
-        lifuren::config::loadConfig();
-    }, this);
+    aboutButtonPtr ->callback(aboutCallback , this);
+    reloadButtonPtr->callback(reloadCallback, this);
 }
 
 // 定义窗口
@@ -109,3 +111,7 @@ LFR_BUTTON_CALLBACK_FUNCTION(imageCallback,  ImageWindow,  imageWindowPtr,  LFR_
 LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(poetryCallback, PoetryWindow, poetryWindowPtr, LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
 LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  512,              256);
+
+static void reloadCallback(Fl_Widget*, void*) {
+    lifuren::config::loadConfig();
+}
