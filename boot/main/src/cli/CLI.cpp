@@ -2,8 +2,22 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "spdlog/spdlog.h"
+
+#include "lifuren/Config.hpp"
+#include "lifuren/ActClient.hpp"
+#include "lifuren/PaintClient.hpp"
+#include "lifuren/ComposeClient.hpp"
+#include "lifuren/PoetizeClient.hpp"
+
+static void act(    std::vector<std::string>); // 视频生成
+static void paint(  std::vector<std::string>); // 图片生成
+static void compose(std::vector<std::string>); // 音频生成
+static void poetize(std::vector<std::string>); // 诗词生成
+static void embedding(); // 诗词嵌入
+static void help();      // 帮助
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
@@ -12,21 +26,82 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{}", argv[i]);
     }
-    const char* const command = argv[0];
-    if(std::strcmp(command, "poetize") == 0) {
-        if(argc <= 2) {
-            SPDLOG_WARN("缺少提示内容");
-            return true;
-        }
-        std::vector<std::string> prompt;
-        for(int i = 2; i < argc; ++i) {
-            prompt.push_back(argv[i]);
-        }
-        // TODO: 实现
+    // 命令
+    const char* const command = argv[1];
+    // 参数
+    std::vector<std::string> args;
+    for(int i = 2; i < argc; ++i) {
+        args.push_back(argv[i]);
+    }
+    if(
+        std::strcmp(command, "?")    == 0 ||
+        std::strcmp(command, "help") == 0
+    ) {
+        help();
+    } else if(std::strcmp(command, "act") == 0) {
+        act(args);
+    } else if(std::strcmp(command, "paint") == 0) {
+        paint(args);
+    } else if(std::strcmp(command, "compose") == 0) {
+        compose(args);
+    } else if(std::strcmp(command, "poetize") == 0) {
+        poetize(args);
     } else if(std::strcmp(command, "embedding") == 0) {
-        // TODO: 实现
+        embedding();
     } else {
         SPDLOG_WARN("不支持的命令：{}", command);
     }
     return true;
+}
+
+static void act(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto client = lifuren::ActClient::getClient(lifuren::config::CONFIG.video.client);
+    // TODO: 实现
+ }
+
+static void paint(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto client = lifuren::PaintClient::getClient(lifuren::config::CONFIG.image.client);
+    // TODO: 实现
+}
+
+static void compose(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto client = lifuren::ComposeClient::getClient(lifuren::config::CONFIG.audio.client);
+    // TODO: 实现
+}
+
+static void poetize(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto client = lifuren::PoetizeClient::getClient(lifuren::config::CONFIG.poetry.client);
+    // TODO: 实现
+}
+
+static void embedding() {
+    // TODO: 实现
+}
+
+static void help() {
+    std::cout << R"(
+./lifuren[.exe] 命令 [参数...]
+./lifuren[.exe] act     video
+./lifuren[.exe] paint   image
+./lifuren[.exe] compose audio
+./lifuren[.exe] poetize prompt
+./lifuren[.exe] embedding
+./lifuren[.exe] [?|help]
+    )" << std::endl;
 }

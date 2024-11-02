@@ -1,23 +1,19 @@
 /**
  * FLTK GUI
  * 
- * 文档：https://www.fltk.org/doc-1.3/index.html
+ * https://www.fltk.org/doc-1.3/index.html
  * 
  * @author acgist
  */
 #ifndef LFR_HEADER_BOOT_FLTK_HPP
 #define LFR_HEADER_BOOT_FLTK_HPP
 
+// https://github.com/yhirose/cpp-httplib
 #ifdef  _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #endif
-
-#include <set>
-#include <string>
-
-#include "FL/Fl_Window.H"
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
@@ -26,7 +22,7 @@
 #endif
 
 #ifndef LFR_CHOICE_PATH
-#if _WIN32
+#if     _WIN32
 #define LFR_CHOICE_PATH(path) \
 lifuren::string::replace(path, "\\", "\\\\");
 #else
@@ -34,6 +30,11 @@ lifuren::string::replace(path, "\\", "\\\\");
 lifuren::string::replace(path, "/", "\\/");
 #endif
 #endif
+
+#include <set>
+#include <string>
+
+#include "FL/Fl_Window.H"
 
 class Fl_Choice;
 class Fl_PNG_Image;

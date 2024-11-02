@@ -63,3 +63,15 @@
 * [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
 * [功能文档](./docs/TODO.md)
+
+## 命令
+
+```
+./lifuren[.exe] 命令 [参数...]
+./lifuren[.exe] act     video
+./lifuren[.exe] paint   image
+./lifuren[.exe] compose audio
+./lifuren[.exe] poetize prompt
+./lifuren[.exe] embedding
+./lifuren[.exe] [?|help]
+```
