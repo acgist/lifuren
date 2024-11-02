@@ -44,30 +44,12 @@ lifuren::PoetryWindow::~PoetryWindow() {
 
 void lifuren::PoetryWindow::saveConfig() {
     auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIFO_RNN) {
-        auto& poetizeShifoRNN = lifuren::config::CONFIG.poetizeShifoRNN;
-        poetizeShifoRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIMO_RNN) {
-        auto& poetizeShimoRNN = lifuren::config::CONFIG.poetizeShimoRNN;
-        poetizeShimoRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIGUI_RNN) {
-        auto& poetizeShiguiRNN = lifuren::config::CONFIG.poetizeShiguiRNN;
-        poetizeShiguiRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIXIAN_RNN) {
-        auto& poetizeShixianRNN = lifuren::config::CONFIG.poetizeShixianRNN;
-        poetizeShixianRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHISHENG_RNN) {
-        auto& poetizeShishengRNN = lifuren::config::CONFIG.poetizeShishengRNN;
-        poetizeShishengRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_LIDU_RNN) {
-        auto& poetizeLiduRNN = lifuren::config::CONFIG.poetizeLiduRNN;
-        poetizeLiduRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SUXIN_RNN) {
-        auto& poetizeSuxinRNN = lifuren::config::CONFIG.poetizeSuxinRNN;
-        poetizeSuxinRNN.model = modelPathPtr->value();
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_WANYUE_RNN) {
-        auto& poetizeWanyueRNN = lifuren::config::CONFIG.poetizeWanyueRNN;
-        poetizeWanyueRNN.model = modelPathPtr->value();
+    if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_LIDU) {
+        auto& poetizeLidu = lifuren::config::CONFIG.poetizeLidu;
+        poetizeLidu.model = modelPathPtr->value();
+    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SUXIN) {
+        auto& poetizeSuxin = lifuren::config::CONFIG.poetizeSuxin;
+        poetizeSuxin.model = modelPathPtr->value();
     } else {
         // 其他终端
     }
@@ -76,30 +58,12 @@ void lifuren::PoetryWindow::saveConfig() {
 
 void lifuren::PoetryWindow::redrawConfigElement() {
     const auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIFO_RNN) {
-        const auto& poetizeShifoRNN = lifuren::config::CONFIG.poetizeShifoRNN;
-        modelPathPtr->value(poetizeShifoRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIMO_RNN) {
-        const auto& poetizeShimoRNN = lifuren::config::CONFIG.poetizeShimoRNN;
-        modelPathPtr->value(poetizeShimoRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIGUI_RNN) {
-        const auto& poetizeShiguiRNN = lifuren::config::CONFIG.poetizeShiguiRNN;
-        modelPathPtr->value(poetizeShiguiRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHIXIAN_RNN) {
-        const auto& poetizeShixianRNN = lifuren::config::CONFIG.poetizeShixianRNN;
-        modelPathPtr->value(poetizeShixianRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SHISHENG_RNN) {
-        const auto& poetizeShishengRNN = lifuren::config::CONFIG.poetizeShishengRNN;
-        modelPathPtr->value(poetizeShishengRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_LIDU_RNN) {
-        const auto& poetizeLiduRNN = lifuren::config::CONFIG.poetizeLiduRNN;
-        modelPathPtr->value(poetizeLiduRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SUXIN_RNN) {
-        const auto& poetizeSuxinRNN = lifuren::config::CONFIG.poetizeSuxinRNN;
-        modelPathPtr->value(poetizeSuxinRNN.model.c_str());
-    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_WANYUE_RNN) {
-        const auto& poetizeWanyueRNN = lifuren::config::CONFIG.poetizeWanyueRNN;
-        modelPathPtr->value(poetizeWanyueRNN.model.c_str());
+    if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_LIDU) {
+        const auto& poetizeLidu = lifuren::config::CONFIG.poetizeLidu;
+        modelPathPtr->value(poetizeLidu.model.c_str());
+    } else if(poetryConfig.client == lifuren::config::CONFIG_POETIZE_SUXIN) {
+        const auto& poetizeSuxin = lifuren::config::CONFIG.poetizeSuxin;
+        modelPathPtr->value(poetizeSuxin.model.c_str());
     } else {
         modelPathPtr->value("");
     }

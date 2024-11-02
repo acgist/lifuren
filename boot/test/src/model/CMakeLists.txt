@@ -14,14 +14,6 @@ target_link_libraries(
     lifurenmodel
 )
 
-add_executable(testHouse TestHouse.cpp)
-add_test(NAME testHouse COMMAND testHouse)
-set_target_properties(testHouse PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testHouse
-    lifurencv
-)
-
 add_executable(testGender TestGender.cpp)
 add_test(NAME testGender COMMAND testGender)
 set_target_properties(testGender PROPERTIES FOLDER "test-model")

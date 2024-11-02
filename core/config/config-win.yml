@@ -28,16 +28,10 @@ video:
     - act-tangxianzu
 # 诗词页面配置
 poetry:
-  client: poetize-shixian-rnn
+  client: poetize-lidu
   clients:
-    - poetize-shimo-rnn
-    - poetize-shifo-rnn
-    - poetize-shigui-rnn
-    - poetize-shixian-rnn
-    - poetize-shisheng-rnn
-    - poetize-lidu-rnn
-    - poetize-suxin-rnn
-    - poetize-wanyue-rnn
+    - poetize-lidu
+    - poetize-suxin
 # 标记页面配置
 mark:
   - path: D:\tmp\lifuren\mark\poetry
@@ -74,30 +68,12 @@ elasticsearch:
 # chinese-word-vectors配置
 chinese-word-vectors:
   path: D:\tmp\lifuren\Chinese-Word-Vectors\sgns.sikuquanshu.word
-# poetize-shifo-rnn配置
-poetize-shifo-rnn:
-  model: D:\tmp\lifuren\model\poetize-shifo-rnn.model
-# poetize-shimo-rnn配置
-poetize-shimo-rnn:
-  model: D:\tmp\lifuren\model\poetize-shimo-rnn.model
-# poetize-shigui-rnn配置
-poetize-shigui-rnn:
-  model: D:\tmp\lifuren\model\poetize-shigui-rnn.model
-# poetize-shixian-rnn配置
-poetize-shixian-rnn:
-  model: D:\tmp\lifuren\model\poetize-shixian-rnn.model
-# poetize-shisheng-rnn配置
-poetize-shisheng-rnn:
-  model: D:\tmp\lifuren\model\poetize-shisheng-rnn.model
-# poetize-lidu-rnn配置
-poetize-lidu-rnn:
-  model: D:\tmp\lifuren\model\poetize-lidu-rnn.model
-# poetize-suxin-rnn配置
-poetize-suxin-rnn:
-  model: D:\tmp\lifuren\model\poetize-suxin-rnn.model
-# poetize-wanyue-rnn配置
-poetize-wanyue-rnn:
-  model: D:\tmp\lifuren\model\poetize-wanyue-rnn.model
+# act-guanhanqin配置
+act-guanhanqin:
+  model: D:\tmp\lifuren\model\act-guanhanqin.model
+# act-tangxianzu配置
+act-tangxianzu:
+  model: D:\tmp\lifuren\model\act-tangxianzu.model
 # paint-cycle-gan配置
 paint-cycle-gan:
   model: D:\tmp\lifuren\model\paint-cycle-gan.model
@@ -110,9 +86,9 @@ compose-shikuang:
 # compose-liguinian配置
 compose-liguinian:
   model: D:\tmp\lifuren\model\compose-liguinian.model
-# act-guanhanqin配置
-act-guanhanqin:
-  model: D:\tmp\lifuren\model\act-guanhanqin.model
-# act-tangxianzu配置
-act-tangxianzu:
-  model: D:\tmp\lifuren\model\act-tangxianzu.model
+# poetize-lidu配置
+poetize-lidu:
+  model: D:\tmp\lifuren\model\poetize-lidu.model
+# poetize-suxin配置
+poetize-suxin:
+  model: D:\tmp\lifuren\model\poetize-suxin.model

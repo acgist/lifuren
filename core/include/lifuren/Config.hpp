@@ -55,20 +55,14 @@ extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_CHINESE_WORD_VECTORS;
-extern const std::string CONFIG_POETIZE_SHIFO_RNN;
-extern const std::string CONFIG_POETIZE_SHIMO_RNN;
-extern const std::string CONFIG_POETIZE_SHIGUI_RNN;
-extern const std::string CONFIG_POETIZE_SHIXIAN_RNN;
-extern const std::string CONFIG_POETIZE_SHISHENG_RNN;
-extern const std::string CONFIG_POETIZE_LIDU_RNN;
-extern const std::string CONFIG_POETIZE_SUXIN_RNN;
-extern const std::string CONFIG_POETIZE_WANYUE_RNN;
-extern const std::string CONFIG_PAINT_CYCLE_GAN;
-extern const std::string CONFIG_PAINT_STYLE_GAN;
-extern const std::string CONFIG_COMPOSE_SHIKUANG;
-extern const std::string CONFIG_COMPOSE_LIGUINIAN;
 extern const std::string CONFIG_ACT_GUANHANQIN;
 extern const std::string CONFIG_ACT_TANGXIANZU;
+extern const std::string CONFIG_PAINT_CYCLE_GAN;
+extern const std::string CONFIG_PAINT_STYLE_GAN;
+extern const std::string CONFIG_POETIZE_LIDU;
+extern const std::string CONFIG_POETIZE_SUXIN;
+extern const std::string CONFIG_COMPOSE_SHIKUANG;
+extern const std::string CONFIG_COMPOSE_LIGUINIAN;
 
 // 全局配置：config.yml
 extern lifuren::config::Config CONFIG;
@@ -254,20 +248,14 @@ public:
     lifuren::config::OllamaConfig    ollama    {};
     lifuren::config::ElasticSearchConfig      elasticsearch     {};
     lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
-    lifuren::config::ModelConfig poetizeShifoRNN   {};
-    lifuren::config::ModelConfig poetizeShimoRNN   {};
-    lifuren::config::ModelConfig poetizeShiguiRNN  {};
-    lifuren::config::ModelConfig poetizeShixianRNN {};
-    lifuren::config::ModelConfig poetizeShishengRNN{};
-    lifuren::config::ModelConfig poetizeLiduRNN    {};
-    lifuren::config::ModelConfig poetizeSuxinRNN   {};
-    lifuren::config::ModelConfig poetizeWanyueRNN  {};
-    lifuren::config::ModelConfig paintCycleGAN     {};
-    lifuren::config::ModelConfig paintSytleGAN     {};
-    lifuren::config::ModelConfig composeShikuang   {};
-    lifuren::config::ModelConfig composeLiguinian  {};
-    lifuren::config::ModelConfig actGuanhanqin     {};
-    lifuren::config::ModelConfig actTangxianzu     {};
+    lifuren::config::ModelConfig actGuanhanqin   {};
+    lifuren::config::ModelConfig actTangxianzu   {};
+    lifuren::config::ModelConfig paintCycleGAN   {};
+    lifuren::config::ModelConfig paintSytleGAN   {};
+    lifuren::config::ModelConfig composeShikuang {};
+    lifuren::config::ModelConfig composeLiguinian{};
+    lifuren::config::ModelConfig poetizeLidu     {};
+    lifuren::config::ModelConfig poetizeSuxin    {};
 
 public:
     Config();

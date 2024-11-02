@@ -1,5 +1,7 @@
 /**
  * 诗词模型
+ * 
+ * @author acgist
  */
 #ifndef LFR_HEADER_NLP_MODEL_LIDU_MODEL_HPP
 #define LFR_HEADER_NLP_MODEL_LIDU_MODEL_HPP

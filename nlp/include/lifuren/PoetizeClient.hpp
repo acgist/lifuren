@@ -1,6 +1,17 @@
 /**
  * 诗词终端
  * 
+ * 李杜
+ * 诗仙
+ * 诗圣
+ * 诗佛
+ * 诗鬼
+ * 诗魔
+ * 苏辛
+ * 婉约
+ * 
+ * 模型实现：李杜、苏辛
+ * 
  * RNN/GRU/LSTM/诗词填空/自监督学习
  * 
  * @author acgist
@@ -27,61 +38,6 @@ public:
 };
 
 /**
- * 诗佛终端
- */
-class ShifoPoetizeClient : public PoetizeClient {
-
-public:
-    ShifoPoetizeClient();
-    virtual ~ShifoPoetizeClient();
-
-};
-
-/**
- * 诗魔终端
- */
-class ShimoPoetizeClient : public PoetizeClient {
-
-public:
-    ShimoPoetizeClient();
-    virtual ~ShimoPoetizeClient();
-
-};
-
-/**
- * 诗鬼终端
- */
-class ShiguiPoetizeClient : public PoetizeClient {
-
-public:
-    ShiguiPoetizeClient();
-    virtual ~ShiguiPoetizeClient();
-
-};
-
-/**
- * 诗仙终端
- */
-class ShixianPoetizeClient : public PoetizeClient {
-
-public:
-    ShixianPoetizeClient();
-    virtual ~ShixianPoetizeClient();
-
-};
-
-/**
- * 诗圣终端
- */
-class ShishengPoetizeClient : public PoetizeClient {
-
-public:
-    ShishengPoetizeClient();
-    virtual ~ShishengPoetizeClient();
-
-};
-
-/**
  * 李杜终端
  */
 class LiduPoetizeClient : public PoetizeClient {
@@ -100,17 +56,6 @@ class SuxinPoetizeClient : public PoetizeClient {
 public:
     SuxinPoetizeClient();
     virtual ~SuxinPoetizeClient();
-
-};
-
-/**
- * 婉约终端
- */
-class WanyuePoetizeClient : public PoetizeClient {
-
-public:
-    WanyuePoetizeClient();
-    virtual ~WanyuePoetizeClient();
 
 };
 
