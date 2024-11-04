@@ -4,6 +4,8 @@
  * https://www.fltk.org/doc-1.3/index.html
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_BOOT_FLTK_HPP
 #define LFR_HEADER_BOOT_FLTK_HPP
@@ -37,13 +39,18 @@ lifuren::string::replace(path, "/", "\\/");
 #include "FL/Fl_Window.H"
 
 class Fl_Choice;
-class Fl_PNG_Image;
+class Fl_RGB_Image;
 
 namespace lifuren {
 
-// 加载FLTK窗口
+/**
+ * 加载FLTK窗口
+ */
 extern void initFltkWindow();
-// 关闭FLTK窗口
+
+/**
+ * 关闭FLTK窗口
+ */
 extern void shutdownFltkWindow();
 
 /**
@@ -52,8 +59,7 @@ extern void shutdownFltkWindow();
 class Window : public Fl_Window {
 
 protected:
-    // 图标指针
-    Fl_PNG_Image* iconImagePtr{ nullptr };
+    Fl_RGB_Image* windowIcon{ nullptr }; // 窗口图标
 
 public:
     /**
@@ -65,37 +71,52 @@ public:
     virtual ~Window();
 
 public:
-    // 加载窗口
+    /**
+     * 初始化窗口
+     */
     virtual void init();
 
 protected:
-    // 加载组件
+    /**
+     * 绘制组件
+     * 绑定事件
+     */
     virtual void drawElement() = 0;
-    // 设置图标
+    /**
+     * 设置图标
+     */
     void icon();
-    // 窗口居中
+    /**
+     * 窗口居中
+     */
     void center();
 
 };
-
-class MainWindow;
-class MarkWindow;
-class ImageWindow;
-class PoetryWindow;
-class AboutWindow;
 
 /**
  * 配置管理
  */
 class Configuration {
 
-protected:
-    // 保存配置
+public:
+    /**
+     * 保存配置
+     */
     virtual void saveConfig();
-    // 重新绘制配置元素
+    /**
+     * 重新绘制配置组件
+     */
     virtual void redrawConfigElement() = 0;
 
 };
+
+class MainWindow;
+class MarkWindow;
+class AudioWindow;
+class ImageWindow;
+class VideoWindow;
+class PoetryWindow;
+class AboutWindow;
 
 /**
  * 主窗口
@@ -150,7 +171,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    AudioWindow(int width, int height, const char* title = "音频内容生成");
+    AudioWindow(int width, int height, const char* title = "音频生成");
     virtual ~AudioWindow();
 
 public:
@@ -173,7 +194,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    ImageWindow(int width, int height, const char* title = "图片内容生成");
+    ImageWindow(int width, int height, const char* title = "图片生成");
     virtual ~ImageWindow();
 
 public:
@@ -196,7 +217,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    VideoWindow(int width, int height, const char* title = "视频内容生成");
+    VideoWindow(int width, int height, const char* title = "视频生成");
     virtual ~VideoWindow();
 
 public:
@@ -219,7 +240,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    PoetryWindow(int width, int height, const char* title = "诗词内容生成");
+    PoetryWindow(int width, int height, const char* title = "诗词生成");
     virtual ~PoetryWindow();
 
 public:
@@ -251,7 +272,7 @@ protected:
 };
 
 /**
- * @param title     标题
+ * @param title     窗口标题
  * @param filter    文件过滤：*.{cxx,cpp}
  * @param directory 当前目录
  * 
@@ -260,7 +281,7 @@ protected:
 extern std::string fileChooser(const char* title, const char* filter = "*.*", const char* directory = "");
 
 /**
- * @param title     标题
+ * @param title     窗口标题
  * @param directory 当前目录
  * 
  * @return 选择目录路径

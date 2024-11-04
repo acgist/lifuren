@@ -112,7 +112,7 @@ lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(wi
 
 lifuren::Window::~Window() {
     SPDLOG_DEBUG("关闭窗口");
-    LFR_DELETE_THIS_PTR(iconImagePtr);
+    LFR_DELETE_THIS_PTR(windowIcon);
 }
 
 void lifuren::Window::init() {
@@ -125,8 +125,8 @@ void lifuren::Window::init() {
 
 void lifuren::Window::icon() {
     Fl_PNG_Image iconImage(lifuren::config::baseFile("./logo.png").c_str());
-    this->iconImagePtr = static_cast<Fl_PNG_Image*>(iconImage.copy(32, 32));
-    Fl_Window::default_icon(this->iconImagePtr);
+    this->windowIcon = static_cast<Fl_RGB_Image*>(iconImage.copy(32, 32));
+    Fl_Window::default_icon(this->windowIcon);
 }
 
 void lifuren::Window::center() {

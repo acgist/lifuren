@@ -104,7 +104,7 @@ public:
     // 测试模型
     virtual void test();
     virtual void test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
-    // 数据逻辑
+    // 计算逻辑
     virtual void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
     // 训练验证测试模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);

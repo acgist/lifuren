@@ -92,3 +92,4 @@ poetize-lidu:
 # poetize-suxin配置
 poetize-suxin:
   model: D:\tmp\lifuren\model\poetize-suxin.model
+  

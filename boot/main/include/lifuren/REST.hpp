@@ -2,6 +2,8 @@
  * REST API
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_BOOT_REST_HPP
 #define LFR_HEADER_BOOT_REST_HPP
@@ -23,26 +25,32 @@ namespace lifuren {
 
 namespace content::type {
 
-    const char* const HTML = "text/html";
-    const char* const ICON = "image/x-icon";
-    const char* const JSON = "application/json";
+    const char* const HTML = "text/html";        // HTML
+    const char* const ICON = "image/x-icon";     // ICON
+    const char* const JSON = "application/json"; // JSON
 
 }; // END OF content::type
 
-// HTTP Server
-extern httplib::Server httpServer;
+extern httplib::Server httpServer; // HTTP Server
 
-// 加载HTTP服务
+/**
+ * 加载HTTP服务
+ */
 extern void initHttpServer();
-// 关闭HTTP服务
+
+/**
+ * 关闭HTTP服务
+ */
 extern void shutdownHttpServer();
+
 /**
  * 成功响应
  * 
  * @param response 响应
- * @param body     内容
+ * @param body     响应内容
  */
 extern void response(httplib::Response& response, const char* body);
+
 /**
  * 失败响应
  * 
@@ -51,12 +59,14 @@ extern void response(httplib::Response& response, const char* body);
  * @param message  响应描述
  */
 extern void response(httplib::Response& response, const char* code, const char* message);
+
 /**
- * @param body 内容
+ * @param body 响应内容
  * 
  * @return 成功响应
  */
 extern std::string buildResponse(const char* body);
+
 /**
  * @param code    响应编码
  * @param message 响应描述
@@ -65,11 +75,29 @@ extern std::string buildResponse(const char* body);
  */
 extern std::string buildResponse(const char* code, const char* message);
 
-// 公共接口
+/**
+ * 公共接口
+ */
 extern void restAPI();
-// 图片接口
+
+/**
+ * 音频接口
+ */
+extern void restAudioAPI();
+
+/**
+ * 图片接口
+ */
 extern void restImageAPI();
-// 诗词接口
+
+/**
+ * 视频接口
+ */
+extern void restVideoAPI();
+
+/**
+ * 诗词接口
+ */
 extern void restPoetryAPI();
 
 } // END lifuren

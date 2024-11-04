@@ -26,7 +26,9 @@ static void restGetShutdown();
 void lifuren::initHttpServer() {
     restHandler();
     lifuren::restAPI();
+    lifuren::restAudioAPI();
     lifuren::restImageAPI();
+    lifuren::restVideoAPI();
     lifuren::restPoetryAPI();
     SPDLOG_INFO("启动REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     const bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
