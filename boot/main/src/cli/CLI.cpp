@@ -106,8 +106,12 @@ static void embedding(std::vector<std::string> args) {
     std::mutex mutex;
     std::condition_variable condition;
     ragTask->registerCallback([&mutex, &condition](float, bool finish) {
-        std::lock_guard<std::mutex> lock(mutex);
-        condition.notify_one();
+        if(finish) {
+            std::lock_guard<std::mutex> lock(mutex);
+            condition.notify_one();
+        } else {
+            // 进度
+        }
     });
     std::unique_lock<std::mutex> lock(mutex);
     condition.wait(lock);

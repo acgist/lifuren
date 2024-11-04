@@ -67,6 +67,10 @@ bool lifuren::RAGTaskRunner::startExecute() {
         this->ragClient->saveIndex();
         // 移除RAG任务
         lifuren::RAGService::getInstance().removeRAGTask(this->task.path);
+        // 完成回调
+        if(this->percentCallback) {
+            this->percentCallback(this->percent(), true);
+        }
     });
     this->thread->detach();
     return true;
@@ -158,9 +162,6 @@ bool lifuren::RAGTaskRunner::execute() {
         if(this->percentCallback) {
             this->percentCallback(this->percent(), false);
         }
-    }
-    if(this->percentCallback) {
-        this->percentCallback(this->percent(), true);
     }
     SPDLOG_DEBUG("累计处理诗词数量：{} / {}", count, total);
     lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);
