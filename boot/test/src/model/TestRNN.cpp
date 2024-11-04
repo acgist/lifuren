@@ -119,15 +119,9 @@ public:
         return true;
     }
     torch::Tensor pred(torch::Tensor i) override {
-        // i = i.unsqueeze(0);
-        try {
         i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });
         SPDLOG_DEBUG("i = {}", i.sizes());
         return this->model->forward(i);
-        } catch(const std::exception& e) {
-            std::cerr << e.what() << '\n';
-        }
-        return {};
     }
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
         // SPDLOG_DEBUG("feature = {}", feature.sizes());

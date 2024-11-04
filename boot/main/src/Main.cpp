@@ -71,11 +71,15 @@ int main(const int argc, const char* const argv[]) {
     lifuren::logger::opencv::init();
     lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
-    if(lifuren::cli(argc, argv)) {
-        // -
-    } else {
-        // 使用命令行时忽略其他模式
-        launch();
+    try {
+        if(lifuren::cli(argc, argv)) {
+            // -
+        } else {
+            // 使用命令行时忽略其他模式
+            launch();
+        }
+    } catch(const std::exception& e) {
+        SPDLOG_ERROR("系统异常：{}", e.what());
     }
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();

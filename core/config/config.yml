@@ -38,7 +38,7 @@ mark:
 # RAG配置
 rag:
   # faiss|elasticsearch
-  type: elasticsearch
+  type: faiss
   size: 4
 # 词嵌入配置
 embedding:
