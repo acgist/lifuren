@@ -1,8 +1,10 @@
 #include "lifuren/CLI.hpp"
 
+#include <mutex>
 #include <string>
 #include <vector>
 #include <iostream>
+#include <condition_variable>
 
 #include "spdlog/spdlog.h"
 
@@ -97,7 +99,18 @@ static void embedding(std::vector<std::string> args) {
         return;
     }
     auto& service = lifuren::RAGService::getInstance();
-    service.runRAGTask(args[0]);
+    auto  ragTask = service.runRAGTask(args[0]);
+    if(!ragTask) {
+        return;
+    }
+    std::mutex mutex;
+    std::condition_variable condition;
+    ragTask->registerCallback([&mutex, &condition](float, bool finish) {
+        std::lock_guard<std::mutex> lock(mutex);
+        condition.notify_one();
+    });
+    std::unique_lock<std::mutex> lock(mutex);
+    condition.wait(lock);
     std::cout << "成功" << std::endl;
 }
 
