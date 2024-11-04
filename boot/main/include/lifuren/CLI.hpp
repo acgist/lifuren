@@ -1,11 +1,11 @@
 /**
  * CLI
  * 
- * ./lifuren[.exe] act     prompt
- * ./lifuren[.exe] paint   prompt
- * ./lifuren[.exe] compose prompt
- * ./lifuren[.exe] poetize prompt
- * ./lifuren[.exe] embedding
+ * ./lifuren[.exe] act       prompt
+ * ./lifuren[.exe] paint     prompt
+ * ./lifuren[.exe] compose   prompt
+ * ./lifuren[.exe] poetize   prompt
+ * ./lifuren[.exe] embedding path
  * ./lifuren[.exe] [?|help]
  * 
  * @author acgist

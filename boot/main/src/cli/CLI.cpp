@@ -6,17 +6,18 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/RAG.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/ActClient.hpp"
 #include "lifuren/PaintClient.hpp"
 #include "lifuren/ComposeClient.hpp"
 #include "lifuren/PoetizeClient.hpp"
 
-static void act(    std::vector<std::string>); // 视频生成
-static void paint(  std::vector<std::string>); // 图片生成
-static void compose(std::vector<std::string>); // 音频生成
-static void poetize(std::vector<std::string>); // 诗词生成
-static void embedding(); // 诗词嵌入
+static void act(      std::vector<std::string>); // 视频生成
+static void paint(    std::vector<std::string>); // 图片生成
+static void compose(  std::vector<std::string>); // 音频生成
+static void poetize(  std::vector<std::string>); // 诗词生成
+static void embedding(std::vector<std::string>); // 诗词嵌入
 static void help();      // 帮助
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
@@ -47,7 +48,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     } else if(std::strcmp(command, "poetize") == 0) {
         poetize(args);
     } else if(std::strcmp(command, "embedding") == 0) {
-        embedding();
+        embedding(args);
     } else {
         SPDLOG_WARN("不支持的命令：{}", command);
     }
@@ -90,8 +91,14 @@ static void poetize(std::vector<std::string> args) {
     // TODO: 实现
 }
 
-static void embedding() {
-    // TODO: 实现
+static void embedding(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto& service = lifuren::RAGService::getInstance();
+    service.runRAGTask(args[0]);
+    std::cout << "成功" << std::endl;
 }
 
 static void help() {
