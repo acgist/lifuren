@@ -1,6 +1,7 @@
 #include "lifuren/RAG.hpp"
 
 #include <fstream>
+#include <unordered_map>
 
 #include "spdlog/spdlog.h"
 
@@ -12,7 +13,7 @@
 #include "lifuren/Lifuren.hpp"
 
 // 避免单次重复索引
-static std::set<std::string> promptSet;
+static std::unordered_map<std::string, std::vector<float>> embeddingCache;
 
 // 公用一个锁不考虑并发
 static std::mutex mutex;
@@ -41,16 +42,18 @@ lifuren::FaissRAGClient::FaissRAGClient(
 }
 
 lifuren::FaissRAGClient::~FaissRAGClient() {
-    promptSet.clear();
+    embeddingCache.clear();
 }
 
 std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
-    const std::vector<float> vector = std::move(this->embeddingClient->getVector(prompt));
-    if(promptSet.contains(prompt)) {
-        return vector;
+    auto iterator = embeddingCache.find(prompt);
+    if(iterator != embeddingCache.end()) {
+        return iterator->second;
     }
-    promptSet.insert(prompt);
-    const int64_t id = lifuren::uuid(); {
+    const std::vector<float> vector = std::move(this->embeddingClient->getVector(prompt));
+    embeddingCache.emplace(prompt, vector);
+    const int64_t id = lifuren::uuid();
+    {
         std::lock_guard<std::mutex> lock(mutex);
         this->mapping->emplace(id, prompt);
         this->indexDB->add_with_ids(faiss_n, vector.data(), &id);

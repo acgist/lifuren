@@ -3,12 +3,14 @@
 // TODO: GCC/G++ 13+
 // #include <format>
 
+#include <unordered_map>
+
 #include "spdlog/spdlog.h"
 
 #include "nlohmann/json.hpp"
 
 // 避免单次重复索引
-static std::set<std::string> promptSet;
+static std::unordered_map<std::string, std::vector<float>> embeddingCache;
 
 // 检测索引
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
@@ -24,15 +26,16 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
 }
 
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
-    promptSet.clear();
+    embeddingCache.clear();
 }
 
 std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& prompt) {
-    const auto vector = std::move(this->embeddingClient->getVector(prompt));
-    if(promptSet.contains(prompt)) {
-        return vector;
+    auto iterator = embeddingCache.find(prompt);
+    if(iterator != embeddingCache.end()) {
+        return iterator->second;
     }
-    promptSet.insert(prompt);
+    const auto vector = std::move(this->embeddingClient->getVector(prompt));
+    embeddingCache.emplace(prompt, vector);
     const nlohmann::json body = {
         { "vector" , vector },
         { "content", prompt }

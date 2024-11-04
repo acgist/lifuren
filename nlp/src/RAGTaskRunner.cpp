@@ -147,11 +147,11 @@ bool lifuren::RAGTaskRunner::execute() {
             }
             if(embedding(poetry, stream, this->ragClient.get())) {
                 ++count;
-                if(count % 100 == 0) {
-                    SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
-                }
             } else {
                 // SPDLOG_WARN("RAG任务嵌入失败：{}", file);
+            }
+            if(total % 100 == 0) {
+                SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
             }
         }
         ++this->doneFileCount;

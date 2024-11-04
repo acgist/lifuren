@@ -19,6 +19,7 @@
   for(const auto& [k, v] : lifuren::config::RHYTHM) {
     auto sc = std::accumulate(v.segmentRule.begin(), v.segmentRule.end(), 0);
     auto pc = std::accumulate(v.participleRule.begin(), v.participleRule.end(), 0);
+    SPDLOG_DEBUG("{} {} {} {}", v.title, v.fontSize, sc, pc);
     assert(sc == v.fontSize);
     assert(pc == v.fontSize);
   }
@@ -26,18 +27,14 @@
 
 [[maybe_unused]] static void testGeneratePoetryConfig() {
     using namespace std::literals;
-    const std::string title   = "满江红·无利无名";
-    const std::string alias   = "上江虹、念良游、伤春曲";
-    const std::string rhythm  = "满江红";
+    const std::string title   = "醉垂鞭·双蝶绣罗裙";
+    const std::string alias   = "";
+    const std::string rhythm  = "醉垂鞭";
     const std::string content = lifuren::string::trim(R"(
-无利无名，无荣无辱，无烦无恼。
-夜灯前、独歌独酌，独吟独笑。
-况值群山初雪满，又兼明月交光好。
-便假饶百岁拟如何，从他老。
-知富贵，谁能保。知功业，何时了。
-算箪瓢金玉，所争多少。
-一瞬光阴何足道，便思行乐常不早。
-待春来携酒殢东风，眠芳草。
+双蝶绣罗裙，东池宴，初相见。
+朱粉不深匀，闲花淡淡春。
+细看诸处好，人人道，柳腰身。
+昨日乱山昏，来时衣上云。
     )"s);
     int fontSize    = 0;
     int segmentSize = 0;
