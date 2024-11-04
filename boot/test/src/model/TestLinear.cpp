@@ -53,15 +53,16 @@ public:
         std::mt19937 rand(device());
         std::normal_distribution<float> w(10, 2);
         std::normal_distribution<float> b(0.5, 0.2);
-        std::vector<float> labels;
-        std::vector<std::vector<float>> features;
+        std::vector<torch::Tensor> labels;
+        std::vector<torch::Tensor> features;
         labels.reserve(200);
         features.reserve(200);
         // w * 15.4 + 4 + r
         for(int index = 0; index < 200; ++index) {
             float f = w(rand);
-            labels.push_back(15.4 * f + 4 + b(rand));
-            features.push_back(std::vector<float>{ f });
+            float l = 15.4 * f + 4 + b(rand);
+            labels.push_back(torch::tensor({ l }));
+            features.push_back(torch::tensor( { f } ));
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;

@@ -105,16 +105,16 @@ private:
     // 计算设备
     torch::DeviceType device{ torch::DeviceType::CPU };
     // 标签
-    std::vector<float> labels;
+    std::vector<torch::Tensor> labels;
     // 特征
-    std::vector<std::vector<float>> features;
+    std::vector<torch::Tensor> features;
 
 public:
     /**
      * @param labels   标签
      * @param features 特征
      */
-    RawDataset(std::vector<float>& labels, std::vector<std::vector<float>>& features);
+    RawDataset(std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features);
     virtual ~RawDataset();
 
 public:
@@ -223,8 +223,8 @@ using CsvDatasetLoader = std::invoke_result<
 
 inline auto loadRawDataset(
     const size_t& batch_size,
-    std::vector<float>& labels,
-    std::vector<std::vector<float>>& features
+    std::vector<torch::Tensor>& labels,
+    std::vector<torch::Tensor>& features
 ) -> decltype(auto) {
     auto dataset = lifuren::dataset::RawDataset(labels, features).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
@@ -233,8 +233,8 @@ inline auto loadRawDataset(
 using RawDatasetLoader = std::invoke_result<
     decltype(&lifuren::dataset::loadRawDataset),
     const size_t&,
-    std::vector<float>&,
-    std::vector<std::vector<float>>&
+    std::vector<torch::Tensor>&,
+    std::vector<torch::Tensor>&
 >::type;
 
 } // END OF dataset

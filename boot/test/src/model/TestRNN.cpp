@@ -99,20 +99,21 @@ public:
         std::random_device device;
         std::mt19937 rand(device());
         std::normal_distribution<float> nd(0.5, 0.2);
-        std::vector<float> labels;
-        std::vector<std::vector<float>> features;
+        std::vector<torch::Tensor> labels;
+        std::vector<torch::Tensor> features;
         labels.reserve(200);
         features.reserve(200);
         for(int index = 0; index < 200; ++index) {
-            // const float a = nd(rand);
-            const float a = nd(rand) * 10;
-            const float a1 = a  + 0 + nd(rand);
+            // const float a0 = nd(rand);
+            const float a0 = nd(rand) * 10;
+            const float a1 = a0 + 0 + nd(rand);
             const float a2 = a1 + 1 + nd(rand);
             const float a3 = a2 + 2 + nd(rand);
             const float a4 = a3 + 3 + nd(rand);
             const float a5 = a4 + 4 + nd(rand);
-            features.push_back({ a1, a2, a3, a4 });
-            labels.push_back(a5);
+            float data[] { a1, a2, a3, a4 };
+            features.push_back(torch::from_blob(data, { 4, 1 }, torch::kFloat32).clone());
+            labels.push_back(torch::tensor({ a5 }));
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;
@@ -120,8 +121,8 @@ public:
     torch::Tensor pred(torch::Tensor i) override {
         // i = i.unsqueeze(0);
         try {
-        i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 }).repeat({1, 10, 1});
-        SPDLOG_DEBUG("{}", i.sizes());
+        i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });
+        SPDLOG_DEBUG("i = {}", i.sizes());
         return this->model->forward(i);
         } catch(const std::exception& e) {
             std::cerr << e.what() << '\n';
@@ -129,7 +130,9 @@ public:
         return {};
     }
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
-        feature = feature.unsqueeze(0).permute({2, 1, 0});
+        // SPDLOG_DEBUG("feature = {}", feature.sizes());
+        feature = feature.permute({1, 0, 2});
+        // SPDLOG_DEBUG("feature = {}", feature.sizes());
         pred = std::move(this->model->forward(feature));
         // SPDLOG_DEBUG("pred  = {}", pred.sizes());
         // SPDLOG_DEBUG("label = {}", label.sizes());
@@ -147,10 +150,10 @@ public:
     save.define();
     // save.print();
     save.trainValAndTest();
-    auto pred1 = save.pred(torch::tensor({ 1.0F, 2.0F, 4.0F, 7.0F }));
+    auto pred1 = save.pred(torch::tensor({ 1.0F, 2.0F, 4.0F, 7.0F })); // 7 + 4
     SPDLOG_DEBUG("pred = \n{}", pred1.sizes());
     SPDLOG_DEBUG("pred = \n{}", pred1.squeeze());
-    auto pred2 = save.pred(torch::tensor({ 2.0F, 3.0F, 4.0F, 10.0F }));
+    auto pred2 = save.pred(torch::tensor({ 2.0F, 3.0F, 5.0F, 8.0F })); // 8 + 4
     SPDLOG_DEBUG("pred = \n{}", pred2.sizes());
     SPDLOG_DEBUG("pred = \n{}", pred2.squeeze());
 }

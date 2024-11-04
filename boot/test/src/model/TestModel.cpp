@@ -45,17 +45,17 @@ public:
         std::random_device device;
         std::mt19937 rand(device());
         std::normal_distribution<float> nd(10.0F, 2.0F);
-        std::vector<float> labels;
-        std::vector<std::vector<float>> features;
+        std::vector<torch::Tensor> labels;
+        std::vector<torch::Tensor> features;
         labels.reserve(100);
         features.reserve(100);
         for(int index = 0; index < 100; ++index) {
-            labels.push_back(nd(rand));
+            labels.push_back(torch::tensor({ nd(rand) }));
             std::vector<float> feature(10);
             std::for_each(feature.begin(), feature.end(), [&](auto& v) {
                 v = nd(rand);
             });
-            features.push_back(feature);
+            features.push_back(torch::from_blob(feature.data(), { 10 }, torch::kFloat32).clone());
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
         return true;
