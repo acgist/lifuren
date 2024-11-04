@@ -52,6 +52,9 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     }
     const std::vector<float> vector = std::move(this->embeddingClient->getVector(prompt));
     embeddingCache.emplace(prompt, vector);
+    if(vector.empty()) {
+        return vector;
+    }
     const int64_t id = lifuren::uuid();
     {
         std::lock_guard<std::mutex> lock(mutex);

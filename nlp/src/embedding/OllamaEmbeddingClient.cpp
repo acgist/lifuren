@@ -27,6 +27,7 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
     nlohmann::json data = std::move(nlohmann::json::parse(response.body));
     auto iterator = data.find("embeddings");
     if(iterator == data.end()) {
+        SPDLOG_WARN("没有匹配嵌入内容：{}", prompt);
         return {};
     }
     const auto embeddings = std::move(iterator->get<std::vector<std::vector<float>>>());

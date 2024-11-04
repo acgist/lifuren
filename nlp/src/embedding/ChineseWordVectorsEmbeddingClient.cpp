@@ -38,6 +38,7 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     initVectors();
     auto iterator = vectors.find(prompt);
     if(iterator == vectors.end()) {
+        SPDLOG_WARN("没有匹配嵌入内容：{}", prompt);
         return {};
     }
     return iterator->second;

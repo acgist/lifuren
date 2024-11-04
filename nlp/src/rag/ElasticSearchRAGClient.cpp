@@ -36,6 +36,9 @@ std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& pro
     }
     const auto vector = std::move(this->embeddingClient->getVector(prompt));
     embeddingCache.emplace(prompt, vector);
+    if(vector.empty()) {
+        return vector;
+    }
     const nlohmann::json body = {
         { "vector" , vector },
         { "content", prompt }
