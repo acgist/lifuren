@@ -17,7 +17,11 @@
 int main(const int argc, const char* const argv[]) {  \
     lifuren::logger::init();                          \
     lifuren::config::init(argc, argv);                \
-    __VA_ARGS__                                       \
+    try {                                             \
+        __VA_ARGS__                                   \
+    } catch(const std::exception& e) {                \
+        SPDLOG_ERROR("{}", e.what());                 \
+    }                                                 \
     lifuren::logger::shutdown();                      \
     return 0;                                         \
 }

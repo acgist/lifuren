@@ -53,8 +53,8 @@ extern const std::string CONFIG_MARK;
 extern const std::string CONFIG_RAG;
 extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
+extern const std::string CONFIG_PEPPER;
 extern const std::string CONFIG_ELASTICSEARCH;
-extern const std::string CONFIG_CHINESE_WORD_VECTORS;
 extern const std::string CONFIG_ACT_GUANHANQIN;
 extern const std::string CONFIG_ACT_TANGXIANZU;
 extern const std::string CONFIG_PAINT_CYCLE_GAN;
@@ -213,19 +213,19 @@ struct OllamaConfig : RestConfig {
 };
 
 /**
- * ElasticSearch配置
+ * pepper配置
  */
-struct ElasticSearchConfig : RestConfig {
+struct PepperConfig {
+
+    // 文件路径
+    std::string path;
 
 };
 
 /**
- * chinese-word-vectors配置
+ * ElasticSearch配置
  */
-struct ChineseWordVectorsConfig {
-
-    // 文件路径
-    std::string path;
+struct ElasticSearchConfig : RestConfig {
 
 };
 
@@ -243,11 +243,11 @@ public:
     lifuren::config::VideoConfig  video {};
     lifuren::config::PoetryConfig poetry{};
     std::list<lifuren::config::MarkConfig> mark{};
-    lifuren::config::RAGConfig       rag       {};
-    lifuren::config::EmbeddingConfig embedding {};
-    lifuren::config::OllamaConfig    ollama    {};
-    lifuren::config::ElasticSearchConfig      elasticsearch     {};
-    lifuren::config::ChineseWordVectorsConfig chineseWordVectors{};
+    lifuren::config::RAGConfig           rag          {};
+    lifuren::config::EmbeddingConfig     embedding    {};
+    lifuren::config::OllamaConfig        ollama       {};
+    lifuren::config::PepperConfig        pepper       {};
+    lifuren::config::ElasticSearchConfig elasticsearch{};
     lifuren::config::ModelConfig actGuanhanqin   {};
     lifuren::config::ModelConfig actTangxianzu   {};
     lifuren::config::ModelConfig paintCycleGAN   {};

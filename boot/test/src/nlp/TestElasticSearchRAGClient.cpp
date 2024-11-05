@@ -5,7 +5,7 @@
 
 [[maybe_unused]] static void testRAGClientIndex() {
     lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
-    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
     client.loadIndex();
     client.index("猪");
     client.index("牛");
@@ -22,7 +22,7 @@
 
 [[maybe_unused]] static void testRAGClientSearch() {
     lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
-    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ChineseWordVectors" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
     client.loadIndex();
     auto a = client.search("狗");
     for(const auto& v : a) {

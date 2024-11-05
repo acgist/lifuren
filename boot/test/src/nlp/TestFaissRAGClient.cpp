@@ -40,7 +40,7 @@
 }
 
 LFR_TEST(
-    // testRAGClientIndex();
-    testRAGClientSearch();
+    testRAGClientIndex();
+    // testRAGClientSearch();
     // testRAGClientTruncate();
 );

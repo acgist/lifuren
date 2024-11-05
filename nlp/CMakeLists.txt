@@ -14,7 +14,7 @@ add_library(
     src/poetize/LiduPoetizeClient.cpp
     src/poetize/SuxinPoetizeClient.cpp
     src/embedding/OllamaEmbeddingClient.cpp
-    src/embedding/ChineseWordVectorsEmbeddingClient.cpp
+    src/embedding/PepperEmbeddingClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

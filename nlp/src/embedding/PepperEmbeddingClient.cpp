@@ -22,19 +22,19 @@ static void initVectors();
 // 加载向量
 static void loadVectors(const std::string& path);
 
-lifuren::ChineseWordVectorsEmbeddingClient::ChineseWordVectorsEmbeddingClient() : EmbeddingClient() {
+lifuren::PepperEmbeddingClient::PepperEmbeddingClient() : EmbeddingClient() {
     ++share_count;
 }
 
-lifuren::ChineseWordVectorsEmbeddingClient::~ChineseWordVectorsEmbeddingClient() {
+lifuren::PepperEmbeddingClient::~PepperEmbeddingClient() {
     if(--share_count <= 0) {
         std::lock_guard<std::mutex> lock(mutex);
-        SPDLOG_DEBUG("ChineseWordVectors没有引用释放缓存内容");
+        SPDLOG_DEBUG("pepper没有引用释放缓存内容");
         vectors.clear();
     }
 }
 
-std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const std::string& prompt) const {
+std::vector<float> lifuren::PepperEmbeddingClient::getVector(const std::string& prompt) const {
     initVectors();
     auto iterator = vectors.find(prompt);
     if(iterator == vectors.end()) {
@@ -44,8 +44,8 @@ std::vector<float> lifuren::ChineseWordVectorsEmbeddingClient::getVector(const s
     return iterator->second;
 }
 
-size_t lifuren::ChineseWordVectorsEmbeddingClient::getDims() const {
-    return 300;
+size_t lifuren::PepperEmbeddingClient::getDims() const {
+    return 1024;
 }
 
 static void initVectors() {
@@ -57,25 +57,25 @@ static void initVectors() {
         return;
     }
     auto aTime = std::chrono::system_clock::now();
-    loadVectors(lifuren::config::CONFIG.chineseWordVectors.path);
+    loadVectors(lifuren::config::CONFIG.pepper.path);
     auto zTime = std::chrono::system_clock::now();
-    SPDLOG_DEBUG("加载ChineseWordVectors耗时：{}毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(zTime - aTime).count());
+    SPDLOG_DEBUG("加载pepper耗时：{}毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(zTime - aTime).count());
 }
 
 // TODO: 性能优化到一秒内
 static void loadVectors(const std::string& path) {
     if(path.empty()) {
-        SPDLOG_WARN("加载ChineseWordVectors失败（没有配置文件）：{}", path);
+        SPDLOG_WARN("加载pepper失败（没有配置文件）：{}", path);
         return;
     }
     std::ifstream input;
     input.open(path, std::ios::in);
     if(!input.is_open()) {
-        SPDLOG_WARN("加载ChineseWordVectors失败（文件打开失败）：{}", path);
+        SPDLOG_WARN("加载pepper失败（文件打开失败）：{}", path);
         input.close();
         return;
     }
-    SPDLOG_DEBUG("加载ChineseWordVectors：{}", path);
+    SPDLOG_DEBUG("加载pepper：{}", path);
     char * beg { nullptr };
     char * pos { nullptr };
     char * lend{ nullptr };
@@ -92,7 +92,7 @@ static void loadVectors(const std::string& path) {
     pos  = lend + 1;
     beg  = pos;
     if(lend == bend || dims == 0) {
-        SPDLOG_WARN("加载ChineseWordVectors失败（数据格式错误）：{}", path);
+        SPDLOG_WARN("加载pepper失败（数据格式错误）：{}", path);
         input.close();
         return;
     }
@@ -121,7 +121,7 @@ static void loadVectors(const std::string& path) {
             break;
         }
     }
-    SPDLOG_DEBUG("加载ChineseWordVectors完成：{} - {}", copy.size(), dims);
+    SPDLOG_DEBUG("加载pepper完成：{} - {}", copy.size(), dims);
     vectors.swap(copy);
     input.close();
 }

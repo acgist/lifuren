@@ -73,15 +73,13 @@ public:
 };
 
 /**
- * Chinese-Word-Vectors词嵌入终端
- * 
- * https://github.com/Embedding/Chinese-Word-Vectors
+ * pepper词嵌入终端
  */
-class ChineseWordVectorsEmbeddingClient : public EmbeddingClient {
+class PepperEmbeddingClient : public EmbeddingClient {
 
 public:
-    ChineseWordVectorsEmbeddingClient();
-    virtual ~ChineseWordVectorsEmbeddingClient();
+    PepperEmbeddingClient();
+    virtual ~PepperEmbeddingClient();
 
 public:
     std::vector<float> getVector(const std::string& prompt) const override;

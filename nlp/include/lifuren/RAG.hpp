@@ -29,7 +29,7 @@ struct RAGTask {
     std::string rag;
     // 文档路径
     std::string path;
-    // 词嵌入方式：ollama|chinese-word-vectors
+    // 词嵌入方式：ollama|pepper
     std::string embedding;
 
 };

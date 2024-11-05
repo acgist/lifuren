@@ -42,7 +42,7 @@ rag:
   size: 4
 # 词嵌入配置
 embedding:
-  # ollama|chinese-word-vectors
+  # ollama|pepper
   type: ollama
   # char|rhythm
   participle: rhythm
@@ -56,8 +56,13 @@ ollama:
   auth-type: NONE
   embedding:
     path: /api/embed
-    model: quentinz/bge-large-zh-v1.5
+    model: quentinz/bge-base-zh-v1.5
+    # model: quentinz/bge-large-zh-v1.5
+    # model: quentinz/bge-small-zh-v1.5
     options: {}
+# pepper配置
+pepper:
+  path: /data/lifuren/pepper/pepper.word
 # ElasticSearch配置
 elasticsearch:
   api: http://localhost:9200
@@ -65,9 +70,6 @@ elasticsearch:
   password: elastic
   # NONE|Basic|Token
   auth-type: Basic
-# chinese-word-vectors配置
-chinese-word-vectors:
-  path: /data/lifuren/Chinese-Word-Vectors/sgns.sikuquanshu.word
 # act-guanhanqin配置
 act-guanhanqin:
   model: /data/lifuren/model/act-guanhanqin.model

@@ -92,8 +92,7 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
-    // auto client = lifuren::EmbeddingClient::getClient("ollama");
-    auto client = lifuren::EmbeddingClient::getClient("ChineseWordVectors");
+    auto client = lifuren::EmbeddingClient::getClient("ollama");
     auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
     SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data);
     SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target);
