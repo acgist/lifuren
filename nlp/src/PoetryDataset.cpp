@@ -6,7 +6,8 @@
 
 bool lifuren::dataset::poetry::read(std::ifstream& stream, std::vector<std::vector<float>>& vector) {
     short size{ 0 };
-    if(stream.read(reinterpret_cast<char*>(&size), sizeof(size)) && size > 0) {
+    // short不能使用>>读取
+    if(stream.read(reinterpret_cast<char*>(&size), sizeof(size))) {
         std::vector<float> v;
         v.resize(size);
         stream.read(reinterpret_cast<char*>(v.data()), sizeof(float) * size);

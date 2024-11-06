@@ -30,11 +30,11 @@ target_link_libraries(
     lifurennlp
 )
 
-add_executable(testFaissRAGClient TestFaissRAGClient.cpp)
-add_test(NAME testFaissRAGClient COMMAND testFaissRAGClient)
-set_target_properties(testFaissRAGClient PROPERTIES FOLDER "test-nlp")
+add_executable(testRAGClient TestRAGClient.cpp)
+add_test(NAME testRAGClient COMMAND testRAGClient)
+set_target_properties(testRAGClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
-    testFaissRAGClient
+    testRAGClient
     lifurennlp
 )
 
@@ -43,13 +43,5 @@ add_test(NAME testEmbeddingClient COMMAND testEmbeddingClient)
 set_target_properties(testEmbeddingClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testEmbeddingClient
-    lifurennlp
-)
-
-add_executable(testElasticSearchRAGClient TestElasticSearchRAGClient.cpp)
-add_test(NAME testElasticSearchRAGClient COMMAND testElasticSearchRAGClient)
-set_target_properties(testElasticSearchRAGClient PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testElasticSearchRAGClient
     lifurennlp
 )

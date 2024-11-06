@@ -131,6 +131,11 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     auto embeddingClient = lifuren::EmbeddingClient::getClient("ollama");
     std::ofstream output;
     output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "pepper", "pepper.word" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+    if(!output.is_open()) {
+        output.close();
+        SPDLOG_WARN("文件打开失败");
+        return;
+    }
     std::mutex mutex;
     std::condition_variable condition;
     std::vector<std::string> vector;
@@ -146,18 +151,17 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
             auto beg = vector.begin() + (i * batchSize);
             auto end = (i == batch - 1) ? vector.end() : beg + batchSize;
             for(; beg != end; ++beg) {
-                SPDLOG_DEBUG("处理词语：{}", *beg);
                 auto x = std::move(embeddingClient->getVector(*beg));
+                SPDLOG_DEBUG("处理词语：{} {} {}", *beg, beg->size(), x.size());
                 std::lock_guard<std::mutex> lock(mutex);
                 size_t iSize = beg->size();
                 output.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
                 output.write(beg->data(), beg->size());
                 size_t xSize = x.size();
                 output.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
-                output.write(reinterpret_cast<char*>(x.data()), x.size() * sizeof(float));
+                output.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
                 if(++index % 100 == 0) {
                     SPDLOG_DEBUG("处理数量：{} - {}", i, index);
-                    output.flush();
                 }
             }
             std::lock_guard<std::mutex> lock(mutex);
@@ -170,6 +174,7 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     while(countDown != 0) {
         condition.wait(lock);
     }
+    output.flush();
     output.close();
 }
 
