@@ -62,6 +62,7 @@ ollama:
     options: {}
 # pepper配置
 pepper:
+  dims: 768
   path: D:\tmp\lifuren\pepper\pepper.word
 # ElasticSearch配置
 elasticsearch:

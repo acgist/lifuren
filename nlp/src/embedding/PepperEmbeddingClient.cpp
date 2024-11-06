@@ -45,9 +45,7 @@ std::vector<float> lifuren::PepperEmbeddingClient::getVector(const std::string& 
 }
 
 size_t lifuren::PepperEmbeddingClient::getDims() const {
-    // return 512;
-    return 768;
-    // return 1024;
+    return lifuren::config::CONFIG.pepper.dims;
 }
 
 static void initVectors() {

@@ -182,6 +182,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             config.ollama.embeddingClient = embeddingClient;
         }
     } else if(lifuren::config::CONFIG_PEPPER == name) {
+        LFR_CONFIG_YAML_GETTER(config.pepper, yaml, dims, dims, int);
         LFR_CONFIG_YAML_GETTER(config.pepper, yaml, path, path, std::string);
     } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
@@ -303,6 +304,7 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node pepper;
+        LFR_CONFIG_YAML_SETTER(pepper, config.pepper, dims, dims);
         LFR_CONFIG_YAML_SETTER(pepper, config.pepper, path, path);
         yaml[lifuren::config::CONFIG_PEPPER] = pepper;
     }

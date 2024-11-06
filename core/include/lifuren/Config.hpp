@@ -217,6 +217,8 @@ struct OllamaConfig : RestConfig {
  */
 struct PepperConfig {
 
+    // 维度
+    int dims;
     // 文件路径
     std::string path;
 
