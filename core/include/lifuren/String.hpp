@@ -10,6 +10,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include <codecvt>
 #include <sstream>
 #include <algorithm>
 
@@ -154,6 +155,26 @@ inline uint32_t indexPos(const char* value, uint32_t& pos, const uint32_t& size)
         }
     }
     return pos;
+}
+
+/**
+ * @param input 文本
+ * 
+ * @return 文本
+ */
+inline std::wstring to_wstring(const std::string& input) {
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	return converter.from_bytes(input);
+}
+
+/**
+ * @param input 文本
+ * 
+ * @return 文本
+ */
+inline std::string to_string(const std::wstring& input) {
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	return converter.to_bytes(input);
 }
 
 /**
