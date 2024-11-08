@@ -9,9 +9,6 @@
 
 #include "nlohmann/json.hpp"
 
-// 避免单次重复索引
-static std::unordered_map<std::string, std::vector<float>> embeddingCache;
-
 // 检测索引
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
 // 创建索引
@@ -26,16 +23,13 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
 }
 
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
-    embeddingCache.clear();
 }
 
 std::vector<float> lifuren::ElasticSearchRAGClient::index(const std::string& prompt) {
-    auto iterator = embeddingCache.find(prompt);
-    if(iterator != embeddingCache.end()) {
-        return iterator->second;
-    }
     const auto vector = std::move(this->embeddingClient->getVector(prompt));
-    embeddingCache.emplace(prompt, vector);
+    if(this->donePromptEmplace(prompt)) {
+        return vector;
+    }
     if(vector.empty()) {
         return vector;
     }

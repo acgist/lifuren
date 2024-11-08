@@ -1,11 +1,20 @@
 #include "lifuren/RAG.hpp"
 
+#include <mutex>
+#include <atomic>
 #include <fstream>
 
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
+
+// 避免单次重复索引
+static std::set<std::string> promptCache;
+// 索引计数
+static std::atomic<int> share_count(0);
+// 锁
+static std::mutex mutex;
 
 lifuren::RAGClient::RAGClient(
     const std::string& path,
@@ -14,9 +23,15 @@ lifuren::RAGClient::RAGClient(
     path(path),
     embeddingClient(lifuren::EmbeddingClient::getClient(embedding))
 {
+    ++share_count;
 }
 
 lifuren::RAGClient::~RAGClient() {
+    if(--share_count <= 0) {
+        std::lock_guard<std::mutex> lock(mutex);
+        promptCache.clear();
+        SPDLOG_DEBUG("没有引用清空提示索引缓存");
+    }
 }
 
 bool lifuren::RAGClient::loadIndex() {
@@ -58,6 +73,7 @@ bool lifuren::RAGClient::saveIndex() const {
         stream.close();
         return false;
     }
+    SPDLOG_DEBUG("保存索引文件：{}", markPath.string());
     stream << this->id << '\n';
     for(const auto& line : this->doneFile) {
         stream << line << '\n';
@@ -79,6 +95,16 @@ size_t lifuren::RAGClient::getDims() const {
     } else {
         return 0;
     }
+}
+
+bool lifuren::RAGClient::donePromptEmplace(const std::string& prompt) {
+    std::lock_guard<std::mutex> lock(mutex);
+    auto iterator = promptCache.find(prompt);
+    if(iterator == promptCache.end()) {
+        promptCache.insert(prompt);
+        return false;
+    }
+    return true;
 }
 
 bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {

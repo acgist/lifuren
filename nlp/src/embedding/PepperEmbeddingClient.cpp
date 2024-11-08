@@ -1,3 +1,10 @@
+/**
+ * PepperEmbeddingClient.cpp
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
+ */
 #include "lifuren/EmbeddingClient.hpp"
 
 #include <map>
@@ -10,16 +17,16 @@
 
 #include "spdlog/spdlog.h"
 
-// 锁
+// 读取锁：防止多线程重复读取文件
 static std::mutex mutex;
-// 共享数量
+// 共享数量：没有引用时释放内存
 static std::atomic<int> share_count(0);
-// 提示向量
+// 嵌入向量
 static std::unordered_map<std::string, std::vector<float>> vectors;
 
-// 加载向量
+// 加载嵌入向量
 static void initVectors();
-// 加载向量
+// 加载嵌入向量
 static void loadVectors(const std::string& path);
 
 lifuren::PepperEmbeddingClient::PepperEmbeddingClient() : EmbeddingClient() {
@@ -29,7 +36,7 @@ lifuren::PepperEmbeddingClient::PepperEmbeddingClient() : EmbeddingClient() {
 lifuren::PepperEmbeddingClient::~PepperEmbeddingClient() {
     if(--share_count <= 0) {
         std::lock_guard<std::mutex> lock(mutex);
-        SPDLOG_DEBUG("pepper没有引用释放缓存内容");
+        SPDLOG_DEBUG("没有引用释放嵌入向量");
         vectors.clear();
     }
 }
@@ -62,7 +69,6 @@ static void initVectors() {
     SPDLOG_DEBUG("加载pepper耗时：{}毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(zTime - aTime).count());
 }
 
-// TODO: 性能优化到一秒内
 static void loadVectors(const std::string& path) {
     if(path.empty()) {
         SPDLOG_WARN("加载pepper失败（没有配置文件）：{}", path);

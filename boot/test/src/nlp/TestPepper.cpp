@@ -16,11 +16,12 @@
 #include "lifuren/String.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
+static bool enable_embedding        = true;
 static bool enable_print_messy_code = false;
 
 // 不能含有空格
-static std::wregex word_regex (L"[\\u4e00-\\u9fff]+");   // 词语
-static std::wregex title_regex(L"[\\u4e00-\\u9fff・]+"); // 标题
+static std::wregex word_regex (L"[\\u4e00-\\u9fff]{1,8}"); // 词语
+static std::wregex title_regex(L"[\\u4e00-\\u9fff・]+");   // 标题
 
 static void print_messy_code(const std::string& file, const std::string& title, const std::string& value, const std::wregex& regex) {
     if(!enable_print_messy_code || value.empty()) {
@@ -128,6 +129,9 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     SPDLOG_DEBUG("词匹配格律的数量：{} / {}", ciCount,  ciTotal);
     SPDLOG_DEBUG("诗匹配格律的数量：{} / {}", shiCount, shiTotal);
     SPDLOG_DEBUG("格律累计分词数量：{} / {}", words.size(), wSize);
+    if(!enable_embedding) {
+        return;
+    }
     auto embeddingClient = lifuren::EmbeddingClient::getClient("ollama");
     std::ofstream output;
     output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "pepper", "pepper.word" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
@@ -136,43 +140,49 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
         SPDLOG_WARN("文件打开失败");
         return;
     }
+    const int batch = 10;
+    std::atomic_int countDown(batch);
     std::mutex mutex;
     std::condition_variable condition;
     std::vector<std::string> vector;
     vector.reserve(words.size());
     vector.assign(words.begin(), words.end());
-    const int batch = 10;
-    std::atomic_int countDown(batch);
     const int batchSize = vector.size() / batch;
     for(int i = 0; i < batch; ++i) {
         std::thread thread([i, &mutex, &output, &vector, &countDown, &batchSize, &condition, &embeddingClient]() {
             int index = 0;
-            SPDLOG_DEBUG("启动线程：{} {} {}", i , batch - 1, i == (batch - 1));
+            SPDLOG_DEBUG("启动线程：{} {} {}", i, batch - 1, i == (batch - 1));
             auto beg = vector.begin() + (i * batchSize);
             auto end = (i == batch - 1) ? vector.end() : beg + batchSize;
             for(; beg != end; ++beg) {
                 auto x = std::move(embeddingClient->getVector(*beg));
                 SPDLOG_DEBUG("处理词语：{} {} {}", *beg, beg->size(), x.size());
-                std::lock_guard<std::mutex> lock(mutex);
-                size_t iSize = beg->size();
-                output.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
-                output.write(beg->data(), beg->size());
-                size_t xSize = x.size();
-                output.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
-                output.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
+                {
+                    std::lock_guard<std::mutex> lock(mutex);
+                    size_t iSize = beg->size();
+                    output.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
+                    output.write(beg->data(), beg->size());
+                    size_t xSize = x.size();
+                    output.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
+                    output.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
+                }
                 if(++index % 100 == 0) {
                     SPDLOG_DEBUG("处理数量：{} - {}", i, index);
                 }
             }
-            std::lock_guard<std::mutex> lock(mutex);
-            --countDown;
-            condition.notify_all();
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                --countDown;
+                condition.notify_all();
+            }
         });
         thread.detach();
     }
-    std::unique_lock<std::mutex> lock(mutex);
-    while(countDown != 0) {
-        condition.wait(lock);
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        while(countDown != 0) {
+            condition.wait(lock);
+        }
     }
     output.flush();
     output.close();

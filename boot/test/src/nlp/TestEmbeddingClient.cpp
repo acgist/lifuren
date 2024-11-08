@@ -12,7 +12,7 @@
     // lifuren::PepperEmbeddingClient ref{};
     {
         lifuren::PepperEmbeddingClient client{};
-        auto v = std::move(client.getVector("中"));
+        auto v = std::move(client.getVector("东风"));
         // auto v = std::move(client.getVector({ "李", "夫", "人"}));
         SPDLOG_DEBUG("v length = {}", v.size());
     }

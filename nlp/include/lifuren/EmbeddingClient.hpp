@@ -73,7 +73,11 @@ public:
 };
 
 /**
- * pepper词嵌入终端
+ * Pepper（辣椒）词嵌入终端
+ * 
+ * 自定义词嵌入终端，主要是将第三方词嵌入转为本地文件存储加快词嵌入速度。
+ * 格式如下：
+ * length(word) word length(vector) vector
  */
 class PepperEmbeddingClient : public EmbeddingClient {
 

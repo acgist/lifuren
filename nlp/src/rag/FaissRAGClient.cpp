@@ -1,7 +1,6 @@
 #include "lifuren/RAG.hpp"
 
 #include <fstream>
-#include <unordered_map>
 
 #include "spdlog/spdlog.h"
 
@@ -11,9 +10,6 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Lifuren.hpp"
-
-// 避免单次重复索引
-static std::unordered_map<std::string, std::vector<float>> embeddingCache;
 
 // 公用一个锁不考虑并发
 static std::mutex mutex;
@@ -42,16 +38,13 @@ lifuren::FaissRAGClient::FaissRAGClient(
 }
 
 lifuren::FaissRAGClient::~FaissRAGClient() {
-    embeddingCache.clear();
 }
 
 std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
-    auto iterator = embeddingCache.find(prompt);
-    if(iterator != embeddingCache.end()) {
-        return iterator->second;
-    }
     const std::vector<float> vector = std::move(this->embeddingClient->getVector(prompt));
-    embeddingCache.emplace(prompt, vector);
+    if(this->donePromptEmplace(prompt)) {
+        return vector;
+    }
     if(vector.empty()) {
         return vector;
     }
@@ -165,6 +158,7 @@ static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::fil
 }
 
 static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, const std::filesystem::path& path) {
+    SPDLOG_DEBUG("保存映射文件：{}", path.string());
     lifuren::file::createFolder(path.parent_path());
     std::ofstream stream;
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
@@ -193,6 +187,7 @@ static faiss::Index* loadIndexDB(size_t dims, const std::filesystem::path& path)
 }
 
 static void saveIndexDB(faiss::Index* index, const std::filesystem::path& path) {
+    SPDLOG_DEBUG("保存索引文件：{}", path.string());
     lifuren::file::createFolder(path.parent_path());
     faiss::write_index(index, path.string().c_str());
 }

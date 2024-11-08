@@ -113,6 +113,7 @@ bool lifuren::RAGTaskRunner::execute() {
         stream.close();
         return false;
     }
+    SPDLOG_DEBUG("保存词嵌入文件：{}", embeddingPath.string());
     std::vector<std::string> files;
     lifuren::file::listFile(files, this->task.path, { ".json" });
     this->fileCount = files.size();

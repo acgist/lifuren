@@ -37,6 +37,8 @@ struct RAGTask {
 /**
  * RAG终端
  * 
+ * 提供词嵌入和词向量搜索
+ * 
  * 注意：
  *  1. 只能保证单次索引提示不会重复
  *  2. 多次索引提示建议先删除再重建
@@ -63,6 +65,16 @@ public:
     RAGClient(const std::string& path, const std::string& embedding);
     virtual ~RAGClient();
 
+protected:
+    /**
+     * 是否已经索引提示内容
+     * 
+     * @param prompt 提示内容
+     * 
+     * @return 是否已经索引
+     */
+    bool donePromptEmplace(const std::string& prompt);
+
 public:
     // 加载索引
     virtual bool loadIndex();
@@ -81,6 +93,8 @@ public:
      */
     bool doneFileEmplace(const std::string& file);
     /**
+     * 判断是否重复索引，但是不要缓存，缓存在EmbeddingClient里面实现。
+     * 
      * @param prompt 提示内容
      * 
      * @return 提示向量
