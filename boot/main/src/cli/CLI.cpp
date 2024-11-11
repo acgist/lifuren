@@ -10,10 +10,10 @@
 
 #include "lifuren/RAG.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/ActClient.hpp"
-#include "lifuren/PaintClient.hpp"
-#include "lifuren/ComposeClient.hpp"
-#include "lifuren/PoetizeClient.hpp"
+#include "lifuren/video/ActClient.hpp"
+#include "lifuren/image/PaintClient.hpp"
+#include "lifuren/audio/ComposeClient.hpp"
+#include "lifuren/poetry/PoetizeClient.hpp"
 
 static void act(      std::vector<std::string>); // 视频生成
 static void paint(    std::vector<std::string>); // 图片生成

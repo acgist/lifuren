@@ -2,19 +2,19 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Audio.cpp
-    src/Image.cpp
-    src/Video.cpp
     src/OpenCV.cpp
-    src/ActClient.cpp
-    src/PaintClient.cpp
-    src/ComposeClient.cpp
-    src/act/GuanhanqinActClient.cpp
-    src/act/TangxianzuActClient.cpp
-    src/paint/CycleGANPaintClient.cpp
-    src/paint/StyleGANPaintClient.cpp
-    src/compose/ShikuangComposeClient.cpp
-    src/compose/LiguinianComposeClient.cpp
+    src/audio/Audio.cpp
+    src/audio/ComposeClient.cpp
+    src/audio/ShikuangComposeClient.cpp
+    src/audio/LiguinianComposeClient.cpp
+    src/image/Image.cpp
+    src/image/PaintClient.cpp
+    src/image/CycleGANPaintClient.cpp
+    src/image/StyleGANPaintClient.cpp
+    src/video/Video.cpp
+    src/video/ActClient.cpp
+    src/video/GuanhanqinActClient.cpp
+    src/video/TangxianzuActClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

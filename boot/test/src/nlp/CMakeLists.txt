@@ -6,6 +6,14 @@ target_link_libraries(
     lifurennlp
 )
 
+add_executable(testSuxin TestSuxin.cpp)
+add_test(NAME testSuxin COMMAND testSuxin)
+set_target_properties(testSuxin PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testSuxin
+    lifurennlp
+)
+
 add_executable(testPepper TestPepper.cpp)
 add_test(NAME testPepper COMMAND testPepper)
 set_target_properties(testPepper PROPERTIES FOLDER "test-nlp")

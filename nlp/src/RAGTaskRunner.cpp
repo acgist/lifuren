@@ -8,7 +8,7 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/String.hpp"
-#include "lifuren/PoetryDataset.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 // 诗词嵌入
 static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client);

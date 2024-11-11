@@ -3,7 +3,7 @@
 #include "nlohmann/json.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Poetry.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 [[maybe_unused]] static void testPoetry() {
     nlohmann::json json = nlohmann::json::parse(R"(

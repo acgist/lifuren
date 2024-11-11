@@ -10,7 +10,7 @@
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Tensor.hpp"
-#include "lifuren/ImageDataset.hpp"
+#include "lifuren/image/ImageDataset.hpp"
 
 class GenderModuleImpl : public torch::nn::Module {
 

@@ -14,7 +14,7 @@
 
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/PaintClient.hpp"
+#include "lifuren/image/PaintClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * modelPathPtr   { nullptr };

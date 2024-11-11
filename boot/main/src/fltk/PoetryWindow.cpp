@@ -11,6 +11,7 @@
 
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
+#include "lifuren/poetry/PoetizeClient.hpp"
 
 static Fl_Choice* clientPtr     { nullptr };
 static Fl_Input * imagePathPtr  { nullptr };

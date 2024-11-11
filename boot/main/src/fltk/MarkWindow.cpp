@@ -16,8 +16,8 @@
 #include "lifuren/Raii.hpp"
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Poetry.hpp"
 #include "lifuren/String.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 // 诗词内容
 static nlohmann::json           poetryJson    {};

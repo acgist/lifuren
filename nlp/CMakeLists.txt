@@ -2,17 +2,18 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Poetry.cpp
     src/RAGClient.cpp
     src/RAGService.cpp
-    src/PoetryDataset.cpp
-    src/PoetizeClient.cpp
     src/RAGTaskRunner.cpp
     src/EmbeddingClient.cpp
     src/rag/FaissRAGClient.cpp
     src/rag/ElasticSearchRAGClient.cpp
-    src/poetize/LiduPoetizeClient.cpp
-    src/poetize/SuxinPoetizeClient.cpp
+    src/poetry/Poetry.cpp
+    src/poetry/SuxinModel.cpp
+    src/poetry/PoetryDataset.cpp
+    src/poetry/PoetizeClient.cpp
+    src/poetry/LiduPoetizeClient.cpp
+    src/poetry/SuxinPoetizeClient.cpp
     src/embedding/OllamaEmbeddingClient.cpp
     src/embedding/PepperEmbeddingClient.cpp
 )

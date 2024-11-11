@@ -1,7 +1,7 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Image.hpp"
+#include "lifuren/image/Image.hpp"
 
 #include "opencv2/opencv.hpp"
 

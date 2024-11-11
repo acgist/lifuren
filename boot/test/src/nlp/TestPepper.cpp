@@ -12,8 +12,8 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Poetry.hpp"
 #include "lifuren/String.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
 static bool enable_embedding        = true;

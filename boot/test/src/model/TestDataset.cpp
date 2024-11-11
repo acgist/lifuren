@@ -10,9 +10,9 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Dataset.hpp"
-#include "lifuren/ImageDataset.hpp"
-#include "lifuren/PoetryDataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
+#include "lifuren/image/ImageDataset.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor);
 LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)

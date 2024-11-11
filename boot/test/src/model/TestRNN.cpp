@@ -118,11 +118,6 @@ public:
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;
     }
-    torch::Tensor pred(torch::Tensor i) override {
-        i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });
-        SPDLOG_DEBUG("i = {}", i.sizes());
-        return this->model->forward(i);
-    }
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
         // SPDLOG_DEBUG("feature = {}", feature.sizes());
         feature = feature.permute({1, 0, 2});
@@ -131,6 +126,11 @@ public:
         // SPDLOG_DEBUG("pred  = {}", pred.sizes());
         // SPDLOG_DEBUG("label = {}", label.sizes());
         loss = std::move(this->loss->forward(pred, label));
+    }
+    torch::Tensor pred(torch::Tensor i) override {
+        i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });
+        SPDLOG_DEBUG("i = {}", i.sizes());
+        return this->model->forward(i);
     }
 
 };

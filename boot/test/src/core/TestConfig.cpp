@@ -6,7 +6,7 @@
 
 #include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
-#include "lifuren/Poetry.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 [[maybe_unused]] static void testConfig() {
     auto& config = lifuren::config::CONFIG;
