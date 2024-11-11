@@ -101,9 +101,10 @@ public:
         std::normal_distribution<float> nd(0.5, 0.2);
         std::vector<torch::Tensor> labels;
         std::vector<torch::Tensor> features;
-        labels.reserve(200);
-        features.reserve(200);
-        for(int index = 0; index < 200; ++index) {
+        const int count = 200;
+        labels.reserve(count);
+        features.reserve(count);
+        for(int index = 0; index < count; ++index) {
             // const float a0 = nd(rand);
             const float a0 = nd(rand) * 10;
             const float a1 = a0 + 0 + nd(rand);

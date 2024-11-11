@@ -34,13 +34,16 @@ namespace lifuren {
  */
 struct ModelParams {
 
-    float       lr         { 0.001F }; // 学习率
-    size_t      batch_size { 100LL  }; // 批量大小
-    size_t      epoch_count{ 128LL  }; // 训练次数
-    bool        classify   { false  }; // 分类任务
-    bool        check_point{ false  }; // 保存快照
-    std::string check_path { "./"   }; // 快照路径
+    float       lr         { 0.001F    }; // 学习率
+    size_t      batch_size { 100LL     }; // 批量大小
+    size_t      epoch_count{ 128LL     }; // 训练次数
+    bool        classify   { false     }; // 分类任务
+    bool        check_point{ false     }; // 保存快照
+    std::string check_path { "./"      }; // 快照路径
     std::string model_name { "lifuren" }; // 模型名称
+    std::string train_path {}; // 训练数据集路径
+    std::string val_path   {}; // 验证数据集路径
+    std::string test_path  {}; // 测试数据集路径
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     size_t thread_size{ std::thread::hardware_concurrency() }; // 线程数量
 

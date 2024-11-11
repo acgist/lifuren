@@ -43,7 +43,7 @@ rag:
 # 词嵌入配置
 embedding:
   # ollama|pepper
-  type: ollama
+  type: pepper
   # char|rhythm
   participle: rhythm
 # Ollama配置

@@ -11,7 +11,7 @@
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 // 诗词嵌入
-static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client);
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client, size_t& wCount);
 
 lifuren::RAGTaskRunner::RAGTaskRunner(
     lifuren::RAGTask task
@@ -120,6 +120,7 @@ bool lifuren::RAGTaskRunner::execute() {
     SPDLOG_DEBUG("RAG任务文件总量：{} - {}", this->task.path, this->fileCount);
     size_t count = 0; // 处理成功诗词总数
     size_t total = 0; // 累计读取诗词总数
+    size_t wCount = 0; // 累计处理词语总数
     for(const auto& file : files) {
         if(this->stop) {
             break;
@@ -150,7 +151,7 @@ bool lifuren::RAGTaskRunner::execute() {
                 SPDLOG_WARN("RAG任务文件格式错误：{}", file);
                 continue;
             }
-            if(embedding(poetry, stream, this->ragClient.get())) {
+            if(embedding(poetry, stream, this->ragClient.get()), wCount) {
                 ++count;
             } else {
                 // SPDLOG_WARN("RAG任务嵌入失败：{}", file);
@@ -164,13 +165,13 @@ bool lifuren::RAGTaskRunner::execute() {
             this->percentCallback(this->percent(), false);
         }
     }
-    SPDLOG_DEBUG("累计处理诗词数量：{} / {}", count, total);
+    SPDLOG_DEBUG("累计处理诗词数量：{} / {} / {}", count, total, wCount);
     lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);
     stream.close();
     return true;
 }
 
-static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient) {
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient, size_t& wCount) {
     const std::string& participle = lifuren::config::CONFIG.embedding.participle;
     lifuren::poetry::Poetry poetry = json;
     poetry.preproccess();
@@ -206,5 +207,6 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
         return ragClient->index(word);
     });
     lifuren::dataset::poetry::write(stream, ret);
+    wCount += ret.size();
     return true;
 }

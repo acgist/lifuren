@@ -1,6 +1,6 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/poetry/SuxinModel.hpp"
+#include "lifuren/poetry/PoetizeModel.hpp"
 
 [[maybe_unused]] static void testSuxinTrain() {
     lifuren::SuxinModule suxin;

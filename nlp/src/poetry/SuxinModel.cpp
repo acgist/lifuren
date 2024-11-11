@@ -24,10 +24,13 @@ lifuren::SuxinModel::~SuxinModel() {
 }
 
 bool lifuren::SuxinModel::defineDataset() {
+    // 最长：116 + 2
+
     return true;
 }
 
 void lifuren::SuxinModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+
 }
 
 std::vector<torch::Tensor> lifuren::SuxinModel::pred(std::vector<torch::Tensor> i) {
