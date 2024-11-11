@@ -151,7 +151,7 @@ bool lifuren::RAGTaskRunner::execute() {
                 SPDLOG_WARN("RAG任务文件格式错误：{}", file);
                 continue;
             }
-            if(embedding(poetry, stream, this->ragClient.get()), wCount) {
+            if(embedding(poetry, stream, this->ragClient.get(), wCount)) {
                 ++count;
             } else {
                 // SPDLOG_WARN("RAG任务嵌入失败：{}", file);
