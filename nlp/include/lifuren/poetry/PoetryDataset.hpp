@@ -18,8 +18,6 @@
 
 namespace lifuren::dataset {
 
-class EmbeddingClient;
-
 namespace poetry {
 
 const short END_OF_POETRY  = -1; // 诗词结束
@@ -56,6 +54,26 @@ inline void writeEnd(std::ofstream& stream, const short& flag) {
  */
 extern bool fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm);
 
+} // END OF poetry
+
+inline torch::Tensor cat(
+    std::vector<torch::Tensor>::iterator segmentRule,
+    std::vector<torch::Tensor>::iterator participleRule,
+    std::vector<torch::Tensor>::iterator beg,
+    int index,
+    const torch::DeviceType& device
+) {
+    const int sequenceLength = lifuren::config::CONFIG.poetry.length;
+    std::vector<float> indexVector(beg->sizes()[0], 0.0F);
+    std::fill(indexVector.begin() + index, indexVector.begin() + index + sequenceLength, 1.0F);
+    std::vector<torch::Tensor> sequence;
+    sequence.push_back(*segmentRule);
+    sequence.push_back(*participleRule);
+    sequence.push_back(torch::from_blob(indexVector.data(), beg->sizes(), torch::kFloat32).to(device).clone());
+    for(int index = 0; index < sequenceLength; ++index) {
+        sequence.push_back(*(beg + index));
+    }
+    return torch::cat(sequence).resize_({ sequenceLength + 3, beg->sizes()[0] });
 }
 
 /**
@@ -67,14 +85,33 @@ extern bool fillRhythm(const int& dims, std::vector<std::vector<float>>& vector,
  */
 inline auto loadPoetryFileDataset(
     const size_t& batch_size,
-    const std::string& path,
-    const lifuren::EmbeddingClient* client
+    const std::string& path
 ) -> decltype(auto) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
-        { ".model" },
-        [&client](const std::ifstream& stream, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features) {
-            // TODO: 加载embedding.model
+        [](std::ifstream& stream, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+            std::vector<torch::Tensor> data;
+            std::vector<std::vector<float>> vector;
+            while(!lifuren::dataset::poetry::read(stream, vector)) {
+                for(auto& v : vector) {
+                    data.push_back(torch::from_blob(v.data(), { static_cast<int>(v.size()) }, torch::kFloat32).to(device).clone());
+                }
+                int index = 0;
+                auto beg = data.begin();
+                auto end = data.end();
+                auto segmentRule    = beg++;
+                auto participleRule = beg++;
+                const int sequenceLength = lifuren::config::CONFIG.poetry.length;
+                for(; beg + sequenceLength != end; ++beg, ++index) {
+                    labels.push_back(*(beg + sequenceLength));
+                    features.push_back(cat(segmentRule, participleRule, beg, index, device));
+                }
+                // EOF
+                labels.push_back(torch::zeros({ beg->sizes()[0] }).to(device).clone());
+                features.push_back(cat(segmentRule, participleRule, beg, index, device));
+                data.clear();
+                vector.clear();
+            }
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
@@ -83,10 +120,9 @@ inline auto loadPoetryFileDataset(
 using PoetryFileDatasetLoader = std::invoke_result<
     decltype(&lifuren::dataset::loadPoetryFileDataset),
     const size_t&,
-    const std::string&,
-    lifuren::EmbeddingClient*
+    const std::string&
 >::type;
 
-} // END OF lifuren
+} // END OF lifuren::dataset
 
 #endif // END OF LFR_HEADER_NLP_POETRY_DATASET_HPP

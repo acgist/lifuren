@@ -43,7 +43,8 @@ inline auto loadImageFileDataset(
             std::vector<float> feature;
             feature.resize(width * height * 3);
             lifuren::image::load(file, feature.data(), length, width, height, transform);
-            return torch::from_blob(feature.data(), { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kF32).div(255.0);
+            // TODO: 验证是否需要clone
+            return torch::from_blob(feature.data(), { height, width, 3 }, torch::kByte).permute({2, 0, 1}).clone().to(torch::kF32).div(255.0);
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);

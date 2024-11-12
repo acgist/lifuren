@@ -7,6 +7,7 @@
 #include "spdlog/fmt/ostr.h"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor);
+LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
 
 [[maybe_unused]] static void testPrint() {
     torch::Tensor tensor = torch::randn({ 2, 4 });
@@ -29,6 +30,9 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
     SPDLOG_DEBUG("\n{}", a.reshape({6, 4}));
     SPDLOG_DEBUG("\n{}", a.permute({1, 0}));
     SPDLOG_DEBUG("\n{}", torch::tensor({1.0F, 2.0F, 3.0F}, torch::kFloat32));
+    SPDLOG_DEBUG("zero: {}", torch::zeros({10}));
+    SPDLOG_DEBUG("zero: {}", a.sizes()[0]);
+    SPDLOG_DEBUG("zero: {}", a.sizes()[1]);
 }
 
 [[maybe_unused]] static void testNorm() {
@@ -52,8 +56,19 @@ LFR_FORMAT_LOG_STREAM(at::Tensor);
     SPDLOG_DEBUG("bn:\n{}", bn->forward(a));
 }
 
+[[maybe_unuse]] static void testCat() {
+    float data[] { 1.0F, 2.0F, 3.0F, 4.0F };
+    torch::Tensor a = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
+    torch::Tensor b = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
+    torch::Tensor c = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
+    torch::Tensor d = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
+    auto e = torch::cat({ a, b, c, d });
+    SPDLOG_DEBUG("e size: {}", e.sizes());
+}
+
 LFR_TEST(
     // testPrint();
     testTensor();
     // testNorm();
+    // testCat();
 );

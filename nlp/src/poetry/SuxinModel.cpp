@@ -24,8 +24,6 @@ lifuren::SuxinModel::~SuxinModel() {
 }
 
 bool lifuren::SuxinModel::defineDataset() {
-    // 最长：116 + 2
-
     return true;
 }
 

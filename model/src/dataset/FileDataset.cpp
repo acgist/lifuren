@@ -30,9 +30,9 @@ lifuren::dataset::FileDataset::FileDataset(
             std::vector<std::string> files;
             lifuren::file::listFile(files, path.string(), exts);
             for(const auto& file : files) {
-                this->features.push_back(std::move(transform(file)));
+                this->features.push_back(std::move(transform(file).to(this->device)));
             }
-            this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(path.filename().string()), torch::kFloat32));
+            this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(path.filename().string()), torch::kFloat32).to(this->device));
         } else {
             SPDLOG_DEBUG("忽略无效文件：{}", path.string());
         }
@@ -41,26 +41,21 @@ lifuren::dataset::FileDataset::FileDataset(
 
 lifuren::dataset::FileDataset::FileDataset(
     const std::string& path,
-    const std::vector<std::string>& exts,
-    const std::function<void(const std::ifstream&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&)> transform
+    const std::function<void(std::ifstream&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
 ) {
-    if(!lifuren::file::exists(path) || !lifuren::file::isDirectory(path)) {
+    if(!lifuren::file::exists(path) || !lifuren::file::isFile(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
     lifuren::setDevice(this->device);
-    std::vector<std::string> files;
-    lifuren::file::listFile(files, path, exts);
-    for(const auto& file : files) {
-        std::ifstream stream;
-        stream.open(file, std::ios_base::in | std::ios_base::binary);
-        if(stream.is_open()) {
-            transform(stream, this->labels, this->features);
-        } else {
-            SPDLOG_WARN("文件打开失败：{}", file);
-        }
-        stream.close();
+    std::ifstream stream;
+    stream.open(path, std::ios_base::in | std::ios_base::binary);
+    if(stream.is_open()) {
+        transform(stream, this->labels, this->features, this->device);
+    } else {
+        SPDLOG_WARN("文件打开失败：{}", path);
     }
+    stream.close();
 }
 
 lifuren::dataset::FileDataset::~FileDataset() {

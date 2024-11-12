@@ -172,16 +172,13 @@ public:
     );
     /**
      * path/file1.ext
-     * path/file2.ext
      * 
      * @param path      数据路径
-     * @param exts      文件后缀
      * @param transform 文件转换
      */
     FileDataset(
         const std::string& path,
-        const std::vector<std::string>& exts,
-        const std::function<void(const std::ifstream&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&)> transform
+        const std::function<void(std::ifstream&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
     virtual ~FileDataset();
 

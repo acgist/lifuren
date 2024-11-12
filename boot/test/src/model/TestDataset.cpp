@@ -49,8 +49,8 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
         feature,
         label
     ] = std::move(dataset.get(0));
-    SPDLOG_DEBUG("RAW特征：\n{}", feature);
-    SPDLOG_DEBUG("RAW标签：\n{}", label);
+    SPDLOG_DEBUG("RAW特征：\n{}", feature.sizes());
+    SPDLOG_DEBUG("RAW标签：\n{}", label.sizes());
 }
 
 [[maybe_unused]] static void testFileDataset() {
@@ -71,8 +71,8 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
         feature,
         label
     ] = std::move(dataset.get(0));
-    SPDLOG_DEBUG("文件特征：\n{}", feature);
-    SPDLOG_DEBUG("文件标签：\n{}", label);
+    SPDLOG_DEBUG("文件特征：\n{}", feature.sizes());
+    SPDLOG_DEBUG("文件标签：\n{}", label.sizes());
 }
 
 [[maybe_unused]] static void testLoadImageFileDataset() {
@@ -87,37 +87,20 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
             { "woman", 0.0F }
         }
     );
-    SPDLOG_DEBUG("图片特征：\n{}", loader->begin()->data);
-    SPDLOG_DEBUG("图片标签：\n{}", loader->begin()->target);
+    SPDLOG_DEBUG("图片特征：\n{}", loader->begin()->data.sizes());
+    SPDLOG_DEBUG("图片标签：\n{}", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
-    auto client = lifuren::EmbeddingClient::getClient("ollama");
-    auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "poetry"}).string(), client.get());
-    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data);
-    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target);
-}
-
-[[maybe_unused]] static void testPoetryEmbeddingFile() {
-    std::vector<std::vector<float>> ww{ { 1.0F, 2.0F, 3.0F, 4.0F } };
-    std::ofstream out;
-    out.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
-    lifuren::dataset::poetry::write(out, ww);
-    out.close();
-    std::ifstream in;
-    in.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "embedding.model" }).string(), std::ios_base::in | std::ios_base::binary);
-    std::vector<std::vector<float>> rr;
-    rr.reserve(1);
-    lifuren::dataset::poetry::read(in, rr);
-    in.close();
-    assert(rr == ww);
+    auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
+    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data.sizes());
+    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target.sizes());
 }
 
 LFR_TEST(
     // testCsvDataset();
-    testRawDataset();
+    // testRawDataset();
     // testFileDataset();
     // testLoadImageFileDataset();
-    // testLoadPoetryFileDataset();
-    // testPoetryEmbeddingFile();
+    testLoadPoetryFileDataset();
 );

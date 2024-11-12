@@ -158,6 +158,8 @@ struct VideoConfig {
  */
 struct PoetryConfig {
 
+    // 句子长度
+    int length;
     // 终端名称
     std::string client;
     // 终端列表
