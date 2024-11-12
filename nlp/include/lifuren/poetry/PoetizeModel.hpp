@@ -38,9 +38,9 @@ TORCH_MODULE(SuxinModule);
  */
 class SuxinModel : public lifuren::Model<
     lifuren::dataset::PoetryFileDatasetLoader,
-    std::vector<torch::Tensor>,
-    std::vector<torch::Tensor>,
-    torch::nn::CrossEntropyLoss,
+    torch::Tensor,
+    torch::Tensor,
+    torch::nn::MSELoss,
     SuxinModule,
     torch::optim::Adam
 > {
@@ -52,7 +52,7 @@ public:
 public:
     bool defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
-    std::vector<torch::Tensor> pred(std::vector<torch::Tensor> i) override;
+    torch::Tensor pred(torch::Tensor i) override;
 
 };
 

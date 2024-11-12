@@ -36,6 +36,8 @@ extern std::string base;           // 执行绝对路径
 extern std::string httpServerHost; // 监听地址
 extern int         httpServerPort; // 监听端口
 
+const int LIFUREN_POETRY_DATASET_HEAD = 3; // 诗词前缀
+
 const std::string LIFUREN_HIDDEN_FILE  = ".lifuren";        // 隐藏文件
 const std::string MARK_MODEL_FILE      = "mark.model";      // 标记文件
 const std::string INDEXDB_MODEL_FILE   = "indexDB.model";   // 向量文件
@@ -158,6 +160,8 @@ struct VideoConfig {
  */
 struct PoetryConfig {
 
+    // 维度
+    int size;
     // 句子长度
     int length;
     // 终端名称

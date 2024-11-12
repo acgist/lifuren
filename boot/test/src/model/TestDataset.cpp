@@ -97,10 +97,35 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target.sizes());
 }
 
+[[maybe_unused]] static void testEmbeddingSlice() {
+    std::ifstream in;
+    std::ofstream val;
+    std::ofstream train;
+    in.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding.model" }).string(), std::ios_base::in | std::ios_base::binary);
+    val.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding_val.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+    train.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding_train.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+    std::vector<std::vector<float>> rr;
+    int i = 0;
+    while(!lifuren::dataset::poetry::read(in, rr)) {
+        if(++i % 100 == 0) {
+            lifuren::dataset::poetry::write(val, rr);
+        } else {
+            lifuren::dataset::poetry::write(train, rr);
+        }
+        rr.clear();
+    }
+    lifuren::dataset::poetry::writeEnd(val, lifuren::dataset::poetry::END_OF_DATASET);
+    lifuren::dataset::poetry::writeEnd(train, lifuren::dataset::poetry::END_OF_DATASET);
+    in.close();
+    val.close();
+    train.close();
+}
+
 LFR_TEST(
     // testCsvDataset();
     // testRawDataset();
     // testFileDataset();
     // testLoadImageFileDataset();
-    testLoadPoetryFileDataset();
+    // testLoadPoetryFileDataset();
+    testEmbeddingSlice();
 );

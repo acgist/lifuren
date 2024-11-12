@@ -49,6 +49,10 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
         return vector;
     }
     const int64_t id = lifuren::uuid();
+    if(!this->mapping || !this->indexDB) {
+        SPDLOG_WARN("没有初始化");
+        return vector;
+    }
     {
         std::lock_guard<std::mutex> lock(mutex);
         this->mapping->emplace(id, prompt);
@@ -141,7 +145,10 @@ static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::fil
     if(stream.is_open()) {
         size_t  id     = 0;
         uint8_t length = 0;
-        while(stream >> id && stream >> length) {
+        while(
+            stream.read(reinterpret_cast<char*>(&id),     sizeof(id)) &&
+            stream.read(reinterpret_cast<char*>(&length), sizeof(length))
+        ) {
             std::string word;
             word.resize(length);
             if(stream.read(word.data(), length)) {
@@ -150,6 +157,7 @@ static std::shared_ptr<std::map<size_t, std::string>> loadMapping(const std::fil
                 break;
             }
         }
+        SPDLOG_DEBUG("加载映射文件：{}", map->size());
     } else {
         SPDLOG_WARN("Faiss映射文件打开失败：{}", path.string());
     }
@@ -164,9 +172,10 @@ static void saveMapping(std::shared_ptr<std::map<size_t, std::string>> map, cons
     stream.open(path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     if(stream.is_open()) {
         for(const auto& [id, word] : *map) {
-            stream << id;
-            stream << static_cast<uint8_t>(word.size());
-            stream << word;
+            const uint8_t size = static_cast<uint8_t>(word.size());
+            stream.write(reinterpret_cast<const char*>(&id), sizeof(id));
+            stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
+            stream.write(word.data(), word.size());
         }
     } else {
         SPDLOG_WARN("Faiss映射文件打开失败：{}", path.string());

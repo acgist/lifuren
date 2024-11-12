@@ -73,7 +73,8 @@ inline torch::Tensor cat(
     for(int index = 0; index < sequenceLength; ++index) {
         sequence.push_back(*(beg + index));
     }
-    return torch::cat(sequence).resize_({ sequenceLength + 3, beg->sizes()[0] });
+    // return torch::cat(sequence).resize_({ sequenceLength + lifuren::config::LIFUREN_POETRY_DATASET_HEAD, beg->sizes()[0] });
+    return torch::cat(sequence).reshape({ sequenceLength + lifuren::config::LIFUREN_POETRY_DATASET_HEAD, beg->sizes()[0] });
 }
 
 /**

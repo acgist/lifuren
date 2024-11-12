@@ -185,8 +185,8 @@ void lifuren::Model<D, O, I, L, M, P>::print() {
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
-    pred = std::move(this->model->forward(feature));
-    loss = std::move(this->loss->forward(pred, label));
+    pred = this->model->forward(feature);
+    loss = this->loss(pred, label);
 }
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
@@ -246,7 +246,6 @@ void lifuren::Model<D, O, I, L, M, P>::train(torch::Tensor& feature, torch::Tens
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     if(!this->valDataset) {
-        SPDLOG_WARN("无效的验证数据集");
         return;
     }
     size_t accu_val = 0;
@@ -297,7 +296,6 @@ void lifuren::Model<D, O, I, L, M, P>::val(torch::Tensor& feature, torch::Tensor
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::test() {
     if(!this->testDataset) {
-        SPDLOG_WARN("无效的测试数据集");
         return;
     }
     size_t accu_val = 0;
@@ -345,6 +343,10 @@ void lifuren::Model<D, O, I, L, M, P>::test(torch::Tensor& feature, torch::Tenso
 
 template<typename D, typename O, typename I, typename L, typename M, typename P>
 void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const bool test) {
+    if(!this->trainDataset) {
+        SPDLOG_WARN("无效的训练数据集");
+        return;
+    }
     const auto a = std::chrono::system_clock::now();
     try {
         for (size_t epoch = 0; epoch < this->params.epoch_count; ++epoch) {

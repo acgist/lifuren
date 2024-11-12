@@ -147,6 +147,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,   size,   int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length, length, int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client, client, std::string);
         const YAML::Node& clients = yaml["clients"];
@@ -260,6 +261,7 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node poetry;
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,   size);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length, length);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client, client);
         YAML::Node clients;

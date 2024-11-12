@@ -65,11 +65,10 @@ public:
 public:
     torch::Tensor forward(torch::Tensor input) {
         // SPDLOG_DEBUG("{}", input.sizes());
-        // SPDLOG_DEBUG("{}", this->hidden.sizes());
         auto [output, hidden] = this->gru->forward(input);
         // auto [output, hidden] = this->gru->forward(input, this->hidden);
-        // SPDLOG_DEBUG("{}", output.sizes());
         // SPDLOG_DEBUG("{}", hidden.sizes());
+        // SPDLOG_DEBUG("{}", output.sizes());
         // SPDLOG_DEBUG("{}", output.squeeze().sizes());
         return this->linear->forward(output.squeeze().t());
     }
@@ -123,10 +122,10 @@ public:
         // SPDLOG_DEBUG("feature = {}", feature.sizes());
         feature = feature.permute({1, 0, 2});
         // SPDLOG_DEBUG("feature = {}", feature.sizes());
-        pred = std::move(this->model->forward(feature));
+        pred = this->model->forward(feature);
         // SPDLOG_DEBUG("pred  = {}", pred.sizes());
         // SPDLOG_DEBUG("label = {}", label.sizes());
-        loss = std::move(this->loss->forward(pred, label));
+        loss = this->loss(pred, label);
     }
     torch::Tensor pred(torch::Tensor i) override {
         i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });

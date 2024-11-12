@@ -56,7 +56,7 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
     SPDLOG_DEBUG("bn:\n{}", bn->forward(a));
 }
 
-[[maybe_unuse]] static void testCat() {
+[[maybe_unused]] static void testCat() {
     float data[] { 1.0F, 2.0F, 3.0F, 4.0F };
     torch::Tensor a = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
     torch::Tensor b = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
@@ -66,9 +66,35 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
     SPDLOG_DEBUG("e size: {}", e.sizes());
 }
 
+[[maybe_unused]] static void testLinear() {
+    torch::nn::Linear linear(torch::nn::LinearOptions(7, 1));
+    // auto a = torch::randn({ 7, 100 });
+    auto a = torch::randn({ 7, 100, 768 });
+    // SPDLOG_DEBUG("size: {}", linear->forward(a.permute({ 1, 0 })).sizes());
+    SPDLOG_DEBUG("size: {}", linear->forward(a.permute({ 2, 1, 0 })).sizes());
+}
+
+[[maybe_unused]] static void testLoss() {
+    torch::nn::MSELoss loss;
+    // torch::nn::CrossEntropyLoss loss;
+    // auto a = torch::randn({ 100 });
+    // auto b = torch::randn({ 100 });
+    auto a = torch::randn({ 7, 100 });
+    auto b = torch::randn({ 7, 100 });
+    a.requires_grad_(true);
+    b.requires_grad_(true);
+    auto c = loss(a, b);
+    c.backward();
+    SPDLOG_DEBUG("{}", a.sizes());
+    SPDLOG_DEBUG("{}", b.sizes());
+    SPDLOG_DEBUG("{}", c.sizes());
+}
+
 LFR_TEST(
     // testPrint();
-    testTensor();
+    // testTensor();
     // testNorm();
     // testCat();
+    // testLinear();
+    testLoss();
 );

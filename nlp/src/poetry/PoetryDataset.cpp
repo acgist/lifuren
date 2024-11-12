@@ -13,6 +13,9 @@ bool lifuren::dataset::poetry::read(std::ifstream& stream, std::vector<std::vect
         stream.read(reinterpret_cast<char*>(v.data()), sizeof(float) * size);
         vector.push_back(std::move(v));
     }
+    if(stream.eof()) {
+        return true;
+    }
     return size == lifuren::dataset::poetry::END_OF_DATASET;
 }
 

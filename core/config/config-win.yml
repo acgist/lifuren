@@ -28,6 +28,7 @@ video:
     - act-tangxianzu
 # 诗词页面配置
 poetry:
+  size: 768
   length: 4
   client: poetize-lidu
   clients:
