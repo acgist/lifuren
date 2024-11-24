@@ -5,16 +5,10 @@ add_library(
     src/OpenCV.cpp
     src/audio/Audio.cpp
     src/audio/ComposeClient.cpp
-    src/audio/ShikuangComposeClient.cpp
-    src/audio/LiguinianComposeClient.cpp
     src/image/Image.cpp
     src/image/PaintClient.cpp
-    src/image/CycleGANPaintClient.cpp
-    src/image/StyleGANPaintClient.cpp
     src/video/Video.cpp
     src/video/ActClient.cpp
-    src/video/GuanhanqinActClient.cpp
-    src/video/TangxianzuActClient.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

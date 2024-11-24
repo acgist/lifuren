@@ -79,12 +79,10 @@ TORCH_MODULE(RNNModule);
 
 class RNNModel : public lifuren::Model<
     lifuren::dataset::RawDatasetLoader,
-    torch::Tensor,
-    torch::Tensor,
     torch::nn::MSELoss,
+    torch::optim::Adam,
     // torch::nn::CrossEntropyLoss,
-    RNNModule,
-    torch::optim::Adam
+    RNNModule
 > {
 
 public:
@@ -127,11 +125,6 @@ public:
         // SPDLOG_DEBUG("label = {}", label.sizes());
         loss = this->loss(pred, label);
     }
-    torch::Tensor pred(torch::Tensor i) override {
-        i = i.unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 });
-        SPDLOG_DEBUG("i = {}", i.sizes());
-        return this->model->forward(i);
-    }
 
 };
 
@@ -144,10 +137,10 @@ public:
     save.define();
     // save.print();
     save.trainValAndTest();
-    auto pred1 = save.pred(torch::tensor({ 1.0F, 2.0F, 4.0F, 7.0F })); // 7 + 4
+    auto pred1 = save.pred(torch::tensor({ 1.0F, 2.0F, 4.0F, 7.0F }).unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 })); // 7 + 4
     SPDLOG_DEBUG("pred = \n{}", pred1.sizes());
     SPDLOG_DEBUG("pred = \n{}", pred1.squeeze());
-    auto pred2 = save.pred(torch::tensor({ 2.0F, 3.0F, 5.0F, 8.0F })); // 8 + 4
+    auto pred2 = save.pred(torch::tensor({ 2.0F, 3.0F, 5.0F, 8.0F }).unsqueeze(0).unsqueeze(0).permute({ 2, 1, 0 })); // 8 + 4
     SPDLOG_DEBUG("pred = \n{}", pred2.sizes());
     SPDLOG_DEBUG("pred = \n{}", pred2.squeeze());
 }

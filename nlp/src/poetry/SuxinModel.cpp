@@ -44,8 +44,3 @@ void lifuren::SuxinModel::logic(torch::Tensor& feature, torch::Tensor& label, to
     pred = this->model->forward(feature);
     loss = this->loss(pred, label);
 }
-
-torch::Tensor lifuren::SuxinModel::pred(torch::Tensor i) {
-    this->model->eval();
-    return this->model->forward(i);
-}

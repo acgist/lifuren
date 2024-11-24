@@ -23,12 +23,6 @@
 
 namespace lifuren {
 
-/**
- * 诗词终端
- */
-class PoetizeClient : public StatefulClient {
-
-public:
 struct PoetizeOptions {
 
     std::string model;  // 模型
@@ -37,34 +31,26 @@ struct PoetizeOptions {
 
 };
 
+using PoetizeModelClient = ModelClient<PoetizeOptions, std::string>;
+
+template<typename M>
+using PoetizeModelImplClient = ModelImplClient<PoetizeOptions, std::string, M>;
+
+extern std::unique_ptr<lifuren::PoetizeModelClient> getPoetizeClient(const std::string& client);
+
+/**
+ * 诗词终端
+ */
+template<typename M>
+class PoetizeClient : public StatefulClient, public PoetizeModelImplClient<M> {
+
 public:
     PoetizeClient();
     virtual ~PoetizeClient();
 
 public:
-    static std::unique_ptr<lifuren::PoetizeClient> getClient(const std::string& client);
-
-};
-
-/**
- * 李杜终端
- */
-class LiduPoetizeClient : public PoetizeClient {
-
-public:
-    LiduPoetizeClient();
-    virtual ~LiduPoetizeClient();
-
-};
-
-/**
- * 苏辛终端
- */
-class SuxinPoetizeClient : public PoetizeClient {
-
-public:
-    SuxinPoetizeClient();
-    virtual ~SuxinPoetizeClient();
+    std::string pred(const PoetizeOptions& input) override;
+    void        pred(const PoetizeOptions& input, PoetizeModelClient::Callback callback) override;
 
 };
 

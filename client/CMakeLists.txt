@@ -2,7 +2,6 @@ project(lifurenclient VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Client.cpp
     src/RestClient.cpp
     src/StatefulClient.cpp
 )

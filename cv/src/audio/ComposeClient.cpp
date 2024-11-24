@@ -1,17 +1,33 @@
 #include "lifuren/audio/ComposeClient.hpp"
 
-lifuren::ComposeClient::ComposeClient(lifuren::ComposeClient::ComposeCallback callback) : callback(callback) {
+#include "lifuren/audio/ComposeModel.hpp"
+
+template<typename M>
+lifuren::ComposeClient<M>::ComposeClient() {
 }
 
-lifuren::ComposeClient::~ComposeClient() {
+template<typename M>
+lifuren::ComposeClient<M>::~ComposeClient() {
 }
 
-std::unique_ptr<lifuren::ComposeClient> lifuren::ComposeClient::getClient(const std::string& client) {
+template<typename M>
+std::string lifuren::ComposeClient<M>::pred(const ComposeOptions& input) {
+    // TODO: 实现
+    return {};
+};
+
+template<typename M>
+void lifuren::ComposeClient<M>::pred(const ComposeOptions& input, ComposeModelClient::Callback callback) {
+    // TODO: 实现
+};
+
+std::unique_ptr<lifuren::ComposeModelClient> lifuren::getComposeClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_COMPOSE_SHIKUANG) {
-        return std::make_unique<lifuren::ShikuangComposeClient>();
+        // return std::make_unique<lifuren::ComposeClient<ShikuangModel>>();
     } else if(client == lifuren::config::CONFIG_COMPOSE_LIGUINIAN) {
-        return std::make_unique<lifuren::LiguinianComposeClient>();
+        // return std::make_unique<lifuren::ComposeClient<LiguinianModel>>();
     } else {
         return nullptr;
     }
+    return nullptr;
 }

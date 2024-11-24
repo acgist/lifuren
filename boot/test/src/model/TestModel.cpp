@@ -27,11 +27,9 @@ TORCH_MODULE(SimpleModule);
 
 class SimpleModel : public lifuren::Model<
     lifuren::dataset::RawDatasetLoader,
-    float,
-    torch::Tensor,
     torch::nn::MSELoss,
-    SimpleModule,
-    torch::optim::Adam
+    torch::optim::Adam,
+    SimpleModule
 > {
 
 public:
@@ -59,10 +57,6 @@ public:
         }
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
         return true;
-    }
-    float pred(torch::Tensor i) override {
-        auto o = this->model->forward(i);
-        return o.template item<float>();
     }
 
 };

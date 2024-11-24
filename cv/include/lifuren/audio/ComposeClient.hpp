@@ -10,13 +10,6 @@
 
 namespace lifuren {
 
-/**
- * 作曲终端
- */
-class ComposeClient : public StatefulClient {
-
-public:
-
 struct ComposeOptions {
 
     std::string model;
@@ -25,58 +18,26 @@ struct ComposeOptions {
     
 };
 
-public:
+using ComposeModelClient = ModelClient<ComposeOptions, std::string>;
+
+template<typename M>
+using ComposeModelImplClient = ModelImplClient<ComposeOptions, std::string, M>;
+
+extern std::unique_ptr<lifuren::ComposeModelClient> getComposeClient(const std::string& client);
+
 /**
- * 作曲回调
- * 
- * @param finish  是否完成
- * @param percent 进度
- * @param message 没有完成=提示内容、任务完成=图片路径
- * 
- * @return 是否结束
+ * 作曲终端
  */
-using ComposeCallback = std::function<bool(bool finish, float percent, const std::string& message)>;
-
-protected:
-    ComposeCallback callback{ nullptr };
+template<typename M>
+class ComposeClient : public StatefulClient, public ComposeModelImplClient<M> {
 
 public:
-    static std::unique_ptr<lifuren::ComposeClient> getClient(const std::string& client);
-
-public:
-    ComposeClient(ComposeCallback callback = nullptr);
+    ComposeClient();
     virtual ~ComposeClient();
 
 public:
-    /**
-     * @param options  提示内容
-     * @param callback 消息回调
-     * 
-     * @return 是否成功
-     */
-    virtual bool paint(const ComposeOptions& options, ComposeCallback callback = nullptr) = 0;
-
-};
-
-class ShikuangComposeClient : public ComposeClient {
-
-public:
-    ShikuangComposeClient();
-    virtual ~ShikuangComposeClient();
-
-public:
-    bool paint(const ComposeOptions& options, ComposeClient::ComposeCallback callback = nullptr) override;
-    
-};
-
-class LiguinianComposeClient : public ComposeClient {
-
-public:
-    LiguinianComposeClient();
-    virtual ~LiguinianComposeClient();
-
-public:
-    bool paint(const ComposeOptions& options, ComposeClient::ComposeCallback callback = nullptr) override;
+    std::string pred(const ComposeOptions& input) override;
+    void        pred(const ComposeOptions& input, ComposeModelClient::Callback callback) override;
 
 };
 

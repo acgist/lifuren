@@ -67,11 +67,9 @@ TORCH_MODULE(GenderModule);
 
 class GenderModel : public lifuren::Model<
     lifuren::dataset::ImageFileDatasetLoader,
-    float,
-    std::string,
     torch::nn::CrossEntropyLoss,
-    GenderModule,
-    torch::optim::Adam
+    torch::optim::Adam,
+    GenderModule
 > {
 
 public:
@@ -105,18 +103,6 @@ public:
         label = std::move(label.squeeze().to(torch::kInt64));
         Model::logic(feature, label, pred, loss);
     }
-    float pred(std::string i) {
-        cv::Mat image = cv::imread(i);
-        cv::resize(image, image, cv::Size(200, 200));
-        torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kF32).div(255.0);
-        auto prediction = this->model->forward(image_tensor);
-        prediction = torch::softmax(prediction, 1);
-        SPDLOG_DEBUG("预测结果：{}", prediction);
-        auto class_id = prediction.argmax(1);
-        int class_val = class_id.item<int>();
-        SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
-        return class_val;
-    }
 
 };
 
@@ -124,8 +110,16 @@ public:
     GenderModel linear;
     linear.define();
     linear.trainValAndTest(true, false);
-    float pred = linear.pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
-    SPDLOG_DEBUG("当前预测：{}", pred);
+    // 预测
+    cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
+    cv::resize(image, image, cv::Size(200, 200));
+    torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kF32).div(255.0);
+    auto prediction = linear.pred(image_tensor);
+    prediction = torch::softmax(prediction, 1);
+    SPDLOG_DEBUG("预测结果：{}", prediction);
+    auto class_id = prediction.argmax(1);
+    int class_val = class_id.item<int>();
+    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
     // linear.print();
     // linear.save();
 }

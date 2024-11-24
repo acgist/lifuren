@@ -16,7 +16,7 @@ namespace lifuren {
 /**
  * 词嵌入终端
  */
-class EmbeddingClient : public Client {
+class EmbeddingClient {
 
 public:
     EmbeddingClient();

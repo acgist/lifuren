@@ -30,11 +30,9 @@ TORCH_MODULE(LinearModule);
 
 class LinearModel : public lifuren::Model<
     lifuren::dataset::RawDatasetLoader,
-    float,
-    torch::Tensor,
     torch::nn::MSELoss,
-    LinearModule,
-    torch::optim::SGD
+    torch::optim::SGD,
+    LinearModule
 > {
 
 public:
@@ -67,10 +65,6 @@ public:
         this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
         return true;
     }
-    float pred(torch::Tensor i) {
-        auto o = this->model->forward(i);
-        return o.template item<float>();
-    }
 
 };
 
@@ -78,7 +72,9 @@ public:
     LinearModel linear;
     linear.define();
     linear.trainValAndTest(false, false);
-    float pred = linear.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    // w * 15.4 + 4 + r
+    auto output = linear.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    float pred = output.template item<float>();
     SPDLOG_DEBUG("当前预测：{}", pred);
     linear.print();
     linear.save();
@@ -91,7 +87,8 @@ public:
     // model.load(lifuren::config::CONFIG.tmp);
     model.print();
     // w * 15.4 + 4 + r
-    float pred = model.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    auto output = model.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    float pred = output.template item<float>();
     SPDLOG_DEBUG("当前预测：{}", pred);
 }
 

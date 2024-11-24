@@ -1,17 +1,33 @@
 #include "lifuren/poetry/PoetizeClient.hpp"
 
-lifuren::PoetizeClient::PoetizeClient() {
+#include "lifuren/poetry/PoetizeModel.hpp"
+
+template<typename M>
+lifuren::PoetizeClient<M>::PoetizeClient() {
 }
 
-lifuren::PoetizeClient::~PoetizeClient() {
+template<typename M>
+lifuren::PoetizeClient<M>::~PoetizeClient() {
 }
 
-std::unique_ptr<lifuren::PoetizeClient> lifuren::PoetizeClient::getClient(const std::string& client) {
+template<typename M>
+std::string lifuren::PoetizeClient<M>::pred(const PoetizeOptions& input) {
+    // TODO: 实现
+    return {};
+};
+
+template<typename M>
+void lifuren::PoetizeClient<M>::pred(const PoetizeOptions& input, PoetizeModelClient::Callback callback) {
+    // TODO: 实现
+};
+
+std::unique_ptr<lifuren::PoetizeModelClient> lifuren::getPoetizeClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_POETIZE_LIDU) {
-        return std::make_unique<lifuren::LiduPoetizeClient>();
+        // return std::make_unique<lifuren::PoetizeClient<LiduModel>>();
     } else if(client == lifuren::config::CONFIG_POETIZE_SUXIN) {
-        return std::make_unique<lifuren::SuxinPoetizeClient>();
+        return std::make_unique<lifuren::PoetizeClient<SuxinModel>>();
     } else {
         return nullptr;
     }
+    return nullptr;
 }

@@ -1,6 +1,8 @@
 /**
  * 模型
  * 
+ * 模型输出向量不要使用任何逻辑判断语句
+ * 
  * @author acgist
  * 
  * TODO: GPU
@@ -61,15 +63,13 @@ concept M = std::derived_from<T, torch::nn::Module>;
  * 模型
  * 
  * @param D 数据集
- * @param O 模型输出
- * @param I 模型输入
  * @param L 损失函数
- * @param M 模型结构
  * @param P 优化函数
+ * @param M 模型结构
  * 
  * @author acgist
  */
-template<typename D, typename O, typename I, typename L, typename M, typename P>
+template<typename D, typename L, typename P, typename M>
 class Model {
 
 protected:
@@ -110,9 +110,9 @@ public:
     // 计算逻辑
     virtual void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
     // 训练验证测试模型
-    virtual void trainValAndTest(const bool val = true, const bool test = true);
+    virtual void trainValAndTest(const bool& val = true, const bool& test = true);
     // 模型预测
-    virtual O pred(I i) = 0;
+    virtual torch::Tensor pred(const torch::Tensor& input);
 
 protected:
     // 定义数据集
@@ -122,8 +122,8 @@ protected:
 
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-lifuren::Model<D, O, I, L, M, P>::Model(
+template<typename D, typename L, typename P, typename M>
+lifuren::Model<D, L, P, M>::Model(
     lifuren::ModelParams params,
     L loss,
     M model
@@ -135,15 +135,17 @@ lifuren::Model<D, O, I, L, M, P>::Model(
         this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
     }
     lifuren::setDevice(this->params.device);
+    torch::set_num_threads(this->params.thread_size);
+    // torch::set_default_dtype(this->params.device);
     SPDLOG_DEBUG("当前计算设备：{}", torch::DeviceTypeName(this->params.device));
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-lifuren::Model<D, O, I, L, M, P>::~Model() {
+template<typename D, typename L, typename P, typename M>
+lifuren::Model<D, L, P, M>::~Model() {
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-bool lifuren::Model<D, O, I, L, M, P>::save(const std::string& path, const std::string& filename) {
+template<typename D, typename L, typename P, typename M>
+bool lifuren::Model<D, L, P, M>::save(const std::string& path, const std::string& filename) {
     if(!this->model) {
         SPDLOG_WARN("保存模型没有定义");
         return false;
@@ -155,8 +157,8 @@ bool lifuren::Model<D, O, I, L, M, P>::save(const std::string& path, const std::
     return true;
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-bool lifuren::Model<D, O, I, L, M, P>::load(const std::string& path, const std::string& filename) {
+template<typename D, typename L, typename P, typename M>
+bool lifuren::Model<D, L, P, M>::load(const std::string& path, const std::string& filename) {
     const std::string fullpath = lifuren::file::join({ path, filename }).string();
     if(!lifuren::file::exists(fullpath)) {
         SPDLOG_WARN("模型文件无效：{}", fullpath);
@@ -167,14 +169,14 @@ bool lifuren::Model<D, O, I, L, M, P>::load(const std::string& path, const std::
     return true;
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-bool lifuren::Model<D, O, I, L, M, P>::define() {
+template<typename D, typename L, typename P, typename M>
+bool lifuren::Model<D, L, P, M>::define() {
     this->model->to(this->params.device);
     return this->defineDataset();
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::print() {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::print() {
     for(const auto& value : this->model->parameters()) {
         SPDLOG_DEBUG("parameters: {}", value);
     }
@@ -183,14 +185,14 @@ void lifuren::Model<D, O, I, L, M, P>::print() {
     }
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     pred = this->model->forward(feature);
     loss = this->loss(pred, label);
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::train(size_t epoch) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
@@ -238,13 +240,13 @@ void lifuren::Model<D, O, I, L, M, P>::train(size_t epoch) {
     }
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::val(size_t epoch) {
     if(!this->valDataset) {
         return;
     }
@@ -288,13 +290,13 @@ void lifuren::Model<D, O, I, L, M, P>::val(size_t epoch) {
     }
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::test() {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::test() {
     if(!this->testDataset) {
         return;
     }
@@ -336,13 +338,13 @@ void lifuren::Model<D, O, I, L, M, P>::test() {
     }
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
-template<typename D, typename O, typename I, typename L, typename M, typename P>
-void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const bool test) {
+template<typename D, typename L, typename P, typename M>
+void lifuren::Model<D, L, P, M>::trainValAndTest(const bool& val, const bool& test) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
@@ -366,6 +368,12 @@ void lifuren::Model<D, O, I, L, M, P>::trainValAndTest(const bool val, const boo
     }
     const auto z = std::chrono::system_clock::now();
     SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
+}
+
+template<typename D, typename L, typename P, typename M>
+torch::Tensor lifuren::Model<D, L, P, M>::pred(const torch::Tensor& input) {
+    this->model->eval();
+    return this->model->forward(input);
 }
 
 #endif // LFR_HEADER_MODEL_MODEL_HPP

@@ -5,7 +5,8 @@
 
 [[maybe_unused]] static void testSuxinTrain() {
     lifuren::SuxinModel model({
-        .epoch_count = 8,
+        // .epoch_count = 8,
+        .check_point = true,
         // .train_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string()
         .train_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding_val.model"}).string()
         // .train_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding_train.model"}).string()

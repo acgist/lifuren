@@ -11,6 +11,7 @@
 #include <mutex>
 #include <memory>
 #include <string>
+#include <thread>
 #include <functional>
 
 #include "lifuren/Config.hpp"
@@ -24,20 +25,62 @@ class Client;
 namespace lifuren {
 
 /**
- * 终端父类
+ * 模型终端
+ * 
+ * @param I 模型输入
+ * @param O 模型输出
  */
-class Client {
+template<typename I, typename O>
+class ModelClient {
 
 public:
-    Client();
-    virtual ~Client();
+/**
+ * 回调函数
+ * 
+ * @param finish  是否完成
+ * @param percent 当前进度
+ * @param message 回调内容
+ * 
+ * @return 是否结束
+ */
+using Callback = std::function<bool(bool finish, float percent, const O& message)>;
+
+public:
+    virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
+    virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
+    virtual void trainValAndTest(const bool& val = true, const bool& test = true) = 0;
+    virtual O    pred(const I& input) = 0;
+    virtual void pred(const I& input, Callback callback) = 0;
+    virtual bool predBackend(const I& input, Callback callback);
+
+};
+
+/**
+ * 模型终端
+ * 
+ * @param I 模型输入
+ * @param O 模型输出
+ * @param M 模型实现
+ */
+template<typename I, typename O, typename M>
+class ModelImplClient : public ModelClient<I, O> {
+
+protected:
+    std::unique_ptr<M> model;
+
+public:
+    virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
+    virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
+    virtual void trainValAndTest(const bool& val = true, const bool& test = true);
+    virtual O    pred(const I& input) = 0;
+    virtual void pred(const I& input, ModelClient<I, O>::Callback callback) = 0;
 
 };
 
 /**
  * 有状态的终端
  */
-class StatefulClient : public Client {
+class StatefulClient {
 
 protected:
     // 是否运行
@@ -70,7 +113,7 @@ public:
 /**
  * RAG搜索终端
  */
-class RAGSearchClient : public Client {
+class RAGSearchClient {
 
 public:
     /**
@@ -104,7 +147,7 @@ extern std::string toQuery(const std::map<std::string, std::string>& data);
 /**
  * REST终端
  */
-class RestClient : public Client {
+class RestClient {
 
 public:
 
@@ -260,18 +303,31 @@ public:
 
 };
 
-/**
- * 模型终端
- */
-template<typename O, typename I>
-class ModelClient {
+} // END OF lifuren
 
-public:
-    virtual void train()   = 0;
-    virtual O    pred(I i) = 0;
+template<typename I, typename O>
+bool lifuren::ModelClient<I, O>::predBackend(const I& input, lifuren::ModelClient<I, O>::Callback callback) {
+    std::thread thread([this, input, callback]() {
+        this->pred(input, callback);
+    });
+    thread.detach();
+    return true;
+}
 
+
+template<typename I, typename O, typename M>
+bool lifuren::ModelImplClient<I, O, M>::save(const std::string& path, const std::string& filename) {
+    return this->model->save(path, filename);
 };
 
-} // END OF lifuren
+template<typename I, typename O, typename M>
+bool lifuren::ModelImplClient<I, O, M>::load(const std::string& path, const std::string& filename) {
+    return this->model->load(path, filename);
+};
+
+template<typename I, typename O, typename M>
+void lifuren::ModelImplClient<I, O, M>::trainValAndTest(const bool& val, const bool& test) {
+    this->model->trainValAndTest(val, test);
+};
 
 #endif // END OF LFR_HEADER_CLIENT_CLIENT_HPP

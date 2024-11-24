@@ -4,7 +4,9 @@
 
 ## 流程
 
-原始数据 -> 特征工程 -> 建模（训练、评估） -> 模型
+```
+原始数据 -> 特征工程 -> 训练模型（训练、评估、测试） -> 模型
+```
 
 ## 分类
 
@@ -25,13 +27,13 @@
 * 传统任务：回归、分类、聚类
 * 深度学习：机器视觉、自然语言
 
-#### 机器视觉
+#### 机器视觉（CV）
 
-图像分类、图像分割、目标检测等等
+图像分类、目标分割、目标检测、目标识别、目标跟踪等等
 
-#### 自然语言
+#### 自然语言（NLP）
 
-语音识别、机器翻译、自动摘要、观点提取、文本分类、问题回答等等
+文本分类、情感分析、语音识别、机器翻译、观点提取、自动摘要、问答系统、文本生成等等
 
 ## 回归算法（regression）
 
@@ -60,15 +62,9 @@
 
 机器视觉
 
-* 核
-* 步幅
-* 填充
-
 ###### 视觉几何组（VGG）
 ###### 残差神经网络（ResNet）
 ###### 稠密连接⽹络（DenseNET）
-
-图像分类
 
 #### 循环神经网络（RNN）
 
@@ -85,6 +81,8 @@
 
 目标检测
 
+* https://github.com/ultralytics/yolov5
+
 #### 生成对抗网络（GAN）
 
 * https://github.com/podgorskiy/ALAE
@@ -100,12 +98,6 @@
 
 * https://github.com/CompVis/taming-transformers
 
-#### mamba
-
-对比RNN/Transformer结构
-
-* https://github.com/state-spaces/mamba
-
 #### 大语言模型（LLM）
 
 * https://github.com/THUDM/ChatGLM3
@@ -116,25 +108,31 @@
 
 #### whisper
 
+语音识别
+
 * https://github.com/openai/whisper
 * https://github.com/ggerganov/whisper.cpp
 
 #### Transformer
 
+自然语言
+
 * https://github.com/huggingface/transformers
 
 ###### T5
 ###### GPT
-###### BERF
-###### Self-Attention
-
 ###### BERT
-
-情感分析、词性标注、自然语言推理、基于提取的回答
+###### Self-Attention
 
 #### GLUE
 
 通用语言理解评估（GLUE）基准
+
+#### mamba
+
+类似Transformer架构（竞争关系）
+
+* https://github.com/state-spaces/mamba
 
 #### gemma
 
@@ -161,6 +159,7 @@
 * https://github.com/Stability-AI/stablediffusion
 
 #### VAE
+
 #### LoRA
 
 #### CLIP
@@ -285,7 +284,7 @@ ADMA + L2
 #### 丢弃法（Dropout）
 #### 批量归一化（Batch Normalization）
 
-#### 特征归一化（feature normalization）
+#### 特征归一化（Feature Normalization）
 
 * Z值归一化（Z-score normalization）也叫标准化（standardization）
 
@@ -375,8 +374,10 @@ ADMA + L2
 
 ## 模型工具
 
+#### GGML
 #### ONNX
 #### Netron
+#### OpenVINO
 #### TensorRT
 
 ## 模型下载

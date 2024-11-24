@@ -10,13 +10,6 @@
 
 namespace lifuren {
 
-/**
- * 导演终端
- */
-class ActClient : public StatefulClient {
-
-public:
-
 struct ActOptions {
 
     std::string model;
@@ -25,58 +18,27 @@ struct ActOptions {
     
 };
 
-public:
+using ActModelClient = ModelClient<ActOptions, std::string>;
+
+template<typename M>
+using ActModelImplClient = ModelImplClient<ActOptions, std::string, M>;
+
+extern std::unique_ptr<lifuren::ActModelClient> getActClient(const std::string& client);
+
+
 /**
- * 导演回调
- * 
- * @param finish  是否完成
- * @param percent 进度
- * @param message 没有完成=提示内容、任务完成=图片路径
- * 
- * @return 是否结束
+ * 导演终端
  */
-using ActCallback = std::function<bool(bool finish, float percent, const std::string& message)>;
-
-protected:
-    ActCallback callback{ nullptr };
+template<typename M>
+class ActClient : public StatefulClient, public ActModelImplClient<M> {
 
 public:
-    static std::unique_ptr<lifuren::ActClient> getClient(const std::string& client);
-
-public:
-    ActClient(ActCallback callback = nullptr);
+    ActClient();
     virtual ~ActClient();
 
 public:
-    /**
-     * @param options  提示内容
-     * @param callback 消息回调
-     * 
-     * @return 是否成功
-     */
-    virtual bool paint(const ActOptions& options, ActCallback callback = nullptr) = 0;
-
-};
-
-class GuanhanqinActClient : public ActClient {
-
-public:
-    GuanhanqinActClient();
-    virtual ~GuanhanqinActClient();
-
-public:
-    bool paint(const ActOptions& options, ActClient::ActCallback callback = nullptr) override;
-    
-};
-
-class TangxianzuActClient : public ActClient {
-
-public:
-    TangxianzuActClient();
-    virtual ~TangxianzuActClient();
-
-public:
-    bool paint(const ActOptions& options, ActClient::ActCallback callback = nullptr) override;
+    std::string pred(const ActOptions& input) override;
+    void        pred(const ActOptions& input, ActModelClient::Callback callback) override;
 
 };
 
