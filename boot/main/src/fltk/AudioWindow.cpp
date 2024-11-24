@@ -33,7 +33,7 @@ static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
 static std::mutex mutex;
 
-static std::unique_ptr<lifuren::ComposeClient> composeClient{ nullptr };
+static std::unique_ptr<lifuren::ComposeModelClient> composeClient{ nullptr };
 
 static void generate(Fl_Widget*, void*);
 static void modelReleaseCallback(Fl_Widget*, void*);
@@ -144,7 +144,7 @@ static void generate(Fl_Widget*, void*) {
             return;
         }
         // TODO: 模型切换是否自动释放模型
-        composeClient = lifuren::ComposeClient::getClient(clientPtr->text());
+        composeClient = lifuren::getComposeClient(clientPtr->text());
         if(!composeClient) {
             fl_message("不支持的终端");
             return;

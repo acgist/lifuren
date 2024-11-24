@@ -62,7 +62,7 @@ static void act(std::vector<std::string> args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto client = lifuren::ActClient::getClient(lifuren::config::CONFIG.video.client);
+    auto client = lifuren::getActClient(lifuren::config::CONFIG.video.client);
     // TODO: 实现
  }
 
@@ -71,7 +71,7 @@ static void paint(std::vector<std::string> args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto client = lifuren::PaintClient::getClient(lifuren::config::CONFIG.image.client);
+    auto client = lifuren::getPaintClient(lifuren::config::CONFIG.image.client);
     // TODO: 实现
 }
 
@@ -80,7 +80,7 @@ static void compose(std::vector<std::string> args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto client = lifuren::ComposeClient::getClient(lifuren::config::CONFIG.audio.client);
+    auto client = lifuren::getComposeClient(lifuren::config::CONFIG.audio.client);
     // TODO: 实现
 }
 
@@ -89,7 +89,7 @@ static void poetize(std::vector<std::string> args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto client = lifuren::PoetizeClient::getClient(lifuren::config::CONFIG.poetry.client);
+    auto client = lifuren::getPoetizeClient(lifuren::config::CONFIG.poetry.client);
     // TODO: 实现
 }
 

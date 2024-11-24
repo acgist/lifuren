@@ -42,7 +42,7 @@ extern std::unique_ptr<lifuren::PoetizeModelClient> getPoetizeClient(const std::
  * 诗词终端
  */
 template<typename M>
-class PoetizeClient : public StatefulClient, public PoetizeModelImplClient<M> {
+class PoetizeClient : public PoetizeModelImplClient<M> {
 
 public:
     PoetizeClient();

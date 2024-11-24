@@ -30,7 +30,7 @@ extern std::unique_ptr<lifuren::ActModelClient> getActClient(const std::string& 
  * 导演终端
  */
 template<typename M>
-class ActClient : public StatefulClient, public ActModelImplClient<M> {
+class ActClient : public ActModelImplClient<M> {
 
 public:
     ActClient();

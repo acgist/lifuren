@@ -24,6 +24,40 @@ class Client;
 
 namespace lifuren {
 
+
+/**
+ * 有状态的终端
+ */
+class StatefulClient {
+
+protected:
+    // 是否运行
+    bool running{ false };
+    // 状态锁
+    std::mutex mutex;
+
+public:
+    /**
+     * @return 是否运行
+     */
+    const bool& isRunning() const;
+    // 修改状态
+    void changeState();
+    /**
+     * @param running 修改状态
+     */
+    void changeState(bool running);
+    /**
+     * @return 是否停止
+     */
+    virtual bool stop();
+
+public:
+    StatefulClient();
+    virtual ~StatefulClient();
+
+};
+
 /**
  * 模型终端
  * 
@@ -31,7 +65,7 @@ namespace lifuren {
  * @param O 模型输出
  */
 template<typename I, typename O>
-class ModelClient {
+class ModelClient : public StatefulClient {
 
 public:
 /**
@@ -74,39 +108,6 @@ public:
     virtual void trainValAndTest(const bool& val = true, const bool& test = true);
     virtual O    pred(const I& input) = 0;
     virtual void pred(const I& input, ModelClient<I, O>::Callback callback) = 0;
-
-};
-
-/**
- * 有状态的终端
- */
-class StatefulClient {
-
-protected:
-    // 是否运行
-    bool running{ false };
-    // 状态锁
-    std::mutex mutex;
-
-public:
-    /**
-     * @return 是否运行
-     */
-    const bool& isRunning() const;
-    // 修改状态
-    void changeState();
-    /**
-     * @param running 修改状态
-     */
-    void changeState(bool running);
-    /**
-     * @return 是否停止
-     */
-    virtual bool stop();
-
-public:
-    StatefulClient();
-    virtual ~StatefulClient();
 
 };
 

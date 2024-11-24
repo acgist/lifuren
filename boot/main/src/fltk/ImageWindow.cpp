@@ -33,7 +33,7 @@ static Fl_Text_Editor* promptEditorPtr{ nullptr };
 
 static std::mutex mutex;
 
-static std::unique_ptr<lifuren::PaintClient> paintClient{ nullptr };
+static std::unique_ptr<lifuren::PaintModelClient> paintClient{ nullptr };
 
 static void generate(Fl_Widget*, void*);
 static void modelReleaseCallback(Fl_Widget*, void*);
@@ -144,18 +144,18 @@ static void generate(Fl_Widget*, void*) {
             return;
         }
         // TODO: 模型切换是否自动释放模型
-        paintClient = lifuren::PaintClient::getClient(clientPtr->text());
+        paintClient = lifuren::getPaintClient(clientPtr->text());
         if(!paintClient) {
             fl_message("不支持的终端");
             return;
         }
     }
     std::thread thread([]() {
-        lifuren::PaintClient::PaintOptions options;
+        lifuren::PaintOptions options;
         options.image  = imagePathPtr->value();
         #if defined(_DEBUG) || !defined(NDEBUG)
         #endif
-        paintClient->paint(options, [](bool finish, float percent, const std::string& message) {
+        paintClient->pred(options, [](bool finish, float percent, const std::string& message) {
             if(finish) {
                 fl_message("绘制完成");
             } else {

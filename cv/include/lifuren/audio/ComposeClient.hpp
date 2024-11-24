@@ -29,7 +29,7 @@ extern std::unique_ptr<lifuren::ComposeModelClient> getComposeClient(const std::
  * 作曲终端
  */
 template<typename M>
-class ComposeClient : public StatefulClient, public ComposeModelImplClient<M> {
+class ComposeClient : public ComposeModelImplClient<M> {
 
 public:
     ComposeClient();

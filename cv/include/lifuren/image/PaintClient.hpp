@@ -30,7 +30,7 @@ extern std::unique_ptr<lifuren::PaintModelClient> getPaintClient(const std::stri
  * 绘画终端
  */
 template<typename M>
-class PaintClient : public StatefulClient, public PaintModelImplClient<M> {
+class PaintClient : public PaintModelImplClient<M> {
 
 public:
     PaintClient();
