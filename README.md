@@ -68,10 +68,11 @@
 
 ```
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] act     video
-./lifuren[.exe] paint   image
-./lifuren[.exe] compose audio
-./lifuren[.exe] poetize prompt
-./lifuren[.exe] embedding
+./lifuren[.exe] act       prompt
+./lifuren[.exe] paint     prompt
+./lifuren[.exe] compose   prompt
+./lifuren[.exe] poetize   prompt
+./lifuren[.exe] pepper    path
+./lifuren[.exe] embedding path
 ./lifuren[.exe] [?|help]
 ```

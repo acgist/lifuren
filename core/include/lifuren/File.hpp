@@ -135,6 +135,19 @@ extern bool createParent(const std::string& path);
 extern bool createFolder(const std::string& path);
 
 /**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+inline bool createParent(const std::filesystem::path& path) {
+    auto parent = path.parent_path();
+    if(std::filesystem::exists(parent)) {
+        return true;
+    }
+    return std::filesystem::create_directories(parent);
+}
+
+/**
  * @parma path 目录路径
  * 
  * @return 是否成功

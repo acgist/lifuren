@@ -39,5 +39,5 @@ std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& 
 }
 
 size_t lifuren::OllamaEmbeddingClient::getDims() const {
-    return 1024;
+    return lifuren::config::CONFIG.ollama.dims;
 }

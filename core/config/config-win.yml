@@ -52,6 +52,7 @@ embedding:
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
   api: http://192.168.8.228:11434
+  dims: 768
   username: 
   password: 
   # NONE|Basic|Token
@@ -65,7 +66,7 @@ ollama:
 # pepper配置
 pepper:
   dims: 768
-  path: D:\tmp\lifuren\pepper\pepper.word
+  path: D:\tmp\lifuren\mark\poetry\.lifuren\pepper.word
 # ElasticSearch配置
 elasticsearch:
   api: http://192.168.8.183:9200

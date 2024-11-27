@@ -17,6 +17,11 @@
 
 #include "spdlog/spdlog.h"
 
+#include "nlohmann/json.hpp"
+
+#include "lifuren/File.hpp"
+#include "lifuren/poetry/Poetry.hpp"
+
 // 读取锁：防止多线程重复读取文件
 static std::mutex mutex;
 // 共享数量：没有引用时释放内存
@@ -53,6 +58,97 @@ std::vector<float> lifuren::PepperEmbeddingClient::getVector(const std::string& 
 
 size_t lifuren::PepperEmbeddingClient::getDims() const {
     return lifuren::config::CONFIG.pepper.dims;
+}
+
+bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
+    // 分词
+    int64_t fSize = 0; // 文件数量
+    int64_t wSize = 0; // 分词数量
+    int64_t count = 0; // 诗词匹配格律数量
+    int64_t total = 0; // 诗词数量
+    std::set<std::string> words;
+    std::vector<std::string> files;
+    lifuren::file::listFile(files, lifuren::file::join({ path }).string(), { ".json" });
+    for(const auto& file : files) {
+        ++fSize;
+        std::string json = std::move(lifuren::file::loadFile(file));
+        auto poetries = nlohmann::json::parse(json);
+        for(const auto& poetry : poetries) {
+            ++total;
+            lifuren::poetry::Poetry value = poetry;
+            value.preproccess();
+            if(value.matchRhythm()) {
+                ++count;
+                value.participle();
+                for(const auto& word : value.participleParagraphs) {
+                    ++wSize;
+                    words.insert(word);
+                }
+            } else {
+                // 匹配失败
+            }
+            if(total % 1000 == 0) {
+                SPDLOG_DEBUG("当前数量：{} / {} / {} / {}", fSize, wSize, count, total);
+            }
+        }
+    }
+    // 嵌入
+    auto pepperPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::PEPPER_WORD_FILE });
+    lifuren::file::createParent(pepperPath);
+    std::ofstream output;
+    output.open(pepperPath, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+    if(!output.is_open()) {
+        output.close();
+        SPDLOG_WARN("文件打开失败：{}", pepperPath.string());
+        return false;
+    }
+    const int batch = 10; // 线程数量
+    std::mutex mutex;
+    std::atomic_int countDown(batch);
+    std::condition_variable condition;
+    std::vector<std::string> vector;
+    vector.reserve(words.size());
+    vector.assign(words.begin(), words.end());
+    const int batchSize = vector.size() / batch;
+    auto embeddingClient = lifuren::EmbeddingClient::getClient("ollama");
+    for(int i = 0; i < batch; ++i) {
+        std::thread thread([i, &mutex, &output, &vector, &countDown, &batchSize, &condition, &embeddingClient]() {
+            int index = 0;
+            SPDLOG_DEBUG("启动线程：{} {} {}", i, batch - 1, i == (batch - 1));
+            auto beg = vector.begin() + (i * batchSize);
+            auto end = (i == batch - 1) ? vector.end() : beg + batchSize;
+            for(; beg != end; ++beg) {
+                auto x = std::move(embeddingClient->getVector(*beg));
+                SPDLOG_DEBUG("处理词语：{} {} {}", *beg, beg->size(), x.size());
+                {
+                    std::lock_guard<std::mutex> lock(mutex);
+                    size_t iSize = beg->size();
+                    output.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
+                    output.write(beg->data(), beg->size());
+                    size_t xSize = x.size();
+                    output.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
+                    output.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
+                }
+                if(++index % 100 == 0) {
+                    SPDLOG_DEBUG("处理数量：{} - {}", i, index);
+                }
+            }
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                --countDown;
+                condition.notify_all();
+            }
+        });
+        thread.detach();
+    }
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        while(countDown != 0) {
+            condition.wait(lock);
+        }
+    }
+    output.close();
+    return true;
 }
 
 static void initVectors() {

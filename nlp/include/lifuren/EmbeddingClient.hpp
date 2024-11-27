@@ -88,6 +88,7 @@ public:
 public:
     std::vector<float> getVector(const std::string& prompt) const override;
     size_t getDims() const override;
+    bool embedding(const std::string& path);
 
 };
 

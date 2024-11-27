@@ -29,7 +29,7 @@ void lifuren::logger::init() {
     logger->set_level(spdlog::level::info);
     #endif
     logger->flush_on(spdlog::level::warn);
-    logger->set_pattern("[%D %T] [%L] [%t] [%s:%#] %v");
+    logger->set_pattern("[%m-%d %H:%M:%S.%e] [%L] [%6t] [%-8!s:%4#] %v");
     spdlog::set_default_logger(logger);
     SPDLOG_DEBUG(R"(
         

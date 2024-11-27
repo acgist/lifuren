@@ -10,6 +10,7 @@
 
 #include "lifuren/RAG.hpp"
 #include "lifuren/Config.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/video/ActClient.hpp"
 #include "lifuren/image/PaintClient.hpp"
 #include "lifuren/audio/ComposeClient.hpp"
@@ -19,6 +20,7 @@ static void act(      std::vector<std::string>); // 视频生成
 static void paint(    std::vector<std::string>); // 图片生成
 static void compose(  std::vector<std::string>); // 音频生成
 static void poetize(  std::vector<std::string>); // 诗词生成
+static void pepper(   std::vector<std::string>); // 辣椒嵌入
 static void embedding(std::vector<std::string>); // 诗词嵌入
 static void help();      // 帮助
 
@@ -49,6 +51,8 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         compose(args);
     } else if(std::strcmp(command, "poetize") == 0) {
         poetize(args);
+    } else if(std::strcmp(command, "pepper") == 0) {
+        pepper(args);
     } else if(std::strcmp(command, "embedding") == 0) {
         embedding(args);
     } else {
@@ -93,6 +97,19 @@ static void poetize(std::vector<std::string> args) {
     // TODO: 实现
 }
 
+static void pepper(std::vector<std::string> args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto client = std::make_unique<lifuren::PepperEmbeddingClient>();
+    if(client->embedding(args[0])) {
+        SPDLOG_INFO("辣椒嵌入成功");
+    } else {
+        SPDLOG_WARN("辣椒嵌入失败");
+    }
+}
+
 static void embedding(std::vector<std::string> args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
@@ -121,11 +138,12 @@ static void embedding(std::vector<std::string> args) {
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] act     video
-./lifuren[.exe] paint   image
-./lifuren[.exe] compose audio
-./lifuren[.exe] poetize prompt
-./lifuren[.exe] embedding
+./lifuren[.exe] act       prompt
+./lifuren[.exe] paint     prompt
+./lifuren[.exe] compose   prompt
+./lifuren[.exe] poetize   prompt
+./lifuren[.exe] pepper    path
+./lifuren[.exe] embedding path
 ./lifuren[.exe] [?|help]
     )" << std::endl;
 }

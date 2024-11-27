@@ -5,6 +5,7 @@
  * ./lifuren[.exe] paint     prompt
  * ./lifuren[.exe] compose   prompt
  * ./lifuren[.exe] poetize   prompt
+ * ./lifuren[.exe] pepper    path
  * ./lifuren[.exe] embedding path
  * ./lifuren[.exe] [?|help]
  * 

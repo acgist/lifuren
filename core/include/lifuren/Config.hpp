@@ -3,11 +3,7 @@
  * 
  * @author acgist
  * 
- * TODO:
- * 1. 内容错误
- * 2. 诗经
- * 3. 元曲
- * 4. 五代诗词
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_CORE_CONFIG_HPP
 #define LFR_HEADER_CORE_CONFIG_HPP
@@ -29,20 +25,22 @@ const char* const CONFIG_PATH = "../config/config-win.yml";
 #else
 const char* const CONFIG_PATH = "../config/config.yml";
 #endif
+
 // 格律路径
 const char* const RHYTHM_PATH = "../config/rhythm.yml";
 
-extern std::string base;           // 执行绝对路径
+extern std::string base;           // 启动路径：项目启动绝对路径
 extern std::string httpServerHost; // 监听地址
 extern int         httpServerPort; // 监听端口
 
-const int LIFUREN_POETRY_DATASET_HEAD = 3; // 诗词前缀
+const int LIFUREN_POETRY_DATASET_HEAD = 3; // 诗词前缀：段落规则、分词规则、词语序号
 
 const std::string LIFUREN_HIDDEN_FILE  = ".lifuren";        // 隐藏文件
-const std::string MARK_MODEL_FILE      = "mark.model";      // 标记文件
-const std::string INDEXDB_MODEL_FILE   = "indexDB.model";   // 向量文件
-const std::string MAPPING_MODEL_FILE   = "mapping.model";   // 映射文件
-const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件
+const std::string MARK_MODEL_FILE      = "mark.model";      // 标记文件：当前文件夹标记信息
+const std::string INDEXDB_MODEL_FILE   = "indexDB.model";   // 向量文件：提示词ID和向量映射关系
+const std::string MAPPING_MODEL_FILE   = "mapping.model";   // 映射文件：提示词ID和提示词映射关系
+const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件：诗词训练嵌入数据集
+const std::string PEPPER_WORD_FILE     = "pepper.word";     // 辣椒嵌入：使用ollama将分词转为词嵌入
 
 // 全局配置名称
 extern const std::string CONFIG_CONFIG;
@@ -213,6 +211,8 @@ struct EmbeddingConfig {
  */
 struct OllamaConfig : RestConfig {
 
+    // 维度
+    int dims;
     // 词嵌入终端
     EmbeddingClientConfig embeddingClient;
 
@@ -279,6 +279,14 @@ public:
 
 /**
  * 格律
+ * 
+ * TODO:
+ * 1. 内容错误
+ * 2. 诗经
+ * 3. 元曲
+ * 4. 五代诗词
+ * 
+ * @author acgist
  */
 class Rhythm {
 

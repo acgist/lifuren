@@ -170,6 +170,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.embedding, yaml, participle, participle, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, dims,      dims,     int);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, auth-type, authType, std::string);
@@ -295,6 +296,7 @@ static YAML::Node toYaml() {
     {
         YAML::Node ollama;
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, api,      api);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, dims,     dims);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);

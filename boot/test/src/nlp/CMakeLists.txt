@@ -14,14 +14,6 @@ target_link_libraries(
     lifurennlp
 )
 
-add_executable(testPepper TestPepper.cpp)
-add_test(NAME testPepper COMMAND testPepper)
-set_target_properties(testPepper PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testPepper
-    lifurennlp
-)
-
 add_executable(testPoetry TestPoetry.cpp)
 add_test(NAME testPoetry COMMAND testPoetry)
 set_target_properties(testPoetry PROPERTIES FOLDER "test-nlp")
