@@ -65,14 +65,15 @@ const std::string lifuren::config::CONFIG_VIDEO             = "video";
 const std::string lifuren::config::CONFIG_POETRY            = "poetry";
 const std::string lifuren::config::CONFIG_MARK              = "mark";
 const std::string lifuren::config::CONFIG_RAG               = "rag";
+const std::string lifuren::config::CONFIG_FAISS             = "faiss";
+const std::string lifuren::config::CONFIG_ELASTICSEARCH     = "elasticsearch";
 const std::string lifuren::config::CONFIG_EMBEDDING         = "embedding";
 const std::string lifuren::config::CONFIG_OLLAMA            = "ollama";
 const std::string lifuren::config::CONFIG_PEPPER            = "pepper";
-const std::string lifuren::config::CONFIG_ELASTICSEARCH     = "elasticsearch";
 const std::string lifuren::config::CONFIG_ACT_GUANHANQIN    = "act-guanhanqin";
 const std::string lifuren::config::CONFIG_ACT_TANGXIANZU    = "act-tangxianzu";
-const std::string lifuren::config::CONFIG_PAINT_CYCLE_GAN   = "paint-cycle-gan";
-const std::string lifuren::config::CONFIG_PAINT_STYLE_GAN   = "paint-style-gan";
+const std::string lifuren::config::CONFIG_PAINT_WUDAOZI     = "paint-wudaozi";
+const std::string lifuren::config::CONFIG_PAINT_GUKAIZHI    = "paint-gukaizhi";
 const std::string lifuren::config::CONFIG_COMPOSE_SHIKUANG  = "compose-shikuang";
 const std::string lifuren::config::CONFIG_COMPOSE_LIGUINIAN = "compose-liguinian";
 const std::string lifuren::config::CONFIG_POETIZE_LIDU      = "poetize-lidu";
@@ -120,8 +121,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             lifuren::config::httpServerPort = port.as<int>();
         }
     } else if(lifuren::config::CONFIG_AUDIO == name) {
+        LFR_CONFIG_YAML_GETTER(config.audio, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, client, client, std::string);
-        LFR_CONFIG_YAML_GETTER(config.audio, yaml, output, output, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
@@ -129,8 +130,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_IMAGE == name) {
+        LFR_CONFIG_YAML_GETTER(config.image, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
-        LFR_CONFIG_YAML_GETTER(config.image, yaml, output, output, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
@@ -138,8 +139,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_VIDEO == name) {
+        LFR_CONFIG_YAML_GETTER(config.video, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, client, client, std::string);
-        LFR_CONFIG_YAML_GETTER(config.video, yaml, output, output, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
@@ -147,6 +148,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,   size,   int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length, length, int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client, client, std::string);
@@ -156,18 +158,17 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
                 config.poetry.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(lifuren::config::CONFIG_MARK == name) {
-        std::for_each(yaml.begin(), yaml.end(), [&config](const auto& value) {
-            lifuren::config::MarkConfig markConfig{};
-            LFR_CONFIG_YAML_GETTER(markConfig, value, path, path, std::string);
-            config.mark.push_back(markConfig);
-        });
     } else if(lifuren::config::CONFIG_RAG == name) {
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
         LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
     } else if(lifuren::config::CONFIG_EMBEDDING == name) {
         LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type,       type,       std::string);
         LFR_CONFIG_YAML_GETTER(config.embedding, yaml, participle, participle, std::string);
+    } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
+        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, dims,      dims,     int);
@@ -187,27 +188,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
     } else if(lifuren::config::CONFIG_PEPPER == name) {
         LFR_CONFIG_YAML_GETTER(config.pepper, yaml, dims, dims, int);
         LFR_CONFIG_YAML_GETTER(config.pepper, yaml, path, path, std::string);
-    } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
-        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
-        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
-        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, password,  password, std::string);
-        LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
-    } else if(lifuren::config::CONFIG_POETIZE_LIDU == name) {
-        LFR_CONFIG_YAML_GETTER(config.poetizeLidu, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_POETIZE_SUXIN == name) {
-        LFR_CONFIG_YAML_GETTER(config.poetizeSuxin, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_PAINT_CYCLE_GAN == name) {
-        LFR_CONFIG_YAML_GETTER(config.paintCycleGAN, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_PAINT_STYLE_GAN == name) {
-        LFR_CONFIG_YAML_GETTER(config.paintSytleGAN, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_COMPOSE_SHIKUANG == name) {
-        LFR_CONFIG_YAML_GETTER(config.composeShikuang, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_COMPOSE_LIGUINIAN == name) {
-        LFR_CONFIG_YAML_GETTER(config.composeLiguinian, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_ACT_GUANHANQIN == name) {
-        LFR_CONFIG_YAML_GETTER(config.actGuanhanqin, yaml, model, model, std::string);
-    } else if(lifuren::config::CONFIG_ACT_TANGXIANZU == name) {
-        LFR_CONFIG_YAML_GETTER(config.actTangxianzu, yaml, model, model, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -229,8 +209,8 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node audio;
+        LFR_CONFIG_YAML_SETTER(audio, config.audio, path,   path);
         LFR_CONFIG_YAML_SETTER(audio, config.audio, client, client);
-        LFR_CONFIG_YAML_SETTER(audio, config.audio, output, output);
         YAML::Node clients;
         std::for_each(config.audio.clients.begin(), config.audio.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -240,8 +220,8 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node image;
+        LFR_CONFIG_YAML_SETTER(image, config.image, path,   path);
         LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
-        LFR_CONFIG_YAML_SETTER(image, config.image, output, output);
         YAML::Node clients;
         std::for_each(config.image.clients.begin(), config.image.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -251,8 +231,8 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node video;
+        LFR_CONFIG_YAML_SETTER(video, config.video, path,   path);
         LFR_CONFIG_YAML_SETTER(video, config.video, client, client);
-        LFR_CONFIG_YAML_SETTER(video, config.video, output, output);
         YAML::Node clients;
         std::for_each(config.video.clients.begin(), config.video.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -262,6 +242,7 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node poetry;
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, path,   path);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,   size);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length, length);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client, client);
@@ -273,19 +254,18 @@ static YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_POETRY] = poetry;
     }
     {
-        YAML::Node mark;
-        for(const auto& value : config.mark) {
-            YAML::Node item;
-            item["path"] = value.path;
-            mark.push_back(item);
-        }
-        yaml[lifuren::config::CONFIG_MARK] = mark;
-    }
-    {
         YAML::Node rag;
         LFR_CONFIG_YAML_SETTER(rag, config.rag, type, type);
         LFR_CONFIG_YAML_SETTER(rag, config.rag, size, size);
         yaml[lifuren::config::CONFIG_RAG] = rag;
+    }
+    {
+        YAML::Node elasticsearch;
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, api,       api);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, username,  username);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
+        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
+        yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
     }
     {
         YAML::Node embedding;
@@ -313,54 +293,6 @@ static YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(pepper, config.pepper, dims, dims);
         LFR_CONFIG_YAML_SETTER(pepper, config.pepper, path, path);
         yaml[lifuren::config::CONFIG_PEPPER] = pepper;
-    }
-    {
-        YAML::Node elasticsearch;
-        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, api,       api);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, username,  username);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
-        LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
-        yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
-    }
-    {
-        YAML::Node poetizeLidu;
-        LFR_CONFIG_YAML_SETTER(poetizeLidu, config.poetizeLidu, model, model);
-        yaml[lifuren::config::CONFIG_POETIZE_LIDU] = poetizeLidu;
-    }
-    {
-        YAML::Node poetizeSuxin;
-        LFR_CONFIG_YAML_SETTER(poetizeSuxin, config.poetizeSuxin, model, model);
-        yaml[lifuren::config::CONFIG_POETIZE_SUXIN] = poetizeSuxin;
-    }
-    {
-        YAML::Node paintCycleGAN;
-        LFR_CONFIG_YAML_SETTER(paintCycleGAN, config.paintCycleGAN, model, model);
-        yaml[lifuren::config::CONFIG_PAINT_CYCLE_GAN] = paintCycleGAN;
-    }
-    {
-        YAML::Node paintSytleGAN;
-        LFR_CONFIG_YAML_SETTER(paintSytleGAN, config.paintSytleGAN, model, model);
-        yaml[lifuren::config::CONFIG_PAINT_STYLE_GAN] = paintSytleGAN;
-    }
-    {
-        YAML::Node composeShikuang;
-        LFR_CONFIG_YAML_SETTER(composeShikuang, config.composeShikuang, model, model);
-        yaml[lifuren::config::CONFIG_COMPOSE_SHIKUANG] = composeShikuang;
-    }
-    {
-        YAML::Node composeLiguinian;
-        LFR_CONFIG_YAML_SETTER(composeLiguinian, config.composeLiguinian, model, model);
-        yaml[lifuren::config::CONFIG_COMPOSE_LIGUINIAN] = composeLiguinian;
-    }
-    {
-        YAML::Node actGuanhanqin;
-        LFR_CONFIG_YAML_SETTER(actGuanhanqin, config.actGuanhanqin, model, model);
-        yaml[lifuren::config::CONFIG_ACT_GUANHANQIN] = actGuanhanqin;
-    }
-    {
-        YAML::Node actTangxianzu;
-        LFR_CONFIG_YAML_SETTER(actTangxianzu, config.actTangxianzu, model, model);
-        yaml[lifuren::config::CONFIG_ACT_TANGXIANZU] = actTangxianzu;
     }
     return yaml;
 }
@@ -424,8 +356,4 @@ void lifuren::config::loadConfig() noexcept {
     lifuren::config::RHYTHM.clear();
     std::swap(lifuren::config::RHYTHM, rhythm);
     // lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
-}
-
-bool lifuren::config::MarkConfig::operator==(const std::string& path) const {
-    return this->path == path;
 }

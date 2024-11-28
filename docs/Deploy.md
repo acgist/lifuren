@@ -105,16 +105,10 @@ cmake --install .
 
 * https://hf-mirror.com/datasets
 * https://huggingface.co/datasets
-* https://github.com/chinese-poetry/chinese-poetry
-* https://github.com/chinese-poetry/chinese-poetry-zhCN
 
 ## 服务部署
 
 [服务部署](./service)
-
-## 模型优化
-
-[模型微调](./optimize)
 
 ## 线上部署
 

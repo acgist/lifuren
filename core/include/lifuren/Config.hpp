@@ -51,14 +51,15 @@ extern const std::string CONFIG_VIDEO;
 extern const std::string CONFIG_POETRY;
 extern const std::string CONFIG_MARK;
 extern const std::string CONFIG_RAG;
+extern const std::string CONFIG_FAISS;
+extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_EMBEDDING;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_PEPPER;
-extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_ACT_GUANHANQIN;
 extern const std::string CONFIG_ACT_TANGXIANZU;
-extern const std::string CONFIG_PAINT_CYCLE_GAN;
-extern const std::string CONFIG_PAINT_STYLE_GAN;
+extern const std::string CONFIG_PAINT_WUDAOZI;
+extern const std::string CONFIG_PAINT_GUKAIZHI;
 extern const std::string CONFIG_POETIZE_LIDU;
 extern const std::string CONFIG_POETIZE_SUXIN;
 extern const std::string CONFIG_COMPOSE_SHIKUANG;
@@ -88,16 +89,6 @@ struct RestConfig {
 };
 
 /**
- * 模型配置
- */
-struct ModelConfig {
-
-    // 模型文件
-    std::string model;
-
-};
-
-/**
  * 词嵌入终端配置
  */
 struct EmbeddingClientConfig {
@@ -116,10 +107,10 @@ struct EmbeddingClientConfig {
  */
 struct AudioConfig {
 
+    // 文件目录
+    std::string path;
     // 终端名称
     std::string client;
-    // 输出目录
-    std::string output;
     // 终端列表
     std::set<std::string> clients;
 
@@ -130,10 +121,10 @@ struct AudioConfig {
  */
 struct ImageConfig {
 
+    // 文件目录
+    std::string path;
     // 终端名称
     std::string client;
-    // 输出目录
-    std::string output;
     // 终端列表
     std::set<std::string> clients;
 
@@ -144,10 +135,10 @@ struct ImageConfig {
  */
 struct VideoConfig {
 
+    // 文件目录
+    std::string path;
     // 终端名称
     std::string client;
-    // 输出目录
-    std::string output;
     // 终端列表
     std::set<std::string> clients;
 
@@ -158,6 +149,8 @@ struct VideoConfig {
  */
 struct PoetryConfig {
 
+    // 文件目录
+    std::string path;
     // 维度
     int size;
     // 句子长度
@@ -166,19 +159,6 @@ struct PoetryConfig {
     std::string client;
     // 终端列表
     std::set<std::string> clients;
-
-};
-
-/**
- * 标记页面配置
- */
-struct MarkConfig {
-
-    // 目录
-    std::string path;
-
-    // 路径相同即为相等
-    bool operator==(const std::string& path) const;
 
 };
 
@@ -250,20 +230,11 @@ public:
     lifuren::config::ImageConfig  image {};
     lifuren::config::VideoConfig  video {};
     lifuren::config::PoetryConfig poetry{};
-    std::list<lifuren::config::MarkConfig> mark{};
     lifuren::config::RAGConfig           rag          {};
+    lifuren::config::ElasticSearchConfig elasticsearch{};
     lifuren::config::EmbeddingConfig     embedding    {};
     lifuren::config::OllamaConfig        ollama       {};
     lifuren::config::PepperConfig        pepper       {};
-    lifuren::config::ElasticSearchConfig elasticsearch{};
-    lifuren::config::ModelConfig actGuanhanqin   {};
-    lifuren::config::ModelConfig actTangxianzu   {};
-    lifuren::config::ModelConfig paintCycleGAN   {};
-    lifuren::config::ModelConfig paintSytleGAN   {};
-    lifuren::config::ModelConfig composeShikuang {};
-    lifuren::config::ModelConfig composeLiguinian{};
-    lifuren::config::ModelConfig poetizeLidu     {};
-    lifuren::config::ModelConfig poetizeSuxin    {};
 
 public:
     Config();

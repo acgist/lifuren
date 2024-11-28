@@ -7,41 +7,46 @@ http-server:
   port: 8080
 # 音频页面配置
 audio:
+  path: /data/lifuren/audio
   client: compose-shikuang
-  output: /data/lifuren/audio
   clients:
     - compose-shikuang
     - compose-liguinian
 # 图片页面配置
 image:
-  client: paint-cycle-gan
-  output: /data/lifuren/image
+  path: /data/lifuren/image
+  client: paint-wudaozi
   clients:
-    - paint-cycle-gan
-    - paint-style-gan
+    - paint-wudaozi
+    - paint-gukaizhi
 # 图片页面配置
 video:
+  path: /data/lifuren/video
   client: act-guanhanqin
-  output: /data/lifuren/video
   clients:
     - act-guanhanqin
     - act-tangxianzu
 # 诗词页面配置
 poetry:
+  path: /data/lifuren/poetry
   size: 768
   length: 4
   client: poetize-lidu
   clients:
     - poetize-lidu
     - poetize-suxin
-# 标记页面配置
-mark:
-  - path: /data/lifuren/mark/poetry
 # RAG配置
 rag:
   # faiss|elasticsearch
   type: faiss
   size: 4
+# ElasticSearch配置
+elasticsearch:
+  api: http://localhost:9200
+  username: elastic
+  password: elastic
+  # NONE|Basic|Token
+  auth-type: Basic
 # 词嵌入配置
 embedding:
   # ollama|pepper
@@ -67,35 +72,4 @@ ollama:
 pepper:
   dims: 768
   path: /data/lifuren/mark/poetry/.lifuren/pepper.word
-# ElasticSearch配置
-elasticsearch:
-  api: http://localhost:9200
-  username: elastic
-  password: elastic
-  # NONE|Basic|Token
-  auth-type: Basic
-# act-guanhanqin配置
-act-guanhanqin:
-  model: /data/lifuren/model/act-guanhanqin.model
-# act-tangxianzu配置
-act-tangxianzu:
-  model: /data/lifuren/model/act-tangxianzu.model
-# paint-cycle-gan配置
-paint-cycle-gan:
-  model: /data/lifuren/model/paint-cycle-gan.model
-# paint-style-gan配置
-paint-style-gan:
-  model: /data/lifuren/model/paint-style-gan.model
-# compose-shikuang配置
-compose-shikuang:
-  model: /data/lifuren/model/compose-shikuang.model
-# compose-liguinian配置
-compose-liguinian:
-  model: /data/lifuren/model/compose-liguinian.model
-# poetize-lidu配置
-poetize-lidu:
-  model: /data/lifuren/model/poetize-lidu.model
-# poetize-suxin配置
-poetize-suxin:
-  model: /data/lifuren/model/poetize-suxin.model
   

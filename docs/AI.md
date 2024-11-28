@@ -5,7 +5,7 @@
 ## 流程
 
 ```
-原始数据 -> 特征工程 -> 训练模型（训练、评估、测试） -> 模型
+原始数据 -> 特征工程 -> 设计模型 -> 训练模型（训练、评估、测试） -> 部署模型
 ```
 
 ## 分类
@@ -82,6 +82,7 @@
 目标检测
 
 * https://github.com/ultralytics/yolov5
+* https://github.com/ultralytics/ultralytics
 
 #### 生成对抗网络（GAN）
 
@@ -89,6 +90,8 @@
 * https://github.com/junyanz/CycleGAN
 * https://github.com/TencentARC/GFPGAN
 * https://github.com/eladrich/pixel2style2pixel
+* https://github.com/TachibanaYoshino/AnimeGANv2
+* https://github.com/TachibanaYoshino/AnimeGANv3
 * https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
 
 ###### 循环生成对抗网络（CycleGAN）
@@ -365,20 +368,22 @@ ADMA + L2
 
 ## 训练框架
 
-* [GGML](https://github.com/ggerganov/ggml)
 * [PyTorch](https://github.com/pytorch/pytorch)
 * [MindSpore](https://github.com/mindspore-ai/mindspore)
 * [TensorFlow](https://github.com/tensorflow/tensorflow)
 * [PaddlePaddle](https://github.com/PaddlePaddle/PaddleHub)
 * [scikit-learn](https://github.com/scikit-learn/scikit-learn)
 
-## 模型工具
+## 部署框架
 
-#### GGML
-#### ONNX
-#### Netron
-#### OpenVINO
-#### TensorRT
+* [GGML](https://github.com/ggerganov/ggml)
+* [ONNX](https://docs.openvino.ai)
+* [OpenVINO](https://github.com/openvinotoolkit/openvino)
+* [TensorRT](https://developer.nvidia.com/tensorrt)
+
+## 模型结构
+
+[Netron](https://netron.app)
 
 ## 模型下载
 
@@ -388,7 +393,7 @@ ADMA + L2
 
 ## 学习资料
 
-* https://zh-v2.d2l.ai/
+* https://zh-v2.d2l.ai
 * https://github.com/datawhalechina
 * https://github.com/datawhalechina/fun-rec
 * https://github.com/datawhalechina/easy-rl

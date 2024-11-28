@@ -22,10 +22,10 @@ void lifuren::PaintClient<M>::pred(const PaintOptions& input, PaintModelClient::
 };
 
 std::unique_ptr<lifuren::PaintModelClient> lifuren::getPaintClient(const std::string& client) {
-    if(client == lifuren::config::CONFIG_PAINT_CYCLE_GAN) {
-        // return std::make_unique<lifuren::PaintClient<CycleGANModel>>();
-    } else if(client == lifuren::config::CONFIG_PAINT_STYLE_GAN) {
-        // return std::make_unique<lifuren::PaintClient<StyleGANModel>>();
+    if(client == lifuren::config::CONFIG_PAINT_WUDAOZI) {
+        // return std::make_unique<lifuren::PaintClient<WudaoziModel>>();
+    } else if(client == lifuren::config::CONFIG_PAINT_GUKAIZHI) {
+        // return std::make_unique<lifuren::PaintClient<GukaizhiModel>>();
     } else {
         return nullptr;
     }

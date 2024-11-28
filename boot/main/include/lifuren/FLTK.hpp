@@ -111,7 +111,6 @@ public:
 };
 
 class MainWindow;
-class MarkWindow;
 class AudioWindow;
 class ImageWindow;
 class VideoWindow;
@@ -132,29 +131,6 @@ public:
     MainWindow(int width, int height, const char* title = "李夫人");
     virtual ~MainWindow();
 
-protected:
-    virtual void drawElement() override;
-
-};
-
-/**
- * 诗词标记窗口
- */
-class MarkWindow : public Window, public Configuration {
-
-public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    MarkWindow(int width, int height, const char* title = "诗词标记");
-    virtual ~MarkWindow();
-
-public:
-    virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
-    
 protected:
     virtual void drawElement() override;
 

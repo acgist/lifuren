@@ -7,41 +7,46 @@ http-server:
   port: 8080
 # 音频页面配置
 audio:
+  path: D:\tmp\lifuren\audio
   client: compose-shikuang
-  output: D:\tmp\lifuren\audio
   clients:
     - compose-shikuang
     - compose-liguinian
 # 图片页面配置
 image:
-  client: paint-cycle-gan
-  output: D:\tmp\lifuren\image
+  path: D:\tmp\lifuren\image
+  client: paint-wudaozi
   clients:
-    - paint-cycle-gan
-    - paint-style-gan
+    - paint-wudaozi
+    - paint-gukaizhi
 # 视频页面配置
 video:
+  path: D:\tmp\lifuren\video
   client: act-guanhanqin
-  output: D:\tmp\lifuren\video
   clients:
     - act-guanhanqin
     - act-tangxianzu
 # 诗词页面配置
 poetry:
+  path: D:\tmp\lifuren\video
   size: 768
   length: 4
   client: poetize-lidu
   clients:
     - poetize-lidu
     - poetize-suxin
-# 标记页面配置
-mark:
-  - path: D:\tmp\lifuren\mark\poetry
 # RAG配置
 rag:
   # faiss|elasticsearch
   type: faiss
   size: 4
+# ElasticSearch配置
+elasticsearch:
+  api: http://192.168.8.183:9200
+  username: elastic
+  password: elastic
+  # NONE|Basic|Token
+  auth-type: Basic
 # 词嵌入配置
 embedding:
   # ollama|pepper
@@ -67,35 +72,4 @@ ollama:
 pepper:
   dims: 768
   path: D:\tmp\lifuren\mark\poetry\.lifuren\pepper.word
-# ElasticSearch配置
-elasticsearch:
-  api: http://192.168.8.183:9200
-  username: elastic
-  password: elastic
-  # NONE|Basic|Token
-  auth-type: Basic
-# act-guanhanqin配置
-act-guanhanqin:
-  model: D:\tmp\lifuren\model\act-guanhanqin.model
-# act-tangxianzu配置
-act-tangxianzu:
-  model: D:\tmp\lifuren\model\act-tangxianzu.model
-# paint-cycle-gan配置
-paint-cycle-gan:
-  model: D:\tmp\lifuren\model\paint-cycle-gan.model
-# paint-style-gan配置
-paint-style-gan:
-  model: D:\tmp\lifuren\model\paint-style-gan.model
-# compose-shikuang配置
-compose-shikuang:
-  model: D:\tmp\lifuren\model\compose-shikuang.model
-# compose-liguinian配置
-compose-liguinian:
-  model: D:\tmp\lifuren\model\compose-liguinian.model
-# poetize-lidu配置
-poetize-lidu:
-  model: D:\tmp\lifuren\model\poetize-lidu.model
-# poetize-suxin配置
-poetize-suxin:
-  model: D:\tmp\lifuren\model\poetize-suxin.model
   

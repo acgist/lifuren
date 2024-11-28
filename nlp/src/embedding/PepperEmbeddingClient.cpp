@@ -114,12 +114,12 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
     for(int i = 0; i < batch; ++i) {
         std::thread thread([i, &mutex, &output, &vector, &countDown, &batchSize, &condition, &embeddingClient]() {
             int index = 0;
-            SPDLOG_DEBUG("启动线程：{} {} {}", i, batch - 1, i == (batch - 1));
+            SPDLOG_DEBUG("启动线程：{} {}", i, batch - 1);
             auto beg = vector.begin() + (i * batchSize);
             auto end = (i == batch - 1) ? vector.end() : beg + batchSize;
             for(; beg != end; ++beg) {
                 auto x = std::move(embeddingClient->getVector(*beg));
-                SPDLOG_DEBUG("处理词语：{} {} {}", *beg, beg->size(), x.size());
+                SPDLOG_DEBUG("处理词语：{} {} {} {}", i, x.size(), beg->size(), *beg);
                 {
                     std::lock_guard<std::mutex> lock(mutex);
                     size_t iSize = beg->size();

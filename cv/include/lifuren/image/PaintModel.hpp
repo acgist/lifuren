@@ -8,11 +8,11 @@
 
 namespace lifuren {
 
-class CycleGANModel {
+class WudaoziModel {
     // TODO: 实现
 };
 
-class StyleGANModel {
+class GukaizhiModel {
     // TODO: 实现
 };
 
