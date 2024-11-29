@@ -37,6 +37,14 @@ target_include_directories(
     PUBLIC ${HEADER_DIR}
 )
 
+if(CMAKE_HOST_WIN32)
+    set(CONFIG_FILES "config/config-win.yml" "config/rhythm.yml")
+else()
+    set(CONFIG_FILES "config/config.yml" "config/rhythm.yml")
+endif()
+
+install(FILES ${CONFIG_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
+
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
@@ -45,6 +53,5 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
-install(DIRECTORY config/       DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
 
-file(COPY config/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)
+file(COPY ${CONFIG_FILES} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)

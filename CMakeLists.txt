@@ -169,11 +169,13 @@ add_subdirectory(deps)
 add_subdirectory(model)
 add_subdirectory(client)
 
-set(HELP "LICENSE" "README.md")
+set(HELP_FILES "LICENSE" "README.md")
 
-install(FILES     ${HELP}         DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+install(FILES ${HELP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+
+install(DIRECTORY docs/resources/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(DIRECTORY                 DESTINATION ${CMAKE_INSTALL_PREFIX}/logs/)
 install(DIRECTORY                 DESTINATION ${CMAKE_INSTALL_PREFIX}/model/)
-install(DIRECTORY docs/resources/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+file(COPY ${HELP_FILES}   DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/)
 file(COPY docs/resources/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
