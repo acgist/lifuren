@@ -5,13 +5,13 @@
 #include "nlohmann/json.hpp"
 
 // 生成诗词
-static void restPostPoetry();
+static void restPostPoetryGenerate();
 
 void lifuren::restPoetryAPI() {
-    restPostPoetry();
+    restPostPoetryGenerate();
 }
 
-static void restPostPoetry() {
+static void restPostPoetryGenerate() {
     lifuren::httpServer.Post("/poetry/generate", [](const httplib::Request& request, httplib::Response& response) {
         if(request.body.empty()) {
             return;
@@ -21,9 +21,6 @@ static void restPostPoetry() {
         if(prompt == body.end()) {
             lifuren::response(response, "9999", "缺少提示内容");
             return;
-        }
-        // 图片内容
-        if(request.has_file("image")) {
         }
         lifuren::response(response, "");
     });

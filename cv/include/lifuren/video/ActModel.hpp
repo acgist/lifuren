@@ -10,7 +10,7 @@ class TanxianzuModel {
     // TODO: 实现
 };
 
-class GuanhanqinModel {
+class GuanhanqingModel {
     // TODO: 实现
 };
 

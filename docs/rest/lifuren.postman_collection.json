@@ -7,6 +7,30 @@
 	},
 	"item": [
 		{
+			"name": "audio",
+			"item": [
+				{
+					"name": "生成音频",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/D:/tmp/audio.mp3"
+								}
+							]
+						},
+						"url": "http://localhost:8080/audio/generate"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "image",
 			"item": [
 				{
@@ -15,15 +39,40 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"prompt\": \"雨天\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/D:/tmp/image.jpg"
 								}
-							}
+							]
 						},
 						"url": "http://localhost:8080/image/generate"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "video",
+			"item": [
+				{
+					"name": "生成视频",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/D:/tmp/video.mp4"
+								}
+							]
+						},
+						"url": "http://localhost:8080/video/generate"
 					},
 					"response": []
 				}

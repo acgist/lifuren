@@ -1,6 +1,8 @@
 /**
  * REST API
  * 
+ * 只提供生成接口不提供训练等等其他接口
+ * 
  * @author acgist
  * 
  * @version 1.0.0

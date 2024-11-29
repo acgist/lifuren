@@ -22,13 +22,13 @@ image:
 # 视频页面配置
 video:
   path: D:\tmp\lifuren\video
-  client: act-guanhanqin
+  client: act-guanhanqing
   clients:
-    - act-guanhanqin
     - act-tangxianzu
+    - act-guanhanqing
 # 诗词页面配置
 poetry:
-  path: D:\tmp\lifuren\video
+  path: D:\tmp\lifuren\poetry
   size: 768
   length: 4
   client: poetize-lidu
@@ -71,5 +71,5 @@ ollama:
 # pepper配置
 pepper:
   dims: 768
-  path: D:\tmp\lifuren\mark\poetry\.lifuren\pepper.word
+  path: D:\tmp\lifuren\poetry\.lifuren\pepper.word
   
