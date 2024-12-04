@@ -1,5 +1,7 @@
 /**
  * 音频工具
+ * 
+ * PCM和封装格式都使用单声道
  */
 #ifndef LFR_HEADER_CV_AUDIO_HPP
 #define LFR_HEADER_CV_AUDIO_HPP
@@ -11,14 +13,14 @@ namespace lifuren {
 namespace audio {
 
 /**
- * 音频文件转为PCM音频
- * 支持格式：AAC/MP3/FLAC
- * PCM格式：单声道 48000采样率 16bits
+ * 音频文件转为PCM文件
+ * 文件格式：AAC/MP3/FLAC
+ * PCM格式：48000Hz mono 16bit
  */
 extern bool toPcm(const std::string& audioFile);
 
 /**
- * PCM转为封装音频
+ * PCM文件转为音频文件
  */
 extern bool toFile(const std::string& pcmFile);
 

@@ -306,9 +306,19 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
         SPDLOG_WARN("创建编码器上下文失败");
         return false;
     }
-    (*encodeCodecCtx)->ch_layout   = AV_CHANNEL_LAYOUT_MONO;
+    #if define(__MP3__) && (defined(__linux) || defined(__linux__))
+    // 单声道不用重采样
+    (*encodeCodecCtx)->sample_fmt  = AV_SAMPLE_FMT_S16P;
+    #else
     (*encodeCodecCtx)->sample_fmt  = AV_SAMPLE_FMT_S16;
+    #endif
     (*encodeCodecCtx)->sample_rate = 48000;
+    #ifdef FF_API_OLD_CHANNEL_LAYOUT
+    (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
+    (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
+    #else
+    (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
+    #endif
     if(avcodec_open2(*encodeCodecCtx, encoder, nullptr) != 0) {
         SPDLOG_WARN("打开编码器上下文失败");
         return false;
