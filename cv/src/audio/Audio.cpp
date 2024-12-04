@@ -306,7 +306,7 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
         SPDLOG_WARN("创建编码器上下文失败");
         return false;
     }
-    #if define(__MP3__) && (defined(__linux) || defined(__linux__))
+    #if defined(__MP3__) && (defined(__linux) || defined(__linux__))
     // 单声道不用重采样
     (*encodeCodecCtx)->sample_fmt  = AV_SAMPLE_FMT_S16P;
     #else
