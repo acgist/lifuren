@@ -2,6 +2,7 @@
  * 测试
  */
 #include <chrono>
+#include <thread>
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
@@ -24,6 +25,24 @@ int main(const int argc, const char* const argv[]) {  \
     }                                                 \
     lifuren::logger::shutdown();                      \
     return 0;                                         \
+}
+#endif
+
+#ifndef LFR_MEM_TEST
+#define LFR_MEM_TEST(...)                                                 \
+int main(const int argc, const char* const argv[]) {                      \
+    lifuren::logger::init();                                              \
+    lifuren::config::init(argc, argv);                                    \
+    try {                                                                 \
+        while(true) {                                                     \
+            __VA_ARGS__                                                   \
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000)); \
+        }                                                                 \
+    } catch(const std::exception& e) {                                    \
+        SPDLOG_ERROR("{}", e.what());                                     \
+    }                                                                     \
+    lifuren::logger::shutdown();                                          \
+    return 0;                                                             \
 }
 #endif
 

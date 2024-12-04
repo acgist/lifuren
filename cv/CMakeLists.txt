@@ -13,12 +13,27 @@ add_library(
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
-target_link_libraries(
-    ${PROJECT_NAME}
-    ${OpenCV_LIBS}
-    lifurenmodel
-    lifurenclient
-)
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        ${OpenCV_LIBS}
+        ${FFMPEG_LIBRARIES}
+        lifurenmodel
+        lifurenclient
+    )
+    target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
+else()
+    target_link_libraries(
+        ${PROJECT_NAME}
+        ${OpenCV_LIBS}
+        avutil
+        avcodec
+        avformat
+        swresample
+        lifurenmodel
+        lifurenclient
+    )
+endif()
 
 target_include_directories(
     ${PROJECT_NAME}

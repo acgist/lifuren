@@ -100,31 +100,18 @@ set(
     deps/libtorch
 )
 
-# include_directories(
-#     deps/libtorch/include
-#     deps/libtorch/include/torch/csrc/api/include
-# )
-
 if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
         ${CMAKE_PREFIX_PATH}
         deps/fltk
         deps/faiss
+        deps/ffmpeg
         deps/opencv
         deps/spdlog
         deps/yaml-cpp
         deps/cpp-httplib
     )
-
-    # include_directories(
-    #     deps/fltk/include
-    #     deps/faiss/include
-    #     deps/opencv/include
-    #     deps/spdlog/include
-    #     deps/yaml-cpp/include
-    #     deps/cpp-httplib/include
-    # )
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
@@ -132,6 +119,7 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB FAISS_DLLS   "deps/faiss/debug/bin/*.dll")
+        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100d.dll")
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/debug/bin/*.dll")
@@ -141,6 +129,7 @@ if(CMAKE_HOST_WIN32)
         file(GLOB FLTK_DLLS    "deps/fltk/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/bin/*.dll")
         file(GLOB FAISS_DLLS   "deps/faiss/bin/*.dll")
+        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/bin/*.dll")
         file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100.dll")
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/bin/*.dll")
@@ -148,6 +137,7 @@ if(CMAKE_HOST_WIN32)
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
+    find_package(FFMPEG        REQUIRED)
     find_package(libpng        REQUIRED)
     find_package(libjpeg-turbo REQUIRED)
 endif()

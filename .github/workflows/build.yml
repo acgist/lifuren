@@ -24,6 +24,9 @@ jobs:
           ################################ faiss
           sudo  apt install libfaiss-dev -y
           apt-cache madison libfaiss-dev
+          ################################ ffmpeg
+          sudo  apt install ffmpeg -y
+          apt-cache madison ffmpeg
           ################################ spdlog
           # sudo  apt install libspdlog-dev -y
           # apt-cache madison libspdlog-dev

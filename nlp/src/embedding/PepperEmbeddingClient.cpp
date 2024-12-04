@@ -61,6 +61,30 @@ size_t lifuren::PepperEmbeddingClient::getDims() const {
 }
 
 bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
+    auto pepperPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::PEPPER_WORD_FILE });
+    // 读取
+    std::set<std::string> old_words;
+    if(std::filesystem::exists(pepperPath)) {
+        std::ifstream input;
+        input.open(pepperPath, std::ios_base::in | std::ios_base::binary);
+        if(!input.is_open()) {
+            SPDLOG_WARN("加载pepper失败（文件打开失败）：{}", pepperPath.string());
+            input.close();
+            return false;
+        }
+        SPDLOG_DEBUG("加载pepper：{}", pepperPath.string());
+        size_t wSize;
+        size_t vSize;
+        std::string word;
+        while(input.read(reinterpret_cast<char*>(&wSize), sizeof(wSize))) {
+            word.resize(wSize);
+            input.read(word.data(), wSize);
+            old_words.emplace(word);
+            input.read(reinterpret_cast<char*>(&vSize), sizeof(vSize));
+            input.seekg(vSize * sizeof(float), std::ios::cur);
+        }
+        input.close();
+    }
     // 分词
     int64_t fSize = 0; // 文件数量
     int64_t wSize = 0; // 分词数量
@@ -81,8 +105,12 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
                 ++count;
                 value.participle();
                 for(const auto& word : value.participleParagraphs) {
-                    ++wSize;
-                    words.insert(word);
+                    if(old_words.contains(word)) {
+                        SPDLOG_DEBUG("已经含有分词：{}", word);
+                    } else {
+                        ++wSize;
+                        words.insert(word);
+                    }
                 }
             } else {
                 // 匹配失败
@@ -92,11 +120,11 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
             }
         }
     }
+    SPDLOG_DEBUG("开始嵌入分词：{} - {}", old_words.size(), words.size());
     // 嵌入
-    auto pepperPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::PEPPER_WORD_FILE });
     lifuren::file::createParent(pepperPath);
     std::ofstream output;
-    output.open(pepperPath, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+    output.open(pepperPath, std::ios_base::app | std::ios_base::out | std::ios_base::binary);
     if(!output.is_open()) {
         output.close();
         SPDLOG_WARN("文件打开失败：{}", pepperPath.string());
