@@ -1,5 +1,5 @@
 /**
- * FLTK GUI
+ * FLTK GUI API
  * 
  * https://www.fltk.org/doc-1.3/index.html
  * 
@@ -21,16 +21,6 @@
 #define LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_WIDTH  1280
 #define LFR_WINDOW_HEIGHT 820
-#endif
-
-#ifndef LFR_CHOICE_PATH
-#if     _WIN32
-#define LFR_CHOICE_PATH(path) \
-lifuren::string::replace(path, "\\", "\\\\");
-#else
-#define LFR_CHOICE_PATH(path) \
-lifuren::string::replace(path, "/", "\\/");
-#endif
 #endif
 
 #include <set>

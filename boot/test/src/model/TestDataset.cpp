@@ -17,16 +17,6 @@
 LFR_FORMAT_LOG_STREAM(at::Tensor);
 LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
-[[maybe_unused]] static void testCsvDataset() {
-    auto loader = lifuren::dataset::loadCsvDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "train.csv"}).string());
-    SPDLOG_DEBUG("CSV特征：\n{}", loader->begin()->data.sizes());
-    SPDLOG_DEBUG("CSV标签：\n{}", loader->begin()->target.sizes());
-    std::vector<torch::Tensor> features;
-    lifuren::dataset::CsvDataset::loadCSV(lifuren::file::join({lifuren::config::CONFIG.tmp, "house", "test.csv"}).string(), features);
-    SPDLOG_DEBUG("CSV特征：\n{}", features[0].sizes());
-    SPDLOG_DEBUG("CSV特征：\n{}", features[1].sizes());
-}
-
 [[maybe_unused]] static void testRawDataset() {
     std::random_device device;
     std::mt19937 rand(device());
@@ -54,16 +44,49 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 }
 
 [[maybe_unused]] static void testFileDataset() {
+    // lifuren::dataset::FileDataset dataset(
+    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "gender", "train" }).string(),
+    //     { ".jpg" },
+    //     {
+    //         { "man",   1.0F },
+    //         { "woman", 0.0F }
+    //     },
+    //     [](const std::string& path) {
+    //         return torch::rand({ 2, 2});
+    //     }
+    // );
+    // lifuren::dataset::FileDataset dataset(
+    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset1", "file.txt" }).string(),
+    //     [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
+    //         labels.push_back(torch::rand({ 2, 2}));
+    //         features.push_back(torch::rand({ 2, 2}));
+    //     }
+    // );
+    // lifuren::dataset::FileDataset dataset(
+    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset2" }).string(),
+    //     { ".txt", ".json" },
+    //     [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
+    //         labels.push_back(torch::rand({ 2, 2}));
+    //         features.push_back(torch::rand({ 2, 2}));
+    //     }
+    // );
+    // lifuren::dataset::FileDataset dataset(
+    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset3" }).string(),
+    //     ".json",
+    //     { ".txt" },
+    //     [](const std::string& file, const std::string& label, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
+    //         labels.push_back(torch::rand({ 2, 2}));
+    //         features.push_back(torch::rand({ 2, 2}));
+    //     }
+    // );
     lifuren::dataset::FileDataset dataset(
-        lifuren::file::join({ lifuren::config::CONFIG.tmp, "gender", "train" }).string(),
-        { ".jpg" },
-        {
-            { "man",   1.0F },
-            { "woman", 0.0F }
-        },
-        [](const std::string& path) {
-            // SPDLOG_DEBUG("读取文件：{}", path);
-            return torch::rand({ 2, 2});
+        lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset3" }).string(),
+        "source",
+        "target",
+        { ".txt" },
+        [](const std::string& file, const std::string& label, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
+            labels.push_back(torch::rand({ 2, 2}));
+            features.push_back(torch::rand({ 2, 2}));
         }
     );
     SPDLOG_DEBUG("文件数量：{}", dataset.size().value());
@@ -122,10 +145,9 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 }
 
 LFR_TEST(
-    // testCsvDataset();
     // testRawDataset();
-    // testFileDataset();
+    testFileDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
-    testEmbeddingSlice();
+    // testEmbeddingSlice();
 );

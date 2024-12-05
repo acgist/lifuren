@@ -10,18 +10,32 @@
 
 namespace lifuren {
 
+/**
+ * 作曲训练配置
+ */
+struct ComposeConfigOptions {
+
+    std::string model      {}; // 模型路径
+    std::string train_path {}; // 训练数据集路径
+    std::string val_path   {}; // 验证数据集路径
+    std::string test_path  {}; // 测试数据集路径
+
+};
+
+/**
+ * 作曲推理配置
+ */
 struct ComposeOptions {
 
-    std::string model;
-    std::string audio;
-    std::string output;
+    std::string audio;  // 音频文件
+    std::string output; // 输出位置
     
 };
 
-using ComposeModelClient = ModelClient<ComposeOptions, std::string>;
+using ComposeModelClient = ModelClient<ComposeConfigOptions, ComposeOptions, std::string>;
 
 template<typename M>
-using ComposeModelImplClient = ModelImplClient<ComposeOptions, std::string, M>;
+using ComposeModelImplClient = ModelImplClient<ComposeConfigOptions, ComposeOptions, std::string, M>;
 
 extern std::unique_ptr<lifuren::ComposeModelClient> getComposeClient(const std::string& client);
 
@@ -32,7 +46,7 @@ template<typename M>
 class ComposeClient : public ComposeModelImplClient<M> {
 
 public:
-    ComposeClient();
+    ComposeClient(ComposeConfigOptions config);
     virtual ~ComposeClient();
 
 public:

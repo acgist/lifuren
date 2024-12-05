@@ -122,6 +122,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         }
     } else if(lifuren::config::CONFIG_AUDIO == name) {
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, path,   path,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.audio, yaml, model,  model,  std::string);
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, client, client, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
@@ -131,6 +132,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         }
     } else if(lifuren::config::CONFIG_IMAGE == name) {
         LFR_CONFIG_YAML_GETTER(config.image, yaml, path,   path,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.image, yaml, model,  model,  std::string);
         LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
@@ -140,6 +142,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         }
     } else if(lifuren::config::CONFIG_VIDEO == name) {
         LFR_CONFIG_YAML_GETTER(config.video, yaml, path,   path,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.video, yaml, model,  model,  std::string);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, client, client, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
@@ -149,6 +152,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, path,   path,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, model,  model,  std::string);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,   size,   int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length, length, int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client, client, std::string);
@@ -210,6 +214,7 @@ static YAML::Node toYaml() {
     {
         YAML::Node audio;
         LFR_CONFIG_YAML_SETTER(audio, config.audio, path,   path);
+        LFR_CONFIG_YAML_SETTER(audio, config.audio, model,  model);
         LFR_CONFIG_YAML_SETTER(audio, config.audio, client, client);
         YAML::Node clients;
         std::for_each(config.audio.clients.begin(), config.audio.clients.end(), [&clients](auto& v) {
@@ -221,6 +226,7 @@ static YAML::Node toYaml() {
     {
         YAML::Node image;
         LFR_CONFIG_YAML_SETTER(image, config.image, path,   path);
+        LFR_CONFIG_YAML_SETTER(image, config.image, model,  model);
         LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
         YAML::Node clients;
         std::for_each(config.image.clients.begin(), config.image.clients.end(), [&clients](auto& v) {
@@ -232,6 +238,7 @@ static YAML::Node toYaml() {
     {
         YAML::Node video;
         LFR_CONFIG_YAML_SETTER(video, config.video, path,   path);
+        LFR_CONFIG_YAML_SETTER(video, config.video, model,  model);
         LFR_CONFIG_YAML_SETTER(video, config.video, client, client);
         YAML::Node clients;
         std::for_each(config.video.clients.begin(), config.video.clients.end(), [&clients](auto& v) {
@@ -243,6 +250,7 @@ static YAML::Node toYaml() {
     {
         YAML::Node poetry;
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, path,   path);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, model,  model);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,   size);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length, length);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client, client);

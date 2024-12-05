@@ -1,10 +1,11 @@
 /**
- * CLI
+ * CLI API
  * 
- * ./lifuren[.exe] act       prompt
- * ./lifuren[.exe] paint     prompt
- * ./lifuren[.exe] compose   prompt
- * ./lifuren[.exe] poetize   prompt
+ * ./lifuren[.exe] 命令 [参数...]
+ * ./lifuren[.exe] act       [train|pred] [model|dataset] file
+ * ./lifuren[.exe] paint     [train|pred] [model|dataset] file
+ * ./lifuren[.exe] compose   [train|pred] [model|dataset] file
+ * ./lifuren[.exe] poetize   [train|pred] [model|dataset] prompt
  * ./lifuren[.exe] pepper    path
  * ./lifuren[.exe] embedding path
  * ./lifuren[.exe] [?|help]

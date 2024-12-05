@@ -72,22 +72,9 @@
 
 > *√=完成、○-进行中、#-未开始、?-待定、--忽略*
 
-## 命令
-
-```
-./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] act       prompt
-./lifuren[.exe] paint     prompt
-./lifuren[.exe] compose   prompt
-./lifuren[.exe] poetize   prompt
-./lifuren[.exe] pepper    path
-./lifuren[.exe] embedding path
-./lifuren[.exe] [?|help]
-```
-
 ## 文档
 
 * [学习资料](./docs/AI.md)
 * [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
-* [功能文档](./docs/TODO.md)
+* [计划文档](./docs/TODO.md)

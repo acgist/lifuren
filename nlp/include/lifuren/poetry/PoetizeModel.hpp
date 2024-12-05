@@ -16,6 +16,9 @@ class LiduModel {
     // TODO: 实现
 };
 
+/**
+ * 苏辛模型
+ */
 class SuxinModuleImpl : public torch::nn::Module {
 
 private:

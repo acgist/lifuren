@@ -103,62 +103,51 @@ struct EmbeddingClientConfig {
 };
 
 /**
- * 音频页面配置
+ * 模型配置
  */
-struct AudioConfig {
+struct ModelConfig {
 
     // 文件目录
     std::string path;
+    // 模型路径（默认为空=文件目录/.lifuren/model-name.pt）
+    std::string model;
     // 终端名称
     std::string client;
     // 终端列表
     std::set<std::string> clients;
+
+};
+
+/**
+ * 音频页面配置
+ */
+struct AudioConfig : public ModelConfig {
 
 };
 
 /**
  * 图片页面配置
  */
-struct ImageConfig {
-
-    // 文件目录
-    std::string path;
-    // 终端名称
-    std::string client;
-    // 终端列表
-    std::set<std::string> clients;
+struct ImageConfig : public ModelConfig {
 
 };
 
 /**
  * 视频页面配置
  */
-struct VideoConfig {
-
-    // 文件目录
-    std::string path;
-    // 终端名称
-    std::string client;
-    // 终端列表
-    std::set<std::string> clients;
+struct VideoConfig : public ModelConfig {
 
 };
 
 /**
  * 诗词页面配置
  */
-struct PoetryConfig {
+struct PoetryConfig : public ModelConfig {
 
-    // 文件目录
-    std::string path;
     // 维度
     int size;
     // 句子长度
     int length;
-    // 终端名称
-    std::string client;
-    // 终端列表
-    std::set<std::string> clients;
 
 };
 

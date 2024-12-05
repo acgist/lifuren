@@ -16,6 +16,8 @@
 
 #include <fstream>
 
+#include "spdlog/spdlog.h"
+
 namespace lifuren::dataset {
 
 namespace poetry {
@@ -90,7 +92,14 @@ inline auto loadPoetryFileDataset(
 ) -> decltype(auto) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
-        [](std::ifstream& stream, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+        [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+            std::ifstream stream;
+            stream.open(file, std::ios_base::in | std::ios_base::binary);
+            if(stream.is_open()) {
+                SPDLOG_WARN("文件打开失败：{}", file);
+                stream.close();
+                return;
+            }
             std::vector<torch::Tensor> data;
             std::vector<std::vector<float>> vector;
             while(!lifuren::dataset::poetry::read(stream, vector)) {
@@ -113,6 +122,7 @@ inline auto loadPoetryFileDataset(
                 data.clear();
                 vector.clear();
             }
+            stream.close();
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);

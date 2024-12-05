@@ -61,10 +61,11 @@ public:
 /**
  * 模型终端
  * 
+ * @param C 模型配置
  * @param I 模型输入
  * @param O 模型输出
  */
-template<typename I, typename O>
+template<typename C, typename I, typename O>
 class ModelClient : public StatefulClient {
 
 public:
@@ -79,11 +80,18 @@ public:
  */
 using Callback = std::function<bool(bool finish, float percent, const O& message)>;
 
+protected:
+    // 模型配置
+    C config;
+
+public:
+    ModelClient(C config = {});
+
 public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual void trainValAndTest(const bool& val = true, const bool& test = true) = 0;
-    virtual O    pred(const I& input) = 0;
+    virtual O    pred(const I& input)                    = 0;
     virtual void pred(const I& input, Callback callback) = 0;
     virtual bool predBackend(const I& input, Callback callback);
 
@@ -92,22 +100,27 @@ public:
 /**
  * 模型终端
  * 
+ * @param C 模型配置
  * @param I 模型输入
  * @param O 模型输出
  * @param M 模型实现
  */
-template<typename I, typename O, typename M>
-class ModelImplClient : public ModelClient<I, O> {
+template<typename C, typename I, typename O, typename M>
+class ModelImplClient : public ModelClient<C, I, O> {
 
 protected:
-    std::unique_ptr<M> model;
+    // 模型实现
+    std::unique_ptr<M> model{ nullptr };
+
+public:
+    ModelImplClient(C config = {});
 
 public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual void trainValAndTest(const bool& val = true, const bool& test = true);
-    virtual O    pred(const I& input) = 0;
-    virtual void pred(const I& input, ModelClient<I, O>::Callback callback) = 0;
+    virtual O    pred(const I& input)                                       = 0;
+    virtual void pred(const I& input, ModelClient<C, I, O>::Callback callback) = 0;
 
 };
 
@@ -306,8 +319,12 @@ public:
 
 } // END OF lifuren
 
-template<typename I, typename O>
-bool lifuren::ModelClient<I, O>::predBackend(const I& input, lifuren::ModelClient<I, O>::Callback callback) {
+template<typename C, typename I, typename O>
+lifuren::ModelClient<C, I, O>::ModelClient(C config) : config(config) {
+}
+
+template<typename C, typename I, typename O>
+bool lifuren::ModelClient<C, I, O>::predBackend(const I& input, lifuren::ModelClient<C, I, O>::Callback callback) {
     std::thread thread([this, input, callback]() {
         this->pred(input, callback);
     });
@@ -315,19 +332,22 @@ bool lifuren::ModelClient<I, O>::predBackend(const I& input, lifuren::ModelClien
     return true;
 }
 
+template<typename C, typename I, typename O, typename M>
+lifuren::ModelImplClient<C, I, O, M>::ModelImplClient(C config) : lifuren::ModelClient<C, I, O>(config) {
+}
 
-template<typename I, typename O, typename M>
-bool lifuren::ModelImplClient<I, O, M>::save(const std::string& path, const std::string& filename) {
+template<typename C, typename I, typename O, typename M>
+bool lifuren::ModelImplClient<C, I, O, M>::save(const std::string& path, const std::string& filename) {
     return this->model->save(path, filename);
 };
 
-template<typename I, typename O, typename M>
-bool lifuren::ModelImplClient<I, O, M>::load(const std::string& path, const std::string& filename) {
+template<typename C, typename I, typename O, typename M>
+bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path, const std::string& filename) {
     return this->model->load(path, filename);
 };
 
-template<typename I, typename O, typename M>
-void lifuren::ModelImplClient<I, O, M>::trainValAndTest(const bool& val, const bool& test) {
+template<typename C, typename I, typename O, typename M>
+void lifuren::ModelImplClient<C, I, O, M>::trainValAndTest(const bool& val, const bool& test) {
     this->model->trainValAndTest(val, test);
 };
 

@@ -17,7 +17,10 @@
 #include <thread>
 #include <concepts>
 
-#include "torch/torch.h"
+#include "torch/nn.h"
+#include "torch/jit.h"
+#include "torch/optim.h"
+#include "torch/serialize.h"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"

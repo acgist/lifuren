@@ -246,7 +246,7 @@
 * 动态计算
 * 网络架构设计
 
-## 模型量化
+## 模型量化（Quantization）
 
 ## 模型微调（Fine-tune）
 
@@ -359,12 +359,12 @@ ADMA + L2
 
 #### 梯度消失
 
+#### 梯度爆炸
+
 #### 分类函数
 
 * 二分类：sigmoid
 * 多分类：softmax
-
-#### 梯度爆炸
 
 #### 计划采样（Scheduled Sampling）
 

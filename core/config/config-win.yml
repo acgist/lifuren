@@ -8,6 +8,7 @@ http-server:
 # 音频页面配置
 audio:
   path: D:\tmp\lifuren\audio
+  model: 
   client: compose-shikuang
   clients:
     - compose-shikuang
@@ -15,6 +16,7 @@ audio:
 # 图片页面配置
 image:
   path: D:\tmp\lifuren\image
+  model: 
   client: paint-wudaozi
   clients:
     - paint-wudaozi
@@ -22,6 +24,7 @@ image:
 # 视频页面配置
 video:
   path: D:\tmp\lifuren\video
+  model: 
   client: act-guanhanqing
   clients:
     - act-tangxianzu
@@ -29,6 +32,7 @@ video:
 # 诗词页面配置
 poetry:
   path: D:\tmp\lifuren\poetry
+  model: 
   size: 768
   length: 4
   client: poetize-lidu

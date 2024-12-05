@@ -3,7 +3,7 @@
 #include "lifuren/audio/ComposeModel.hpp"
 
 template<typename M>
-lifuren::ComposeClient<M>::ComposeClient() {
+lifuren::ComposeClient<M>::ComposeClient(ComposeConfigOptions config) : ComposeModelImplClient<M>(std::move(config)) {
 }
 
 template<typename M>
