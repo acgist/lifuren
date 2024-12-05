@@ -113,11 +113,6 @@ static void generateCallback(Fl_Widget*, void*) {
         return;
     }
     {
-        std::lock_guard<std::mutex> lock(mutex);
-        if(actClient && actClient->isRunning()) {
-            fl_message("上次绘画任务没有完成");
-            return;
-        }
         // TODO: 模型切换是否自动释放模型
         actClient = lifuren::getActClient(clientPtr->text());
         if(!actClient) {
@@ -125,17 +120,10 @@ static void generateCallback(Fl_Widget*, void*) {
             return;
         }
     }
-    std::thread thread([]() {
-    });
-    thread.detach();
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!actClient) {
-        return;
-    }
-    if(actClient->isRunning()) {
-        fl_message("当前正在进行生成视频任务");
         return;
     }
     actClient = nullptr;

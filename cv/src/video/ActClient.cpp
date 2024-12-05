@@ -16,11 +16,6 @@ std::string lifuren::ActClient<M>::pred(const ActOptions& input) {
     return {};
 };
 
-template<typename M>
-void lifuren::ActClient<M>::pred(const ActOptions& input, ActModelClient::Callback callback) {
-    // TODO: 实现
-};
-
 std::unique_ptr<lifuren::ActModelClient> lifuren::getActClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_ACT_TANGXIANZU) {
         // return std::make_unique<lifuren::ActModelClient<TanxianzuModel>>();

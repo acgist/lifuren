@@ -10,6 +10,10 @@ namespace lifuren {
 
 extern void setDevice(torch::DeviceType& type);
 
+extern void logTensor(const torch::Tensor& tensor);
+
+extern void logTensor(const c10::IntArrayRef& tensor);
+
 } // END OF lifuren
 
 #endif // END OF LFR_HEADER_MODEL_TORCH_HPP

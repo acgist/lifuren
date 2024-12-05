@@ -45,7 +45,6 @@ public:
 
 public:
     std::string pred(const ActOptions& input) override;
-    void        pred(const ActOptions& input, ActModelClient::Callback callback) override;
 
 };
 

@@ -5,6 +5,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/File.hpp"
+
 extern "C" {
 
 #include "libavutil/opt.h"
@@ -141,6 +143,19 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     input.close();
     close_encoder(&frame, &packet, &encodeCodecCtx);
     close_output(&outputCtx);
+    return true;
+}
+
+bool lifuren::audio::preprocessing(const std::string& path) {
+    std::vector<std::string> files;
+    lifuren::file::listFile(files, path, { ".aac", ".mp3", ".flac" });
+    for(const auto& file : files) {
+        if(lifuren::audio::toPcm(file)) {
+            SPDLOG_DEBUG("转换PCM成功：{}", file);
+        } else {
+            SPDLOG_WARN("转换PCM失败：{}", file);
+        }
+    }
     return true;
 }
 

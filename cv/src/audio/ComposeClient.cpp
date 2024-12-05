@@ -16,11 +16,6 @@ std::string lifuren::ComposeClient<M>::pred(const ComposeOptions& input) {
     return {};
 };
 
-template<typename M>
-void lifuren::ComposeClient<M>::pred(const ComposeOptions& input, ComposeModelClient::Callback callback) {
-    // TODO: 实现
-};
-
 std::unique_ptr<lifuren::ComposeModelClient> lifuren::getComposeClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_COMPOSE_SHIKUANG) {
         // return std::make_unique<lifuren::ComposeClient<ShikuangModel>>();

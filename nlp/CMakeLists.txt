@@ -3,8 +3,6 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/RAGClient.cpp
-    src/RAGService.cpp
-    src/RAGTaskRunner.cpp
     src/EmbeddingClient.cpp
     src/rag/FaissRAGClient.cpp
     src/rag/ElasticSearchRAGClient.cpp

@@ -18,6 +18,20 @@ namespace lifuren {
 namespace dataset {
 
 /**
+ * path => [ path/train, path/val, path/test ]
+ * 
+ * @param path 目录
+ * 
+ * @return 训练集、验证集、测试集
+ */
+extern std::vector<std::string> allDataset(const std::string& path);
+
+/**
+ * 数据集前置处理
+ */
+extern bool allDatasetPreprocessing(const std::string& path, std::function<bool(const std::string&)> preprocessing);
+
+/**
  * 裸数据集
  */
 class RawDataset : public torch::data::Dataset<RawDataset> {

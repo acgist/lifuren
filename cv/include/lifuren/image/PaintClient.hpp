@@ -47,7 +47,6 @@ public:
 public:
 public:
     std::string pred(const PaintOptions& input) override;
-    void        pred(const PaintOptions& input, PaintModelClient::Callback callback) override;
 
 };
 

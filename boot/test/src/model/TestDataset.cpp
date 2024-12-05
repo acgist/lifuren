@@ -80,7 +80,7 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     //     }
     // );
     lifuren::dataset::FileDataset dataset(
-        lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset3" }).string(),
+        lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset4" }).string(),
         "source",
         "target",
         { ".txt" },

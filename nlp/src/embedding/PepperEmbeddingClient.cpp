@@ -20,6 +20,7 @@
 #include "nlohmann/json.hpp"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Dataset.hpp"
 #include "lifuren/poetry/Poetry.hpp"
 
 // 读取锁：防止多线程重复读取文件
@@ -139,6 +140,7 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
     vector.assign(words.begin(), words.end());
     const int batchSize = vector.size() / batch;
     auto embeddingClient = lifuren::EmbeddingClient::getClient("ollama");
+    // 多线程加载
     for(int i = 0; i < batch; ++i) {
         std::thread thread([i, &mutex, &output, &vector, &countDown, &batchSize, &condition, &embeddingClient]() {
             int index = 0;

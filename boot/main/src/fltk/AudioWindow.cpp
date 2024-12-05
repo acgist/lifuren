@@ -21,6 +21,7 @@ static Fl_Input * modelPathPtr   { nullptr };
 static Fl_Button* modelChoosePtr { nullptr };
 static Fl_Input * audioPathPtr   { nullptr };
 static Fl_Button* audioChoosePtr { nullptr };
+static Fl_Button* pcmPtr         { nullptr };
 static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* finetunePtr    { nullptr };
@@ -31,11 +32,12 @@ static std::mutex mutex;
 
 static std::unique_ptr<lifuren::ComposeModelClient> composeClient{ nullptr };
 
-static void trainCallback(Fl_Widget*, void*);
-static void generateCallback(Fl_Widget*, void*);
-static void modelReleaseCallback(Fl_Widget*, void*);
-static void clientCallback(Fl_Widget*, void*);
-static void chooseFileCallback(Fl_Widget*, void*);
+static void pcmCallback            (Fl_Widget*, void*);
+static void trainCallback          (Fl_Widget*, void*);
+static void generateCallback       (Fl_Widget*, void*);
+static void modelReleaseCallback   (Fl_Widget*, void*);
+static void clientCallback         (Fl_Widget*, void*);
+static void chooseFileCallback     (Fl_Widget*, void*);
 static void chooseDirectoryCallback(Fl_Widget*, void*);
 
 lifuren::AudioWindow::AudioWindow(int width, int height, const char* title) : Window(width, height, title) {
@@ -52,6 +54,7 @@ lifuren::AudioWindow::~AudioWindow() {
     LFR_DELETE_PTR(modelChoosePtr);
     LFR_DELETE_PTR(audioPathPtr);
     LFR_DELETE_PTR(audioChoosePtr);
+    LFR_DELETE_PTR(pcmPtr);
     LFR_DELETE_PTR(trainPtr);
     LFR_DELETE_PTR(generatePtr);
     LFR_DELETE_PTR(finetunePtr);
@@ -77,34 +80,30 @@ void lifuren::AudioWindow::drawElement() {
     modelChoosePtr  = new Fl_Button(480, 90,  100, 30, "选择模型");
     audioPathPtr    = new Fl_Input(  80, 130, 400, 30, "音频路径");
     audioChoosePtr  = new Fl_Button(480, 130, 100, 30, "选择音频");
-    trainPtr        = new Fl_Button( 80, 170, 100, 30, "训练模型");
-    generatePtr     = new Fl_Button(180, 170, 100, 30, "生成音频");
-    finetunePtr     = new Fl_Button(280, 170, 100, 30, "模型微调");
-    quantizationPtr = new Fl_Button(380, 170, 100, 30, "模型量化");
-    modelReleasePtr = new Fl_Button(480, 170, 100, 30, "释放模型");
+    pcmPtr          = new Fl_Button( 80, 170, 100, 30, "PCM转换");
+    trainPtr        = new Fl_Button(180, 170, 100, 30, "训练模型");
+    generatePtr     = new Fl_Button(280, 170, 100, 30, "生成音频");
+    finetunePtr     = new Fl_Button(380, 170, 100, 30, "模型微调");
+    quantizationPtr = new Fl_Button(480, 170, 100, 30, "模型量化");
+    modelReleasePtr = new Fl_Button(580, 170, 100, 30, "释放模型");
     // 绑定事件
-    // 终端名称
     const auto& audioConfig = lifuren::config::CONFIG.audio;
     lifuren::fillChoice(clientPtr, audioConfig.clients, audioConfig.client);
     clientPtr->callback(clientCallback, this);
-    // 选择数据集
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
-    // 选择模型
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
-    // 选择音频
     audioChoosePtr->callback(chooseFileCallback, audioPathPtr);
-    // 训练模型
+    pcmPtr->callback(pcmCallback, this);
     trainPtr->callback(trainCallback, this);
-    // 生成音频
     generatePtr->callback(generateCallback, this);
-    // 释放模型
     modelReleasePtr->callback(modelReleaseCallback, this);
-    // 重绘配置
     this->redrawConfigElement();
 }
 
-static void trainCallback(Fl_Widget*, void*) {
+static void pcmCallback(Fl_Widget*, void*) {
+}
 
+static void trainCallback(Fl_Widget*, void*) {
 }
 
 static void generateCallback(Fl_Widget*, void*) {
@@ -113,11 +112,6 @@ static void generateCallback(Fl_Widget*, void*) {
         return;
     }
     {
-        std::lock_guard<std::mutex> lock(mutex);
-        if(composeClient && composeClient->isRunning()) {
-            fl_message("上次绘画任务没有完成");
-            return;
-        }
         // TODO: 模型切换是否自动释放模型
         composeClient = lifuren::getComposeClient(clientPtr->text());
         if(!composeClient) {
@@ -125,17 +119,10 @@ static void generateCallback(Fl_Widget*, void*) {
             return;
         }
     }
-    std::thread thread([]() {
-    });
-    thread.detach();
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!composeClient) {
-        return;
-    }
-    if(composeClient->isRunning()) {
-        fl_message("当前正在进行生成音频任务");
         return;
     }
     composeClient = nullptr;

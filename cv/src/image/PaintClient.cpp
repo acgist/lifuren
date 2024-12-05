@@ -16,11 +16,6 @@ std::string lifuren::PaintClient<M>::pred(const PaintOptions& input) {
     return {};
 };
 
-template<typename M>
-void lifuren::PaintClient<M>::pred(const PaintOptions& input, PaintModelClient::Callback callback) {
-    // TODO: 实现
-};
-
 std::unique_ptr<lifuren::PaintModelClient> lifuren::getPaintClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_PAINT_WUDAOZI) {
         // return std::make_unique<lifuren::PaintClient<WudaoziModel>>();

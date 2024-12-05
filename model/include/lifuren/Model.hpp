@@ -23,14 +23,10 @@
 #include "torch/serialize.h"
 
 #include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/Logger.hpp"
-
-LFR_FORMAT_LOG_STREAM(at::Tensor)
-LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 namespace lifuren {
 
@@ -181,10 +177,12 @@ bool lifuren::Model<D, L, P, M>::define() {
 template<typename D, typename L, typename P, typename M>
 void lifuren::Model<D, L, P, M>::print() {
     for(const auto& value : this->model->parameters()) {
-        SPDLOG_DEBUG("parameters: {}", value);
+        SPDLOG_DEBUG("parameters");
+        lifuren::logTensor(value);
     }
     for(const auto& value : this->model->named_parameters()) {
-        SPDLOG_DEBUG("named_parameters: {} = {}", value.key(), value.value());
+        SPDLOG_DEBUG("named_parameters: {}", value.key());
+        lifuren::logTensor(value.value());
     }
 }
 

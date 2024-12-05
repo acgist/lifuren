@@ -24,6 +24,11 @@ extern bool toPcm(const std::string& audioFile);
  */
 extern bool toFile(const std::string& pcmFile);
 
+/**
+ * 文件夹里面所有音频文件转为PCM文件
+ */
+extern bool preprocessing(const std::string& path);
+
 } // END OF audio
     
 } // END OF lifuren

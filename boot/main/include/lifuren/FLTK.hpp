@@ -28,6 +28,8 @@
 
 #include "FL/Fl_Window.H"
 
+#include "lifuren/Message.hpp"
+
 class Fl_Choice;
 class Fl_RGB_Image;
 
@@ -234,6 +236,32 @@ public:
 
 protected:
     virtual void drawElement() override;
+
+};
+
+/**
+ * 后台任务窗口
+ */
+class ThreadWindow : public Window {
+
+public:
+    /**
+     * @param width  窗口宽度
+     * @param height 窗口高度
+     * @param title  窗口名称
+     */
+    ThreadWindow(int width, int height, const char* title = "后台任务");
+    virtual ~ThreadWindow();
+
+protected:
+    virtual void drawElement() override;
+
+public:
+    static bool hasThread  (lifuren::message::Type type);
+    static void showThread (lifuren::message::Type type);
+    static bool checkThread(lifuren::message::Type type);
+    static bool startThread(lifuren::message::Type type, bool notify = false);
+    static bool stopThread (lifuren::message::Type type);
 
 };
 

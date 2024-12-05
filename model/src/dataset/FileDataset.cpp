@@ -114,14 +114,18 @@ lifuren::dataset::FileDataset::FileDataset(
     for(const auto& file : files) {
         const auto index = file.find_last_of('.');
         if(index == std::string::npos) {
-            SPDLOG_INFO("加载文件没有标记文件：{}", file);
+            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
             continue;
         }
         if(index < source.size()) {
+            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
             continue;
         }
         const auto label = file.substr(index - source.size(), source.size());
         if(label != source) {
+            if(label != target) {
+                SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            }
             continue;
         }
         auto target_file(file);

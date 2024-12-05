@@ -75,6 +75,7 @@
 ## 文档
 
 * [学习资料](./docs/AI.md)
-* [部署文档](./docs/Deploy.md)
 * [接口文档](./docs/REST.md)
 * [计划文档](./docs/TODO.md)
+* [模型文档](./docs/Model.md)
+* [部署文档](./docs/Deploy.md)

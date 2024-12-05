@@ -91,21 +91,13 @@ bool lifuren::FaissRAGClient::loadIndex() {
         this->mapping = mappingMap.at(this->id);
         this->indexDB = indexDBMap.at(this->id);
     } else {
-        // 异步加载
-        std::unique_lock<std::mutex> lock(mutex);
-        std::condition_variable condition;
-        std::thread loadThread([this, &condition]() {
-            std::lock_guard<std::mutex> lock(mutex);
-            condition.notify_one();
-            const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
-            this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
-            indexDBMap.emplace(this->id, this->indexDB);
-            const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
-            this->mapping = loadMapping(mappingPath);
-            mappingMap.emplace(this->id, this->mapping);
-        });
-        loadThread.detach();
-        condition.wait(lock);
+        std::lock_guard<std::mutex> lock(mutex);
+        const std::filesystem::path indexDBPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::INDEXDB_MODEL_FILE });
+        this->indexDB.reset(loadIndexDB(this->embeddingClient->getDims(), indexDBPath));
+        indexDBMap.emplace(this->id, this->indexDB);
+        const std::filesystem::path mappingPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MAPPING_MODEL_FILE });
+        this->mapping = loadMapping(mappingPath);
+        mappingMap.emplace(this->id, this->mapping);
     }
     return true;
 }

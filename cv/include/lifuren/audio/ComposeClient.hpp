@@ -51,7 +51,6 @@ public:
 
 public:
     std::string pred(const ComposeOptions& input) override;
-    void        pred(const ComposeOptions& input, ComposeModelClient::Callback callback) override;
 
 };
 

@@ -10,19 +10,24 @@
 
 #include "lifuren/RAG.hpp"
 #include "lifuren/Config.hpp"
+#include "lifuren/Dataset.hpp"
+#include "lifuren/audio/Audio.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/video/ActClient.hpp"
 #include "lifuren/image/PaintClient.hpp"
 #include "lifuren/audio/ComposeClient.hpp"
 #include "lifuren/poetry/PoetizeClient.hpp"
 
-static void act(      std::vector<std::string>); // 视频生成
-static void paint(    std::vector<std::string>); // 图片生成
-static void compose(  std::vector<std::string>); // 音频生成
-static void poetize(  std::vector<std::string>); // 诗词生成
-static void pepper(   std::vector<std::string>); // 辣椒嵌入
-static void embedding(std::vector<std::string>); // 诗词嵌入
-static void help();      // 帮助
+static void act(      const std::vector<std::string>&); // 视频生成
+static void paint(    const std::vector<std::string>&); // 图片生成
+static void compose(  const std::vector<std::string>&); // 音频生成
+static void poetize(  const std::vector<std::string>&); // 诗词生成
+static void pcm(      const std::vector<std::string>&); // 转为PCM
+static void pepper(   const std::vector<std::string>&); // 辣椒嵌入
+static void embedding(const std::vector<std::string>&); // 诗词嵌入
+static void help(); // 帮助
+
+// TODO: 注册回调
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
@@ -51,6 +56,8 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         compose(args);
     } else if(std::strcmp(command, "poetize") == 0) {
         poetize(args);
+    } else if(std::strcmp(command, "pcm") == 0) {
+        pcm(args);
     } else if(std::strcmp(command, "pepper") == 0) {
         pepper(args);
     } else if(std::strcmp(command, "embedding") == 0) {
@@ -61,7 +68,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     return true;
 }
 
-static void act(std::vector<std::string> args) {
+static void act(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -70,7 +77,7 @@ static void act(std::vector<std::string> args) {
     // TODO: 实现
  }
 
-static void paint(std::vector<std::string> args) {
+static void paint(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -79,7 +86,7 @@ static void paint(std::vector<std::string> args) {
     // TODO: 实现
 }
 
-static void compose(std::vector<std::string> args) {
+static void compose(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -88,7 +95,7 @@ static void compose(std::vector<std::string> args) {
     // TODO: 实现
 }
 
-static void poetize(std::vector<std::string> args) {
+static void poetize(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -97,51 +104,54 @@ static void poetize(std::vector<std::string> args) {
     // TODO: 实现
 }
 
-static void pepper(std::vector<std::string> args) {
+static void pcm(const std::vector<std::string>& args) {
+    if(args.empty()) {
+        SPDLOG_WARN("缺少参数");
+        return;
+    }
+    auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], preprocessing)) {
+        SPDLOG_INFO("PCM转换成功");
+    } else {
+        SPDLOG_WARN("PCM转换失败");
+    }
+}
+
+static void pepper(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
     }
     auto client = std::make_unique<lifuren::PepperEmbeddingClient>();
-    if(client->embedding(args[0])) {
+    auto embedding = std::bind(&lifuren::PepperEmbeddingClient::embedding, client.get(), std::placeholders::_1);
+    // auto embedding = std::bind(&lifuren::PepperEmbeddingClient::embedding, std::ref(*client), std::placeholders::_1);
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], embedding)) {
         SPDLOG_INFO("辣椒嵌入成功");
     } else {
         SPDLOG_WARN("辣椒嵌入失败");
     }
 }
 
-static void embedding(std::vector<std::string> args) {
+static void embedding(const std::vector<std::string>& args) {
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto& service = lifuren::RAGService::getInstance();
-    auto  ragTask = service.runRAGTask(args[0]);
-    if(!ragTask) {
-        return;
+    if(lifuren::RAGClient::rag(args[0], args[1], args[2])) {
+        SPDLOG_INFO("嵌入成功");
+    } else {
+        SPDLOG_INFO("嵌入失败");
     }
-    std::mutex mutex;
-    std::condition_variable condition;
-    ragTask->registerCallback([&mutex, &condition](float, bool finish) {
-        if(finish) {
-            std::lock_guard<std::mutex> lock(mutex);
-            condition.notify_one();
-        } else {
-            // 进度
-        }
-    });
-    std::unique_lock<std::mutex> lock(mutex);
-    condition.wait(lock);
-    std::cout << "成功" << std::endl;
 }
 
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] act       prompt
-./lifuren[.exe] paint     prompt
-./lifuren[.exe] compose   prompt
-./lifuren[.exe] poetize   prompt
+./lifuren[.exe] act       [train|pred] [model|dataset] file
+./lifuren[.exe] paint     [train|pred] [model|dataset] file
+./lifuren[.exe] compose   [train|pred] [model|dataset] file
+./lifuren[.exe] poetize   [train|pred] [model|dataset] prompt
+./lifuren[.exe] pcm       path
 ./lifuren[.exe] pepper    path
 ./lifuren[.exe] embedding path
 ./lifuren[.exe] [?|help]

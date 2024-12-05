@@ -8,10 +8,8 @@
 
 #include <map>
 #include <list>
-#include <mutex>
 #include <memory>
 #include <string>
-#include <thread>
 #include <functional>
 
 #include "lifuren/Config.hpp"
@@ -24,40 +22,6 @@ class Client;
 
 namespace lifuren {
 
-
-/**
- * 有状态的终端
- */
-class StatefulClient {
-
-protected:
-    // 是否运行
-    bool running{ false };
-    // 状态锁
-    std::mutex mutex;
-
-public:
-    /**
-     * @return 是否运行
-     */
-    const bool& isRunning() const;
-    // 修改状态
-    void changeState();
-    /**
-     * @param running 修改状态
-     */
-    void changeState(bool running);
-    /**
-     * @return 是否停止
-     */
-    virtual bool stop();
-
-public:
-    StatefulClient();
-    virtual ~StatefulClient();
-
-};
-
 /**
  * 模型终端
  * 
@@ -66,19 +30,7 @@ public:
  * @param O 模型输出
  */
 template<typename C, typename I, typename O>
-class ModelClient : public StatefulClient {
-
-public:
-/**
- * 回调函数
- * 
- * @param finish  是否完成
- * @param percent 当前进度
- * @param message 回调内容
- * 
- * @return 是否结束
- */
-using Callback = std::function<bool(bool finish, float percent, const O& message)>;
+class ModelClient {
 
 protected:
     // 模型配置
@@ -91,9 +43,7 @@ public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual void trainValAndTest(const bool& val = true, const bool& test = true) = 0;
-    virtual O    pred(const I& input)                    = 0;
-    virtual void pred(const I& input, Callback callback) = 0;
-    virtual bool predBackend(const I& input, Callback callback);
+    virtual O    pred(const I& input) = 0;
 
 };
 
@@ -119,8 +69,7 @@ public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual void trainValAndTest(const bool& val = true, const bool& test = true);
-    virtual O    pred(const I& input)                                       = 0;
-    virtual void pred(const I& input, ModelClient<C, I, O>::Callback callback) = 0;
+    virtual O    pred(const I& input) = 0;
 
 };
 
@@ -321,15 +270,6 @@ public:
 
 template<typename C, typename I, typename O>
 lifuren::ModelClient<C, I, O>::ModelClient(C config) : config(config) {
-}
-
-template<typename C, typename I, typename O>
-bool lifuren::ModelClient<C, I, O>::predBackend(const I& input, lifuren::ModelClient<C, I, O>::Callback callback) {
-    std::thread thread([this, input, callback]() {
-        this->pred(input, callback);
-    });
-    thread.detach();
-    return true;
 }
 
 template<typename C, typename I, typename O, typename M>

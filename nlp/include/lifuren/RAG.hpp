@@ -122,6 +122,8 @@ public:
         return RAGClient::getClient(task.rag, task.path, task.embedding);
     }
 
+    static bool rag(const std::string& rag, const std::string& path, const std::string& embedding);
+
 };
 
 /**
@@ -182,132 +184,6 @@ public:
     std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
     bool loadIndex() override;
     bool truncateIndex() override;
-
-};
-
-/**
- * RAG任务执行器
- * 
- * 1. 诗词分词
- * 2. 生成词嵌入文件
- * 3. 生成向量搜索文件
- */
-class RAGTaskRunner {
-
-public:
-    size_t id   = 0;     // 索引标识
-    bool stop   = false; // 是否停止
-    bool finish = false; // 是否完成
-
-private:
-    // RAG任务
-    RAGTask task;
-    // 互斥锁
-    std::mutex mutex;
-    // 文件总数
-    uint32_t fileCount = 0;
-    // 处理文件总数
-    uint32_t doneFileCount = 0;
-    // 执行线程
-    std::unique_ptr<std::thread> thread{ nullptr };
-    // RAG终端
-    std::unique_ptr<lifuren::RAGClient> ragClient{ nullptr };
-    // 进度回调
-    std::function<void(float, bool)> percentCallback{ nullptr };
-
-public:
-    /**
-     * @param task RAG任务
-     */
-    RAGTaskRunner(RAGTask task);
-    virtual ~RAGTaskRunner();
-
-private:
-    /**
-     * 执行任务
-     * 
-     * @return 是否成功
-     */
-    bool execute();
-
-public:
-    /**
-     * @return 是否成功
-     */
-    bool startExecute();
-    /**
-     * @return 任务进度
-     */
-    float percent() const;
-    /**
-     * 注册进度回调
-     * 
-     * @param percentCallback 进度回调
-     */
-    void registerCallback(std::function<void(float, bool)> percentCallback);
-    /**
-     * 取消进度回调注册
-     */
-    void unregisterCallback();
-
-};
-
-/**
- * RAG服务
- * 
- * 文档解析、文档分段、文档搜索
- */
-class RAGService {
-
-public:
-    /**
-     * @return 单例
-     */
-    static RAGService& getInstance();
-
-private:
-    RAGService();
-
-public:
-    RAGService(RAGService& ) = delete;
-    RAGService(RAGService&&) = delete;
-    RAGService operator=(RAGService& ) = delete;
-    RAGService operator=(RAGService&&) = delete;
-    ~RAGService();
-
-private:
-    // 任务地址 = RAG任务执行器
-    std::map<std::string, std::shared_ptr<RAGTaskRunner>> taskMap{};
-
-public:
-    /**
-     * @param path 任务路径
-     * 
-     * @return RAG任务执行器
-     */
-    std::shared_ptr<RAGTaskRunner> getRAGTask(const std::string& path) const;
-    /**
-     * @param path 任务路径
-     * 
-     * @return RAG任务执行器
-     */
-    std::shared_ptr<RAGTaskRunner> runRAGTask(const std::string& path);
-    /**
-     * @param path 任务路径
-     * 
-     * @return 是否成功
-     */
-    bool stopRAGTask(const std::string& path) const;
-    /**
-     * @param path 任务路径
-     * 
-     * @return 是否成功
-     */
-    bool removeRAGTask(const std::string& path);
-    /**
-     * @return 当前任务总量（执行中和待执行的总量）
-     */
-    size_t taskCount() const;
 
 };
 

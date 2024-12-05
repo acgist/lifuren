@@ -58,7 +58,6 @@ public:
 
 public:
     std::string pred(const PoetizeOptions& input) override;
-    void        pred(const PoetizeOptions& input, PoetizeModelClient::Callback callback) override;
 
 };
 

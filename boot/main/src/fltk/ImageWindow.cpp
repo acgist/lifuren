@@ -113,11 +113,6 @@ static void generateCallback(Fl_Widget*, void*) {
         return;
     }
     {
-        std::lock_guard<std::mutex> lock(mutex);
-        if(paintClient && paintClient->isRunning()) {
-            fl_message("上次绘画任务没有完成");
-            return;
-        }
         // TODO: 模型切换是否自动释放模型
         paintClient = lifuren::getPaintClient(clientPtr->text());
         if(!paintClient) {
@@ -130,24 +125,13 @@ static void generateCallback(Fl_Widget*, void*) {
         options.image  = imagePathPtr->value();
         #if defined(_DEBUG) || !defined(NDEBUG)
         #endif
-        paintClient->pred(options, [](bool finish, float percent, const std::string& message) {
-            if(finish) {
-                fl_message("绘制完成");
-            } else {
-                // 进度
-            }
-            return true;
-        });
+        paintClient->pred(options);
     });
     thread.detach();
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!paintClient) {
-        return;
-    }
-    if(paintClient->isRunning()) {
-        fl_message("当前正在进行生成图片任务");
         return;
     }
     paintClient = nullptr;

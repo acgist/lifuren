@@ -10,6 +10,7 @@ add_library(
     src/Rhythm.cpp
     src/String.cpp
     src/Lifuren.cpp
+    src/Message.cpp
     src/Exception.cpp
 )
 
