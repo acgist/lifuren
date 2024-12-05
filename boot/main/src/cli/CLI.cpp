@@ -140,7 +140,7 @@ static void embedding(const std::vector<std::string>& args) {
     if(lifuren::RAGClient::rag(args[0], args[1], args[2])) {
         SPDLOG_INFO("嵌入成功");
     } else {
-        SPDLOG_INFO("嵌入失败");
+        SPDLOG_WARN("嵌入失败");
     }
 }
 

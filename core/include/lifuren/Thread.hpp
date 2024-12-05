@@ -20,6 +20,8 @@ public:
     thread_local static ThreadWorker* this_thread_worker;
     // 是否停止
     bool stop{ true };
+    // 来源
+    void* source { nullptr };
     // 执行线程
     std::shared_ptr<std::thread> thread{ nullptr };
 

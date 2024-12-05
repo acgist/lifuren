@@ -260,7 +260,7 @@ public:
     static bool hasThread  (lifuren::message::Type type);
     static void showThread (lifuren::message::Type type);
     static bool checkThread(lifuren::message::Type type);
-    static bool startThread(lifuren::message::Type type, bool notify = false);
+    static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, bool notify = false);
     static bool stopThread (lifuren::message::Type type);
 
 };
