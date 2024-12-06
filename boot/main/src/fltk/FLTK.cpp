@@ -26,13 +26,11 @@ static const char* last_directory = "";
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
-    Fl::lock();
     lifuren::MainWindow* mainPtr = new lifuren::MainWindow(LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT, "李夫人");
     mainPtr->init();
     mainPtr->show();
     const int code = Fl::run();
     LFR_DELETE_PTR(mainPtr);
-    // Fl::unlock();
     SPDLOG_INFO("结束FLTK服务：{}", code);
     #if LFR_ENABLE_REST
     lifuren::shutdownHttpServer();

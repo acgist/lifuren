@@ -12,12 +12,16 @@ namespace lifuren::message {
 enum class Type {
 
     AUDIO_AUDIO_FILE_TO_PCM_FILE,
+    NONE,
 
 };
 
-extern void registerMessageCallback(Type type, std::function<void(bool, const char*)> callback);
+extern thread_local lifuren::message::Type thread_message_type;
+
+extern void registerMessageCallback  (Type type, std::function<void(bool, const char*)> callback);
 extern void unregisterMessageCallback(Type type);
-extern void sendMessage(Type type, bool finish, const char* message);
+extern void sendMessage(           const char* message, bool finish = false);
+extern void sendMessage(Type type, const char* message, bool finish = false);
 
 } // END OF lifuren::message
 

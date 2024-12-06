@@ -10,8 +10,12 @@
 #ifndef LFR_HEADER_BOOT_FLTK_HPP
 #define LFR_HEADER_BOOT_FLTK_HPP
 
-// https://github.com/yhirose/cpp-httplib
 #ifdef  _WIN32
+// 去掉min/max冲突
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+// https://github.com/yhirose/cpp-httplib
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -247,6 +251,8 @@ class ThreadWindow : public Window {
 public:
     // 是否可以关闭：隐藏时释放资源
     bool closeable { false };
+    // 任务类型
+    lifuren::message::Type type { lifuren::message::Type::NONE };
 
 public:
     /**

@@ -5,7 +5,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "FL/Fl.H"
 #include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
@@ -13,6 +12,8 @@
 
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
+#include "lifuren/Dataset.hpp"
+#include "lifuren/audio/Audio.hpp"
 #include "lifuren/audio/ComposeClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
@@ -102,11 +103,21 @@ void lifuren::AudioWindow::drawElement() {
 }
 
 static void pcmCallback(Fl_Widget*, void*) {
+    const char* path = pathPathPtr->value();
+    if(std::strlen(path) == 0) {
+        fl_message("请选择数据集路径");
+        return;
+    }
     lifuren::ThreadWindow::startThread(
         lifuren::message::Type::AUDIO_AUDIO_FILE_TO_PCM_FILE,
         "PCM转换",
         []() {
-            std::this_thread::sleep_for(std::chrono::seconds(4));
+            auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
+            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), preprocessing)) {
+                lifuren::message::sendMessage("PCM转换成功");
+            } else {
+                lifuren::message::sendMessage("PCM转换失败");
+            }
         }
     );
 }

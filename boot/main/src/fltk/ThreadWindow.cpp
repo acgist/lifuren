@@ -31,14 +31,34 @@ lifuren::ThreadWindow::ThreadWindow(int width, int height, const char* title) : 
 }
 
 lifuren::ThreadWindow::~ThreadWindow() {
-    LFR_DELETE_PTR(cancel);
-    LFR_DELETE_PTR(buffer);
-    LFR_DELETE_PTR(display);
     // 取消回调
+    lifuren::message::unregisterMessageCallback(this->type);
+    // 释放资源
+    LFR_DELETE_PTR(cancel);
+    LFR_DELETE_PTR(display);
+    LFR_DELETE_PTR(buffer);
 }
 
 void lifuren::ThreadWindow::drawElement() {
-    
+    // 绘制界面
+    display = new Fl_Text_Display(10, 20, this->w() - 20, this->h() - 90, "任务消息");
+    buffer  = new Fl_Text_Buffer();
+    display->begin();
+    display->buffer(buffer);
+    display->wrap_mode(display->WRAP_AT_COLUMN, display->textfont());
+    display->end();
+    cancel = new Fl_Button((this->w() - 200) / 2, this->h() - 50, 200, 30, "取消任务");
+    // 注册回调
+    lifuren::message::registerMessageCallback(this->type, [](bool finish, const char* message) {
+        if(buffer) {
+            buffer->append(message);
+            buffer->append("\n");
+            if(finish) {
+                buffer->append("任务完成");
+                buffer->append("\n");
+            }
+        }
+    });
 }
 
 bool lifuren::ThreadWindow::hasThread(lifuren::message::Type type) {
@@ -68,6 +88,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
         return false;
     }
     ThreadWindow* window = new ThreadWindow(800, 600, title);
+    window->type = type;
     window->callback([](Fl_Widget*, void* voidPtr) {
         auto this_window = static_cast<ThreadWindow*>(voidPtr);
         this_window->hide();
@@ -76,12 +97,15 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
         }
     }, window);
     auto worker = std::make_shared<lifuren::thread::ThreadWorker>();
+    window->init();
     thread_worker.emplace(type, worker);
     worker->stop   = false;
     worker->type   = lifuren::thread::Type::FLTK;
     worker->source = window;
     worker->thread = std::make_shared<std::thread>([type, task, worker, title, window, callback]() {
+        lifuren::message::thread_message_type = type;
         SPDLOG_DEBUG("任务开始：{}", title);
+        lifuren::message::sendMessage("任务开始");
         lifuren::thread::ThreadWorker::this_thread_worker = worker.get();
         try {
             task();
@@ -89,6 +113,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
             SPDLOG_ERROR("任务执行异常：{} - {}", title, e.what());
         }
         lifuren::thread::ThreadWorker::this_thread_worker = nullptr;
+        lifuren::message::sendMessage("任务完成");
         SPDLOG_DEBUG("任务完成：{}", title);
         window->closeable = true;
         Fl::awake(task_finish, window);
@@ -96,6 +121,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
             callback();
         }
         thread_worker.erase(type);
+        lifuren::message::thread_message_type = lifuren::message::Type::NONE;
     });
     worker->thread->detach();
     window->show();

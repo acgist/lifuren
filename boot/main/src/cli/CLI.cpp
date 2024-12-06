@@ -11,6 +11,7 @@
 #include "lifuren/RAG.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
+#include "lifuren/Message.hpp"
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/video/ActClient.hpp"
@@ -25,6 +26,7 @@ static void poetize(  const std::vector<std::string>&); // 诗词生成
 static void pcm(      const std::vector<std::string>&); // 转为PCM
 static void pepper(   const std::vector<std::string>&); // 辣椒嵌入
 static void embedding(const std::vector<std::string>&); // 诗词嵌入
+static void messageCallback(bool, const char*); // 消息回调
 static void help(); // 帮助
 
 // TODO: 注册回调
@@ -105,16 +107,18 @@ static void poetize(const std::vector<std::string>& args) {
 }
 
 static void pcm(const std::vector<std::string>& args) {
+    lifuren::message::registerMessageCallback(lifuren::message::Type::AUDIO_AUDIO_FILE_TO_PCM_FILE, messageCallback);
     if(args.empty()) {
-        SPDLOG_WARN("缺少参数");
+        lifuren::message::sendMessage("缺少参数");
         return;
     }
     auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
     if(lifuren::dataset::allDatasetPreprocessing(args[0], preprocessing)) {
-        SPDLOG_INFO("PCM转换成功");
+        lifuren::message::sendMessage("PCM转换成功");
     } else {
-        SPDLOG_WARN("PCM转换失败");
+        lifuren::message::sendMessage("PCM转换失败");
     }
+    lifuren::message::unregisterMessageCallback(lifuren::message::Type::AUDIO_AUDIO_FILE_TO_PCM_FILE);
 }
 
 static void pepper(const std::vector<std::string>& args) {
@@ -141,6 +145,13 @@ static void embedding(const std::vector<std::string>& args) {
         SPDLOG_INFO("嵌入成功");
     } else {
         SPDLOG_WARN("嵌入失败");
+    }
+}
+
+static void messageCallback(bool finish, const char* message) {
+    std::cout << message << std::endl;
+    if(finish) {
+        std::cout << "任务完成" << std::endl;
     }
 }
 

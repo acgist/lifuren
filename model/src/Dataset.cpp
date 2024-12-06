@@ -8,8 +8,8 @@ std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     std::vector<std::string> ret;
     ret.reserve(3);
     const auto train_path = lifuren::file::join({ path, "train" });
-    const auto val_path   = lifuren::file::join({ path, "val" });
-    const auto test_path  = lifuren::file::join({ path, "test" });
+    const auto val_path   = lifuren::file::join({ path, "val"   });
+    const auto test_path  = lifuren::file::join({ path, "test"  });
     if(std::filesystem::exists(train_path)) {
         ret.push_back(train_path.string());
     }
