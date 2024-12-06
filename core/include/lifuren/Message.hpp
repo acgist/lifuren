@@ -10,6 +10,9 @@ namespace lifuren::message {
 
 // 消息类型
 enum class Type {
+
+    AUDIO_AUDIO_FILE_TO_PCM_FILE,
+
 };
 
 extern void registerMessageCallback(Type type, std::function<void(bool, const char*)> callback);

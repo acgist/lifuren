@@ -245,6 +245,10 @@ protected:
 class ThreadWindow : public Window {
 
 public:
+    // 是否可以关闭：隐藏时释放资源
+    bool closeable { false };
+
+public:
     /**
      * @param width  窗口宽度
      * @param height 窗口高度
@@ -260,7 +264,7 @@ public:
     static bool hasThread  (lifuren::message::Type type);
     static void showThread (lifuren::message::Type type);
     static bool checkThread(lifuren::message::Type type);
-    static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, bool notify = false);
+    static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr);
     static bool stopThread (lifuren::message::Type type);
 
 };

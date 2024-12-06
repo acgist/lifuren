@@ -9,6 +9,7 @@ add_library(
     src/Logger.cpp
     src/Rhythm.cpp
     src/String.cpp
+    src/Thread.cpp
     src/Lifuren.cpp
     src/Message.cpp
     src/Exception.cpp

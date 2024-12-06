@@ -11,7 +11,7 @@
 #include "lifuren/Thread.hpp"
 #include "lifuren/Message.hpp"
 
-#include "FL/fl_ask.H"
+#include "FL/Fl.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Text_Buffer.H"
 #include "FL/Fl_Text_Display.H"
@@ -24,6 +24,8 @@ static Fl_Text_Display* display{ nullptr };
 static std::map<lifuren::message::Type, std::shared_ptr<lifuren::thread::ThreadWorker>> thread_worker;
 // 依赖树
 static std::map<lifuren::message::Type, std::vector<lifuren::message::Type>> depend_tree;
+
+static void task_finish(void* voidPtr);
 
 lifuren::ThreadWindow::ThreadWindow(int width, int height, const char* title) : Window(width, height, title) {
 }
@@ -44,7 +46,7 @@ bool lifuren::ThreadWindow::hasThread(lifuren::message::Type type) {
 }
 
 void lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
-    auto iter = thread_worker.find(type);
+    const auto iter = thread_worker.find(type);
     if(iter == thread_worker.end()) {
         return;
     }
@@ -55,29 +57,31 @@ void lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
 
 bool lifuren::ThreadWindow::checkThread(lifuren::message::Type type) {
     if(hasThread(type)) {
-        // TODO：提示？
         showThread(type);
         return false;
     }
     return true;
 }
 
-bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char* title, std::function<void()> task, bool notify) {
+bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback) {
     if(!checkThread(type)) {
         return false;
     }
     ThreadWindow* window = new ThreadWindow(800, 600, title);
     window->callback([](Fl_Widget*, void* voidPtr) {
-        ThreadWindow* thisWindow = static_cast<ThreadWindow*>(voidPtr);
-        thisWindow->hide();
-        delete thisWindow;
+        auto this_window = static_cast<ThreadWindow*>(voidPtr);
+        this_window->hide();
+        if(this_window->closeable) {
+            delete this_window;
+        }
     }, window);
     auto worker = std::make_shared<lifuren::thread::ThreadWorker>();
     thread_worker.emplace(type, worker);
     worker->stop   = false;
+    worker->type   = lifuren::thread::Type::FLTK;
     worker->source = window;
-    worker->thread = std::make_shared<std::thread>([type, task, worker, title, notify]() {
-        lifuren::thread::ThreadWorker::fltk_thread = true;
+    worker->thread = std::make_shared<std::thread>([type, task, worker, title, window, callback]() {
+        SPDLOG_DEBUG("任务开始：{}", title);
         lifuren::thread::ThreadWorker::this_thread_worker = worker.get();
         try {
             task();
@@ -85,20 +89,28 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
             SPDLOG_ERROR("任务执行异常：{} - {}", title, e.what());
         }
         lifuren::thread::ThreadWorker::this_thread_worker = nullptr;
-        if(notify) {
-            fl_message("任务完成：{}", title);
+        SPDLOG_DEBUG("任务完成：{}", title);
+        window->closeable = true;
+        Fl::awake(task_finish, window);
+        if(callback) {
+            callback();
         }
         thread_worker.erase(type);
     });
     worker->thread->detach();
+    window->show();
     return true;
 }
 
 bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
-    auto iter = thread_worker.find(type);
+    const auto iter = thread_worker.find(type);
     if(iter == thread_worker.end()) {
         return false;
     }
     iter->second->stop = true;
     return true;
+}
+
+static void task_finish(void* voidPtr) {
+    static_cast<lifuren::ThreadWindow*>(voidPtr)->show();
 }

@@ -5,6 +5,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "FL/Fl.H"
 #include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
@@ -101,6 +102,13 @@ void lifuren::AudioWindow::drawElement() {
 }
 
 static void pcmCallback(Fl_Widget*, void*) {
+    lifuren::ThreadWindow::startThread(
+        lifuren::message::Type::AUDIO_AUDIO_FILE_TO_PCM_FILE,
+        "PCM转换",
+        []() {
+            std::this_thread::sleep_for(std::chrono::seconds(4));
+        }
+    );
 }
 
 static void trainCallback(Fl_Widget*, void*) {
