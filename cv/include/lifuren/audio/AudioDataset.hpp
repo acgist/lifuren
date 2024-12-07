@@ -8,7 +8,11 @@
 
 namespace lifuren::dataset {
 
+namespace audio {
 
+extern torch::Tensor feature(const std::string& file, const torch::DeviceType& type);
+
+}
     
 } // END OF lifuren::dataset
 

@@ -14,6 +14,12 @@
 
 namespace lifuren::dataset {
 
+namespace image {
+
+extern torch::Tensor feature(const std::string& file, const torch::DeviceType& type);
+
+}
+
 /**
  * @param width      图片宽度
  * @param height     图片高度

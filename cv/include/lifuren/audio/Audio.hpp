@@ -1,6 +1,8 @@
 /**
  * 音频工具
  * 
+ * stft/istft
+ * 
  * PCM和封装格式都使用单声道
  */
 #ifndef LFR_HEADER_CV_AUDIO_HPP
