@@ -4,6 +4,7 @@ add_library(
     ${PROJECT_NAME}
     src/OpenCV.cpp
     src/audio/Audio.cpp
+    src/audio/AudioDataset.cpp
     src/audio/ComposeClient.cpp
     src/image/Image.cpp
     src/image/PaintClient.cpp

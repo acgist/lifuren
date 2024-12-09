@@ -11,6 +11,7 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
+#include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/image/ImageDataset.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
@@ -144,10 +145,45 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     train.close();
 }
 
+[[maybe_unused]] static void testStftIstft() {
+    std::ifstream input;
+    std::ofstream output;
+    input .open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm" }).string(),   std::ios_base::binary);
+    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "denoise.pcm" }).string(), std::ios_base::binary);
+    int size = 48000;
+    std::vector<short> data;
+    data.resize(size);
+    float norm_factor;
+    while(input.read(reinterpret_cast<char*>(data.data()), size * sizeof(short))) {
+        // 其他处理
+        auto tuple = std::move(lifuren::dataset::audio::pcm_mag_pha_stft(data, norm_factor));
+        auto pcm   = std::move(lifuren::dataset::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple), norm_factor));
+        // 原始函数
+        // int n_fft    = 400;
+        // int hop_size = 100;
+        // int win_size = 400;
+        // auto window = torch::hann_window(win_size);
+        // auto pcm_tensor = torch::zeros({1, static_cast<int>(data.size())}, torch::kFloat32);
+        // float* tensor_data = reinterpret_cast<float*>(pcm_tensor.data_ptr());
+        // std::copy_n(data.data(), data.size(), tensor_data);
+        // auto spec   = torch::stft(pcm_tensor, n_fft, hop_size, win_size, window, true, "reflect", false, std::nullopt, true);
+        // auto result = torch::istft(spec, n_fft, hop_size, win_size, window, true);
+        // tensor_data = reinterpret_cast<float*>(result.data_ptr());
+        // std::vector<short> pcm;
+        // pcm.resize(result.sizes()[1]);
+        // std::copy_n(tensor_data, pcm.size(), pcm.data());
+        output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
+        output.flush();
+    }
+    input.close();
+    output.close();
+}
+
 LFR_TEST(
     // testRawDataset();
-    testFileDataset();
+    // testFileDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
     // testEmbeddingSlice();
+    testStftIstft();
 );
