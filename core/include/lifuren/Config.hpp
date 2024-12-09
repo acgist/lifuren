@@ -71,6 +71,11 @@ extern lifuren::config::Config CONFIG;
 extern std::map<std::string, Rhythm> RHYTHM;
 
 /**
+ * @return 所有格律
+ */
+extern std::set<std::string> all_rhythm();
+
+/**
  * REST配置
  */
 struct RestConfig {

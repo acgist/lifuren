@@ -284,6 +284,8 @@ public:
  */
 extern std::string fileChooser(const char* title, const char* filter = "*.*", const char* directory = "");
 
+extern void fileChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* filter = "*.*", const char* directory = "");
+
 /**
  * @param title     窗口标题
  * @param directory 当前目录
@@ -291,6 +293,8 @@ extern std::string fileChooser(const char* title, const char* filter = "*.*", co
  * @return 选择目录路径
  */
 extern std::string directoryChooser(const char* title, const char* directory = "");
+
+extern void directoryChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* directory = "");
 
 /**
  * @param choice 选择框

@@ -1,8 +1,5 @@
 #include "lifuren/FLTK.hpp"
 
-#include <mutex>
-#include <thread>
-
 #include "spdlog/spdlog.h"
 
 #include "FL/fl_ask.H"
@@ -27,15 +24,13 @@ static Fl_Button* finetunePtr    { nullptr };
 static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
-static std::mutex mutex;
-
 static std::unique_ptr<lifuren::ActModelClient> actClient{ nullptr };
 
-static void trainCallback(Fl_Widget*, void*);
-static void generateCallback(Fl_Widget*, void*);
-static void modelReleaseCallback(Fl_Widget*, void*);
-static void clientCallback(Fl_Widget*, void*);
-static void chooseFileCallback(Fl_Widget*, void*);
+static void trainCallback          (Fl_Widget*, void*);
+static void generateCallback       (Fl_Widget*, void*);
+static void modelReleaseCallback   (Fl_Widget*, void*);
+static void clientCallback         (Fl_Widget*, void*);
+static void chooseFileCallback     (Fl_Widget*, void*);
 static void chooseDirectoryCallback(Fl_Widget*, void*);
 
 lifuren::VideoWindow::VideoWindow(int width, int height, const char* title) : Window(width, height, title) {
@@ -83,23 +78,15 @@ void lifuren::VideoWindow::drawElement() {
     quantizationPtr = new Fl_Button(380, 170, 100, 30, "模型量化");
     modelReleasePtr = new Fl_Button(480, 170, 100, 30, "释放模型");
     // 绑定事件
-    // 终端名称
     const auto& videoConfig = lifuren::config::CONFIG.video;
     lifuren::fillChoice(clientPtr, videoConfig.clients, videoConfig.client);
     clientPtr->callback(clientCallback, this);
-    // 选择数据集
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
-    // 选择模型
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
-    // 选择视频
     videoChoosePtr->callback(chooseFileCallback, videoPathPtr);
-    // 训练模型
     trainPtr->callback(trainCallback, this);
-    // 生成视频
     generatePtr->callback(generateCallback, this);
-    // 释放模型
     modelReleasePtr->callback(modelReleaseCallback, this);
-    // 重绘配置
     this->redrawConfigElement();
 }
 
@@ -109,16 +96,14 @@ static void trainCallback(Fl_Widget*, void*) {
 
 static void generateCallback(Fl_Widget*, void*) {
     if(clientPtr->value() < 0) {
-        fl_message("没有选择绘画终端");
+        fl_message("没有选择导演终端");
         return;
     }
-    {
-        // TODO: 模型切换是否自动释放模型
-        actClient = lifuren::getActClient(clientPtr->text());
-        if(!actClient) {
-            fl_message("不支持的终端");
-            return;
-        }
+    // TODO: 验证是否正在运行
+    actClient = lifuren::getActClient(clientPtr->text());
+    if(!actClient) {
+        fl_message("不支持的终端：{}", clientPtr->text());
+        return;
     }
 }
 
@@ -126,6 +111,7 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!actClient) {
         return;
     }
+    // TODO: 验证是否正在运行
     actClient = nullptr;
 }
 
@@ -136,20 +122,10 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     windowPtr->redrawConfigElement();
 }
 
-static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::fileChooser("选择文件", "*.{mp4,pt}");
-    if(filename.empty()) {
-        return;
-    }
-    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
-    inputPtr->value(filename.c_str());
+static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
+    lifuren::fileChooser(widget, voidPtr, "选择文件", "*.{mp4,pt}");
 }
 
-static void chooseDirectoryCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::directoryChooser("选择目录");
-    if(filename.empty()) {
-        return;
-    }
-    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
-    inputPtr->value(filename.c_str());
+static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
+    lifuren::directoryChooser(widget, voidPtr, "选择目录");
 }

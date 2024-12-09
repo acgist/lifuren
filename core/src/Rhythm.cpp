@@ -67,3 +67,12 @@ std::map<std::string, lifuren::config::Rhythm> lifuren::config::Rhythm::loadFile
     });
     return map;
 }
+
+std::set<std::string> lifuren::config::all_rhythm() {
+    std::set<std::string> set;
+    const auto& rhythm = lifuren::config::RHYTHM;
+    for(const auto& [k, v] : rhythm) {
+        set.emplace(k + " - " + v.title);
+    }
+    return set;
+}

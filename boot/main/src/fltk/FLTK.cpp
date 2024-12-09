@@ -14,6 +14,7 @@
 #include "lifuren/Config.hpp"
 
 #include "FL/Fl.H"
+#include "FL/Fl_Input.H"
 #include "FL/Fl_Choice.H"
 #include "FL/Fl_PNG_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
@@ -72,6 +73,15 @@ std::string lifuren::fileChooser(const char* title, const char* filter, const ch
     }
 }
 
+void lifuren::fileChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* filter, const char* directory) {
+    std::string filename = lifuren::fileChooser(title, filter);
+    if(filename.empty()) {
+        return;
+    }
+    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
+    inputPtr->value(filename.c_str());
+}
+
 std::string lifuren::directoryChooser(const char* title, const char* directory) {
     Fl_Native_File_Chooser chooser(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
     chooser.title(title);
@@ -94,6 +104,15 @@ std::string lifuren::directoryChooser(const char* title, const char* directory) 
             return {};
         }
     }
+}
+
+void lifuren::directoryChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* directory) {
+    std::string filename = lifuren::directoryChooser(title, directory);
+    if(filename.empty()) {
+        return;
+    }
+    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
+    inputPtr->value(filename.c_str());
 }
 
 void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value) {

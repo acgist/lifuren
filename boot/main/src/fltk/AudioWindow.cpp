@@ -1,8 +1,5 @@
 #include "lifuren/FLTK.hpp"
 
-#include <mutex>
-#include <thread>
-
 #include "spdlog/spdlog.h"
 
 #include "FL/fl_ask.H"
@@ -29,8 +26,6 @@ static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* finetunePtr    { nullptr };
 static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
-
-static std::mutex mutex;
 
 static std::unique_ptr<lifuren::ComposeModelClient> composeClient{ nullptr };
 
@@ -127,16 +122,14 @@ static void trainCallback(Fl_Widget*, void*) {
 
 static void generateCallback(Fl_Widget*, void*) {
     if(clientPtr->value() < 0) {
-        fl_message("没有选择绘画终端");
+        fl_message("没有选择作曲终端");
         return;
     }
-    {
-        // TODO: 模型切换是否自动释放模型
-        composeClient = lifuren::getComposeClient(clientPtr->text());
-        if(!composeClient) {
-            fl_message("不支持的终端");
-            return;
-        }
+    // TODO: 验证是否正在运行
+    composeClient = lifuren::getComposeClient(clientPtr->text());
+    if(!composeClient) {
+        fl_message("不支持的终端：{}", clientPtr->text());
+        return;
     }
 }
 
@@ -144,6 +137,7 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!composeClient) {
         return;
     }
+    // TODO: 验证是否正在运行
     composeClient = nullptr;
 }
 
@@ -154,20 +148,10 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     windowPtr->redrawConfigElement();
 }
 
-static void chooseFileCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::fileChooser("选择文件", "*.{aac,ogg,mp3,pt}");
-    if(filename.empty()) {
-        return;
-    }
-    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
-    inputPtr->value(filename.c_str());
+static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
+    lifuren::fileChooser(widget, voidPtr, "选择文件", "*.{aac,ogg,mp3,pt}");
 }
 
-static void chooseDirectoryCallback(Fl_Widget*, void* voidPtr) {
-    std::string filename = lifuren::directoryChooser("选择目录");
-    if(filename.empty()) {
-        return;
-    }
-    Fl_Input* inputPtr = static_cast<Fl_Input*>(voidPtr);
-    inputPtr->value(filename.c_str());
+static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
+    lifuren::directoryChooser(widget, voidPtr, "选择目录");
 }
