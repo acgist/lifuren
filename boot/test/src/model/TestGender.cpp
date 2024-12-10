@@ -5,12 +5,17 @@
 
 #include "torch/torch.h"
 
+#include "spdlog/fmt/ostr.h"
+
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Tensor.hpp"
 #include "lifuren/image/ImageDataset.hpp"
+
+LFR_FORMAT_LOG_STREAM(at::Tensor)
+LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 class GenderModuleImpl : public torch::nn::Module {
 
@@ -73,7 +78,7 @@ class GenderModel : public lifuren::Model<
 > {
 
 public:
-    GenderModel(lifuren::ModelParams params = {
+    GenderModel(lifuren::config::ModelParams params = {
         .lr          = 0.001F,
         .batch_size  = 10LL,
         .epoch_count = 64LL,

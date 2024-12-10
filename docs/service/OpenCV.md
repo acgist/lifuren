@@ -14,8 +14,9 @@ vcpkg install opencv:x64-windows
 
 ## 相关链接
 
+* https://opencv.org/
 * https://opencv.org/releases/
 
 ## 注意事项
 
-* `OpenCV`可以直接官网下载
+* 建议直接使用官网下载

@@ -10,26 +10,18 @@
 
 namespace lifuren {
 
-struct ActConfigOptions {
+struct ActParams {
 
-    std::string model;         // 模型
-    std::string train_path {}; // 训练数据集路径
-    std::string val_path   {}; // 验证数据集路径
-    std::string test_path  {}; // 测试数据集路径
-
-};
-
-struct ActOptions {
-
+    std::string model;  // 模型
     std::string video;  // 视频文件
     std::string output; // 输出文件
     
 };
 
-using ActModelClient = ModelClient<ActConfigOptions, ActOptions, std::string>;
+using ActModelClient = ModelClient<lifuren::config::ModelParams, ActParams, std::string>;
 
 template<typename M>
-using ActModelImplClient = ModelImplClient<ActConfigOptions, ActOptions, std::string, M>;
+using ActModelImplClient = ModelImplClient<lifuren::config::ModelParams, ActParams, std::string, M>;
 
 extern std::unique_ptr<lifuren::ActModelClient> getActClient(const std::string& client);
 
@@ -44,7 +36,7 @@ public:
     virtual ~ActClient();
 
 public:
-    std::string pred(const ActOptions& input) override;
+    std::string pred(const ActParams& input) override;
 
 };
 

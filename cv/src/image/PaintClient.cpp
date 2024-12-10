@@ -11,7 +11,7 @@ lifuren::PaintClient<M>::~PaintClient() {
 }
 
 template<typename M>
-std::string lifuren::PaintClient<M>::pred(const PaintOptions& input) {
+std::string lifuren::PaintClient<M>::pred(const PaintParams& input) {
     // TODO: 实现
     return {};
 };

@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <algorithm>
 
 #include "spdlog/spdlog.h"
 
@@ -23,7 +24,9 @@ static Fl_Text_Display* display{ nullptr };
 // 映射
 static std::map<lifuren::message::Type, std::shared_ptr<lifuren::thread::ThreadWorker>> thread_worker;
 // 依赖树
-static std::map<lifuren::message::Type, std::vector<lifuren::message::Type>> depend_tree;
+static std::map<lifuren::message::Type, std::vector<lifuren::message::Type>> depend_tree{
+    
+};
 
 static void task_finish(void* voidPtr);
 
@@ -61,10 +64,6 @@ void lifuren::ThreadWindow::drawElement() {
     });
 }
 
-bool lifuren::ThreadWindow::hasThread(lifuren::message::Type type) {
-    return thread_worker.contains(type);
-}
-
 void lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
     const auto iter = thread_worker.find(type);
     if(iter == thread_worker.end()) {
@@ -76,18 +75,15 @@ void lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
 }
 
 bool lifuren::ThreadWindow::checkThread(lifuren::message::Type type) {
-    if(hasThread(type)) {
-        showThread(type);
-        return false;
-    }
-    return true;
+    return thread_worker.contains(type);
 }
 
 bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback) {
-    if(!checkThread(type)) {
+    if(checkThread(type)) {
+        showThread(type);
         return false;
     }
-    ThreadWindow* window = new ThreadWindow(800, 600, title);
+    ThreadWindow* window = new ThreadWindow(LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT, title);
     window->type = type;
     window->callback([](Fl_Widget*, void* voidPtr) {
         auto this_window = static_cast<ThreadWindow*>(voidPtr);
@@ -135,6 +131,45 @@ bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
     }
     iter->second->stop = true;
     return true;
+}
+
+bool lifuren::ThreadWindow::checkDepend(lifuren::message::Type type) {
+    auto iterator = depend_tree.find(type);
+    if(iterator == depend_tree.end()) {
+        return true;
+    }
+    const auto& depends = iterator->second;
+    return std::all_of(depends.begin(), depends.end(), [](const auto& depend) {
+        return !checkDepend(depend);
+    });
+}
+
+bool lifuren::ThreadWindow::checkAudioThread() {
+    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+        const int value = static_cast<int>(entry.first);
+        return value >= MESSAGE_AUDIO_MIN && value < MESSAGE_IMAGE_MIN;
+    });
+}
+
+bool lifuren::ThreadWindow::checkImageThread() {
+    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+        const int value = static_cast<int>(entry.first);
+        return value >= MESSAGE_IMAGE_MIN && value < MESSAGE_VIDEO_MIN;
+    });
+}
+
+bool lifuren::ThreadWindow::checkVideoThread() {
+    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+        const int value = static_cast<int>(entry.first);
+        return value >= MESSAGE_VIDEO_MIN && value < MESSAGE_POETRY_MIN;
+    });
+}
+
+bool lifuren::ThreadWindow::checkPoetryThread() {
+    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+        const int value = static_cast<int>(entry.first);
+        return value >= MESSAGE_POETRY_MIN && value < MESSAGE_MAX;
+    });
 }
 
 static void task_finish(void* voidPtr) {

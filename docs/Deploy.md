@@ -76,7 +76,7 @@ vcpkg export cpp-httplib --zip
 ```
 
 * `OpenCV`可以直接官网下载
-* `faiss[gpu]`支持`GPU`计算
+* `LibTorch`可以直接官网下载
 
 ###### 编译命令
 

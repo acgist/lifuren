@@ -22,8 +22,6 @@ static Fl_Button* pepperPtr      { nullptr };
 static Fl_Button* embeddingPtr   { nullptr };
 static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
-static Fl_Button* finetunePtr    { nullptr };
-static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
 static std::unique_ptr<lifuren::PoetizeModelClient> poetizeClient{ nullptr };
@@ -53,18 +51,11 @@ lifuren::PoetryWindow::~PoetryWindow() {
     LFR_DELETE_PTR(embeddingPtr);
     LFR_DELETE_PTR(trainPtr);
     LFR_DELETE_PTR(generatePtr);
-    LFR_DELETE_PTR(finetunePtr);
-    LFR_DELETE_PTR(quantizationPtr);
     LFR_DELETE_PTR(modelReleasePtr);
 }
 
 void lifuren::PoetryWindow::saveConfig() {
     lifuren::Configuration::saveConfig();
-}
-
-void lifuren::PoetryWindow::redrawConfigElement() {
-    const auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    pathPathPtr->value(poetryConfig.path.c_str());
 }
 
 void lifuren::PoetryWindow::drawElement() {
@@ -80,12 +71,8 @@ void lifuren::PoetryWindow::drawElement() {
     embeddingPtr    = new Fl_Button(180, 210, 100, 30, "诗词嵌入");
     trainPtr        = new Fl_Button(280, 210, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(380, 210, 100, 30, "生成诗词");
-    finetunePtr     = new Fl_Button(480, 210, 100, 30, "模型微调");
-    quantizationPtr = new Fl_Button(580, 210, 100, 30, "模型量化");
-    modelReleasePtr = new Fl_Button(680, 210, 100, 30, "释放模型");
+    modelReleasePtr = new Fl_Button(480, 210, 100, 30, "释放模型");
     // 绑定事件
-    const auto& poetryConfig = lifuren::config::CONFIG.poetry;
-    lifuren::fillChoice(clientPtr, poetryConfig.clients, poetryConfig.client);
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
@@ -93,22 +80,25 @@ void lifuren::PoetryWindow::drawElement() {
     trainPtr->callback(trainCallback, this);
     generatePtr->callback(generateCallback, this);
     modelReleasePtr->callback(modelReleaseCallback, this);
-    this->redrawConfigElement();
+    // 功能提示
+    pepperPtr->tooltip("诗词分词去重通过ollama转为词嵌入文件加速诗词嵌入");
+    // 默认数据
+    const auto& poetryConfig = lifuren::config::CONFIG.poetry;
+    lifuren::fillChoice(clientPtr, poetryConfig.clients, poetryConfig.client);
+    pathPathPtr->value(poetryConfig.path.c_str());
+    modelPathPtr->value(poetryConfig.model.c_str());
 }
 
 static void trainCallback(Fl_Widget*, void*) {
-
+    if(!poetizeClient) {
+        fl_message("没有终端实例");
+        return;
+    }
 }
 
 static void generateCallback(Fl_Widget*, void* voidPtr) {
-    if(clientPtr->value() < 0) {
-        fl_message("没有选择诗词终端");
-        return;
-    }
-    // TODO: 验证是否正在运行
-    poetizeClient = lifuren::getPoetizeClient(clientPtr->text());
     if(!poetizeClient) {
-        fl_message("不支持的终端：{}", clientPtr->text());
+        fl_message("没有终端实例");
         return;
     }
 }
@@ -117,15 +107,18 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!poetizeClient) {
         return;
     }
-    // TODO: 验证是否正在运行
+    if(lifuren::ThreadWindow::checkPoetryThread()) {
+        fl_message("当前还有任务运行不能释放模型：请先停止任务");
+        return;
+    }
     poetizeClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::PoetryWindow* windowPtr = static_cast<lifuren::PoetryWindow*>(voidPtr);
-    auto& poetryConfig = lifuren::config::CONFIG.poetry;
+    auto& poetryConfig  = lifuren::config::CONFIG.poetry;
     poetryConfig.client = clientPtr->text();
-    windowPtr->redrawConfigElement();
+    poetizeClient       = lifuren::getPoetizeClient(poetryConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

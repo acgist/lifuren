@@ -20,7 +20,7 @@ torch::Tensor lifuren::SuxinModuleImpl::forward(torch::Tensor input) {
     return result;
 }
 
-lifuren::SuxinModel::SuxinModel(lifuren::ModelParams params) : Model(params) {
+lifuren::SuxinModel::SuxinModel(lifuren::config::ModelParams params) : Model(params) {
 }
 
 lifuren::SuxinModel::~SuxinModel() {

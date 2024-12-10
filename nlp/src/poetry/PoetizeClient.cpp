@@ -11,7 +11,7 @@ lifuren::PoetizeClient<M>::~PoetizeClient() {
 }
 
 template<typename M>
-std::string lifuren::PoetizeClient<M>::pred(const PoetizeOptions& input) {
+std::string lifuren::PoetizeClient<M>::pred(const PoetizeParams& input) {
     // TODO: 实现
     return {};
 };

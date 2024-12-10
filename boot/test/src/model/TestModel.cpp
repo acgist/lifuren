@@ -33,7 +33,7 @@ class SimpleModel : public lifuren::Model<
 > {
 
 public:
-    SimpleModel(lifuren::ModelParams params = {}) : Model(params) {
+    SimpleModel(lifuren::config::ModelParams params = {}) : Model(params) {
     }
     virtual ~SimpleModel() {
     }

@@ -99,10 +99,6 @@ public:
      * 保存配置
      */
     virtual void saveConfig();
-    /**
-     * 重新绘制配置组件
-     */
-    virtual void redrawConfigElement() = 0;
 
 };
 
@@ -148,7 +144,6 @@ public:
 
 public:
     virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
     
 protected:
     virtual void drawElement() override;
@@ -171,7 +166,6 @@ public:
 
 public:
     virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
     
 protected:
     virtual void drawElement() override;
@@ -194,7 +188,6 @@ public:
 
 public:
     virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
     
 protected:
     virtual void drawElement() override;
@@ -217,7 +210,6 @@ public:
 
 public:
     virtual void saveConfig() override;
-    virtual void redrawConfigElement() override;
 
 protected:
     virtual void drawElement() override;
@@ -267,11 +259,15 @@ protected:
     virtual void drawElement() override;
 
 public:
-    static bool hasThread  (lifuren::message::Type type);
     static void showThread (lifuren::message::Type type);
-    static bool checkThread(lifuren::message::Type type);
+    static bool checkThread(lifuren::message::Type type); // 判断是否还有相同后台任务
     static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr);
     static bool stopThread (lifuren::message::Type type);
+    static bool checkDepend(lifuren::message::Type type); // 判断是否可以执行
+    static bool checkAudioThread();
+    static bool checkImageThread();
+    static bool checkVideoThread();
+    static bool checkPoetryThread();
 
 };
 

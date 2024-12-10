@@ -9,7 +9,7 @@
 mkdir -p /data/ollama ; cd $_
 
 # 环境
-conda create --name ollama python=3.11
+conda create --name ollama python=3.12
 conda activate ollama
 
 # 下载

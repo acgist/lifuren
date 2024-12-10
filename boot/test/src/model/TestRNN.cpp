@@ -2,8 +2,13 @@
 
 #include <random>
 
+#include "spdlog/fmt/ostr.h"
+
 #include "lifuren/Model.hpp"
 #include "lifuren/Dataset.hpp"
+
+LFR_FORMAT_LOG_STREAM(at::Tensor)
+LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 [[maybe_unused]] static void testGRU() {
     // https://pytorch.org/docs/stable/generated/torch.nn.GRU.html
@@ -86,7 +91,7 @@ class RNNModel : public lifuren::Model<
 > {
 
 public:
-    RNNModel(lifuren::ModelParams params = {}) : Model(params) {
+    RNNModel(lifuren::config::ModelParams params = {}) : Model(params) {
     }
     virtual ~RNNModel() {
     }

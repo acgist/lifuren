@@ -2,6 +2,8 @@
 
 `Anaconda`是一个用于科学计算的`Python`发行版，包含了众多流行的科学计算、数据分析的`Python`包。
 
+本项目不需要`Conda`环境，但是鉴于需要学习使用其他项目，所以还是使用`Conda`区分不同环境。
+
 ## 部署
 
 ```
@@ -64,7 +66,7 @@ conda update  xxxx
 conda install xxxx
 
 # 创建虚拟环境
-conda create --name 环境名称 python=3.11
+conda create --name 环境名称 python=3.12
 # 激活某个环境
 conda activate 环境名称
 # 退出当前环境

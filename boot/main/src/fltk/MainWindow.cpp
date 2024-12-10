@@ -81,8 +81,8 @@ lifuren::MainWindow::~MainWindow() {
 void lifuren::MainWindow::drawElement() {
     // 绘制界面
     poetryButtonPtr = new Fl_Button(20,                      10,             LFR_HALF_WIDTH(60), 80, "诗词生成");
-    imageButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10,             LFR_HALF_WIDTH(60), 80, "图片生成");
-    audioButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "音频生成");
+    audioButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10,             LFR_HALF_WIDTH(60), 80, "音频生成");
+    imageButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "图片生成");
     videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "视频生成");
     reloadButtonPtr = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
     aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
@@ -98,11 +98,11 @@ void lifuren::MainWindow::drawElement() {
 }
 
 // 定义窗口
-LFR_BUTTON_CALLBACK_FUNCTION(audioCallback,  AudioWindow,  audioWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(imageCallback,  ImageWindow,  imageWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(poetryCallback, PoetryWindow, poetryWindowPtr, LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT);
-LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  512,              256);
+LFR_BUTTON_CALLBACK_FUNCTION(audioCallback,  AudioWindow,  audioWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(imageCallback,  ImageWindow,  imageWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(poetryCallback, PoetryWindow, poetryWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 
 static void reloadCallback(Fl_Widget*, void*) {
     lifuren::config::loadConfig();

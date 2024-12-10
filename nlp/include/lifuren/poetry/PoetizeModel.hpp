@@ -47,7 +47,7 @@ class SuxinModel : public lifuren::Model<
 > {
 
 public:
-    SuxinModel(lifuren::ModelParams params = {});
+    SuxinModel(lifuren::config::ModelParams params = {});
     virtual ~SuxinModel();
 
 public:

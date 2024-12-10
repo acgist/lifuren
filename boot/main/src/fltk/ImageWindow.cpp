@@ -20,8 +20,6 @@ static Fl_Input * imagePathPtr   { nullptr };
 static Fl_Button* imageChoosePtr { nullptr };
 static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
-static Fl_Button* finetunePtr    { nullptr };
-static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
 static std::unique_ptr<lifuren::PaintModelClient> paintClient{ nullptr };
@@ -49,18 +47,11 @@ lifuren::ImageWindow::~ImageWindow() {
     LFR_DELETE_PTR(imageChoosePtr);
     LFR_DELETE_PTR(trainPtr);
     LFR_DELETE_PTR(generatePtr);
-    LFR_DELETE_PTR(finetunePtr);
-    LFR_DELETE_PTR(quantizationPtr);
     LFR_DELETE_PTR(modelReleasePtr);
 }
 
 void lifuren::ImageWindow::saveConfig() {
     lifuren::Configuration::saveConfig();
-}
-
-void lifuren::ImageWindow::redrawConfigElement() {
-    const auto& imageConfig = lifuren::config::CONFIG.image;
-    pathPathPtr->value(imageConfig.path.c_str());
 }
 
 void lifuren::ImageWindow::drawElement() {
@@ -74,12 +65,8 @@ void lifuren::ImageWindow::drawElement() {
     imageChoosePtr  = new Fl_Button(480, 130, 100, 30, "选择图片");
     trainPtr        = new Fl_Button( 80, 170, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(180, 170, 100, 30, "生成图片");
-    finetunePtr     = new Fl_Button(280, 170, 100, 30, "模型微调");
-    quantizationPtr = new Fl_Button(380, 170, 100, 30, "模型量化");
-    modelReleasePtr = new Fl_Button(480, 170, 100, 30, "释放模型");
+    modelReleasePtr = new Fl_Button(280, 170, 100, 30, "释放模型");
     // 绑定事件
-    const auto& imageConfig = lifuren::config::CONFIG.image;
-    lifuren::fillChoice(clientPtr, imageConfig.clients, imageConfig.client);
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
@@ -87,21 +74,23 @@ void lifuren::ImageWindow::drawElement() {
     trainPtr->callback(trainCallback, this);
     generatePtr->callback(generateCallback, this);
     modelReleasePtr->callback(modelReleaseCallback, this);
-    this->redrawConfigElement();
+    // 默认数据
+    const auto& imageConfig = lifuren::config::CONFIG.image;
+    lifuren::fillChoice(clientPtr, imageConfig.clients, imageConfig.client);
+    pathPathPtr->value(imageConfig.path.c_str());
+    modelPathPtr->value(imageConfig.model.c_str());
 }
 
 static void trainCallback(Fl_Widget*, void*) {
+    if(!paintClient) {
+        fl_message("没有终端实例");
+        return;
+    }
 }
 
 static void generateCallback(Fl_Widget*, void*) {
-    if(clientPtr->value() < 0) {
-        fl_message("没有选择会话终端");
-        return;
-    }
-    // TODO: 验证是否正在运行
-    paintClient = lifuren::getPaintClient(clientPtr->text());
     if(!paintClient) {
-        fl_message("不支持的终端：{}", clientPtr->text());
+        fl_message("没有终端实例");
         return;
     }
 }
@@ -110,7 +99,10 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!paintClient) {
         return;
     }
-    // TODO: 验证是否正在运行
+    if(lifuren::ThreadWindow::checkImageThread()) {
+        fl_message("当前还有任务运行不能释放模型：请先停止任务");
+        return;
+    }
     paintClient = nullptr;
 }
 
@@ -118,7 +110,7 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::ImageWindow* windowPtr = static_cast<lifuren::ImageWindow*>(voidPtr);
     auto& imageConfig  = lifuren::config::CONFIG.image;
     imageConfig.client = clientPtr->text();
-    windowPtr->redrawConfigElement();
+    paintClient        = lifuren::getPaintClient(imageConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

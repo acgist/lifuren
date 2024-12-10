@@ -23,26 +23,18 @@
 
 namespace lifuren {
 
-struct PoetizeConfigOptions {
-    
-    std::string model;         // 模型
-    std::string train_path {}; // 训练数据集路径
-    std::string val_path   {}; // 验证数据集路径
-    std::string test_path  {}; // 测试数据集路径
+struct PoetizeParams {
 
-};
-
-struct PoetizeOptions {
-
+    std::string model;                // 模型
     std::string rhythm;               // 格律
     std::vector<std::string> prompts; // 提示
 
 };
 
-using PoetizeModelClient = ModelClient<PoetizeConfigOptions, PoetizeOptions, std::string>;
+using PoetizeModelClient = ModelClient<lifuren::config::ModelParams, PoetizeParams, std::string>;
 
 template<typename M>
-using PoetizeModelImplClient = ModelImplClient<PoetizeConfigOptions, PoetizeOptions, std::string, M>;
+using PoetizeModelImplClient = ModelImplClient<lifuren::config::ModelParams, PoetizeParams, std::string, M>;
 
 extern std::unique_ptr<lifuren::PoetizeModelClient> getPoetizeClient(const std::string& client);
 
@@ -57,7 +49,7 @@ public:
     virtual ~PoetizeClient();
 
 public:
-    std::string pred(const PoetizeOptions& input) override;
+    std::string pred(const PoetizeParams& input) override;
 
 };
 

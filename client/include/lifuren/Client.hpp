@@ -32,17 +32,10 @@ namespace lifuren {
 template<typename C, typename I, typename O>
 class ModelClient {
 
-protected:
-    // 模型配置
-    C config;
-
-public:
-    ModelClient(C config = {});
-
 public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
-    virtual void trainValAndTest(const bool& val = true, const bool& test = true) = 0;
+    virtual void trainValAndTest(C params, const bool& val = true, const bool& test = true) = 0;
     virtual O    pred(const I& input) = 0;
 
 };
@@ -63,12 +56,9 @@ protected:
     std::unique_ptr<M> model{ nullptr };
 
 public:
-    ModelImplClient(C config = {});
-
-public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
-    virtual void trainValAndTest(const bool& val = true, const bool& test = true);
+    virtual void trainValAndTest(C params, const bool& val = true, const bool& test = true);
     virtual O    pred(const I& input) = 0;
 
 };
@@ -268,26 +258,25 @@ public:
 
 } // END OF lifuren
 
-template<typename C, typename I, typename O>
-lifuren::ModelClient<C, I, O>::ModelClient(C config) : config(config) {
-}
-
-template<typename C, typename I, typename O, typename M>
-lifuren::ModelImplClient<C, I, O, M>::ModelImplClient(C config) : lifuren::ModelClient<C, I, O>(config) {
-}
-
 template<typename C, typename I, typename O, typename M>
 bool lifuren::ModelImplClient<C, I, O, M>::save(const std::string& path, const std::string& filename) {
+    if(!this->model) {
+        return false;
+    }
     return this->model->save(path, filename);
 };
 
 template<typename C, typename I, typename O, typename M>
 bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path, const std::string& filename) {
+    if(!this->model) {
+        return false;
+    }
     return this->model->load(path, filename);
 };
 
 template<typename C, typename I, typename O, typename M>
-void lifuren::ModelImplClient<C, I, O, M>::trainValAndTest(const bool& val, const bool& test) {
+void lifuren::ModelImplClient<C, I, O, M>::trainValAndTest(C params, const bool& val, const bool& test) {
+    this->model = std::make_unique<M>(params);
     this->model->trainValAndTest(val, test);
 };
 

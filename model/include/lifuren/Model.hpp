@@ -26,29 +26,10 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
+#include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 
 namespace lifuren {
-
-/**
- * 模型参数
- */
-struct ModelParams {
-
-    float       lr         { 0.001F    }; // 学习率
-    size_t      batch_size { 100LL     }; // 批量大小
-    size_t      epoch_count{ 128LL     }; // 训练次数
-    bool        classify   { false     }; // 分类任务
-    bool        check_point{ false     }; // 保存快照
-    std::string check_path { "./"      }; // 快照路径
-    std::string model_name { "lifuren" }; // 模型名称
-    std::string train_path {}; // 训练数据集路径
-    std::string val_path   {}; // 验证数据集路径
-    std::string test_path  {}; // 测试数据集路径
-    torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
-    size_t thread_size{ std::thread::hardware_concurrency() }; // 线程数量
-
-};
 
 // 损失函数
 template<typename T>
@@ -72,17 +53,18 @@ template<typename D, typename L, typename P, typename M>
 class Model {
 
 protected:
-    ModelParams params{};      // 模型参数
+    lifuren::config::ModelParams params{}; // 模型参数
     D trainDataset{ nullptr }; // 训练数据集
     D valDataset  { nullptr }; // 验证数据集
     D testDataset { nullptr }; // 测试数据集
     L loss        { nullptr }; // 损失函数
     M model       { nullptr }; // 模型结构
     std::unique_ptr<P> optimizer{ nullptr }; // 优化函数
+    torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
 
 public:
     Model(
-        ModelParams params = {},
+        lifuren::config::ModelParams params = {},
         L loss  = {},
         M model = {}
     );
@@ -123,7 +105,7 @@ protected:
 
 template<typename D, typename L, typename P, typename M>
 lifuren::Model<D, L, P, M>::Model(
-    lifuren::ModelParams params,
+    lifuren::config::ModelParams params,
     L loss,
     M model
 ) : params(std::move(params)),
@@ -133,10 +115,13 @@ lifuren::Model<D, L, P, M>::Model(
     if(this->model) {
         this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
     }
-    lifuren::setDevice(this->params.device);
+    if(this->params.thread_size == 0) {
+        this->params.thread_size = std::thread::hardware_concurrency();
+    }
+    lifuren::setDevice(this->device);
+    // torch::set_default_dtype(this->device);
     torch::set_num_threads(this->params.thread_size);
-    // torch::set_default_dtype(this->params.device);
-    SPDLOG_DEBUG("当前计算设备：{}", torch::DeviceTypeName(this->params.device));
+    SPDLOG_DEBUG("当前计算设备：{}", torch::DeviceTypeName(this->device));
 }
 
 template<typename D, typename L, typename P, typename M>
@@ -170,7 +155,7 @@ bool lifuren::Model<D, L, P, M>::load(const std::string& path, const std::string
 
 template<typename D, typename L, typename P, typename M>
 bool lifuren::Model<D, L, P, M>::define() {
-    this->model->to(this->params.device);
+    this->model->to(this->device);
     return this->defineDataset();
 }
 

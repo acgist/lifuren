@@ -6,6 +6,7 @@
  * ./lifuren[.exe] paint     [train|pred] [model|dataset] file
  * ./lifuren[.exe] compose   [train|pred] [model|dataset] file
  * ./lifuren[.exe] poetize   [train|pred] [model|dataset] prompt
+ * quantization
  * ./lifuren[.exe] pcm       path
  * ./lifuren[.exe] pepper    path
  * ./lifuren[.exe] embedding path

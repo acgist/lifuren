@@ -48,8 +48,13 @@
     client.truncateIndex();
 }
 
+[[maybe_unused]] static void testRAGClientRag() {
+    lifuren::RAGClient::rag("faiss", lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama");
+}
+
 LFR_TEST(
     testRAGClientIndex();
     // testRAGClientSearch();
     // testRAGClientTruncate();
+    testRAGClientRag();
 );

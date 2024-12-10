@@ -11,7 +11,7 @@ lifuren::ActClient<M>::~ActClient() {
 }
 
 template<typename M>
-std::string lifuren::ActClient<M>::pred(const ActOptions& input) {
+std::string lifuren::ActClient<M>::pred(const ActParams& input) {
     // TODO: 实现
     return {};
 };

@@ -10,26 +10,18 @@
 
 namespace lifuren {
 
-struct PaintConfigOptions {
+struct PaintParams {
 
-    std::string model;         // 模型
-    std::string train_path {}; // 训练数据集路径
-    std::string val_path   {}; // 验证数据集路径
-    std::string test_path  {}; // 测试数据集路径
-
-};
-
-struct PaintOptions {
-
+    std::string model;  // 模型
     std::string image;  // 图片文件
     std::string output; // 输出文件
     
 };
 
-using PaintModelClient = ModelClient<PaintConfigOptions, PaintOptions, std::string>;
+using PaintModelClient = ModelClient<lifuren::config::ModelParams, PaintParams, std::string>;
 
 template<typename M>
-using PaintModelImplClient = ModelImplClient<PaintConfigOptions, PaintOptions, std::string, M>;
+using PaintModelImplClient = ModelImplClient<lifuren::config::ModelParams, PaintParams, std::string, M>;
 
 extern std::unique_ptr<lifuren::PaintModelClient> getPaintClient(const std::string& client);
 
@@ -46,7 +38,7 @@ public:
 
 public:
 public:
-    std::string pred(const PaintOptions& input) override;
+    std::string pred(const PaintParams& input) override;
 
 };
 

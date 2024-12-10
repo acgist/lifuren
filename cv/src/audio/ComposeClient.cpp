@@ -3,7 +3,7 @@
 #include "lifuren/audio/ComposeModel.hpp"
 
 template<typename M>
-lifuren::ComposeClient<M>::ComposeClient(ComposeConfigOptions config) : ComposeModelImplClient<M>(std::move(config)) {
+lifuren::ComposeClient<M>::ComposeClient() {
 }
 
 template<typename M>
@@ -11,7 +11,7 @@ lifuren::ComposeClient<M>::~ComposeClient() {
 }
 
 template<typename M>
-std::string lifuren::ComposeClient<M>::pred(const ComposeOptions& input) {
+std::string lifuren::ComposeClient<M>::pred(const ComposeParams& input) {
     // TODO: 实现
     return {};
 };

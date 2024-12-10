@@ -23,8 +23,6 @@ static Fl_Button* audioChoosePtr { nullptr };
 static Fl_Button* pcmPtr         { nullptr };
 static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
-static Fl_Button* finetunePtr    { nullptr };
-static Fl_Button* quantizationPtr{ nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
 static std::unique_ptr<lifuren::ComposeModelClient> composeClient{ nullptr };
@@ -54,18 +52,11 @@ lifuren::AudioWindow::~AudioWindow() {
     LFR_DELETE_PTR(pcmPtr);
     LFR_DELETE_PTR(trainPtr);
     LFR_DELETE_PTR(generatePtr);
-    LFR_DELETE_PTR(finetunePtr);
-    LFR_DELETE_PTR(quantizationPtr);
     LFR_DELETE_PTR(modelReleasePtr);
 }
 
 void lifuren::AudioWindow::saveConfig() {
     lifuren::Configuration::saveConfig();
-}
-
-void lifuren::AudioWindow::redrawConfigElement() {
-    const auto& audioConfig = lifuren::config::CONFIG.audio;
-    pathPathPtr->value(audioConfig.path.c_str());
 }
 
 void lifuren::AudioWindow::drawElement() {
@@ -80,12 +71,8 @@ void lifuren::AudioWindow::drawElement() {
     pcmPtr          = new Fl_Button( 80, 170, 100, 30, "PCM转换");
     trainPtr        = new Fl_Button(180, 170, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(280, 170, 100, 30, "生成音频");
-    finetunePtr     = new Fl_Button(380, 170, 100, 30, "模型微调");
-    quantizationPtr = new Fl_Button(480, 170, 100, 30, "模型量化");
-    modelReleasePtr = new Fl_Button(580, 170, 100, 30, "释放模型");
+    modelReleasePtr = new Fl_Button(380, 170, 100, 30, "释放模型");
     // 绑定事件
-    const auto& audioConfig = lifuren::config::CONFIG.audio;
-    lifuren::fillChoice(clientPtr, audioConfig.clients, audioConfig.client);
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
@@ -94,7 +81,11 @@ void lifuren::AudioWindow::drawElement() {
     trainPtr->callback(trainCallback, this);
     generatePtr->callback(generateCallback, this);
     modelReleasePtr->callback(modelReleaseCallback, this);
-    this->redrawConfigElement();
+    // 默认数据
+    const auto& audioConfig = lifuren::config::CONFIG.audio;
+    lifuren::fillChoice(clientPtr, audioConfig.clients, audioConfig.client);
+    pathPathPtr->value(audioConfig.path.c_str());
+    modelPathPtr->value(audioConfig.model.c_str());
 }
 
 static void pcmCallback(Fl_Widget*, void*) {
@@ -118,17 +109,15 @@ static void pcmCallback(Fl_Widget*, void*) {
 }
 
 static void trainCallback(Fl_Widget*, void*) {
+    if(!composeClient) {
+        fl_message("没有终端实例");
+        return;
+    }
 }
 
 static void generateCallback(Fl_Widget*, void*) {
-    if(clientPtr->value() < 0) {
-        fl_message("没有选择作曲终端");
-        return;
-    }
-    // TODO: 验证是否正在运行
-    composeClient = lifuren::getComposeClient(clientPtr->text());
     if(!composeClient) {
-        fl_message("不支持的终端：{}", clientPtr->text());
+        fl_message("没有终端实例");
         return;
     }
 }
@@ -137,15 +126,21 @@ static void modelReleaseCallback(Fl_Widget*, void*) {
     if(!composeClient) {
         return;
     }
-    // TODO: 验证是否正在运行
+    if(lifuren::ThreadWindow::checkAudioThread()) {
+        fl_message("当前还有任务运行不能释放模型：请先停止任务");
+        return;
+    }
     composeClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
+    if(composeClient) {
+        fl_message("当前已有终端运行：请先释放模型");
+    }
     lifuren::AudioWindow* windowPtr = static_cast<lifuren::AudioWindow*>(voidPtr);
     auto& audioConfig  = lifuren::config::CONFIG.audio;
     audioConfig.client = clientPtr->text();
-    windowPtr->redrawConfigElement();
+    composeClient      = lifuren::getComposeClient(audioConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

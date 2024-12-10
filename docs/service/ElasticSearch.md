@@ -1,6 +1,6 @@
 # ElasticSearch
 
-`RAG`相关功能
+`ES`提供向量存储搜索功能，推荐使用`Faiss`。
 
 ## 部署
 

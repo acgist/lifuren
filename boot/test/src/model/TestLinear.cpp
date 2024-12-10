@@ -36,7 +36,7 @@ class LinearModel : public lifuren::Model<
 > {
 
 public:
-    LinearModel(lifuren::ModelParams params = {
+    LinearModel(lifuren::config::ModelParams params = {
         .lr = 0.001F,
         .batch_size = 10,
         .epoch_count = 256
