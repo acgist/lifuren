@@ -32,7 +32,7 @@ TORCH_MODULE(TangxianzuModule);
  * 汤显祖模型
  */
 class TangxianzuModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::VideoFileGANDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     TangxianzuModule
@@ -71,7 +71,7 @@ TORCH_MODULE(GuanhanqingModule);
  * 关汉卿模型
  */
 class GuanhanqingModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::VideoFileStyleDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     GuanhanqingModule

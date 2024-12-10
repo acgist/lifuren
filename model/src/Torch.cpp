@@ -18,10 +18,10 @@ void lifuren::setDevice(torch::DeviceType& type) {
     }
 }
 
-void lifuren::logTensor(const torch::Tensor& tensor) {
-    SPDLOG_DEBUG("{}", tensor);
+void lifuren::logTensor(const char* message, const torch::Tensor& tensor) {
+    SPDLOG_DEBUG("{}\n{}", message, tensor);
 }
 
-void lifuren::logTensor(const c10::IntArrayRef& tensor) {
-    SPDLOG_DEBUG("{}", tensor);
+void lifuren::logTensor(const char* message, const c10::IntArrayRef& tensor) {
+    SPDLOG_DEBUG("{}\n{}", message, tensor);
 }

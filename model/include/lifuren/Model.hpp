@@ -162,12 +162,10 @@ bool lifuren::Model<D, L, P, M>::define() {
 template<typename D, typename L, typename P, typename M>
 void lifuren::Model<D, L, P, M>::print() {
     for(const auto& value : this->model->parameters()) {
-        SPDLOG_DEBUG("parameters");
-        lifuren::logTensor(value);
+        lifuren::logTensor("parameters", value);
     }
     for(const auto& value : this->model->named_parameters()) {
-        SPDLOG_DEBUG("named_parameters: {}", value.key());
-        lifuren::logTensor(value.value());
+        lifuren::logTensor(value.key().c_str(), value.value());
     }
 }
 

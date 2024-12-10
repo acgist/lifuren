@@ -10,9 +10,9 @@ namespace lifuren {
 
 extern void setDevice(torch::DeviceType& type);
 
-extern void logTensor(const torch::Tensor& tensor);
+extern void logTensor(const char* message, const torch::Tensor& tensor);
 
-extern void logTensor(const c10::IntArrayRef& tensor);
+extern void logTensor(const char* message, const c10::IntArrayRef& tensor);
 
 } // END OF lifuren
 

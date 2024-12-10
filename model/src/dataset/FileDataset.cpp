@@ -13,7 +13,7 @@ lifuren::dataset::FileDataset::FileDataset(
     const std::string& path,
     const std::vector<std::string>& exts,
     const std::map<std::string, float>& classify,
-    const std::function<torch::Tensor(const std::string&)> transform
+    const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
 ) {
     if(!lifuren::file::exists(path) || !lifuren::file::isDirectory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
@@ -28,7 +28,7 @@ lifuren::dataset::FileDataset::FileDataset(
             lifuren::file::listFile(files, path.string(), exts);
             for(const auto& file : files) {
                 SPDLOG_DEBUG("加载文件：{}", file);
-                this->features.push_back(std::move(transform(file).to(this->device)));
+                this->features.push_back(std::move(transform(file, this->device)));
             }
             this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(path.filename().string()), torch::kFloat32).to(this->device));
         } else {

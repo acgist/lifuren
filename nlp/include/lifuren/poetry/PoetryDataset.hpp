@@ -56,8 +56,6 @@ inline void writeEnd(std::ofstream& stream, const short& flag) {
  */
 extern bool fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm);
 
-extern torch::Tensor feature(const std::string& file, const torch::DeviceType& type);
-
 } // END OF poetry
 
 inline torch::Tensor cat(
@@ -84,7 +82,6 @@ inline torch::Tensor cat(
 /**
  * @param batch_size 批量大小
  * @param path       文件目录
- * @param client     词嵌入终端
  * 
  * @return 诗词数据集
  */

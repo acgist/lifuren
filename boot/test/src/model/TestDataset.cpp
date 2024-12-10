@@ -100,12 +100,11 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 }
 
 [[maybe_unused]] static void testLoadImageFileDataset() {
-    auto loader = lifuren::dataset::loadImageFileDataset(
+    auto loader = lifuren::dataset::loadImageFileClassifyDataset(
         200,
         200,
         5,
         lifuren::file::join({lifuren::config::CONFIG.tmp, "gender", "train"}).string(),
-        ".jpg",
         {
             { "man"  , 1.0F },
             { "woman", 0.0F }

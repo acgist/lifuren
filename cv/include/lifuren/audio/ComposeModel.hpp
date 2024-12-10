@@ -33,7 +33,7 @@ TORCH_MODULE(ShikuangModule);
  * 师旷模型
  */
 class ShikuangModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::AudioFileStyleDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     ShikuangModule
@@ -72,7 +72,7 @@ TORCH_MODULE(LiguinianModule);
  * 李龟年模型
  */
 class LiguinianModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::AudioFileGANDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     LiguinianModule

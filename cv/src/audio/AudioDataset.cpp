@@ -20,7 +20,7 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::dataset::audio:
 }
 
 std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::dataset::audio::pcm_mag_pha_stft(
-    std::vector<short> pcm,
+    std::vector<short>& pcm,
     float& norm_factor,
     int n_fft,
     int hop_size,

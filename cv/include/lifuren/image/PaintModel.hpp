@@ -33,7 +33,7 @@ TORCH_MODULE(WudaoziModule);
  * 吴道子模型
  */
 class WudaoziModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::ImageFileStyleDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     WudaoziModule
@@ -72,7 +72,7 @@ TORCH_MODULE(GukaizhiModule);
  * 顾恺之模型
  */
 class GukaizhiModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
+    lifuren::dataset::ImageFileGANDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     GukaizhiModule

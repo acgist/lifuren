@@ -94,7 +94,7 @@ public:
         const std::string& path,
         const std::vector<std::string>& exts,
         const std::map<std::string, float>& classify,
-        const std::function<torch::Tensor(const std::string&)> transform
+        const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
     );
     /**
      * path/file.ext

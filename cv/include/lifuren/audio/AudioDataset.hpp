@@ -6,11 +6,17 @@
 
 #include "lifuren/Dataset.hpp"
 
+#include <fstream>
+
+#include "spdlog/spdlog.h"
+
+#ifndef DATASET_PCM_LENGTH
+#define DATASET_PCM_LENGTH 480
+#endif
+
 namespace lifuren::dataset {
 
 namespace audio {
-
-extern torch::Tensor feature(const std::string& file, const torch::DeviceType& type);
 
 /**
  * 短时傅里叶变换
@@ -40,7 +46,7 @@ extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
  * @return [mag, pha, com]
  */
 extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> pcm_mag_pha_stft(
-    std::vector<short> pcm,
+    std::vector<short>& pcm,
     float& norm_factor,
     int n_fft    = 400,
     int hop_size = 100,
@@ -89,6 +95,76 @@ extern std::vector<short> pcm_mag_pha_istft(
 );
 
 }
+
+inline auto loadAudioFileGANDataset(
+    const size_t& batch_size,
+    const std::string& path
+) -> decltype(auto) {
+    auto dataset = lifuren::dataset::FileDataset(
+        path,
+        ".json",
+        { ".pcm" },
+        [] (const std::string& audio_file, const std::string& label_file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
+            // TODO: label embedding
+            // TODO: image rnn
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+using AudioFileGANDatasetLoader = std::invoke_result<
+    decltype(&lifuren::dataset::loadAudioFileGANDataset),
+    const size_t&,
+    const std::string&
+>::type;
+
+inline auto loadAudioFileStyleDataset(
+    const size_t& batch_size,
+    const std::string& path
+) -> decltype(auto) {
+    auto dataset = lifuren::dataset::FileDataset(
+        path,
+        "source",
+        "target",
+        { ".pcm" },
+        [] (const std::string& source, const std::string& target, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
+            std::ifstream source_stream;
+            std::ifstream target_stream;
+            source_stream.open(source, std::ios_base::binary);
+            target_stream.open(source, std::ios_base::binary);
+            if(!source_stream.is_open() || !target_stream.is_open()) {
+                SPDLOG_DEBUG("打开文件失败：{} - {}", source, target);
+                source_stream.close();
+                target_stream.close();
+                return;
+            }
+            std::vector<short> source_pcm;
+            std::vector<short> target_pcm;
+            source_pcm.resize(DATASET_PCM_LENGTH);
+            target_pcm.resize(DATASET_PCM_LENGTH);
+            while(
+                source_stream.read(reinterpret_cast<char*>(source_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
+                target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short))
+            ) {
+                float norm_factor;
+                // 短时傅里叶变换
+                auto source_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(source_pcm, norm_factor);
+                features.push_back(std::move(torch::cat({ std::get<0>(source_tuple), std::get<1>(source_tuple) }).to(device)));
+                auto target_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(target_pcm, norm_factor);
+                labels.push_back(std::move(torch::cat({ std::get<0>(target_tuple), std::get<1>(target_tuple) }).to(device)));
+            }
+            source_stream.close();
+            target_stream.close();
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+using AudioFileStyleDatasetLoader = std::invoke_result<
+    decltype(&lifuren::dataset::loadAudioFileStyleDataset),
+    const size_t&,
+    const std::string&
+>::type;
     
 } // END OF lifuren::dataset
 

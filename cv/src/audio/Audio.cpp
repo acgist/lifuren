@@ -115,7 +115,9 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
         return false;
     }
     // 写入头部
-    avformat_write_header(outputCtx, NULL);
+    if(avformat_write_header(outputCtx, NULL) != 0) {
+        SPDLOG_WARN("写入头部失败");
+    }
     while(input.read(data.data(), buffer_size)) {
         size       = input.gcount();
         nb_samples = size / sample_size;
@@ -138,7 +140,9 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     // 刷出缓冲
     encode(pts, nb_samples, NULL, packet, encodeCodecCtx, outputCtx);
     // 写入尾部
-    av_write_trailer(outputCtx);
+    if(av_write_trailer(outputCtx)) {
+        SPDLOG_WARN("写入尾部失败");
+    }
     // 释放资源
     input.close();
     close_encoder(&frame, &packet, &encodeCodecCtx);
