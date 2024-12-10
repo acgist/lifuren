@@ -1,15 +1,16 @@
 #include "lifuren/Dataset.hpp"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Config.hpp"
 
 #include "spdlog/spdlog.h"
 
 std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     std::vector<std::string> ret;
     ret.reserve(3);
-    const auto train_path = lifuren::file::join({ path, "train" });
-    const auto val_path   = lifuren::file::join({ path, "val"   });
-    const auto test_path  = lifuren::file::join({ path, "test"  });
+    const auto train_path = lifuren::file::join({ path, lifuren::config::DATASET_TRAIN });
+    const auto val_path   = lifuren::file::join({ path, lifuren::config::DATASET_VAL   });
+    const auto test_path  = lifuren::file::join({ path, lifuren::config::DATASET_TEST  });
     if(std::filesystem::exists(train_path)) {
         ret.push_back(train_path.string());
     }

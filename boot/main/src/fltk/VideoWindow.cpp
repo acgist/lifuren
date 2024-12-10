@@ -7,6 +7,7 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 
+#include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/video/ActClient.hpp"
@@ -86,6 +87,27 @@ static void trainCallback(Fl_Widget*, void*) {
         fl_message("没有终端实例");
         return;
     }
+    const std::string path = pathPathPtr->value();
+    if(path.empty()) {
+        fl_message("没有选择数据集路径");
+        return;
+    }
+    const std::string model_name = clientPtr->text();
+    lifuren::ThreadWindow::startThread(
+        lifuren::message::Type::VIDEO_MODEL_TRAIN,
+        "视频模型训练",
+        [path, model_name]() {
+            lifuren::config::ModelParams params {
+                .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
+                .model_name = model_name,
+                .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
+                .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL}).string(),
+                .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST}).string(),
+            };
+            actClient->trainValAndTest(params);
+            actClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+        }
+    );
 }
 
 static void generateCallback(Fl_Widget*, void*) {
@@ -93,6 +115,29 @@ static void generateCallback(Fl_Widget*, void*) {
         fl_message("没有终端实例");
         return;
     }
+    const std::string model = modelPathPtr->value();
+    if(model.empty()) {
+        fl_message("没有选择模型路径");
+        return;
+    }
+    const std::string video = videoPathPtr->value();
+    if(video.empty()) {
+        fl_message("没有选择视频输入文件");
+        return;
+    }
+    const std::string output = video + ".output.mp4";
+    lifuren::ThreadWindow::startThread(
+        lifuren::message::Type::VIDEO_MODEL_PRED,
+        "生成视频",
+        [model, video, output]() {
+            lifuren::ActParams params {
+                .model  = model,
+                .video  = video,
+                .output = output
+            };
+            actClient->pred(params);
+        }
+    );
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
@@ -115,8 +160,16 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
     lifuren::fileChooser(widget, voidPtr, "选择文件", "*.{mp4,pt}");
+    auto& videoConfig = lifuren::config::CONFIG.video;
+    if(voidPtr == modelPathPtr) {
+        videoConfig.model = modelPathPtr->value();
+    }
 }
 
 static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
     lifuren::directoryChooser(widget, voidPtr, "选择目录");
+    auto& videoConfig = lifuren::config::CONFIG.video;
+    if(voidPtr == pathPathPtr) {
+        videoConfig.path = pathPathPtr->value();
+    }
 }

@@ -7,6 +7,7 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 
+#include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
@@ -95,7 +96,7 @@ static void pcmCallback(Fl_Widget*, void*) {
         return;
     }
     lifuren::ThreadWindow::startThread(
-        lifuren::message::Type::AUDIO_AUDIO_FILE_TO_PCM_FILE,
+        lifuren::message::Type::AUDIO_AUDIO_TO_PCM,
         "PCM转换",
         []() {
             auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
@@ -113,6 +114,27 @@ static void trainCallback(Fl_Widget*, void*) {
         fl_message("没有终端实例");
         return;
     }
+    const std::string path = pathPathPtr->value();
+    if(path.empty()) {
+        fl_message("没有选择数据集路径");
+        return;
+    }
+    const std::string model_name = clientPtr->text();
+    lifuren::ThreadWindow::startThread(
+        lifuren::message::Type::AUDIO_MODEL_TRAIN,
+        "音频模型训练",
+        [path, model_name]() {
+            lifuren::config::ModelParams params {
+                .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
+                .model_name = model_name,
+                .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
+                .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL}).string(),
+                .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST}).string(),
+            };
+            composeClient->trainValAndTest(params);
+            composeClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+        }
+    );
 }
 
 static void generateCallback(Fl_Widget*, void*) {
@@ -120,6 +142,30 @@ static void generateCallback(Fl_Widget*, void*) {
         fl_message("没有终端实例");
         return;
     }
+    const std::string model = modelPathPtr->value();
+    if(model.empty()) {
+        fl_message("没有选择模型路径");
+        return;
+    }
+    const std::string audio = audioPathPtr->value();
+    if(audio.empty()) {
+        fl_message("没有选择音频输入文件");
+        return;
+    }
+    const std::string output = audio + ".output.pcm";
+    lifuren::ThreadWindow::startThread(
+        lifuren::message::Type::AUDIO_MODEL_PRED,
+        "生成音频",
+        [model, audio, output]() {
+            lifuren::ComposeParams params {
+                .model  = model,
+                .audio  = audio,
+                .output = output
+            };
+            composeClient->pred(params);
+            lifuren::audio::toFile(output);
+        }
+    );
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
@@ -145,8 +191,16 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
     lifuren::fileChooser(widget, voidPtr, "选择文件", "*.{aac,ogg,mp3,pt}");
+    auto& audioConfig = lifuren::config::CONFIG.audio;
+    if(voidPtr == modelPathPtr) {
+        audioConfig.model = modelPathPtr->value();
+    }
 }
 
 static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
     lifuren::directoryChooser(widget, voidPtr, "选择目录");
+    auto& audioConfig = lifuren::config::CONFIG.audio;
+    if(voidPtr == pathPathPtr) {
+        audioConfig.path = pathPathPtr->value();
+    }
 }

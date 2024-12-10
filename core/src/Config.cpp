@@ -64,10 +64,8 @@ const std::string lifuren::config::CONFIG_IMAGE             = "image";
 const std::string lifuren::config::CONFIG_VIDEO             = "video";
 const std::string lifuren::config::CONFIG_POETRY            = "poetry";
 const std::string lifuren::config::CONFIG_MARK              = "mark";
-const std::string lifuren::config::CONFIG_RAG               = "rag";
 const std::string lifuren::config::CONFIG_FAISS             = "faiss";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH     = "elasticsearch";
-const std::string lifuren::config::CONFIG_EMBEDDING         = "embedding";
 const std::string lifuren::config::CONFIG_OLLAMA            = "ollama";
 const std::string lifuren::config::CONFIG_PEPPER            = "pepper";
 const std::string lifuren::config::CONFIG_ACT_TANGXIANZU    = "act-tangxianzu";
@@ -151,23 +149,19 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
             });
         }
     } else if(lifuren::config::CONFIG_POETRY == name) {
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, path,   path,   std::string);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, model,  model,  std::string);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,   size,   int);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length, length, int);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, path,     path,     std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, model,    model,    std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,     size,     int);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length,   length,   int);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client,   client,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, rag-size, rag_size, int);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, embedding-participle, embedding_participle, std::string);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
                 config.poetry.clients.emplace(client.template as<std::string>());
             });
         }
-    } else if(lifuren::config::CONFIG_RAG == name) {
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, type, type, std::string);
-        LFR_CONFIG_YAML_GETTER(config.rag, yaml, size, size, size_t);
-    } else if(lifuren::config::CONFIG_EMBEDDING == name) {
-        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, type,       type,       std::string);
-        LFR_CONFIG_YAML_GETTER(config.embedding, yaml, participle, participle, std::string);
     } else if(lifuren::config::CONFIG_ELASTICSEARCH == name) {
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, api,       api,      std::string);
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, username,  username, std::string);
@@ -249,11 +243,13 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node poetry;
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, path,   path);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, model,  model);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,   size);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length, length);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client, client);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, path,     path);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, model,    model);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,     size);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length,   length);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client,   client);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, rag_size, rag-size);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, embedding_participle, embedding-participle);
         YAML::Node clients;
         std::for_each(config.poetry.clients.begin(), config.poetry.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -262,24 +258,12 @@ static YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_POETRY] = poetry;
     }
     {
-        YAML::Node rag;
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, type, type);
-        LFR_CONFIG_YAML_SETTER(rag, config.rag, size, size);
-        yaml[lifuren::config::CONFIG_RAG] = rag;
-    }
-    {
         YAML::Node elasticsearch;
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, api,       api);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, username,  username);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, password,  password);
         LFR_CONFIG_YAML_SETTER(elasticsearch, config.elasticsearch, authType,  auth-type);
         yaml[lifuren::config::CONFIG_ELASTICSEARCH] = elasticsearch;
-    }
-    {
-        YAML::Node embedding;
-        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, type,       type);
-        LFR_CONFIG_YAML_SETTER(embedding, config.embedding, participle, participle);
-        yaml[lifuren::config::CONFIG_EMBEDDING] = embedding;
     }
     {
         YAML::Node ollama;

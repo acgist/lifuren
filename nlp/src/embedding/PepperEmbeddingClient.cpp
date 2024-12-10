@@ -62,18 +62,18 @@ size_t lifuren::PepperEmbeddingClient::getDims() const {
 }
 
 bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
-    auto pepperPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::PEPPER_WORD_FILE });
+    auto pepperPath = lifuren::config::CONFIG.pepper.path;
     // 读取
     std::set<std::string> old_words;
     if(std::filesystem::exists(pepperPath)) {
         std::ifstream input;
         input.open(pepperPath, std::ios_base::in | std::ios_base::binary);
         if(!input.is_open()) {
-            SPDLOG_WARN("加载pepper失败（文件打开失败）：{}", pepperPath.string());
+            SPDLOG_WARN("加载pepper失败（文件打开失败）：{}", pepperPath);
             input.close();
             return false;
         }
-        SPDLOG_DEBUG("加载pepper：{}", pepperPath.string());
+        SPDLOG_DEBUG("加载pepper：{}", pepperPath);
         size_t wSize;
         size_t vSize;
         std::string word;
@@ -128,7 +128,7 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
     output.open(pepperPath, std::ios_base::app | std::ios_base::out | std::ios_base::binary);
     if(!output.is_open()) {
         output.close();
-        SPDLOG_WARN("文件打开失败：{}", pepperPath.string());
+        SPDLOG_WARN("文件打开失败：{}", pepperPath);
         return false;
     }
     const int batch = 10; // 线程数量

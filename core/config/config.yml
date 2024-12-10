@@ -39,11 +39,10 @@ poetry:
   clients:
     - poetize-lidu
     - poetize-suxin
-# RAG配置
-rag:
-  # faiss|elasticsearch
-  type: faiss
-  size: 4
+  # 返回数量
+  rag-size: 4
+  # char|rhythm
+  embedding-participle: rhythm
 # ElasticSearch配置
 elasticsearch:
   api: http://localhost:9200
@@ -51,12 +50,6 @@ elasticsearch:
   password: elastic
   # NONE|Basic|Token
   auth-type: Basic
-# 词嵌入配置
-embedding:
-  # ollama|pepper
-  type: pepper
-  # char|rhythm
-  participle: rhythm
 # Ollama配置
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:

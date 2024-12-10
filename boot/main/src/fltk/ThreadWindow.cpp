@@ -23,10 +23,6 @@ static Fl_Text_Display* display{ nullptr };
 
 // 映射
 static std::map<lifuren::message::Type, std::shared_ptr<lifuren::thread::ThreadWorker>> thread_worker;
-// 依赖树
-static std::map<lifuren::message::Type, std::vector<lifuren::message::Type>> depend_tree{
-    
-};
 
 static void task_finish(void* voidPtr);
 
@@ -79,9 +75,17 @@ bool lifuren::ThreadWindow::checkThread(lifuren::message::Type type) {
 }
 
 bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback) {
+    // 相同类型任务
     if(checkThread(type)) {
         showThread(type);
         return false;
+    }
+    // 同类型的任务不能同时执行
+    for(const auto& [k, v] : thread_worker) {
+        if(static_cast<int>(k) / 1000 == static_cast<int>(type) / 1000) {
+            showThread(k);
+            return false;
+        }
     }
     ThreadWindow* window = new ThreadWindow(LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT, title);
     window->type = type;
@@ -131,17 +135,6 @@ bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
     }
     iter->second->stop = true;
     return true;
-}
-
-bool lifuren::ThreadWindow::checkDepend(lifuren::message::Type type) {
-    auto iterator = depend_tree.find(type);
-    if(iterator == depend_tree.end()) {
-        return true;
-    }
-    const auto& depends = iterator->second;
-    return std::all_of(depends.begin(), depends.end(), [](const auto& depend) {
-        return !checkDepend(depend);
-    });
 }
 
 bool lifuren::ThreadWindow::checkAudioThread() {

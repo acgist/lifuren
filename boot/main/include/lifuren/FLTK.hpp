@@ -263,7 +263,6 @@ public:
     static bool checkThread(lifuren::message::Type type); // 判断是否还有相同后台任务
     static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr);
     static bool stopThread (lifuren::message::Type type);
-    static bool checkDepend(lifuren::message::Type type); // 判断是否可以执行
     static bool checkAudioThread();
     static bool checkImageThread();
     static bool checkVideoThread();

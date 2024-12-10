@@ -216,7 +216,7 @@ bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, co
 }
 
 static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient, size_t& wCount) {
-    const std::string& participle = lifuren::config::CONFIG.embedding.participle;
+    const std::string& participle = lifuren::config::CONFIG.poetry.embedding_participle;
     lifuren::poetry::Poetry poetry = json;
     poetry.preproccess();
     if(!poetry.matchRhythm()) {

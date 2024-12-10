@@ -25,3 +25,7 @@ void lifuren::logTensor(const torch::Tensor& tensor) {
 void lifuren::logTensor(const c10::IntArrayRef& tensor) {
     SPDLOG_DEBUG("{}", tensor);
 }
+
+void lifuren::quantization(const std::string& model_path) {
+    // TODO: 实现
+}
