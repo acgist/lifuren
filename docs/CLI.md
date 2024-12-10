@@ -11,6 +11,7 @@
 ./lifuren[.exe] pcm          dataset
 ./lifuren[.exe] pepper       dataset
 ./lifuren[.exe] embedding    [faiss|elasticsearch] dataset [pepper|ollama]
-./lifuren[.exe] quantization model
+./lifuren[.exe] transform    [act-tangxianzu|act-guanhanqing...] [ONNX | TorchScript]
+./lifuren[.exe] quantization [act-tangxianzu|act-guanhanqing...] model_path
 ./lifuren[.exe] [?|help]
 ```

@@ -18,11 +18,10 @@ std::string lifuren::PoetizeClient<M>::pred(const PoetizeParams& input) {
 
 std::unique_ptr<lifuren::PoetizeModelClient> lifuren::getPoetizeClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_POETIZE_LIDU) {
-        // return std::make_unique<lifuren::PoetizeClient<LiduModel>>();
+        return std::make_unique<lifuren::PoetizeClient<LiduModel>>();
     } else if(client == lifuren::config::CONFIG_POETIZE_SUXIN) {
         return std::make_unique<lifuren::PoetizeClient<SuxinModel>>();
     } else {
         return nullptr;
     }
-    return nullptr;
 }

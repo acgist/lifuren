@@ -27,13 +27,13 @@ lifuren::SuxinModel::~SuxinModel() {
 }
 
 bool lifuren::SuxinModel::defineDataset() {
-    if(!this->params.train_path.empty()) {
+    if(lifuren::file::exists(this->params.train_path)) {
         this->trainDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.train_path);
     }
-    if(!this->params.val_path.empty()) {
+    if(lifuren::file::exists(this->params.val_path)) {
         this->valDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.val_path);
     }
-    if(!this->params.test_path.empty()) {
+    if(lifuren::file::exists(this->params.test_path)) {
         this->testDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.test_path);
     }
     return true;

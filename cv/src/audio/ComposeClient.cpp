@@ -18,11 +18,10 @@ std::string lifuren::ComposeClient<M>::pred(const ComposeParams& input) {
 
 std::unique_ptr<lifuren::ComposeModelClient> lifuren::getComposeClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_COMPOSE_SHIKUANG) {
-        // return std::make_unique<lifuren::ComposeClient<ShikuangModel>>();
+        return std::make_unique<lifuren::ComposeClient<ShikuangModel>>();
     } else if(client == lifuren::config::CONFIG_COMPOSE_LIGUINIAN) {
-        // return std::make_unique<lifuren::ComposeClient<LiguinianModel>>();
+        return std::make_unique<lifuren::ComposeClient<LiguinianModel>>();
     } else {
         return nullptr;
     }
-    return nullptr;
 }

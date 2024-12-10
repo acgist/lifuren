@@ -18,11 +18,10 @@ std::string lifuren::ActClient<M>::pred(const ActParams& input) {
 
 std::unique_ptr<lifuren::ActModelClient> lifuren::getActClient(const std::string& client) {
     if(client == lifuren::config::CONFIG_ACT_TANGXIANZU) {
-        // return std::make_unique<lifuren::ActModelClient<TanxianzuModel>>();
+        return std::make_unique<lifuren::ActClient<TangxianzuModel>>();
     } else if(client == lifuren::config::CONFIG_ACT_GUANHANQING) {
-        // return std::make_unique<lifuren::ActModelClient<GuanhanqingModel>>();
+        return std::make_unique<lifuren::ActClient<GuanhanqingModel>>();
     } else {
         return nullptr;
     }
-    return nullptr;
 }

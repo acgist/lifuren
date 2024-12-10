@@ -52,8 +52,10 @@ template<typename C, typename I, typename O, typename M>
 class ModelImplClient : public ModelClient<C, I, O> {
 
 protected:
-    // 模型实现
-    std::unique_ptr<M> model{ nullptr };
+    // 训练模型
+    std::unique_ptr<M> model  { nullptr };
+    // 推理模型
+    std::unique_ptr<M> runtime{ nullptr };
 
 public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");

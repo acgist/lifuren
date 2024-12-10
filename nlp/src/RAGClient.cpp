@@ -205,7 +205,7 @@ bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, co
                 SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
             }
         }
-        doneFileCount;
+        ++doneFileCount;
     }
     SPDLOG_DEBUG("累计处理诗词数量：{} / {} / {}", count, total, wCount);
     lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);

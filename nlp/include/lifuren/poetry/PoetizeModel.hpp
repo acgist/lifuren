@@ -5,6 +5,7 @@
 #define LFR_HEADER_NLP_POETIZE_MODEL_HPP
 
 #include "lifuren/Model.hpp"
+
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 namespace lifuren {
@@ -12,8 +13,40 @@ namespace lifuren {
 /**
  * 李杜模型
  */
-class LiduModel {
-    // TODO: 实现
+class LiduModuleImpl : public torch::nn::Module {
+
+private:
+    // TODO: 模型定义
+
+public:
+    LiduModuleImpl();
+    virtual ~LiduModuleImpl();
+
+public:
+    torch::Tensor forward(torch::Tensor input);
+
+};
+
+TORCH_MODULE(LiduModule);
+
+/**
+ * 李杜模型
+ */
+class LiduModel : public lifuren::Model<
+    lifuren::dataset::PoetryFileDatasetLoader,
+    torch::nn::MSELoss,
+    torch::optim::Adam,
+    LiduModule
+> {
+
+public:
+    LiduModel(lifuren::config::ModelParams params = {});
+    virtual ~LiduModel();
+
+public:
+    bool defineDataset() override;
+    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
+
 };
 
 /**

@@ -52,10 +52,6 @@ void lifuren::ThreadWindow::drawElement() {
         if(buffer) {
             buffer->append(message);
             buffer->append("\n");
-            if(finish) {
-                buffer->append("任务完成");
-                buffer->append("\n");
-            }
         }
     });
 }
