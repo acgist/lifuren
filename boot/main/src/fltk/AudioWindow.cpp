@@ -99,8 +99,8 @@ static void pcmCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_AUDIO_TO_PCM,
         "PCM转换",
         []() {
-            auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
-            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), preprocessing)) {
+            auto allFileToPCM = std::bind(&lifuren::audio::allFileToPCM, std::placeholders::_1);
+            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), allFileToPCM)) {
                 lifuren::message::sendMessage("PCM转换成功");
             } else {
                 lifuren::message::sendMessage("PCM转换失败");

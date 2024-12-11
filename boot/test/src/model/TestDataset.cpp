@@ -13,6 +13,7 @@
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/image/ImageDataset.hpp"
+#include "lifuren/video/VideoDataset.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 LFR_FORMAT_LOG_STREAM(at::Tensor);
@@ -99,6 +100,12 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     SPDLOG_DEBUG("文件标签：\n{}", label.sizes());
 }
 
+[[maybe_unused]] static void testLoadAudioFileDataset() {
+    auto loader = lifuren::dataset::loadAudioFileStyleDataset(200, lifuren::file::join({lifuren::config::CONFIG.tmp, "audio", "train"}).string());
+    SPDLOG_DEBUG("音频特征：\n{}", loader->begin()->data.sizes());
+    SPDLOG_DEBUG("音频标签：\n{}", loader->begin()->target.sizes());
+}
+
 [[maybe_unused]] static void testLoadImageFileDataset() {
     auto loader = lifuren::dataset::loadImageFileClassifyDataset(
         200,
@@ -118,30 +125,6 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
     SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data.sizes());
     SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target.sizes());
-}
-
-[[maybe_unused]] static void testEmbeddingSlice() {
-    std::ifstream in;
-    std::ofstream val;
-    std::ofstream train;
-    in.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding.model" }).string(), std::ios_base::in | std::ios_base::binary);
-    val.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding_val.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
-    train.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "embedding_train.model" }).string(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
-    std::vector<std::vector<float>> rr;
-    int i = 0;
-    while(!lifuren::dataset::poetry::read(in, rr)) {
-        if(++i % 100 == 0) {
-            lifuren::dataset::poetry::write(val, rr);
-        } else {
-            lifuren::dataset::poetry::write(train, rr);
-        }
-        rr.clear();
-    }
-    lifuren::dataset::poetry::writeEnd(val, lifuren::dataset::poetry::END_OF_DATASET);
-    lifuren::dataset::poetry::writeEnd(train, lifuren::dataset::poetry::END_OF_DATASET);
-    in.close();
-    val.close();
-    train.close();
 }
 
 [[maybe_unused]] static void testStftIstft() {
@@ -181,8 +164,8 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 LFR_TEST(
     // testRawDataset();
     // testFileDataset();
+    testLoadAudioFileDataset();
     // testLoadImageFileDataset();
     // testLoadPoetryFileDataset();
-    // testEmbeddingSlice();
-    testStftIstft();
+    // testStftIstft();
 );

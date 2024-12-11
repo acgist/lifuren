@@ -240,8 +240,8 @@ static void pcm(const std::vector<std::string>& args) {
         lifuren::message::sendMessage("缺少参数");
         return;
     }
-    auto preprocessing = std::bind(&lifuren::audio::preprocessing, std::placeholders::_1);
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], preprocessing)) {
+    auto allFileToPCM = std::bind(&lifuren::audio::allFileToPCM, std::placeholders::_1);
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], allFileToPCM)) {
         lifuren::message::sendMessage("PCM转换成功");
     } else {
         lifuren::message::sendMessage("PCM转换失败");

@@ -206,6 +206,8 @@ extern void replace(std::string& value, const std::string& oldValue, const std::
  */
 extern void replace(std::string& value, const std::vector<std::string>& oldValue, const std::string& newValue = "");
 
+extern std::vector<float> embedding(const std::vector<std::string>& prompts);
+
 } // END OF string
 } // END OF lifuren
 

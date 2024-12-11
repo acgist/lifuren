@@ -18,6 +18,7 @@ endif()
 add_executable(
     ${PROJECT_NAME}
     src/Main.cpp
+    src/Embedding.cpp
     ${CLI_FILES}
     ${FLTK_FILES}
     ${REST_FILES}

@@ -162,6 +162,9 @@ struct ImageConfig : public ModelConfig {
  */
 struct VideoConfig : public ModelConfig {
 
+    // 帧数长度
+    int length;
+
 };
 
 /**

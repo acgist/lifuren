@@ -150,7 +150,7 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     return true;
 }
 
-bool lifuren::audio::preprocessing(const std::string& path) {
+bool lifuren::audio::allFileToPCM(const std::string& path) {
     std::vector<std::string> files;
     lifuren::file::listFile(files, path, { ".aac", ".mp3", ".flac" });
     for(const auto& file : files) {

@@ -10,6 +10,11 @@
 
 #include "spdlog/spdlog.h"
 
+#include "nlohmann/json.hpp"
+
+#include "lifuren/File.hpp"
+#include "lifuren/String.hpp"
+
 #ifndef DATASET_PCM_LENGTH
 #define DATASET_PCM_LENGTH 480
 #endif
@@ -94,9 +99,12 @@ extern std::vector<short> pcm_mag_pha_istft(
     float compress_factor = 1.0
 );
 
+extern torch::Tensor feature(const int& length, const std::string& file, const torch::DeviceType& type);
+
 }
 
 inline auto loadAudioFileGANDataset(
+    const int& length,
     const size_t& batch_size,
     const std::string& path
 ) -> decltype(auto) {
@@ -104,9 +112,20 @@ inline auto loadAudioFileGANDataset(
         path,
         ".json",
         { ".pcm" },
-        [] (const std::string& audio_file, const std::string& label_file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
-            // TODO: label embedding
-            // TODO: image rnn
+        [length] (const std::string& audio_file, const std::string& label_file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
+            const std::string content = std::move(lifuren::file::loadFile(label_file));
+            if(content.empty()) {
+                SPDLOG_WARN("音频文件标记无效：{}", label_file);
+                return;
+            }
+            const nlohmann::json prompts = std::move(nlohmann::json::parse(content));
+            auto vector = std::move(lifuren::string::embedding(prompts.get<std::vector<std::string>>()));
+            if(vector.empty()) {
+                SPDLOG_WARN("音频文件标记无效：{}", label_file);
+                return;
+            }
+            labels.push_back(torch::from_blob(vector.data(), { static_cast<int>(vector.size()) }, torch::kFloat32).clone().to(device));
+            features.push_back(std::move(lifuren::dataset::audio::feature(length, audio_file, device)));
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
@@ -114,6 +133,7 @@ inline auto loadAudioFileGANDataset(
 
 using AudioFileGANDatasetLoader = std::invoke_result<
     decltype(&lifuren::dataset::loadAudioFileGANDataset),
+    const int&,
     const size_t&,
     const std::string&
 >::type;

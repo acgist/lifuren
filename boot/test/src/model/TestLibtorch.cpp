@@ -63,7 +63,9 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
     torch::Tensor c = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
     torch::Tensor d = torch::from_blob(data, { 2, 2 }, torch::kFloat32).clone();
     auto e = torch::cat({ a, b, c, d });
+    auto f = torch::stack({a, b, c, d});
     SPDLOG_DEBUG("e size: {}", e.sizes());
+    SPDLOG_DEBUG("f size: {}", f.sizes());
 }
 
 [[maybe_unused]] static void testLinear() {
@@ -94,7 +96,7 @@ LFR_TEST(
     // testPrint();
     // testTensor();
     // testNorm();
-    // testCat();
+    testCat();
     // testLinear();
-    testLoss();
+    // testLoss();
 );

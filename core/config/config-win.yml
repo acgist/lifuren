@@ -25,6 +25,7 @@ image:
 video:
   path: D:\tmp\lifuren\video
   model: 
+  length: 24
   client: act-guanhanqing
   clients:
     - act-tangxianzu

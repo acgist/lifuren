@@ -92,6 +92,7 @@ bool lifuren::OnnxRuntime::releaseSession() {
     for(auto ptr : this->outputNodeNames) {
         delete[] ptr;
     }
+    return true;
 }
 
 Ort::Value lifuren::OnnxRuntime::runSession(

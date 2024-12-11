@@ -1,5 +1,7 @@
 #include "lifuren/audio/AudioDataset.hpp"
 
+#include <fstream>
+
 const static float NORMALIZATION = 32768.0F;
 
 std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::dataset::audio::mag_pha_stft(
@@ -67,4 +69,13 @@ std::vector<short> lifuren::dataset::audio::pcm_mag_pha_istft(
     pcm.resize(result.sizes()[1]);
     std::copy_n(data, pcm.size(), pcm.data());
     return pcm;
+}
+
+torch::Tensor lifuren::dataset::audio::feature(const int& length, const std::string& file, const torch::DeviceType& type) {
+    std::ifstream stream;
+    stream.open(file, std::ios_base::binary);
+    std::vector<short> data;
+    data.resize(length);
+    stream.read(reinterpret_cast<char*>(data.data()), length * sizeof(short));
+    return torch::from_blob(data.data(), { length }, torch::kShort).to(torch::kF32).div(NORMALIZATION).clone().to(type);
 }
