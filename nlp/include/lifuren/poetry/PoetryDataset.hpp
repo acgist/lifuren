@@ -94,7 +94,7 @@ inline auto loadPoetryFileDataset(
         [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
             std::ifstream stream;
             stream.open(file, std::ios_base::in | std::ios_base::binary);
-            if(stream.is_open()) {
+            if(!stream.is_open()) {
                 SPDLOG_WARN("文件打开失败：{}", file);
                 stream.close();
                 return;

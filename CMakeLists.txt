@@ -101,7 +101,9 @@ set(
     deps/onnxruntime
 )
 
-include_directories(include deps/onnxruntime/include)
+if(CMAKE_HOST_UNIX)
+    find_package(onnxruntime REQUIRED)
+endif()
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -115,6 +117,8 @@ if(CMAKE_HOST_WIN32)
         deps/yaml-cpp
         deps/cpp-httplib
     )
+
+    include_directories(include deps/onnxruntime/include)
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)

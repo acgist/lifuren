@@ -69,6 +69,15 @@ jobs:
           make -j
           sudo make install
           cd ../../
+          ################################ onnxruntime
+          wget https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/onnxruntime-linux-x64-1.19.2.tgz > /dev/null 2>&1
+          tar -zxvf onnxruntime-linux-x64-1.19.2.tgz > /dev/null 2>&1
+          mv onnxruntime-linux-x64-1.19.2 onnxruntime
+          cd onnxruntime
+          mkdir -p include/onnxruntime
+          cp -r lib lib64
+          cp -r include/*.h include/core include/onnxruntime
+          cd ../
       - name: Deploy lifuren
         run: |
           pwd
