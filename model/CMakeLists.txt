@@ -7,17 +7,28 @@ add_library(
     src/Model.cpp
     src/Tensor.cpp
     src/Dataset.cpp
+    src/OnnxRuntime.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
-target_link_libraries(
-    ${PROJECT_NAME}
-    lifurencore
-    ${TORCH_LIBRARIES}
-)
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurencore
+        ${TORCH_LIBRARIES}
+        ${ONNXRUNTIME_LIBS}
+    )
+else()
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurencore
+        ${TORCH_LIBRARIES}
+        onnxruntime::onnxruntime
+    )
+endif()
 
 target_include_directories(
     ${PROJECT_NAME}

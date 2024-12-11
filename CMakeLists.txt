@@ -98,7 +98,10 @@ set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
     deps/libtorch
+    deps/onnxruntime
 )
+
+include_directories(include deps/onnxruntime/include)
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -135,7 +138,10 @@ if(CMAKE_HOST_WIN32)
         file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/bin/*.dll")
     endif()
 
-    file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
+    file(GLOB TORCH_DLLS       "deps/libtorch/lib/*.dll")
+    file(GLOB ONNXRUNTIME_DLLS "deps/onnxruntime/lib/*.dll")
+
+    file(GLOB ONNXRUNTIME_LIBS "deps/onnxruntime/lib/onnxruntime.lib")
 
     find_package(FFMPEG        REQUIRED)
     find_package(libpng        REQUIRED)

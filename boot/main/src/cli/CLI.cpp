@@ -21,15 +21,13 @@
 #include "lifuren/audio/ComposeClient.hpp"
 #include "lifuren/poetry/PoetizeClient.hpp"
 
-static void act         (const std::vector<std::string>&); // 视频生成
-static void paint       (const std::vector<std::string>&); // 图片生成
-static void compose     (const std::vector<std::string>&); // 音频生成
-static void poetize     (const std::vector<std::string>&); // 诗词生成
-static void pcm         (const std::vector<std::string>&); // 转为PCM
-static void pepper      (const std::vector<std::string>&); // 辣椒嵌入
-static void embedding   (const std::vector<std::string>&); // 诗词嵌入
-static void transform   (const std::vector<std::string>&); // 模型转换
-static void quantization(const std::vector<std::string>&); // 模型量化
+static void act      (const std::vector<std::string>&); // 视频生成
+static void paint    (const std::vector<std::string>&); // 图片生成
+static void compose  (const std::vector<std::string>&); // 音频生成
+static void poetize  (const std::vector<std::string>&); // 诗词生成
+static void pcm      (const std::vector<std::string>&); // 转为PCM
+static void pepper   (const std::vector<std::string>&); // 辣椒嵌入
+static void embedding(const std::vector<std::string>&); // 诗词嵌入
 static void help(); // 帮助
 static void messageCallback(bool, const char*); // 消息回调
 
@@ -68,10 +66,6 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         pepper(args);
     } else if(std::strcmp(command, "embedding") == 0) {
         embedding(args);
-    } else if(std::strcmp(command, "transform") == 0) {
-        transform(args);
-    } else if(std::strcmp(command, "quantization") == 0) {
-        quantization(args);
     } else {
         SPDLOG_WARN("不支持的命令：{}", command);
     }
@@ -281,34 +275,16 @@ static void embedding(const std::vector<std::string>& args) {
     }
 }
 
-static void transform(const std::vector<std::string>& args) {
-    if(args.empty()) {
-        SPDLOG_WARN("缺少参数");
-        return;
-    }
-    // TODO: 实现
-}
-
-static void quantization(const std::vector<std::string>& args) {
-    if(args.empty()) {
-        SPDLOG_WARN("缺少参数");
-        return;
-    }
-    // TODO: 实现
-}
-
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] act          [act-tangxianzu  |act-guanhanqing  ] [train|pred] [model video_file|dataset model_name]
-./lifuren[.exe] paint        [paint-wudaozi   |paint-gukaizhi   ] [train|pred] [model image_file|dataset model_name]
-./lifuren[.exe] compose      [compose-shikuang|compose-liguinian] [train|pred] [model audio_file|dataset model_name]
-./lifuren[.exe] poetize      [poetize-lidu    |poetize-suxin    ] [train|pred] [model rhythm prompt1 prompt2|dataset model_name]
-./lifuren[.exe] pcm          dataset
-./lifuren[.exe] pepper       dataset
-./lifuren[.exe] embedding    [faiss|elasticsearch] dataset [pepper|ollama]
-./lifuren[.exe] transform    [act-tangxianzu|act-guanhanqing...] [ONNX | TorchScript]
-./lifuren[.exe] quantization [act-tangxianzu|act-guanhanqing...] model_path
+./lifuren[.exe] act       [act-tangxianzu  |act-guanhanqing  ] [train|pred] [model video_file|dataset model_name]
+./lifuren[.exe] paint     [paint-wudaozi   |paint-gukaizhi   ] [train|pred] [model image_file|dataset model_name]
+./lifuren[.exe] compose   [compose-shikuang|compose-liguinian] [train|pred] [model audio_file|dataset model_name]
+./lifuren[.exe] poetize   [poetize-lidu    |poetize-suxin    ] [train|pred] [model rhythm prompt1 prompt2|dataset model_name]
+./lifuren[.exe] pcm       dataset
+./lifuren[.exe] pepper    dataset
+./lifuren[.exe] embedding [faiss|elasticsearch] dataset [pepper|ollama]
 ./lifuren[.exe] [?|help]
     )" << std::endl;
 }

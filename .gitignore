@@ -21,3 +21,4 @@ deps/spdlog
 deps/libtorch
 deps/yaml-cpp
 deps/cpp-httplib
+deps/onnxruntime

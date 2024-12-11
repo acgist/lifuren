@@ -18,8 +18,8 @@
 #include <concepts>
 
 #include "torch/nn.h"
-#include "torch/jit.h"
 #include "torch/optim.h"
+#include "torch/script.h"
 #include "torch/serialize.h"
 
 #include "spdlog/spdlog.h"
@@ -341,7 +341,7 @@ void lifuren::Model<D, L, P, M>::trainValAndTest(const bool& val, const bool& te
                 this->val(epoch);
             }
             if(this->params.check_point) {
-                this->save(this->params.check_path, this->params.model_name + "-" + std::to_string(epoch + 1) + ".pt");
+                this->save(this->params.check_path, this->params.model_name + ".checkpoint.pt");
             }
         }
         if(test) {

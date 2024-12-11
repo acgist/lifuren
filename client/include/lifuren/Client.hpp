@@ -278,8 +278,13 @@ bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path, const s
 
 template<typename C, typename I, typename O, typename M>
 void lifuren::ModelImplClient<C, I, O, M>::trainValAndTest(C params, const bool& val, const bool& test) {
-    this->model = std::make_unique<M>(params);
-    this->model->trainValAndTest(val, test);
+    if(!this->model) {
+        this->model = std::make_unique<M>(params);
+        // TODO: check_point
+    }
+    if(this->model) {
+        this->model->trainValAndTest(val, test);
+    }
 };
 
 #endif // END OF LFR_HEADER_CLIENT_CLIENT_HPP
