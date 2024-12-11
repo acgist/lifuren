@@ -36,7 +36,7 @@ jobs:
           git switch -c 10.2.0
           mkdir build ; cd $_
           cmake .. -DFMT_TEST=OFF
-          make -j
+          make -j 2
           sudo make install
           cd ../../
           # spdlog
@@ -45,7 +45,7 @@ jobs:
           git switch -c v1.12.0
           mkdir build ; cd $_
           cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF
-          make -j
+          make -j 2
           sudo make install
           cd ../../
           ################################ opencv
@@ -66,7 +66,7 @@ jobs:
           git switch -c v0.16.2
           mkdir build ; cd $_
           cmake ..
-          make -j
+          make -j 2
           sudo make install
           cd ../../
           ################################ onnxruntime
@@ -86,7 +86,7 @@ jobs:
           cmake -version
           mkdir build ; cd $_
           cmake ..
-          make -j
+          make -j 2
           ls -lh Debug/bin
           ls -lh Debug/lib
           sudo make install

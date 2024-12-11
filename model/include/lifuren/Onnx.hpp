@@ -34,9 +34,7 @@ public:
     std::vector<const char*> outputNodeNames; // ONNX输出参数
 
 public:
-    OnnxRuntime(
-        const char* logid = "lifuren"
-    );
+    OnnxRuntime(const char* logid = "lifuren");
     virtual ~OnnxRuntime();
 
 public:
@@ -48,6 +46,7 @@ public:
      * @return 是否成功
      */
     bool createSession(const std::string& path);
+    bool releaseSession();
     /**
      * 运行会话
      */

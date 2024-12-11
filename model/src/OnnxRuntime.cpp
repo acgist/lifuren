@@ -1,28 +1,25 @@
 #include "lifuren/Onnx.hpp"
 
-#include <atomic>
 #include <thread>
 
 #include "spdlog/spdlog.h"
 
 #include "onnxruntime_cxx_api.h"
 
-static Ort::Env*       env      { nullptr }; // ONNX运行环境
-static std::atomic_int env_count{ 0       }; // ONNX环境计数
+static Ort::Env* env      { nullptr }; // ONNX运行环境
+static int       env_count{ 0       }; // ONNX环境计数
 
 static std::mutex mutex;
 
 // 默认日志
 static OrtLoggingLevel log_level = OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING;
 
-lifuren::OnnxRuntime::OnnxRuntime(
-    const char* logid
-) : logid(logid)
-{
+lifuren::OnnxRuntime::OnnxRuntime(const char* logid) : logid(logid) {
     {
         std::lock_guard<std::mutex> lock(mutex);
         ++env_count;
         if(!env) {
+            SPDLOG_DEBUG("创建ONNX运行环境：{}", this->logid);
             env = new Ort::Env(log_level, logid);
         }
     }
@@ -31,34 +28,19 @@ lifuren::OnnxRuntime::OnnxRuntime(
 lifuren::OnnxRuntime::~OnnxRuntime() {
     {
         std::lock_guard<std::mutex> lock(mutex);
-        if(env && --env_count == 0) {
+        --env_count;
+        if(env && env_count == 0) {
             SPDLOG_DEBUG("释放ONNX运行环境：{}", this->logid);
             env->release();
             delete env;
             env = nullptr;
         }
     }
-    if(this->session) {
-        SPDLOG_DEBUG("释放ONNX会话：{}", this->logid);
-        this->session->release();
-        delete this->session;
-        this->session = nullptr;
-    }
-    if(this->runOptions) {
-        SPDLOG_DEBUG("释放ONNX配置：{}", this->logid);
-        this->runOptions->release();
-        delete this->runOptions;
-        this->runOptions = nullptr;
-    }
-    for(auto ptr : this->inputNodeNames) {
-        delete[] ptr;
-    }
-    for(auto ptr : this->outputNodeNames) {
-        delete[] ptr;
-    }
+    this->releaseSession();
 }
 
 bool lifuren::OnnxRuntime::createSession(const std::string& path) {
+    this->releaseSession();
     SPDLOG_DEBUG("创建会话：{} - {}", this->logid, path);
     Ort::SessionOptions options;
     options.SetLogSeverityLevel(static_cast<int>(log_level));
@@ -89,6 +71,27 @@ bool lifuren::OnnxRuntime::createSession(const std::string& path) {
     }
     this->runOptions = new Ort::RunOptions(nullptr);
     return true;
+}
+
+bool lifuren::OnnxRuntime::releaseSession() {
+    if(this->session) {
+        SPDLOG_DEBUG("释放ONNX会话：{}", this->logid);
+        this->session->release();
+        delete this->session;
+        this->session = nullptr;
+    }
+    if(this->runOptions) {
+        SPDLOG_DEBUG("释放ONNX配置：{}", this->logid);
+        this->runOptions->release();
+        delete this->runOptions;
+        this->runOptions = nullptr;
+    }
+    for(auto ptr : this->inputNodeNames) {
+        delete[] ptr;
+    }
+    for(auto ptr : this->outputNodeNames) {
+        delete[] ptr;
+    }
 }
 
 Ort::Value lifuren::OnnxRuntime::runSession(
