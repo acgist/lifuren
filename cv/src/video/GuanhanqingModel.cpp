@@ -2,6 +2,13 @@
 
 #include "lifuren/File.hpp"
 
+#ifndef VIDEO_STYLE_WIDTH
+#define VIDEO_STYLE_WIDTH 640
+#endif
+#ifndef VIDEO_STYLE_HEIGHT
+#define VIDEO_STYLE_HEIGHT 640
+#endif
+
 lifuren::GuanhanqingModuleImpl::GuanhanqingModuleImpl() {
 }
 
@@ -20,7 +27,15 @@ lifuren::GuanhanqingModel::~GuanhanqingModel() {
 }
 
 bool lifuren::GuanhanqingModel::defineDataset() {
-    // TODO：实现
+    if(lifuren::file::exists(this->params.train_path)) {
+        this->trainDataset = lifuren::dataset::loadVideoFileStyleDataset(VIDEO_STYLE_WIDTH, VIDEO_STYLE_HEIGHT, this->params.batch_size, this->params.train_path);
+    }
+    if(lifuren::file::exists(this->params.val_path)) {
+        this->valDataset = lifuren::dataset::loadVideoFileStyleDataset(VIDEO_STYLE_WIDTH, VIDEO_STYLE_HEIGHT, this->params.batch_size, this->params.val_path);
+    }
+    if(lifuren::file::exists(this->params.test_path)) {
+        this->testDataset = lifuren::dataset::loadVideoFileStyleDataset(VIDEO_STYLE_WIDTH, VIDEO_STYLE_HEIGHT, this->params.batch_size, this->params.test_path);
+    }
     return true;
 }
 

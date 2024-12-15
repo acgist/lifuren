@@ -121,6 +121,12 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     SPDLOG_DEBUG("图片标签：\n{}", loader->begin()->target.sizes());
 }
 
+[[maybe_unused]] static void testLoadVideoFileDataset() {
+    auto loader = lifuren::dataset::loadVideoFileStyleDataset(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
+    SPDLOG_DEBUG("视频特征：\n{}", loader->begin()->data.sizes());
+    SPDLOG_DEBUG("视频标签：\n{}", loader->begin()->target.sizes());
+}
+
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
     auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
     SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data.sizes());
@@ -130,15 +136,16 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 [[maybe_unused]] static void testStftIstft() {
     std::ifstream input;
     std::ofstream output;
-    input .open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm" }).string(),   std::ios_base::binary);
-    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "denoise.pcm" }).string(), std::ios_base::binary);
-    int size = 48000;
+    input .open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"      }).string(), std::ios_base::binary);
+    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise_copy.pcm" }).string(), std::ios_base::binary);
     std::vector<short> data;
-    data.resize(size);
+    data.resize(DATASET_PCM_LENGTH);
     float norm_factor;
-    while(input.read(reinterpret_cast<char*>(data.data()), size * sizeof(short))) {
+    while(input.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
         // 其他处理
         auto tuple = std::move(lifuren::dataset::audio::pcm_mag_pha_stft(data, norm_factor));
+        SPDLOG_DEBUG("mag size: {}", std::get<0>(tuple).sizes());
+        SPDLOG_DEBUG("pha size: {}", std::get<1>(tuple).sizes());
         auto pcm   = std::move(lifuren::dataset::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple), norm_factor));
         // 原始函数
         // int n_fft    = 400;
@@ -166,6 +173,7 @@ LFR_TEST(
     // testFileDataset();
     testLoadAudioFileDataset();
     // testLoadImageFileDataset();
+    // testLoadVideoFileDataset();
     // testLoadPoetryFileDataset();
     // testStftIstft();
 );

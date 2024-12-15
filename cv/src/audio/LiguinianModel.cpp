@@ -2,6 +2,10 @@
 
 #include "lifuren/File.hpp"
 
+#ifndef AUDIO_GAN_LENGTH
+#define AUDIO_GAN_LENGTH 48000 * 60
+#endif
+
 lifuren::LiguinianModuleImpl::LiguinianModuleImpl() {
 }
 
@@ -20,7 +24,15 @@ lifuren::LiguinianModel::~LiguinianModel() {
 }
 
 bool lifuren::LiguinianModel::defineDataset() {
-    // TODO：实现
+    if(lifuren::file::exists(this->params.train_path)) {
+        this->trainDataset = lifuren::dataset::loadAudioFileGANDataset(AUDIO_GAN_LENGTH, this->params.batch_size, this->params.train_path);
+    }
+    if(lifuren::file::exists(this->params.val_path)) {
+        this->valDataset = lifuren::dataset::loadAudioFileGANDataset(AUDIO_GAN_LENGTH, this->params.batch_size, this->params.val_path);
+    }
+    if(lifuren::file::exists(this->params.test_path)) {
+        this->testDataset = lifuren::dataset::loadAudioFileGANDataset(AUDIO_GAN_LENGTH, this->params.batch_size, this->params.test_path);
+    }
     return true;
 }
 

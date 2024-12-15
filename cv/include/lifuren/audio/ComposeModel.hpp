@@ -15,9 +15,17 @@ namespace lifuren {
 class ShikuangModuleImpl : public torch::nn::Module {
 
 private:
-    // TODO: 模型定义
+    // 卷积->卷积->GRU GRU 还原->还原
+    torch::nn::Conv2d downsample{ nullptr };
+    torch::nn::ReLU   relu      { nullptr };
+    torch::nn::Dropout dropout  { nullptr };
+    torch::nn::Linear upsample1 { nullptr };
+    torch::nn::Linear upsample2 { nullptr };
+    torch::nn::Linear upsample3 { nullptr };
+    torch::nn::Linear upsample4 { nullptr };
+    torch::nn::Linear upsample5 { nullptr };
+    torch::nn::Linear upsample6 { nullptr };
 
-// 卷积->卷积->GRU GRU 还原->还原
 public:
     ShikuangModuleImpl();
     virtual ~ShikuangModuleImpl();

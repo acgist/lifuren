@@ -33,6 +33,8 @@ namespace audio {
  * @param win_size        窗口帧和STFT滤波器的大小：n_fft
  * @param compress_factor 压缩因子
  * 
+ * 480 mag sizes = pha sizes = [1, 201, 5]
+ * 
  * @return [mag, pha, com]
  */
 extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
@@ -169,9 +171,9 @@ inline auto loadAudioFileStyleDataset(
                 float norm_factor;
                 // 短时傅里叶变换
                 auto source_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(source_pcm, norm_factor);
-                features.push_back(std::move(torch::cat({ std::get<0>(source_tuple), std::get<1>(source_tuple) }).to(device)));
+                features.push_back(std::move(torch::stack({ std::get<0>(source_tuple), std::get<1>(source_tuple) }).squeeze().to(device)));
                 auto target_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(target_pcm, norm_factor);
-                labels.push_back(std::move(torch::cat({ std::get<0>(target_tuple), std::get<1>(target_tuple) }).to(device)));
+                labels.push_back(std::move(torch::stack({ std::get<0>(target_tuple), std::get<1>(target_tuple) }).squeeze().to(device)));
             }
             source_stream.close();
             target_stream.close();
@@ -185,7 +187,7 @@ using AudioFileStyleDatasetLoader = std::invoke_result<
     const size_t&,
     const std::string&
 >::type;
-    
+
 } // END OF lifuren::dataset
 
 #endif // END OF LFR_HEADER_CV_AUDIO_DATASET_HPP

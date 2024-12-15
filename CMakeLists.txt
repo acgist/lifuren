@@ -18,8 +18,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(ENABLE_TEST "打开测试"     ON)
-option(ENABLE_FLTK "开启FLTK界面" ON)
-option(ENABLE_REST "开启REST接口" ON)
+option(ENABLE_FLTK "编译FLTK界面" ON)
+option(ENABLE_REST "编译REST接口" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 
@@ -27,6 +27,7 @@ set(HEADER_DIR include/)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# TODO: 使用C23/C++23
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
 if(CMAKE_HOST_UNIX)
@@ -36,6 +37,8 @@ if(CMAKE_HOST_UNIX)
     # https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
     set(CMAKE_C_STANDARD 23)
     set(CMAKE_CXX_STANDARD 23)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CMAKE_COMMAND} -E time")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c2x -Wall -Wextra")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O0 -g")
@@ -50,7 +53,6 @@ elseif(CMAKE_HOST_WIN32)
     if(MSVC)
         # https://learn.microsoft.com/zh-cn/cpp/build/reference/compiler-options-listed-by-category
         # https://learn.microsoft.com/zh-cn/cpp/error-messages/compiler-warnings/compiler-warnings-c4000-c5999
-        # TODO: 使用C23/C++23
         set(CMAKE_C_STANDARD 17)
         set(CMAKE_CXX_STANDARD 20)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c17 /std:c++20")
@@ -67,6 +69,8 @@ else()
 endif()
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
+
+add_definitions(-DSPDLOG_COMPILED_LIB=ON)
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)

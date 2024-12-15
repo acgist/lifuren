@@ -2,6 +2,13 @@
 
 #include "lifuren/File.hpp"
 
+#ifndef VIDEO_GAN_WIDTH
+#define VIDEO_GAN_WIDTH 640
+#endif
+#ifndef VIDEO_GAN_HEIGHT
+#define VIDEO_GAN_HEIGHT 640
+#endif
+
 lifuren::TangxianzuModuleImpl::TangxianzuModuleImpl() {
 }
 
@@ -20,7 +27,15 @@ lifuren::TangxianzuModel::~TangxianzuModel() {
 }
 
 bool lifuren::TangxianzuModel::defineDataset() {
-    // TODO：实现
+    if(lifuren::file::exists(this->params.train_path)) {
+        this->trainDataset = lifuren::dataset::loadVideoFileGANDataset(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.train_path);
+    }
+    if(lifuren::file::exists(this->params.val_path)) {
+        this->valDataset = lifuren::dataset::loadVideoFileGANDataset(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.val_path);
+    }
+    if(lifuren::file::exists(this->params.test_path)) {
+        this->testDataset = lifuren::dataset::loadVideoFileGANDataset(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.test_path);
+    }
     return true;
 }
 

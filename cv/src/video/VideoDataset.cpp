@@ -15,8 +15,8 @@ void lifuren::dataset::video::feature(const int& width, const int& height, const
         return;
     }
     const int& frame_length = lifuren::config::CONFIG.video.length;
+    int index = 0;
     cv::Mat frame;
-    size_t index = 0;
     std::vector<torch::Tensor> tensors;
     tensors.reserve(frame_length);
     while(video.read(frame)) {

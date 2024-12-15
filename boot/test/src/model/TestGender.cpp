@@ -64,6 +64,9 @@ public:
         return torch::log_softmax(x, 1);
     }
     virtual ~GenderModuleImpl() {
+        unregister_module("feature");
+        unregister_module("pool");
+        unregister_module("classify");
     }
 
 };

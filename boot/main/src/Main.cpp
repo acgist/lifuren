@@ -57,9 +57,9 @@ static void launch() {
     SPDLOG_DEBUG("启动完成");
     {
         std::unique_lock<std::mutex> lock(mutex);
-        while(count > 0) {
-            condition.wait(lock);
-        }
+        condition.wait(lock, [] {
+            return count <= 0;
+        });
     }
 }
 

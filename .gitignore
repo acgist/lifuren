@@ -7,8 +7,10 @@
 
 *.log
 
+.vs
 .vscode
 
+out
 logs
 build
 target

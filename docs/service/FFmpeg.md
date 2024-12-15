@@ -111,8 +111,21 @@ ffmpeg -encoders
 ## 常用功能
 
 ```
-ffmpeg -i .\source.wav    -ar 48000 -ac 1 -c:a pcm_s16le -f s16le noise.pcm
-ffmpeg -i .\source.ts -vn -ar 48000 -ac 1 -c:a pcm_s16le -f s16le noise.pcm
+ffmpeg -ac 1 -ar 48000 -f s16le -i ./audio.pcm
+ffplay -ac 1 -ar 48000 -f s16le -i ./audio.pcm
+
+ffmpeg -i ./source.mp4 -vn -c:a mp3 -b:a 128k audio.mp3
+
+ffmpeg -i ./source.mp3     -ac 1 -ar 48000 -f s16le audio.pcm
+ffmpeg -i ./source.mp4 -vn -ac 1 -ar 48000 -f s16le audio.pcm
+
+ffmpeg -ac 1 -ar 48000 -f s16le -i ./source.pcm -c:a mp3 -b:a 128k audio.mp3
+
+ffmpeg -ac 1 -ar 48000 -f s16le -ss 10 -t  60 -i ./source.pcm -ac 1 -ar 48000 -f s16le audio.pcm
+ffmpeg -ac 1 -ar 48000 -f s16le -ss 10 -to 70 -i ./source.pcm -ac 1 -ar 48000 -f s16le audio.pcm
+
+$name="name"
+ffmpeg -i .\$name.mp4 -vn -ac 1 -ar 48000 -c:a mp3 -b:a 128k .\$name.mp3
 ```
 
 ## 相关链接

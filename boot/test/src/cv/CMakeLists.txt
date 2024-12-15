@@ -13,3 +13,11 @@ target_link_libraries(
     testImage
     lifurencv
 )
+
+add_executable(testShikuang TestShikuang.cpp)
+add_test(NAME testShikuang COMMAND testShikuang)
+set_target_properties(testShikuang PROPERTIES FOLDER "test-cv")
+target_link_libraries(
+    testShikuang
+    lifurencv
+)

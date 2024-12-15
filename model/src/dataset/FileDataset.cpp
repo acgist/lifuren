@@ -148,7 +148,7 @@ torch::optional<size_t> lifuren::dataset::FileDataset::size() const {
 }
 
 torch::data::Example<> lifuren::dataset::FileDataset::get(size_t index) {
-    return { 
+    return {
         this->features[index],
         this->labels  [index]
     };

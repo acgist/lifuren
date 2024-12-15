@@ -48,7 +48,7 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
     // N C H W
     torch::Tensor a = torch::from_blob(data, {2, 2, 2, 3}, torch::kFloat32);
     SPDLOG_DEBUG("\n{}", a);
-    // C 
+    // C
     torch::nn::LayerNorm   ln(torch::nn::LayerNormOptions({ 2, 3 }));
     SPDLOG_DEBUG("ln:\n{}", ln->forward(a));
     // N
@@ -69,11 +69,25 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
 }
 
 [[maybe_unused]] static void testLinear() {
-    torch::nn::Linear linear(torch::nn::LinearOptions(7, 1));
-    // auto a = torch::randn({ 7, 100 });
-    auto a = torch::randn({ 7, 100, 768 });
-    // SPDLOG_DEBUG("size: {}", linear->forward(a.permute({ 1, 0 })).sizes());
-    SPDLOG_DEBUG("size: {}", linear->forward(a.permute({ 2, 1, 0 })).sizes());
+    auto input  = torch::randn({4, 2, 8});
+    auto linear1 = torch::nn::Linear(torch::nn::LinearOptions(16, 36).bias(true));
+    auto linear2 = torch::nn::Linear(torch::nn::LinearOptions(16, 36).bias(true));
+    auto linear3 = torch::nn::Linear(torch::nn::LinearOptions(16, 36).bias(true));
+    auto linear4 = torch::nn::Linear(torch::nn::LinearOptions(16, 36).bias(true));
+    // SPDLOG_DEBUG("input ：{}", input);
+    // SPDLOG_DEBUG("input ：{}", input.select(0, 0).view({16}));
+    // SPDLOG_DEBUG("input ：{}", input.select(0, 0).flatten());
+    // SPDLOG_DEBUG("input ：{}", input.select(0, 1));
+    // SPDLOG_DEBUG("input ：{}", input.select(0, 2));
+    // SPDLOG_DEBUG("input ：{}", input.select(0, 3));
+    auto output = torch::stack({
+        linear1->forward(input.select(0, 0).flatten()).add(linear2->forward(input.select(0, 1).flatten())).view({2, 18}),
+        linear3->forward(input.select(0, 2).flatten()).mul(linear4->forward(input.select(0, 3).flatten())).view({2, 18})
+    });
+    SPDLOG_DEBUG("input ：{}", input);
+    SPDLOG_DEBUG("output：{}", output);
+    SPDLOG_DEBUG("input ：{}", input.sizes());
+    SPDLOG_DEBUG("output：{}", output.sizes());
 }
 
 [[maybe_unused]] static void testLoss() {
@@ -92,11 +106,41 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef);
     SPDLOG_DEBUG("{}", c.sizes());
 }
 
+[[maybe_unused]] static void testConv2d() {
+    auto input  = torch::randn({2, 2, 18});
+    auto conv2d = torch::nn::Conv2d(torch::nn::Conv2dOptions(2, 4, {1, 3}).stride({1, 2}).bias(true));
+    auto output = conv2d->forward(input);
+    SPDLOG_DEBUG("input ：{}", input);
+    SPDLOG_DEBUG("oouput：{}", output);
+    SPDLOG_DEBUG("input ：{}", input.sizes());
+    SPDLOG_DEBUG("oouput：{}", output.sizes());
+}
+
+[[maybe_unused]] static void testSlice() {
+    auto input  = torch::randn({2, 2, 2});
+    SPDLOG_DEBUG("input ：{}", input);
+    SPDLOG_DEBUG("input ：{}", input.slice(1, 0, 1));
+    SPDLOG_DEBUG("input ：{}", input.slice(1, 1, 2));
+}
+
+[[maybe_unused]] static void testPermute() {
+    auto input  = torch::ones({2, 2, 2}).to(torch::kFloat);
+    auto linear = torch::nn::Linear(torch::nn::LinearOptions(2, 2));
+    SPDLOG_DEBUG("output ：{}", input);
+    SPDLOG_DEBUG("output ：{}", input.permute({0, 2, 1}));
+    auto output = linear->forward(input.permute({0, 2, 1}));
+    SPDLOG_DEBUG("output ：{}", output);
+    SPDLOG_DEBUG("output ：{}", output.permute({0, 2, 1}));
+}
+
 LFR_TEST(
     // testPrint();
     // testTensor();
     // testNorm();
-    testCat();
+    // testCat();
     // testLinear();
     // testLoss();
+    // testConv2d();
+    // testSlice();
+    testPermute();
 );

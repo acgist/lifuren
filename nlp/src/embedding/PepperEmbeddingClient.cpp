@@ -173,9 +173,9 @@ bool lifuren::PepperEmbeddingClient::embedding(const std::string& path) {
     }
     {
         std::unique_lock<std::mutex> lock(mutex);
-        while(countDown != 0) {
-            condition.wait(lock);
-        }
+        condition.wait(lock, [&countDown] {
+            return countDown <= 0;
+        });
     }
     output.close();
     return true;
