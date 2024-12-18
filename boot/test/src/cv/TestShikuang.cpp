@@ -5,6 +5,9 @@
 [[maybe_unused]] static void testShikuang() {
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::ShikuangModel model({
+        .lr         = 0.01F,
+        .batch_size = 100,
+        .epoch_count = 16,
         .model_name = "baicai",
         .train_path = lifuren::file::join({path, "baicai", lifuren::config::DATASET_TRAIN}).string(),
         .val_path   = lifuren::file::join({path, "baicai", lifuren::config::DATASET_VAL}).string(),

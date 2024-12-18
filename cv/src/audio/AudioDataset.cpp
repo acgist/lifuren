@@ -14,8 +14,8 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::dataset::audio:
     auto window = torch::hann_window(win_size);
     auto spec = torch::stft(pcm_norm, n_fft, hop_size, win_size, window, true, "reflect", false, std::nullopt, true);
          spec = torch::view_as_real(spec);
-    auto mag  = torch::sqrt(spec.pow(2).sum(-1) + (1e-8));
-    auto pha  = torch::atan2(spec.index({"...", 1}), spec.index({"...", 0}) + (1e-8));
+    auto mag  = torch::sqrt(spec.pow(2).sum(-1) + (1e-9));
+    auto pha  = torch::atan2(spec.index({"...", 1}), spec.index({"...", 0}) + (1e-5));
          mag  = torch::pow(mag, compress_factor);
     auto com  = torch::stack((mag * torch::cos(pha), mag * torch::sin(pha)), -1);
     return std::make_tuple<>(mag, pha, com);
@@ -77,5 +77,5 @@ torch::Tensor lifuren::dataset::audio::feature(const int& length, const std::str
     std::vector<short> data;
     data.resize(length);
     stream.read(reinterpret_cast<char*>(data.data()), length * sizeof(short));
-    return torch::from_blob(data.data(), { length }, torch::kShort).to(torch::kF32).div(NORMALIZATION).clone().to(type);
+    return torch::from_blob(data.data(), { length }, torch::kShort).to(torch::kFloat32).div(NORMALIZATION).clone().to(type);
 }

@@ -96,6 +96,8 @@ public:
     virtual torch::Tensor pred(const torch::Tensor& input);
 
 protected:
+    // 初始化权重
+    virtual bool initParameters();
     // 定义数据集
     virtual bool defineDataset() = 0;
 
@@ -156,17 +158,27 @@ bool lifuren::Model<D, L, P, M>::load(const std::string& path, const std::string
 template<typename D, typename L, typename P, typename M>
 bool lifuren::Model<D, L, P, M>::define() {
     this->model->to(this->device);
+    this->initParameters();
+    this->print();
     return this->defineDataset();
 }
 
 template<typename D, typename L, typename P, typename M>
+bool lifuren::Model<D, L, P, M>::initParameters() {
+    for(auto& parameter : this->model->named_parameters()) {
+        // torch::nn::init::xavier_normal_(parameter.value());
+    }
+    return true;
+}
+
+template<typename D, typename L, typename P, typename M>
 void lifuren::Model<D, L, P, M>::print() {
-    for(const auto& value : this->model->parameters()) {
-        lifuren::logTensor("parameters", value);
+    size_t total_numel = 0;
+    for(const auto& parameter : this->model->named_parameters()) {
+        total_numel += parameter.value().numel();
+        SPDLOG_DEBUG("parameter: {} = {}", parameter.key(), parameter.value().numel());
     }
-    for(const auto& value : this->model->named_parameters()) {
-        lifuren::logTensor(value.key().c_str(), value.value());
-    }
+    SPDLOG_DEBUG("model parameter: {}", total_numel);
 }
 
 template<typename D, typename L, typename P, typename M>

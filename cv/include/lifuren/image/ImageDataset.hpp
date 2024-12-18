@@ -25,7 +25,7 @@ namespace image {
 extern torch::Tensor feature(const int& width, const int& height, const std::string& file, const torch::DeviceType& type);
 
 inline torch::Tensor feature(char* data, const int& width, const int& height, const torch::DeviceType& type) {
-    return torch::from_blob(data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kF32).div(255.0).clone().to(type);
+    return torch::from_blob(data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).clone().to(type);
 }
 
 } // END OF image

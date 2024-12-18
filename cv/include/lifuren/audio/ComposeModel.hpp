@@ -17,8 +17,9 @@ class ShikuangModuleImpl : public torch::nn::Module {
 private:
     // 卷积->卷积->GRU GRU 还原->还原
     torch::nn::Conv2d downsample{ nullptr };
-    torch::nn::ReLU   relu      { nullptr };
-    torch::nn::Dropout dropout  { nullptr };
+    torch::nn::BatchNorm2d norm1{ nullptr };
+    torch::nn::BatchNorm2d norm2{ nullptr };
+    torch::nn::BatchNorm2d norm3{ nullptr };
     torch::nn::Linear upsample1 { nullptr };
     torch::nn::Linear upsample2 { nullptr };
     torch::nn::Linear upsample3 { nullptr };
@@ -42,8 +43,10 @@ TORCH_MODULE(ShikuangModule);
  */
 class ShikuangModel : public lifuren::Model<
     lifuren::dataset::AudioFileStyleDatasetLoader,
+    // torch::nn::L1Loss,
     torch::nn::MSELoss,
-    torch::optim::Adam,
+    torch::optim::SGD,
+    // torch::optim::Adam,
     ShikuangModule
 > {
 
