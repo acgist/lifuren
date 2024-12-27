@@ -15,14 +15,26 @@ if(ENABLE_REST)
     aux_source_directory(src/rest/api/ REST_FILES)
 endif()
 
-add_executable(
-    ${PROJECT_NAME}
-    src/Main.cpp
-    src/Embedding.cpp
-    ${CLI_FILES}
-    ${FLTK_FILES}
-    ${REST_FILES}
-)
+if(CMAKE_HOST_WIN32)
+    add_executable(
+        ${PROJECT_NAME}
+        src/Main.cpp
+        src/Embedding.cpp
+        ${CLI_FILES}
+        ${FLTK_FILES}
+        ${REST_FILES}
+        win.rc
+    )
+else()
+    add_executable(
+        ${PROJECT_NAME}
+        src/Main.cpp
+        src/Embedding.cpp
+        ${CLI_FILES}
+        ${FLTK_FILES}
+        ${REST_FILES}
+    )
+endif()
 
 if(CMAKE_HOST_WIN32)
     target_link_libraries(
@@ -51,9 +63,9 @@ target_include_directories(
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)

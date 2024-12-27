@@ -1,0 +1,45 @@
+
+/**
+ * Win32配置
+ * https://learn.microsoft.com/zh-cn/windows/win32/menurc/versioninfo-resource
+ */
+#include <winver.h>
+
+#pragma code_page(65001)
+
+IDI_ICON1 ICON DISCARDABLE "logo.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+#ifndef _DEBUG
+FILEFLAGS       VS_FF_DEBUG
+#else
+// FILEFLAGS    0x0L
+FILEFLAGS       VS_FF_SPECIALBUILD
+#endif
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_DLL | VFT_APP | VFT_STATIC_LIB
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "acgist"
+            VALUE "FileDescription",  "李夫人"
+            VALUE "FileVersion",      "1.0.0.0"
+            VALUE "InternalName",     "李夫人"
+            VALUE "LegalCopyright",   "Copyright © 2013-2024 ACGIST.COM. All Rights Reserved."
+            VALUE "LegalTrademarks",  "lifuren"
+            VALUE "OriginalFilename", "lifuren.exe"
+            VALUE "ProductName",      "李夫人"
+            VALUE "ProductVersion",   "1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1252
+    END
+END
