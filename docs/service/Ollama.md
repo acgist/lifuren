@@ -55,11 +55,18 @@ ollama list
 ollama run 模型名称
 # 下载模型
 ollama pull 模型名称
+
+# bge-large
+ollama run bge-large
+
+# quentinz/bge-large-zh-v1.5
+ollama run quentinz/bge-large-zh-v1.5
 ```
 
 ## 相关链接
 
 * https://ollama.com
+* https://ollama.com/models
 * https://github.com/ollama/ollama
 
 ## 注意事项

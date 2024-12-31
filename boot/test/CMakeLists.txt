@@ -25,8 +25,18 @@ install(
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
 
 if(CMAKE_HOST_WIN32)
+    # /MD  MSVCRT.LIB   多线程DLL的Release版本
+    # /MDd MSVCRTD.LIB  多线程DLL的Debug版本
+    # /MT  LIBCMT.LIB   多线程静态链接的Release版本
+    # /MTd LIBCMTD.LIB  多线程静态链接的Debug版本
+    # /MD  MSVCPRT.LIB  多线程DLL的Release版本
+    # /MDd MSVCPRTD.LIB 多线程DLL的Debug版本
+    # /MT  LIBCPMT.LIB  多线程静态链接的Release版本
+    # /MTd LIBCPMTD.LIB 多线程静态链接的Debug版本
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+    else()
+        set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD")
     endif()
 
     install(FILES ${FLTK_DLLS}        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

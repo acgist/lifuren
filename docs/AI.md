@@ -408,9 +408,9 @@ ADMA + L2
 ## 部署框架
 
 * [GGML](https://github.com/ggerganov/ggml)
-* [ONNX](https://docs.openvino.ai)
 * [OpenVINO](https://github.com/openvinotoolkit/openvino)
 * [TensorRT](https://developer.nvidia.com/tensorrt)
+* [OnnxRuntime](https://github.com/microsoft/onnxruntime)
 
 ## 模型结构
 

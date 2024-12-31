@@ -34,7 +34,7 @@ static void restPostAudioGenerate() {
             audio.content_type == "audio/aac" ||
             audio.content_type == "audio/ogg" ||
             audio.content_type == "audio/wav" ||
-            audio.content_type == "audio/mpeg" // MP3
+            audio.content_type == "audio/mp3"
         )) {
             lifuren::response(response, "4415", "音频格式错误");
             return;

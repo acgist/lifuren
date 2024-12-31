@@ -1,11 +1,10 @@
-
 /**
  * Win32配置
  * https://learn.microsoft.com/zh-cn/windows/win32/menurc/versioninfo-resource
  */
-#include <winver.h>
-
 #pragma code_page(65001)
+
+#include <verrsrc.h>
 
 IDI_ICON1 ICON DISCARDABLE "logo.ico"
 

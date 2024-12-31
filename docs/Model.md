@@ -177,33 +177,3 @@ train/视频2.mp4
 val/视频1.mp4
 val/视频2.mp4
 ```
-
-#### 推理
-
-## ONNX | TorchScript
-
-```
-import torch
-
-class LifurenModel(torch.nn.Module):
-    def __init__(self):
-        super(LifurenModel, self).__init__()
-        self.linear = torch.nn.Linear(1, 1)
-
-    def forward(self, input):
-        return self.linear.forward(input)
-
-model = LifurenModel()
-model.eval()
-
-input = torch.rand(1)
-
-torch.save(model, 'lifuren.pt')
-
-torch.save(model.state_dict(), 'lifuren.bin')
-
-torch.jit.save(torch.jit.trace(model, input), 'lifuren.pth')
-# torch.jit.save(torch.jit.script(model, input), 'lifuren.pth')
-
-torch.onnx.export(model, input, "lifuren.onnx")
-```

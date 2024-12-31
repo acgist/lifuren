@@ -70,7 +70,7 @@ endif()
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
-add_definitions(-DSPDLOG_COMPILED_LIB=ON)
+add_definitions(-DSPDLOG_COMPILED_LIB)
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
