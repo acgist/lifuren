@@ -7,7 +7,6 @@ add_library(
     src/Model.cpp
     src/Tensor.cpp
     src/Dataset.cpp
-    src/OnnxRuntime.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp
 )
@@ -19,14 +18,12 @@ if(CMAKE_HOST_WIN32)
         ${PROJECT_NAME}
         lifurencore
         ${TORCH_LIBRARIES}
-        ${ONNXRUNTIME_LIBS}
     )
 else()
     target_link_libraries(
         ${PROJECT_NAME}
         lifurencore
         ${TORCH_LIBRARIES}
-        onnxruntime::onnxruntime
     )
 endif()
 

@@ -102,12 +102,9 @@ set(
     CMAKE_PREFIX_PATH
     ${CMAKE_PREFIX_PATH}
     deps/libtorch
-    deps/onnxruntime
 )
 
-if(CMAKE_HOST_UNIX)
-    find_package(onnxruntime REQUIRED)
-endif()
+include_directories(HEADER_DIR)
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -121,8 +118,6 @@ if(CMAKE_HOST_WIN32)
         deps/yaml-cpp
         deps/cpp-httplib
     )
-
-    include_directories(include deps/onnxruntime/include)
 
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
@@ -147,9 +142,6 @@ if(CMAKE_HOST_WIN32)
     endif()
 
     file(GLOB TORCH_DLLS       "deps/libtorch/lib/*.dll")
-    file(GLOB ONNXRUNTIME_DLLS "deps/onnxruntime/lib/*.dll")
-
-    file(GLOB ONNXRUNTIME_LIBS "deps/onnxruntime/lib/onnxruntime.lib")
 
     find_package(FFMPEG        REQUIRED)
     find_package(libpng        REQUIRED)

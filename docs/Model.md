@@ -11,13 +11,15 @@ val/...
 test/...
 ```
 
+## 嵌入文件
+
+一些数据集预处理非常耗时，提前生成嵌入文件减小训练时的时间消耗。
+
 ## 李杜 | 苏辛
 
 #### 训练
 
 ###### 数据集
-
-* 原始文件嵌入以后生成嵌入文件作为训练数据
 
 ```
 # 原始文件
@@ -109,6 +111,10 @@ train/音频1.target.pcm
 train/音频2.target.pcm
 val/音频1.target.pcm
 val/音频2.target.pcm
+
+# 嵌入文件
+train/embedding.model
+val/embedding.model
 ```
 
 #### 推理
@@ -139,6 +145,10 @@ train/音频1.pcm
 train/音频2.pcm
 val/音频1.pcm
 val/音频2.pcm
+
+# 嵌入文件
+train/embedding.model
+val/embedding.model
 ```
 
 #### 推理

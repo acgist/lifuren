@@ -153,7 +153,7 @@ inline auto loadAudioFileStyleDataset(
             std::ifstream source_stream;
             std::ifstream target_stream;
             source_stream.open(source, std::ios_base::binary);
-            target_stream.open(source, std::ios_base::binary);
+            target_stream.open(target, std::ios_base::binary);
             if(!source_stream.is_open() || !target_stream.is_open()) {
                 SPDLOG_DEBUG("打开文件失败：{} - {}", source, target);
                 source_stream.close();

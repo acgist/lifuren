@@ -14,14 +14,6 @@ target_link_libraries(
     lifurenmodel
 )
 
-add_executable(testOnnx TestOnnx.cpp)
-add_test(NAME testOnnx COMMAND testOnnx)
-set_target_properties(testOnnx PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testOnnx
-    lifurenmodel
-)
-
 add_executable(testModel TestModel.cpp)
 add_test(NAME testModel COMMAND testModel)
 set_target_properties(testModel PROPERTIES FOLDER "test-model")
