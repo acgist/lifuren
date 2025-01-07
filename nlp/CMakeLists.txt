@@ -7,10 +7,10 @@ add_library(
     src/rag/FaissRAGClient.cpp
     src/rag/ElasticSearchRAGClient.cpp
     src/poetry/Poetry.cpp
+    src/poetry/PoetryClient.cpp
+    src/poetry/PoetryDataset.cpp
     src/poetry/LiduModel.cpp
     src/poetry/SuxinModel.cpp
-    src/poetry/PoetryDataset.cpp
-    src/poetry/PoetizeClient.cpp
     src/embedding/OllamaEmbeddingClient.cpp
     src/embedding/PepperEmbeddingClient.cpp
 )

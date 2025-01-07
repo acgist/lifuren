@@ -76,14 +76,10 @@ extern const std::string CONFIG_FAISS;
 extern const std::string CONFIG_ELASTICSEARCH;
 extern const std::string CONFIG_OLLAMA;
 extern const std::string CONFIG_PEPPER;
-extern const std::string CONFIG_ACT_TANGXIANZU;
-extern const std::string CONFIG_ACT_GUANHANQING;
-extern const std::string CONFIG_PAINT_WUDAOZI;
-extern const std::string CONFIG_PAINT_GUKAIZHI;
-extern const std::string CONFIG_POETIZE_LIDU;
-extern const std::string CONFIG_POETIZE_SUXIN;
-extern const std::string CONFIG_COMPOSE_SHIKUANG;
-extern const std::string CONFIG_COMPOSE_LIGUINIAN;
+extern const std::string CONFIG_AUDIO_SHIKUANG;
+extern const std::string CONFIG_VIDEO_WUDAOZI;
+extern const std::string CONFIG_POETRY_LIDU;
+extern const std::string CONFIG_POETRY_SUXIN;
 
 // 全局配置：config.yml
 extern lifuren::config::Config CONFIG;

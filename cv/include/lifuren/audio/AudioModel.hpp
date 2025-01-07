@@ -1,8 +1,8 @@
 /**
- * 作曲模型
+ * 音频模型
  */
-#ifndef LFR_HEADER_CV_COMPOSE_DATASET_HPP
-#define LFR_HEADER_CV_COMPOSE_DATASET_HPP
+#ifndef LFR_HEADER_CV_AUDIO_MODEL_HPP
+#define LFR_HEADER_CV_AUDIO_MODEL_HPP
 
 #include "lifuren/Model.hpp"
 #include "lifuren/audio/AudioDataset.hpp"
@@ -60,45 +60,6 @@ public:
 
 };
 
-/**
- * 李龟年模型
- */
-class LiguinianModuleImpl : public torch::nn::Module {
-
-private:
-    // TODO: 模型定义
-
-public:
-    LiguinianModuleImpl();
-    virtual ~LiguinianModuleImpl();
-
-public:
-    torch::Tensor forward(torch::Tensor input);
-
-};
-
-TORCH_MODULE(LiguinianModule);
-
-/**
- * 李龟年模型
- */
-class LiguinianModel : public lifuren::Model<
-    lifuren::dataset::AudioFileGANDatasetLoader,
-    torch::nn::MSELoss,
-    torch::optim::Adam,
-    LiguinianModule
-> {
-
-public:
-    LiguinianModel(lifuren::config::ModelParams params = {});
-    virtual ~LiguinianModel();
-
-public:
-    bool defineDataset() override;
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
-
-};
-
 }
 
-#endif // END OF LFR_HEADER_CV_COMPOSE_DATASET_HPP
+#endif // END OF LFR_HEADER_CV_AUDIO_MODEL_HPP

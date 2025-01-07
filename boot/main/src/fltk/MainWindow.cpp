@@ -16,20 +16,17 @@
 #include "FL/Fl_Shared_Image.H"
 
 static Fl_Button* audioButtonPtr { nullptr };
-static Fl_Button* imageButtonPtr { nullptr };
 static Fl_Button* videoButtonPtr { nullptr };
 static Fl_Button* poetryButtonPtr{ nullptr };
 static Fl_Button* aboutButtonPtr { nullptr };
 static Fl_Button* reloadButtonPtr{ nullptr };
 
 static lifuren::AudioWindow * audioWindowPtr { nullptr };
-static lifuren::ImageWindow * imageWindowPtr { nullptr };
 static lifuren::VideoWindow * videoWindowPtr { nullptr };
 static lifuren::PoetryWindow* poetryWindowPtr{ nullptr };
 static lifuren::AboutWindow * aboutWindowPtr { nullptr };
 
 static void audioCallback (Fl_Widget*, void*);
-static void imageCallback (Fl_Widget*, void*);
 static void videoCallback (Fl_Widget*, void*);
 static void poetryCallback(Fl_Widget*, void*);
 static void aboutCallback (Fl_Widget*, void*);
@@ -67,8 +64,6 @@ lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Wind
 lifuren::MainWindow::~MainWindow() {
     LFR_DELETE_PTR(audioButtonPtr);
     LFR_DELETE_PTR(audioWindowPtr);
-    LFR_DELETE_PTR(imageButtonPtr);
-    LFR_DELETE_PTR(imageWindowPtr);
     LFR_DELETE_PTR(videoButtonPtr);
     LFR_DELETE_PTR(videoWindowPtr);
     LFR_DELETE_PTR(poetryButtonPtr);
@@ -82,15 +77,13 @@ void lifuren::MainWindow::drawElement() {
     // 绘制界面
     poetryButtonPtr = new Fl_Button(20,                      10,             LFR_HALF_WIDTH(60), 80, "诗词生成");
     audioButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10,             LFR_HALF_WIDTH(60), 80, "音频生成");
-    imageButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "图片生成");
-    videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 100,            LFR_HALF_WIDTH(60), 80, "视频生成");
+    videoButtonPtr  = new Fl_Button(20,                      100,            LFR_HALF_WIDTH(60), 80, "视频生成");
     reloadButtonPtr = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
     aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
     // 大小修改
     this->resizable(this);
     // 绑定事件
     audioButtonPtr ->callback(audioCallback , this);
-    imageButtonPtr ->callback(imageCallback , this);
     videoButtonPtr ->callback(videoCallback , this);
     poetryButtonPtr->callback(poetryCallback, this);
     aboutButtonPtr ->callback(aboutCallback , this);
@@ -99,7 +92,6 @@ void lifuren::MainWindow::drawElement() {
 
 // 定义窗口
 LFR_BUTTON_CALLBACK_FUNCTION(audioCallback,  AudioWindow,  audioWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
-LFR_BUTTON_CALLBACK_FUNCTION(imageCallback,  ImageWindow,  imageWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 LFR_BUTTON_CALLBACK_FUNCTION(poetryCallback, PoetryWindow, poetryWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);

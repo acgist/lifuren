@@ -13,7 +13,7 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
 #include "lifuren/Dataset.hpp"
-#include "lifuren/poetry/PoetizeClient.hpp"
+#include "lifuren/poetry/PoetryClient.hpp"
 
 static Fl_Choice* clientPtr       { nullptr };
 static Fl_Choice* ragTypePtr      { nullptr };
@@ -30,7 +30,7 @@ static Fl_Button* trainPtr        { nullptr };
 static Fl_Button* generatePtr     { nullptr };
 static Fl_Button* modelReleasePtr { nullptr };
 
-static std::unique_ptr<lifuren::PoetizeModelClient> poetizeClient{ nullptr };
+static std::unique_ptr<lifuren::PoetryModelClient> poetryClient{ nullptr };
 
 static void pepperCallback         (Fl_Widget*, void*);
 static void embeddingCallback      (Fl_Widget*, void*);
@@ -146,7 +146,7 @@ static void embeddingCallback(Fl_Widget*, void*) {
 }
 
 static void trainCallback(Fl_Widget*, void*) {
-    if(!poetizeClient) {
+    if(!poetryClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -167,14 +167,14 @@ static void trainCallback(Fl_Widget*, void*) {
                 .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL}).string(),
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST}).string(),
             };
-            poetizeClient->trainValAndTest(params);
-            poetizeClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+            poetryClient->trainValAndTest(params);
+            poetryClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
         }
     );
 }
 
 static void generateCallback(Fl_Widget*, void* voidPtr) {
-    if(!poetizeClient) {
+    if(!poetryClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -198,33 +198,33 @@ static void generateCallback(Fl_Widget*, void* voidPtr) {
         lifuren::message::Type::POETRY_MODEL_PRED,
         "生成诗词",
         [model, rhythm, prompts]() {
-            lifuren::PoetizeParams params {
+            lifuren::PoetryParams params {
                 .model   = model,
                 .rhythm  = rhythm,
                 .prompts = prompts
             };
-            std::string result = poetizeClient->pred(params);
+            std::string result = poetryClient->pred(params);
             lifuren::message::sendMessage(result.c_str());
         }
     );
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
-    if(!poetizeClient) {
+    if(!poetryClient) {
         return;
     }
     if(lifuren::ThreadWindow::checkPoetryThread()) {
         fl_message("当前还有任务运行不能释放模型：请先停止任务");
         return;
     }
-    poetizeClient = nullptr;
+    poetryClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::PoetryWindow* windowPtr = static_cast<lifuren::PoetryWindow*>(voidPtr);
     auto& poetryConfig  = lifuren::config::CONFIG.poetry;
     poetryConfig.client = clientPtr->text();
-    poetizeClient       = lifuren::getPoetizeClient(poetryConfig.client);
+    poetryClient        = lifuren::getPoetryClient(poetryConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

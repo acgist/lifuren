@@ -9,37 +9,27 @@ http-server:
 audio:
   path: /data/lifuren/audio
   model: 
-  client: compose-shikuang
+  client: audio-shikuang
   clients:
-    - compose-shikuang
-    - compose-liguinian
-# 图片页面配置
-image:
-  path: /data/lifuren/image
-  model: 
-  client: paint-wudaozi
-  clients:
-    - paint-wudaozi
-    - paint-gukaizhi
+    - audio-shikuang
 # 图片页面配置
 video:
   path: /data/lifuren/video
   model: 
   length: 24
-  client: act-guanhanqing
+  client: video-wudaozi
   clients:
-    - act-tangxianzu
-    - act-guanhanqing
+    - video-wudaozi
 # 诗词页面配置
 poetry:
   path: /data/lifuren/poetry
   model: 
   size: 768
   length: 4
-  client: poetize-lidu
+  client: poetry-lidu
   clients:
-    - poetize-lidu
-    - poetize-suxin
+    - poetry-lidu
+    - poetry-suxin
   # 返回数量
   rag-size: 4
   # char|rhythm

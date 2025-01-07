@@ -10,7 +10,7 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/video/ActClient.hpp"
+#include "lifuren/video/VideoClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };
@@ -23,7 +23,7 @@ static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
-static std::unique_ptr<lifuren::ActModelClient> actClient{ nullptr };
+static std::unique_ptr<lifuren::VideoModelClient> videoClient{ nullptr };
 
 static void trainCallback          (Fl_Widget*, void*);
 static void generateCallback       (Fl_Widget*, void*);
@@ -83,7 +83,7 @@ void lifuren::VideoWindow::drawElement() {
 }
 
 static void trainCallback(Fl_Widget*, void*) {
-    if(!actClient) {
+    if(!videoClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -104,14 +104,14 @@ static void trainCallback(Fl_Widget*, void*) {
                 .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL}).string(),
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST}).string(),
             };
-            actClient->trainValAndTest(params);
-            actClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+            videoClient->trainValAndTest(params);
+            videoClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
         }
     );
 }
 
 static void generateCallback(Fl_Widget*, void*) {
-    if(!actClient) {
+    if(!videoClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -130,32 +130,32 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::VIDEO_MODEL_PRED,
         "生成视频",
         [model, video, output]() {
-            lifuren::ActParams params {
+            lifuren::VideoParams params {
                 .model  = model,
                 .video  = video,
                 .output = output
             };
-            actClient->pred(params);
+            videoClient->pred(params);
         }
     );
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
-    if(!actClient) {
+    if(!videoClient) {
         return;
     }
     if(lifuren::ThreadWindow::checkVideoThread()) {
         fl_message("当前还有任务运行不能释放模型：请先停止任务");
         return;
     }
-    actClient = nullptr;
+    videoClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::VideoWindow* windowPtr = static_cast<lifuren::VideoWindow*>(voidPtr);
     auto& videoConfig  = lifuren::config::CONFIG.video;
     videoConfig.client = clientPtr->text();
-    actClient          = lifuren::getActClient(videoConfig.client);
+    videoClient        = lifuren::getVideoClient(videoConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

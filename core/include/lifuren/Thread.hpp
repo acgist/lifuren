@@ -58,72 +58,83 @@ public:
 class ThreadPool {
 
 public:
-    ThreadPool(size_t);
-    template<typename F, typename... Args>
-    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::invoke_result<F(Args...)>::type>;
+    ThreadPool(size_t size);
     ~ThreadPool();
 
-private:
-    bool stop;
-    std::vector<std::thread> workers;
-    std::queue<std::function<void()>> tasks;
-    std::mutex queue_mutex;
-    std::condition_variable condition;
+public:
+    /**
+     * 添加任务
+     * 
+     * @param f    任务
+     * @param args 参数
+     */
+    template<class F, class... Args>
+    auto enqueue(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type>;
 
+private:
+    bool stop;        // 是否关闭
+    std::mutex mutex; // 任务锁
+    std::condition_variable           condition; // 任务锁条件
+    std::vector<std::thread>          workers;   // 工作线程
+    std::queue<std::function<void()>> tasks;     // 任务队列
 };
  
 inline ThreadPool::ThreadPool(size_t threads) : stop(false) {
     for(size_t i = 0; i < threads; ++i) {
-        workers.emplace_back(
-            [this] {
-                for(;;) {
-                    std::function<void()> task;
-                    {
-                        std::unique_lock<std::mutex> lock(this->queue_mutex);
-                        this->condition.wait(lock, [this] {
-                            return this->stop || !this->tasks.empty();
-                        });
-                        if(this->stop && this->tasks.empty()) {
-                            return;
-                        }
-                        task = std::move(this->tasks.front());
-                        this->tasks.pop();
+        this->workers.emplace_back([this] {
+            for(;;) {
+                std::function<void()> task;
+                {
+                    std::unique_lock<std::mutex> lock(this->mutex);
+                    this->condition.wait(lock, [this]{ return this->stop || !this->tasks.empty(); });
+                    if(this->stop && this->tasks.empty()) {
+                        return;
                     }
-                    task();
+                    task = std::move(this->tasks.front());
+                    this->tasks.pop();
                 }
+                task();
             }
-        );
+        });
     }
 }
 
 template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args)  -> std::future<typename std::invoke_result<F(Args...)>::type> {
-    using return_type = typename std::invoke_result<F(Args...)>::type;
-    auto task = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-    std::future<return_type> res = task->get_future();
+auto ThreadPool::enqueue(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type> {
+    using return_type = typename std::invoke_result<F, Args...>::type;
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
+        std::bind(std::forward<F>(func), std::forward<Args>(args)...)
+    );
+    std::future<return_type> future = task->get_future();
     {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        if(stop) {
-            throw std::runtime_error("enqueue on stopped ThreadPool");
+        std::unique_lock<std::mutex> lock(this->mutex);
+        if(this->stop) {
+            throw std::runtime_error("线程池已关闭");
         }
-        tasks.emplace([task]() {
-            (*task)();
-        });
+        // std::move(task)
+        this->tasks.emplace([task](){ (*task)(); });
     }
-    condition.notify_one();
-    return res;
+    this->condition.notify_one();
+    return future;
 }
 
 inline ThreadPool::~ThreadPool() {
     {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        stop = true;
+        std::unique_lock<std::mutex> lock(this->mutex);
+        this->stop = true;
     }
-    condition.notify_all();
-    for(std::thread& worker: workers) {
+    this->condition.notify_all();
+    for(std::thread& worker: this->workers) {
         worker.join();
     }
 }
+
+/**
+ * 定时器
+ */
+class Timer {
+
+};
 
 } // END lifuren
 

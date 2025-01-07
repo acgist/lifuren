@@ -84,7 +84,7 @@ inline torch::Tensor cat(
  * 
  * @return 诗词数据集
  */
-inline auto loadPoetryFileDataset(
+inline auto loadPoetryFileGANDataset(
     const size_t& batch_size,
     const std::string& path
 ) -> decltype(auto) {
@@ -126,8 +126,8 @@ inline auto loadPoetryFileDataset(
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-using PoetryFileDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadPoetryFileDataset),
+using PoetryFileGANDatasetLoader = std::invoke_result<
+    decltype(&lifuren::dataset::loadPoetryFileGANDataset),
     const size_t&,
     const std::string&
 >::type;

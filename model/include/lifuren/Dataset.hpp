@@ -1,6 +1,10 @@
 /**
  * Dataset
  * 
+ * GANDatasetLoader      : 生成模型
+ * StyleDatasetLoader    : 风格迁移模型
+ * ClassifyDatasetLoader : 分类模型
+ * 
  * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_DATASET_HPP

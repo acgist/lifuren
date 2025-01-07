@@ -1,7 +1,7 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/RAG.hpp"
-#include "lifuren/poetry/PoetizeModel.hpp"
+#include "lifuren/poetry/PoetryModel.hpp"
 
 [[maybe_unused]] static void testSuxinTrain() {
     lifuren::SuxinModel model({

@@ -104,8 +104,6 @@ set(
     deps/libtorch
 )
 
-include_directories(HEADER_DIR)
-
 if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH

@@ -1,8 +1,8 @@
 /**
  * 诗词模型
  */
-#ifndef LFR_HEADER_NLP_POETIZE_MODEL_HPP
-#define LFR_HEADER_NLP_POETIZE_MODEL_HPP
+#ifndef LFR_HEADER_NLP_POETRY_MODEL_HPP
+#define LFR_HEADER_NLP_POETRY_MODEL_HPP
 
 #include "lifuren/Model.hpp"
 
@@ -33,7 +33,7 @@ TORCH_MODULE(LiduModule);
  * 李杜模型
  */
 class LiduModel : public lifuren::Model<
-    lifuren::dataset::PoetryFileDatasetLoader,
+    lifuren::dataset::PoetryFileGANDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     LiduModule
@@ -73,7 +73,7 @@ TORCH_MODULE(SuxinModule);
  * 苏辛模型
  */
 class SuxinModel : public lifuren::Model<
-    lifuren::dataset::PoetryFileDatasetLoader,
+    lifuren::dataset::PoetryFileGANDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     SuxinModule
@@ -91,4 +91,4 @@ public:
 
 }
 
-#endif // END OF LFR_HEADER_NLP_POETIZE_MODEL_HPP
+#endif // END OF LFR_HEADER_NLP_POETRY_MODEL_HPP

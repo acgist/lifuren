@@ -210,7 +210,7 @@ void lifuren::Model<D, L, P, M>::train(size_t epoch) {
         this->optimizer->step();
         if(this->params.classify) {
             auto accu = pred.argmax(1).eq(target).sum();
-            accu_val += accu.template item<size_t>();
+            accu_val += accu.template item<int>();
             data_val += target.numel();
         }
         loss_val += loss.template item<float>();
@@ -260,7 +260,7 @@ void lifuren::Model<D, L, P, M>::val(size_t epoch) {
         this->val(data, target, pred, loss);
         if(this->params.classify) {
             auto accu = pred.argmax(1).eq(target).sum();
-            accu_val += accu.template item<size_t>();
+            accu_val += accu.template item<int>();
             data_val += target.numel();
         }
         loss_val += loss.template item<float>();
@@ -310,7 +310,7 @@ void lifuren::Model<D, L, P, M>::test() {
         this->test(data, target, pred, loss);
         if(this->params.classify) {
             auto accu = pred.argmax(1).eq(target).sum();
-            accu_val += accu.template item<size_t>();
+            accu_val += accu.template item<int>();
             data_val += target.numel();
         }
         loss_val += loss.template item<float>();

@@ -12,7 +12,7 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/audio/Audio.hpp"
-#include "lifuren/audio/ComposeClient.hpp"
+#include "lifuren/audio/AudioClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };
@@ -26,7 +26,7 @@ static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
-static std::unique_ptr<lifuren::ComposeModelClient> composeClient{ nullptr };
+static std::unique_ptr<lifuren::AudioModelClient> audioClient{ nullptr };
 
 static void pcmCallback            (Fl_Widget*, void*);
 static void trainCallback          (Fl_Widget*, void*);
@@ -110,7 +110,7 @@ static void pcmCallback(Fl_Widget*, void*) {
 }
 
 static void trainCallback(Fl_Widget*, void*) {
-    if(!composeClient) {
+    if(!audioClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -131,14 +131,14 @@ static void trainCallback(Fl_Widget*, void*) {
                 .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL}).string(),
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST}).string(),
             };
-            composeClient->trainValAndTest(params);
-            composeClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+            audioClient->trainValAndTest(params);
+            audioClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
         }
     );
 }
 
 static void generateCallback(Fl_Widget*, void*) {
-    if(!composeClient) {
+    if(!audioClient) {
         fl_message("没有终端实例");
         return;
     }
@@ -157,36 +157,36 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_MODEL_PRED,
         "生成音频",
         [model, audio, output]() {
-            lifuren::ComposeParams params {
+            lifuren::AudioParams params {
                 .model  = model,
                 .audio  = audio,
                 .output = output
             };
-            composeClient->pred(params);
+            audioClient->pred(params);
             lifuren::audio::toFile(output);
         }
     );
 }
 
 static void modelReleaseCallback(Fl_Widget*, void*) {
-    if(!composeClient) {
+    if(!audioClient) {
         return;
     }
     if(lifuren::ThreadWindow::checkAudioThread()) {
         fl_message("当前还有任务运行不能释放模型：请先停止任务");
         return;
     }
-    composeClient = nullptr;
+    audioClient = nullptr;
 }
 
 static void clientCallback(Fl_Widget*, void* voidPtr) {
-    if(composeClient) {
+    if(audioClient) {
         fl_message("当前已有终端运行：请先释放模型");
     }
     lifuren::AudioWindow* windowPtr = static_cast<lifuren::AudioWindow*>(voidPtr);
     auto& audioConfig  = lifuren::config::CONFIG.audio;
     audioConfig.client = clientPtr->text();
-    composeClient      = lifuren::getComposeClient(audioConfig.client);
+    audioClient        = lifuren::getAudioClient(audioConfig.client);
 }
 
 static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {

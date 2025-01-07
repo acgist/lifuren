@@ -122,13 +122,13 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 }
 
 [[maybe_unused]] static void testLoadVideoFileDataset() {
-    auto loader = lifuren::dataset::loadVideoFileStyleDataset(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
+    auto loader = lifuren::dataset::loadVideoFileGANDataset(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
     SPDLOG_DEBUG("视频特征：\n{}", loader->begin()->data.sizes());
     SPDLOG_DEBUG("视频标签：\n{}", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
-    auto loader = lifuren::dataset::loadPoetryFileDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
+    auto loader = lifuren::dataset::loadPoetryFileGANDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
     SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data.sizes());
     SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target.sizes());
 }

@@ -4,20 +4,15 @@ add_library(
     ${PROJECT_NAME}
     src/OpenCV.cpp
     src/audio/Audio.cpp
+    src/audio/AudioClient.cpp
     src/audio/AudioDataset.cpp
-    src/audio/ComposeClient.cpp
     src/audio/ShikuangModel.cpp
-    src/audio/LiguinianModel.cpp
     src/image/Image.cpp
     src/image/ImageDataset.cpp
-    src/image/PaintClient.cpp
-    src/image/WudaoziModel.cpp
-    src/image/GukaizhiModel.cpp
     src/video/Video.cpp
+    src/video/VideoClient.cpp
     src/video/VideoDataset.cpp
-    src/video/ActClient.cpp
-    src/video/TangxianzuModel.cpp
-    src/video/GuanhanqingModel.cpp
+    src/video/WudaoziModel.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

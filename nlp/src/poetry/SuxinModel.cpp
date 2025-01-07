@@ -1,4 +1,4 @@
-#include "lifuren/poetry/PoetizeModel.hpp"
+#include "lifuren/poetry/PoetryModel.hpp"
 
 lifuren::SuxinModuleImpl::SuxinModuleImpl() {
     const auto& poetry = lifuren::config::CONFIG.poetry;
@@ -28,13 +28,13 @@ lifuren::SuxinModel::~SuxinModel() {
 
 bool lifuren::SuxinModel::defineDataset() {
     if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.train_path);
+        this->trainDataset = lifuren::dataset::loadPoetryFileGANDataset(this->params.batch_size, this->params.train_path);
     }
     if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.val_path);
+        this->valDataset = lifuren::dataset::loadPoetryFileGANDataset(this->params.batch_size, this->params.val_path);
     }
     if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::dataset::loadPoetryFileDataset(this->params.batch_size, this->params.test_path);
+        this->testDataset = lifuren::dataset::loadPoetryFileGANDataset(this->params.batch_size, this->params.test_path);
     }
     return true;
 }
