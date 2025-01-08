@@ -130,6 +130,7 @@ bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
         return false;
     }
     iter->second->stop = true;
+    // iter->second->thread->join();
     return true;
 }
 

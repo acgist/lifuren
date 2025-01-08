@@ -6,10 +6,12 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "nlohmann/json.hpp"
 
 #include "lifuren/Config.hpp"
+#include "lifuren/Thread.hpp"
 
 namespace lifuren {
 
@@ -79,6 +81,8 @@ public:
     bool operator==(const Poetry& poetry) const;
 
 };
+
+extern bool embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
 } // END OF poetry
 } // END OF lifuren

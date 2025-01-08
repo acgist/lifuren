@@ -47,13 +47,11 @@ class RAGClient : public RAGSearchClient {
 
 public:
     // RAG文档ID
-    size_t id = 0;
+    size_t id = 10001000;
 
 protected:
     // 文档路径
     std::string path;
-    // 处理完成文件列表
-    std::set<std::string> doneFile;
     // 词嵌入终端
     std::unique_ptr<lifuren::EmbeddingClient> embeddingClient{ nullptr };
 
@@ -76,22 +74,10 @@ protected:
     bool donePromptEmplace(const std::string& prompt);
 
 public:
-    // 加载索引
-    virtual bool loadIndex();
-    // 保存索引
-    virtual bool saveIndex() const;
-    // 清空索引
-    virtual bool truncateIndex();
     /**
      * @return 嵌入向量维度
      */
     virtual size_t getDims() const;
-    /**
-     * @param file 处理文件路径
-     * 
-     * @return 是否已经添加
-     */
-    bool doneFileEmplace(const std::string& file);
     /**
      * 判断是否重复索引，但是不要缓存，缓存在EmbeddingClient里面实现。
      * 
@@ -152,9 +138,6 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
-    bool loadIndex() override;
-    bool saveIndex() const override;
-    bool truncateIndex() override;
 
 };
 
@@ -182,8 +165,6 @@ public:
     using RAGClient::search;
     std::vector<float> index(const std::string& prompt) override;
     std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
-    bool loadIndex() override;
-    bool truncateIndex() override;
 
 };
 

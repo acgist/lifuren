@@ -15,6 +15,8 @@
 #include "lifuren/Dataset.hpp"
 #include "lifuren/Message.hpp"
 #include "lifuren/audio/Audio.hpp"
+#include "lifuren/video/Video.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/audio/AudioClient.hpp"
 #include "lifuren/video/VideoClient.hpp"
@@ -207,18 +209,17 @@ static void embedding(const std::vector<std::string>& args) {
 }
 
 static void embeddingAudio(const std::vector<std::string>& args) {
-    lifuren::message::registerMessageCallback(lifuren::message::Type::AUDIO_AUDIO_TO_PCM, messageCallback);
+    lifuren::message::registerMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING, messageCallback);
     if(args.empty()) {
         lifuren::message::sendMessage("缺少参数");
         return;
     }
-    auto allFileToPCM = std::bind(&lifuren::audio::allFileToPCM, std::placeholders::_1);
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], allFileToPCM)) {
-        lifuren::message::sendMessage("PCM转换成功");
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
+        lifuren::message::sendMessage("音频嵌入成功");
     } else {
-        lifuren::message::sendMessage("PCM转换失败");
+        lifuren::message::sendMessage("音频嵌入失败");
     }
-    lifuren::message::unregisterMessageCallback(lifuren::message::Type::AUDIO_AUDIO_TO_PCM);
+    lifuren::message::unregisterMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING);
 }
 
 static void embeddingPepper(const std::vector<std::string>& args) {
@@ -226,9 +227,7 @@ static void embeddingPepper(const std::vector<std::string>& args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    auto client = std::make_unique<lifuren::PepperEmbeddingClient>();
-    auto embedding = std::bind(&lifuren::PepperEmbeddingClient::embedding, client.get(), std::placeholders::_1);
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], embedding)) {
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::embedding)) {
         SPDLOG_INFO("辣椒嵌入成功");
     } else {
         SPDLOG_WARN("辣椒嵌入失败");

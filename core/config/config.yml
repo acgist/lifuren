@@ -59,5 +59,4 @@ ollama:
 # pepper配置
 pepper:
   dims: 768
-  path: /data/lifuren/poetry/.lifuren/pepper.word
   

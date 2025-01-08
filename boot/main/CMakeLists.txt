@@ -18,7 +18,6 @@ if(CMAKE_HOST_WIN32)
     add_executable(
         ${PROJECT_NAME}
         src/Main.cpp
-        src/Embedding.cpp
         ${CLI_FILES}
         ${FLTK_FILES}
         ${REST_FILES}
@@ -28,7 +27,6 @@ else()
     add_executable(
         ${PROJECT_NAME}
         src/Main.cpp
-        src/Embedding.cpp
         ${CLI_FILES}
         ${FLTK_FILES}
         ${REST_FILES}

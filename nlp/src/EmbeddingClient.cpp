@@ -2,17 +2,17 @@
 
 #include "spdlog/spdlog.h"
 
-lifuren::EmbeddingClient::EmbeddingClient() {
+lifuren::EmbeddingClient::EmbeddingClient(const std::string& path) : path(path) {
 }
 
 lifuren::EmbeddingClient::~EmbeddingClient() {
 }
 
-std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(const std::string& embedding) {
+std::unique_ptr<lifuren::EmbeddingClient> lifuren::EmbeddingClient::getClient(const std::string& path, const std::string& embedding) {
     if(embedding == "ollama" || embedding == "Ollama") {
-        return std::make_unique<lifuren::OllamaEmbeddingClient>();
+        return std::make_unique<lifuren::OllamaEmbeddingClient>(path);
     } else if (embedding == "pepper" || embedding == "Pepper") {
-        return std::make_unique<lifuren::PepperEmbeddingClient>();
+        return std::make_unique<lifuren::PepperEmbeddingClient>(path);
     } else {
         return nullptr;
     }

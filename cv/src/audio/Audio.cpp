@@ -6,6 +6,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/audio/AudioDataset.hpp"
 
 #ifndef MONO_NB_CHANNELS
 #define MONO_NB_CHANNELS 1
@@ -32,6 +33,10 @@ static bool open_encoder (AVFrame** frame, AVPacket** packet, AVCodecContext** e
 static void close_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx);
 static bool open_output (AVFormatContext** outputCtx, AVCodecContext* encodeCodecCtx, int& stream_index, const std::string& file);
 static void close_output(AVFormatContext** outputCtx);
+static void embedding(const std::string& source, const std::string& target, std::ofstream& stream);
+static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
+
+static std::mutex embedding_mutex;
 
 bool lifuren::audio::toPcm(const std::string& audioFile) {
     AVPacket       * packet  { nullptr };
@@ -153,15 +158,46 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     return true;
 }
 
-bool lifuren::audio::allFileToPCM(const std::string& path) {
+bool lifuren::audio::embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+    const std::string source = "source";
+    const std::string target = "target";
     std::vector<std::string> files;
     lifuren::file::listFile(files, path, { ".aac", ".mp3", ".flac" });
+    if(files.empty()) {
+        return true;
+    }
     for(const auto& file : files) {
-        if(lifuren::audio::toPcm(file)) {
-            SPDLOG_DEBUG("转换PCM成功：{}", file);
-        } else {
-            SPDLOG_WARN("转换PCM失败：{}", file);
+        const auto index = file.find_last_of('.');
+        if(index == std::string::npos) {
+            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            continue;
         }
+        if(index < source.size()) {
+            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            continue;
+        }
+        const auto label = file.substr(index - source.size(), source.size());
+        if(label != source) {
+            if(label != target) {
+                SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            }
+            continue;
+        }
+        auto target_file(file);
+        target_file.replace(index - source.size(), source.size(), target);
+        const auto iterator = std::find(files.begin(), files.end(), target_file);
+        if(iterator == files.end()) {
+            SPDLOG_INFO("加载文件没有标记文件：{}", file);
+            continue;
+        }
+        pool.enqueue([&pool, &file, &stream, &target_file]() {
+            SPDLOG_DEBUG("加载文件：{} - {}", file, target_file);
+            if(lifuren::audio::toPcm(file) && lifuren::audio::toPcm(target_file)) {
+                SPDLOG_DEBUG("转换PCM成功：{} - {}", file, target_file);
+            } else {
+                SPDLOG_WARN("转换PCM失败：{} - {}", file, target_file);
+            }
+        });
     }
     return true;
 }
@@ -399,4 +435,40 @@ static void close_output(AVFormatContext** outputCtx) {
         avformat_close_input(outputCtx);
         *outputCtx = nullptr;
     }
+}
+
+static void embedding(const std::string& source, const std::string& target, std::ofstream& stream) {
+    std::ifstream source_stream;
+    std::ifstream target_stream;
+    source_stream.open(source, std::ios_base::binary);
+    target_stream.open(target, std::ios_base::binary);
+    if(!source_stream.is_open() || !target_stream.is_open()) {
+        SPDLOG_DEBUG("打开文件失败：{} - {}", source, target);
+        source_stream.close();
+        target_stream.close();
+        return;
+    }
+    std::vector<short> source_pcm;
+    std::vector<short> target_pcm;
+    source_pcm.resize(DATASET_PCM_LENGTH);
+    target_pcm.resize(DATASET_PCM_LENGTH);
+    while(
+        source_stream.read(reinterpret_cast<char*>(source_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
+        target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short))
+    ) {
+        float norm_factor;
+        // 短时傅里叶变换
+        auto source_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(source_pcm, norm_factor);
+        embedding(stream, norm_factor, source_tuple);
+        auto target_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(target_pcm, norm_factor);
+        embedding(stream, norm_factor, target_tuple);
+    }
+    source_stream.close();
+    target_stream.close();
+}
+
+inline static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple) {
+    auto tensor = torch::stack({ std::get<0>(tuple), std::get<1>(tuple) }).squeeze();
+    stream.write(reinterpret_cast<char*>(&norm_factor), sizeof(norm_factor));
+    stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
 }

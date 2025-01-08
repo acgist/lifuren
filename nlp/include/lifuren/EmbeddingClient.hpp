@@ -18,8 +18,12 @@ namespace lifuren {
  */
 class EmbeddingClient {
 
+protected:
+    // 目录
+    std::string path;
+
 public:
-    EmbeddingClient();
+    EmbeddingClient(const std::string& path);
     virtual ~EmbeddingClient();
 
 public:
@@ -46,7 +50,7 @@ public:
      * 
      * @return 词嵌入终端
      */
-    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& embedding);
+    static std::unique_ptr<lifuren::EmbeddingClient> getClient(const std::string& path, const std::string& embedding);
 
 };
 
@@ -63,7 +67,7 @@ private:
     std::unique_ptr<lifuren::RestClient> restClient{ nullptr };
 
 public:
-    OllamaEmbeddingClient();
+    OllamaEmbeddingClient(const std::string& path);
     virtual ~OllamaEmbeddingClient();
 
 public:
@@ -82,13 +86,12 @@ public:
 class PepperEmbeddingClient : public EmbeddingClient {
 
 public:
-    PepperEmbeddingClient();
+    PepperEmbeddingClient(const std::string& path);
     virtual ~PepperEmbeddingClient();
 
 public:
     std::vector<float> getVector(const std::string& prompt) const override;
     size_t getDims() const override;
-    bool embedding(const std::string& path);
 
 };
 

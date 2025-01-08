@@ -23,13 +23,26 @@ std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     return ret;
 }
 
-bool lifuren::dataset::allDatasetPreprocessing(const std::string& path, std::function<bool(const std::string&)> preprocessing) {
+bool lifuren::dataset::allDatasetPreprocessing(const std::string& path, const std::string& model_name, std::function<bool(const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing) {
     std::vector<std::string> datasets = std::move(lifuren::dataset::allDataset(path));
     if(datasets.empty()) {
         SPDLOG_WARN("没有数据集：{}", path);
         return false;
     }
-    return std::all_of(datasets.begin(), datasets.end(), [&preprocessing](const auto& dataset) {
-        return preprocessing(dataset);
+    return std::all_of(datasets.begin(), datasets.end(), [&model_name, &preprocessing](const auto& dataset) {
+        lifuren::thread::ThreadPool pool;
+        std::ofstream stream;
+        auto model_path = lifuren::file::join({ dataset, lifuren::config::LIFUREN_HIDDEN_FILE, model_name});
+        lifuren::file::createParent(model_path);
+        stream.open(model_path, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+        if(!stream.is_open()) {
+            stream.close();
+            SPDLOG_WARN("文件打开失败：{}", model_path.string());
+            return false;
+        }
+        bool ret = preprocessing(dataset, stream, pool);
+        pool.wait_finish();
+        stream.close();
+        return ret;
     });
 }

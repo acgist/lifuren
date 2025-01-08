@@ -28,7 +28,7 @@ lifuren::RAGClient::RAGClient(
     const std::string& embedding
 ) :
     path(path),
-    embeddingClient(lifuren::EmbeddingClient::getClient(embedding))
+    embeddingClient(lifuren::EmbeddingClient::getClient(path, embedding))
 {
     ++share_count;
 }
@@ -39,61 +39,6 @@ lifuren::RAGClient::~RAGClient() {
         promptCache.clear();
         SPDLOG_DEBUG("没有引用清空提示索引缓存");
     }
-}
-
-bool lifuren::RAGClient::loadIndex() {
-    const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
-    if(!std::filesystem::exists(markPath)) {
-        this->id = lifuren::uuid();
-        return true;
-    }
-    std::ifstream stream;
-    stream.open(markPath, std::ios_base::in);
-    if(!stream.is_open()) {
-        SPDLOG_WARN("RAG索引文件打开失败：{}", markPath.string());
-        this->id = 0;
-        stream.close();
-        return false;
-    }
-    std::string line;
-    while(std::getline(stream, line)) {
-        if(line.empty()) {
-            continue;
-        }
-        if(this->id == 0) {
-            this->id = std::atoll(line.c_str());
-        } else {
-            this->doneFile.emplace(line);
-        }
-    }
-    stream.close();
-    return true;
-}
-
-bool lifuren::RAGClient::saveIndex() const {
-    const std::filesystem::path markPath = lifuren::file::join({ this->path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::MARK_MODEL_FILE });
-    lifuren::file::createFolder(markPath.parent_path());
-    std::ofstream stream;
-    stream.open(markPath, std::ios_base::out | std::ios_base::trunc);
-    if(!stream.is_open()) {
-        SPDLOG_WARN("RAG索引文件打开失败：{}", markPath.string());
-        stream.close();
-        return false;
-    }
-    SPDLOG_DEBUG("保存索引文件：{}", markPath.string());
-    stream << this->id << '\n';
-    for(const auto& line : this->doneFile) {
-        stream << line << '\n';
-    }
-    stream.close();
-    return true;
-}
-
-bool lifuren::RAGClient::truncateIndex() {
-    SPDLOG_DEBUG("清空RAG索引：{}", this->id);
-    this->doneFile.clear();
-    this->saveIndex();
-    return true;
 }
 
 size_t lifuren::RAGClient::getDims() const {
@@ -112,14 +57,6 @@ bool lifuren::RAGClient::donePromptEmplace(const std::string& prompt) {
         return false;
     }
     return true;
-}
-
-bool lifuren::RAGClient::doneFileEmplace(const std::string& file) {
-    if(this->doneFile.contains(file)) {
-        return true;
-    }
-    this->doneFile.emplace(file);
-    return false;
 }
 
 std::vector<std::string> lifuren::RAGClient::search(const std::string& prompt, const uint8_t size) const {
@@ -142,7 +79,6 @@ bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, co
     if(!client) {
         return false;
     }
-    client->loadIndex();
     SPDLOG_INFO("开始执行RAG任务：{}", path);
     // 打开Embedding文件
     const std::filesystem::path embeddingPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::EMBEDDING_MODEL_FILE });
@@ -172,10 +108,6 @@ bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, co
         // }
         if(!lifuren::file::isFile(file)) {
             SPDLOG_DEBUG("RAG任务跳过其他文件：{}", file);
-            continue;
-        }
-        if(client->doneFileEmplace(file)) {
-            SPDLOG_DEBUG("RAG任务跳过已经处理过的文件：{}", file);
             continue;
         }
         SPDLOG_DEBUG("RAG任务处理文件：{}", file);
@@ -210,7 +142,6 @@ bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, co
     SPDLOG_DEBUG("累计处理诗词数量：{} / {} / {}", count, total, wCount);
     lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);
     stream.close();
-    client->saveIndex();
     SPDLOG_INFO("RAG任务执行完成：{}", path);
     return true;
 }

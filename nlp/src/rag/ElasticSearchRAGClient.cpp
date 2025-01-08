@@ -20,6 +20,12 @@ lifuren::ElasticSearchRAGClient::ElasticSearchRAGClient(const std::string& path,
     const auto& elasticsearchConfig = lifuren::config::CONFIG.elasticsearch;
     this->restClient = std::make_shared<lifuren::RestClient>(elasticsearchConfig.api);
     this->restClient->auth(elasticsearchConfig);
+    if(
+        indexExists(this->id, this->restClient) &&
+        indexCreate(this->id, this->restClient, this->embeddingClient->getDims())
+    ) {
+        // -
+    }
 }
 
 lifuren::ElasticSearchRAGClient::~ElasticSearchRAGClient() {
@@ -66,26 +72,6 @@ std::vector<std::string> lifuren::ElasticSearchRAGClient::search(const std::vect
         ret.push_back(doc["_source"]["content"].get<std::string>());
     }
     return ret;
-}
-
-bool lifuren::ElasticSearchRAGClient::loadIndex() {
-    if(!lifuren::RAGClient::loadIndex()) {
-        return false;
-    }
-    if(indexExists(this->id, this->restClient)) {
-        return true;
-    }
-    if(indexCreate(this->id, this->restClient, this->embeddingClient->getDims())) {
-        return true;
-    }
-    return false;
-}
-
-bool lifuren::ElasticSearchRAGClient::truncateIndex() {
-    if(indexDelete(this->id, this->restClient)) {
-        return lifuren::RAGClient::truncateIndex();
-    }
-    return false;
 }
 
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {

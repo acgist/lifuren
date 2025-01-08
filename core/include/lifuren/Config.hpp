@@ -55,7 +55,7 @@ extern int         httpServerPort; // 监听端口
 const int LIFUREN_POETRY_DATASET_HEAD = 3; // 诗词前缀：段落规则、分词规则、词语序号
 
 const std::string LIFUREN_HIDDEN_FILE  = ".lifuren";        // 隐藏文件
-const std::string MARK_MODEL_FILE      = "mark.model";      // 标记文件：当前文件夹标记信息
+const std::string PEPPER_MODEL_FILE    = "pepper.model";    // 辣椒文件：辣椒嵌入文件
 const std::string INDEXDB_MODEL_FILE   = "indexDB.model";   // 向量文件：提示词ID和向量映射关系
 const std::string MAPPING_MODEL_FILE   = "mapping.model";   // 映射文件：提示词ID和提示词映射关系
 const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件：诗词训练嵌入数据集
@@ -198,8 +198,6 @@ struct PepperConfig {
 
     // 维度
     int dims;
-    // 文件路径
-    std::string path;
 
 };
 

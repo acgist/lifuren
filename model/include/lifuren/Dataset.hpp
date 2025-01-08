@@ -13,9 +13,12 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <functional>
 
 #include "torch/data.h"
+
+#include "lifuren/Thread.hpp"
 
 namespace lifuren {
 namespace dataset {
@@ -32,7 +35,7 @@ extern std::vector<std::string> allDataset(const std::string& path);
 /**
  * 数据集前置处理
  */
-extern bool allDatasetPreprocessing(const std::string& path, std::function<bool(const std::string&)> preprocessing);
+extern bool allDatasetPreprocessing(const std::string& path, const std::string& model_name, std::function<bool(const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing);
 
 /**
  * 裸数据集
@@ -95,8 +98,8 @@ public:
      * @param transform 文件转换
      */
     FileDataset(
-        const std::string& path,
-        const std::vector<std::string>& exts,
+        const std::string                 & path,
+        const std::vector<std::string>    & exts,
         const std::map<std::string, float>& classify,
         const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
     );
@@ -119,45 +122,9 @@ public:
      * @param transform 文件转换
      */
     FileDataset(
-        const std::string& path,
+        const std::string             & path,
         const std::vector<std::string>& exts,
         const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
-    );
-    /**
-     * path/file1.ext
-     * path/file1.label
-     * path/file2.ext
-     * path/file2.label
-     * 
-     * @param path      数据路径
-     * @param label     标记后缀
-     * @param exts      文件后缀
-     * @param transform 文件转换
-     */
-    FileDataset(
-        const std::string& path,
-        const std::string& label,
-        const std::vector<std::string>& exts,
-        const std::function<void(const std::string&, const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
-    );
-    /**
-     * path/file1.source.ext
-     * path/file1.target.ext
-     * path/file2.source.ext
-     * path/file2.target.ext
-     * 
-     * @param path      数据路径
-     * @param source    原始文件标记
-     * @param target    目标文件标记
-     * @param exts      文件后缀
-     * @param transform 文件转换
-     */
-    FileDataset(
-        const std::string& path,
-        const std::string& source,
-        const std::string& target,
-        const std::vector<std::string>& exts,
-        const std::function<void(const std::string&, const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
     virtual ~FileDataset();
 

@@ -1,5 +1,9 @@
 #include "lifuren/Thread.hpp"
 
+lifuren::thread::ThreadWorker::~ThreadWorker() {
+    // this->thread->join();
+}
+
 thread_local lifuren::thread::ThreadWorker* lifuren::thread::ThreadWorker::this_thread_worker = nullptr;
 
 bool lifuren::thread::ThreadWorker::is_running() {

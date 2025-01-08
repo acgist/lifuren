@@ -2,6 +2,7 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/File.hpp"
 #include "lifuren/String.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
@@ -91,4 +92,63 @@ bool lifuren::poetry::Poetry::operator==(const lifuren::poetry::Poetry& poetry) 
     }
     // 内容相同即可
     return this->paragraphs == poetry.paragraphs;
+}
+
+bool lifuren::poetry::embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+    // 分词
+    int64_t fSize = 0; // 文件数量
+    int64_t wSize = 0; // 分词数量
+    int64_t count = 0; // 诗词匹配格律数量
+    int64_t total = 0; // 诗词数量
+    std::set<std::string>    words;
+    std::vector<std::string> files;
+    lifuren::file::listFile(files, path, { ".json" });
+    for(const auto& file : files) {
+        ++fSize;
+        std::string json = std::move(lifuren::file::loadFile(file));
+        auto poetries = nlohmann::json::parse(json);
+        for(const auto& poetry : poetries) {
+            ++total;
+            lifuren::poetry::Poetry value = poetry;
+            value.preproccess();
+            if(value.matchRhythm()) {
+                ++count;
+                value.participle();
+                for(const auto& word : value.participleParagraphs) {
+                    ++wSize;
+                    words.insert(word);
+                }
+            } else {
+                // 匹配失败
+            }
+            if(total % 1000 == 0) {
+                SPDLOG_DEBUG("当前数量：{} / {} / {} / {}", fSize, wSize, count, total);
+            }
+        }
+    }
+    SPDLOG_DEBUG("开始嵌入分词：{}", words.size());
+    // 嵌入
+    auto iter = words.begin();
+    std::shared_ptr<lifuren::EmbeddingClient> embeddingClient = std::move(lifuren::EmbeddingClient::getClient(path, "ollama"));
+    for(int i = 0; i < wSize; i += 100) {
+        std::vector<std::string> vector;
+        for(int j = 0; j < 100 && iter != words.end(); ++j, ++iter) {
+            vector.push_back(std::move(*iter));
+        }
+        pool.enqueue([&stream, words = std::move(vector), embeddingClient]() {
+            for(const auto& word : words) {
+                auto x = std::move(embeddingClient->getVector(word));
+                SPDLOG_DEBUG("处理词语：{}", word);
+                {
+                    size_t iSize = word.size();
+                    stream.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
+                    stream.write(word.data(), word.size());
+                    size_t xSize = x.size();
+                    stream.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
+                    stream.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
+                }
+            }
+        });
+    }
+    return true;
 }

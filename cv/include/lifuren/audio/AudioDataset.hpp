@@ -111,37 +111,27 @@ inline auto loadAudioFileStyleDataset(
 ) -> decltype(auto) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
-        "source",
-        "target",
-        { ".pcm" },
-        [] (const std::string& source, const std::string& target, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
-            std::ifstream source_stream;
-            std::ifstream target_stream;
-            source_stream.open(source, std::ios_base::binary);
-            target_stream.open(target, std::ios_base::binary);
-            if(!source_stream.is_open() || !target_stream.is_open()) {
-                SPDLOG_DEBUG("打开文件失败：{} - {}", source, target);
-                source_stream.close();
-                target_stream.close();
+        [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+            std::ifstream stream;
+            stream.open(file, std::ios_base::binary);
+            if(!stream.is_open()) {
+                stream.close();
                 return;
             }
-            std::vector<short> source_pcm;
-            std::vector<short> target_pcm;
-            source_pcm.resize(DATASET_PCM_LENGTH);
-            target_pcm.resize(DATASET_PCM_LENGTH);
+            float source_norm_factor;
+            float target_norm_factor;
+            torch::Tensor source_tensor = torch::zeros({ 1 });
+            torch::Tensor target_tensor = torch::zeros({ 1 });
             while(
-                source_stream.read(reinterpret_cast<char*>(source_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
-                target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short))
+                stream.read(reinterpret_cast<char*>(&source_norm_factor), sizeof(float)) &&
+                stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), source_tensor.numel() * source_tensor.element_size()) &&
+                stream.read(reinterpret_cast<char*>(&target_norm_factor), sizeof(float)) &&
+                stream.read(reinterpret_cast<char*>(target_tensor.data_ptr()), target_tensor.numel() * target_tensor.element_size())
             ) {
-                float norm_factor;
-                // 短时傅里叶变换
-                auto source_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(source_pcm, norm_factor);
-                features.push_back(std::move(torch::stack({ std::get<0>(source_tuple), std::get<1>(source_tuple) }).squeeze().to(device)));
-                auto target_tuple = lifuren::dataset::audio::pcm_mag_pha_stft(target_pcm, norm_factor);
-                labels.push_back(std::move(torch::stack({ std::get<0>(target_tuple), std::get<1>(target_tuple) }).squeeze().to(device)));
+                features.push_back(std::move(source_tensor.to(device)));
+                labels  .push_back(std::move(target_tensor.to(device)));
             }
-            source_stream.close();
-            target_stream.close();
+            stream.close();
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);

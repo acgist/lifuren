@@ -8,6 +8,7 @@
 
 #include <queue>
 #include <mutex>
+#include <atomic>
 #include <future>
 #include <memory>
 #include <thread>
@@ -33,13 +34,16 @@ public:
     // 当前执行线程
     thread_local static ThreadWorker* this_thread_worker;
     // 是否停止
-    bool stop{ true };
+    bool stop { true };
     // 线程类型
     Type type { Type::NONE };
     // 线程来源
     void* source { nullptr };
     // 执行线程
     std::shared_ptr<std::thread> thread{ nullptr };
+
+public:
+    ~ThreadWorker();
 
 public:
     // 是否运行
@@ -52,13 +56,11 @@ public:
 
 /**
  * 线程池
- * 
- * https://github.com/progschj/ThreadPool
  */
 class ThreadPool {
 
 public:
-    ThreadPool(size_t size);
+    ThreadPool(size_t size = std::thread::hardware_concurrency());
     ~ThreadPool();
 
 public:
@@ -70,11 +72,18 @@ public:
      */
     template<class F, class... Args>
     auto enqueue(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type>;
+    // 等待完成
+    void wait_finish();
+    // 唤醒完成
+    void notify_finish();
 
 private:
     bool stop;        // 是否关闭
+    std::atomic<int> tasks_count{ 0 }; // 任务计数
     std::mutex mutex; // 任务锁
+    std::mutex mutex_finish; // 完成锁
     std::condition_variable           condition; // 任务锁条件
+    std::condition_variable           condition_finish; // 完成锁锁条件
     std::vector<std::thread>          workers;   // 工作线程
     std::queue<std::function<void()>> tasks;     // 任务队列
 };
@@ -94,6 +103,8 @@ inline ThreadPool::ThreadPool(size_t threads) : stop(false) {
                     this->tasks.pop();
                 }
                 task();
+                --this->tasks_count;
+                this->condition_finish.notify_one();
             }
         });
     }
@@ -113,9 +124,24 @@ auto ThreadPool::enqueue(F&& func, Args&&... args) -> std::future<typename std::
         }
         // std::move(task)
         this->tasks.emplace([task](){ (*task)(); });
+        ++this->tasks_count;
     }
     this->condition.notify_one();
     return future;
+}
+
+inline void ThreadPool::wait_finish() {
+    std::unique_lock<std::mutex> lock(this->mutex_finish);
+    this->condition_finish.wait(lock, [this]() {
+        if(lifuren::thread::ThreadWorker::this_thread_worker && lifuren::thread::ThreadWorker::this_thread_worker->stop) {
+            return true;
+        }
+        return this->tasks_count <= 0;
+    });
+}
+
+inline void ThreadPool::notify_finish() {
+    this->condition_finish.notify_one();
 }
 
 inline ThreadPool::~ThreadPool() {
@@ -133,7 +159,7 @@ inline ThreadPool::~ThreadPool() {
  * 定时器
  */
 class Timer {
-
+    // TODO: impl
 };
 
 } // END lifuren

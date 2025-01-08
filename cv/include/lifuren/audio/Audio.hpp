@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "lifuren/Thread.hpp"
+
 namespace lifuren {
 namespace audio   {
 
@@ -26,9 +28,11 @@ extern bool toPcm(const std::string& audioFile);
 extern bool toFile(const std::string& pcmFile);
 
 /**
- * 文件夹里面所有音频文件转为PCM文件
+ * 音频嵌入
+ * 1. PCM
+ * 2. STFT
  */
-extern bool allFileToPCM(const std::string& path);
+extern bool embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
 } // END OF audio
 } // END OF lifuren

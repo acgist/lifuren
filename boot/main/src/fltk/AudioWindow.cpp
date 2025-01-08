@@ -21,14 +21,14 @@ static Fl_Input * modelPathPtr   { nullptr };
 static Fl_Button* modelChoosePtr { nullptr };
 static Fl_Input * audioPathPtr   { nullptr };
 static Fl_Button* audioChoosePtr { nullptr };
-static Fl_Button* pcmPtr         { nullptr };
+static Fl_Button* embeddingPtr   { nullptr };
 static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
 static std::unique_ptr<lifuren::AudioModelClient> audioClient{ nullptr };
 
-static void pcmCallback            (Fl_Widget*, void*);
+static void embeddingCallback      (Fl_Widget*, void*);
 static void trainCallback          (Fl_Widget*, void*);
 static void generateCallback       (Fl_Widget*, void*);
 static void modelReleaseCallback   (Fl_Widget*, void*);
@@ -50,7 +50,7 @@ lifuren::AudioWindow::~AudioWindow() {
     LFR_DELETE_PTR(modelChoosePtr);
     LFR_DELETE_PTR(audioPathPtr);
     LFR_DELETE_PTR(audioChoosePtr);
-    LFR_DELETE_PTR(pcmPtr);
+    LFR_DELETE_PTR(embeddingPtr);
     LFR_DELETE_PTR(trainPtr);
     LFR_DELETE_PTR(generatePtr);
     LFR_DELETE_PTR(modelReleasePtr);
@@ -69,7 +69,7 @@ void lifuren::AudioWindow::drawElement() {
     modelChoosePtr  = new Fl_Button(480, 90,  100, 30, "选择模型");
     audioPathPtr    = new Fl_Input(  80, 130, 400, 30, "音频路径");
     audioChoosePtr  = new Fl_Button(480, 130, 100, 30, "选择音频");
-    pcmPtr          = new Fl_Button( 80, 170, 100, 30, "PCM转换");
+    embeddingPtr    = new Fl_Button( 80, 170, 100, 30, "音频嵌入");
     trainPtr        = new Fl_Button(180, 170, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(280, 170, 100, 30, "生成音频");
     modelReleasePtr = new Fl_Button(380, 170, 100, 30, "释放模型");
@@ -78,7 +78,7 @@ void lifuren::AudioWindow::drawElement() {
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
     audioChoosePtr->callback(chooseFileCallback, audioPathPtr);
-    pcmPtr->callback(pcmCallback, this);
+    embeddingPtr->callback(embeddingCallback, this);
     trainPtr->callback(trainCallback, this);
     generatePtr->callback(generateCallback, this);
     modelReleasePtr->callback(modelReleaseCallback, this);
@@ -89,21 +89,21 @@ void lifuren::AudioWindow::drawElement() {
     modelPathPtr->value(audioConfig.model.c_str());
 }
 
-static void pcmCallback(Fl_Widget*, void*) {
+static void embeddingCallback(Fl_Widget*, void*) {
     const char* path = pathPathPtr->value();
     if(std::strlen(path) == 0) {
         fl_message("请选择数据集路径");
         return;
     }
     lifuren::ThreadWindow::startThread(
-        lifuren::message::Type::AUDIO_AUDIO_TO_PCM,
-        "PCM转换",
+        lifuren::message::Type::AUDIO_EMBEDDING,
+        "音频嵌入",
         []() {
-            auto allFileToPCM = std::bind(&lifuren::audio::allFileToPCM, std::placeholders::_1);
-            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), allFileToPCM)) {
-                lifuren::message::sendMessage("PCM转换成功");
+            auto embedding = std::bind(&lifuren::audio::embedding, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), embedding)) {
+                lifuren::message::sendMessage("音频嵌入成功");
             } else {
-                lifuren::message::sendMessage("PCM转换失败");
+                lifuren::message::sendMessage("音频嵌入失败");
             }
         }
     );

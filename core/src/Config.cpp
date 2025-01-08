@@ -182,7 +182,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         }
     } else if(lifuren::config::CONFIG_PEPPER == name) {
         LFR_CONFIG_YAML_GETTER(config.pepper, yaml, dims, dims, int);
-        LFR_CONFIG_YAML_GETTER(config.pepper, yaml, path, path, std::string);
     } else {
         SPDLOG_DEBUG("配置没有适配加载：{}", name);
     }
@@ -281,7 +280,6 @@ static YAML::Node toYaml() {
     {
         YAML::Node pepper;
         LFR_CONFIG_YAML_SETTER(pepper, config.pepper, dims, dims);
-        LFR_CONFIG_YAML_SETTER(pepper, config.pepper, path, path);
         yaml[lifuren::config::CONFIG_PEPPER] = pepper;
     }
     return yaml;
