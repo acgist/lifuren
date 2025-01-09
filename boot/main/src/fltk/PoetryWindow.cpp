@@ -204,7 +204,7 @@ static void generateCallback(Fl_Widget*, void* voidPtr) {
                 .prompts = prompts
             };
             std::string result = poetryClient->pred(params);
-            lifuren::message::sendMessage(result.c_str());
+            SPDLOG_INFO("{}", result);
         }
     );
 }

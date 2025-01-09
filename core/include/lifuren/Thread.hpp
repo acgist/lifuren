@@ -17,6 +17,8 @@
 #include <functional>
 #include <condition_variable>
 
+#include "lifuren/Message.hpp"
+
 namespace lifuren::thread {
 
 enum class Type {
@@ -60,7 +62,7 @@ public:
 class ThreadPool {
 
 public:
-    ThreadPool(size_t size = std::thread::hardware_concurrency());
+    ThreadPool(bool bindThreadLocal = true, size_t size = std::thread::hardware_concurrency());
     ~ThreadPool();
 
 public:
@@ -88,10 +90,18 @@ private:
     std::queue<std::function<void()>> tasks;     // 任务队列
 };
  
-inline ThreadPool::ThreadPool(size_t threads) : stop(false) {
+inline ThreadPool::ThreadPool(bool bindThreadLocal, size_t threads) : stop(false) {
+    lifuren::message::Type         type               = lifuren::message::Type::NONE;
+    lifuren::thread::ThreadWorker* this_thread_worker = nullptr;
+    if(bindThreadLocal) {
+        type               = lifuren::message::thread_message_type;
+        this_thread_worker = lifuren::thread::ThreadWorker::this_thread_worker;
+    }
     for(size_t i = 0; i < threads; ++i) {
-        this->workers.emplace_back([this] {
-            for(;;) {
+        this->workers.emplace_back([this, type, this_thread_worker] {
+            lifuren::message::thread_message_type             = type;
+            lifuren::thread::ThreadWorker::this_thread_worker = this_thread_worker;
+            while(true) {
                 std::function<void()> task;
                 {
                     std::unique_lock<std::mutex> lock(this->mutex);

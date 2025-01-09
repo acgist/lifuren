@@ -183,7 +183,7 @@ static void poetry(const std::vector<std::string>& args) {
             .prompts = prompts
         };
         std::string result = client->pred(params);
-        lifuren::message::sendMessage(result.c_str());
+        SPDLOG_INFO("{}", result);
     } else {
         SPDLOG_WARN("无效类型：{}", type);
         return;
@@ -211,18 +211,19 @@ static void embedding(const std::vector<std::string>& args) {
 static void embeddingAudio(const std::vector<std::string>& args) {
     lifuren::message::registerMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING, messageCallback);
     if(args.empty()) {
-        lifuren::message::sendMessage("缺少参数");
+        SPDLOG_WARN("缺少参数");
         return;
     }
     if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
-        lifuren::message::sendMessage("音频嵌入成功");
+        SPDLOG_INFO("音频嵌入成功");
     } else {
-        lifuren::message::sendMessage("音频嵌入失败");
+        SPDLOG_INFO("音频嵌入失败");
     }
     lifuren::message::unregisterMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING);
 }
 
 static void embeddingPepper(const std::vector<std::string>& args) {
+    lifuren::message::registerMessageCallback(lifuren::message::Type::POETRY_EMBEDDING_PEPPER, messageCallback);
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -232,6 +233,7 @@ static void embeddingPepper(const std::vector<std::string>& args) {
     } else {
         SPDLOG_WARN("辣椒嵌入失败");
     }
+    lifuren::message::unregisterMessageCallback(lifuren::message::Type::POETRY_EMBEDDING_PEPPER);
 }
 
 static void embeddingPoetry(const std::vector<std::string>& args) {

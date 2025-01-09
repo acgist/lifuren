@@ -4,23 +4,51 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Message.hpp"
+
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 static size_t duration{ 0LL };
+
+template<typename M>
+class MessageLogger : public spdlog::sinks::base_sink<M> {
+
+protected:
+    void sink_it_(const spdlog::details::log_msg& msg) override {
+        spdlog::memory_buf_t log;
+        spdlog::sinks::base_sink<M>::formatter_->format(msg, log);
+        std::string message;
+        message.resize(log.size());
+        std::copy_n(log.data(), log.size(), message.data());
+        lifuren::message::sendMessage(message.data());
+    }
+
+    void flush_() override {
+    }
+
+};
+
+using message_sink_mt = MessageLogger<std::mutex>;
+using message_sink_st = MessageLogger<spdlog::details::null_mutex>;
 
 void lifuren::logger::init() {
     ::duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::vector<spdlog::sink_ptr> sinks{};
     // 开发日志
     #if defined(_DEBUG) || !defined(NDEBUG)
-    sinks.reserve(2);
+    sinks.reserve(3);
     auto stdoutColorSinkSPtr = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     sinks.push_back(stdoutColorSinkSPtr);
+    #else
+    sinks.reserve(2);
     #endif
     // 文件日志
     auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("../logs/lifuren.log", 0, 0, false, 7);
     sinks.push_back(dailyFileSinkSPtr);
+    // 消息日志
+    auto messageSinkSPtr = std::make_shared<message_sink_mt>();
+    sinks.push_back(messageSinkSPtr);
     // 默认日志
     auto logger = std::make_shared<spdlog::logger>("lifurenLogger", sinks.begin(), sinks.end());
     #if defined(_DEBUG) || !defined(NDEBUG)
