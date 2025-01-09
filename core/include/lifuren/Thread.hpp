@@ -67,7 +67,7 @@ public:
     /**
      * 添加任务
      * 
-     * @param f    任务
+     * @param func 任务
      * @param args 参数
      */
     template<class F, class... Args>

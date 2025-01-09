@@ -1,9 +1,7 @@
 #include "lifuren/Test.hpp"
 
-#include <chrono>
-#include <thread>
-
 #include "lifuren/File.hpp"
+#include "lifuren/Dataset.hpp"
 #include "lifuren/audio/Audio.hpp"
 
 [[maybe_unused]] static void testToPcm() {
@@ -16,8 +14,17 @@
     lifuren::audio::toFile(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.pcm"}).string());
 }
 
+[[maybe_unused]] static void testEmbedding() {
+    lifuren::dataset::allDatasetPreprocessing(
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "embedding"}).string(),
+        lifuren::config::EMBEDDING_MODEL_FILE,
+        &lifuren::audio::embedding
+    );
+}
+
 LFR_TEST(
 // LFR_MEM_TEST(
-    testToPcm();
+    // testToPcm();
     // testToFile();
+    testEmbedding();
 );

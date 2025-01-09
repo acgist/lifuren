@@ -1,4 +1,4 @@
-#include "lifuren/RAG.hpp"
+#include "lifuren/RAGClient.hpp"
 
 // TODO: GCC/G++ 13+
 // #include <format>

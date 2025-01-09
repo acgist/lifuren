@@ -99,8 +99,7 @@ static void embeddingCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_EMBEDDING,
         "音频嵌入",
         []() {
-            auto embedding = std::bind(&lifuren::audio::embedding, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), embedding)) {
+            if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
                 lifuren::message::sendMessage("音频嵌入成功");
             } else {
                 lifuren::message::sendMessage("音频嵌入失败");

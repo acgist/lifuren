@@ -7,12 +7,12 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 
-#include "lifuren/RAG.hpp"
 #include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
 #include "lifuren/Dataset.hpp"
+#include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/PoetryClient.hpp"
 
 static Fl_Choice* clientPtr       { nullptr };

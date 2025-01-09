@@ -8,12 +8,12 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/RAG.hpp"
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/Message.hpp"
+#include "lifuren/RAGClient.hpp"
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/video/Video.hpp"
 #include "lifuren/poetry/Poetry.hpp"
@@ -52,15 +52,15 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         std::strcmp(command, "?")    == 0 ||
         std::strcmp(command, "help") == 0
     ) {
-        help();
+        ::help();
     } else if(std::strcmp(command, "audio") == 0) {
         ::audio(args);
     } else if(std::strcmp(command, "video") == 0) {
-        video(args);
+        ::video(args);
     } else if(std::strcmp(command, "poetry") == 0) {
-        poetry(args);
+        ::poetry(args);
     } else if(std::strcmp(command, "embedding") == 0) {
-        embedding(args);
+        ::embedding(args);
     } else {
         SPDLOG_WARN("不支持的命令：{}", command);
     }
@@ -191,14 +191,14 @@ static void poetry(const std::vector<std::string>& args) {
 }
 
 static void embedding(const std::vector<std::string>& args) {
-    if(args.size() < 3) {
+    if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
         return;
     }
     const auto& type = args[1];
     if(type == "audio") {
         embeddingAudio(args);
-    } else if(type == "pepper") {
+    } else if(type == "video") {
         embeddingPepper(args);
     } else if(type == "poetry") {
         embeddingPoetry(args);

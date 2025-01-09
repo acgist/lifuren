@@ -130,9 +130,10 @@ bool lifuren::poetry::embedding(const std::string& path, std::ofstream& stream, 
     // 嵌入
     auto iter = words.begin();
     std::shared_ptr<lifuren::EmbeddingClient> embeddingClient = std::move(lifuren::EmbeddingClient::getClient(path, "ollama"));
-    for(int i = 0; i < wSize; i += 100) {
+    const int batch_size = 512;
+    for(int i = 0; i < wSize; i += batch_size) {
         std::vector<std::string> vector;
-        for(int j = 0; j < 100 && iter != words.end(); ++j, ++iter) {
+        for(int j = 0; j < batch_size && iter != words.end(); ++j, ++iter) {
             vector.push_back(std::move(*iter));
         }
         pool.enqueue([&stream, words = std::move(vector), embeddingClient]() {

@@ -1,7 +1,7 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/RAG.hpp"
 #include "lifuren/File.hpp"
+#include "lifuren/RAGClient.hpp"
 
 [[maybe_unused]] static void testRAGClientIndex() {
     lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };

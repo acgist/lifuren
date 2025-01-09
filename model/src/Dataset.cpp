@@ -29,8 +29,8 @@ bool lifuren::dataset::allDatasetPreprocessing(const std::string& path, const st
         SPDLOG_WARN("没有数据集：{}", path);
         return false;
     }
-    return std::all_of(datasets.begin(), datasets.end(), [&model_name, &preprocessing](const auto& dataset) {
-        lifuren::thread::ThreadPool pool;
+    lifuren::thread::ThreadPool pool;
+    return std::all_of(datasets.begin(), datasets.end(), [&pool, &model_name, &preprocessing](const auto& dataset) {
         std::ofstream stream;
         auto model_path = lifuren::file::join({ dataset, lifuren::config::LIFUREN_HIDDEN_FILE, model_name});
         lifuren::file::createParent(model_path);

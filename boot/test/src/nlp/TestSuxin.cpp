@@ -1,6 +1,6 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/RAG.hpp"
+#include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/PoetryModel.hpp"
 
 [[maybe_unused]] static void testSuxinTrain() {

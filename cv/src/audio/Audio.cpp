@@ -36,6 +36,13 @@ static void close_output(AVFormatContext** outputCtx);
 static void embedding(const std::string& source, const std::string& target, std::ofstream& stream);
 static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
 
+inline static std::string toPcmFilePath(const std::string& audioFile) {
+    auto pos = audioFile.find_last_of('.') + 1;
+    auto ext = audioFile.substr(pos, audioFile.length() - pos);
+    auto pcmFile = audioFile.substr(0, pos) + "pcm";
+    return pcmFile;
+}
+
 static std::mutex embedding_mutex;
 
 bool lifuren::audio::toPcm(const std::string& audioFile) {
@@ -164,6 +171,7 @@ bool lifuren::audio::embedding(const std::string& path, std::ofstream& stream, l
     std::vector<std::string> files;
     lifuren::file::listFile(files, path, { ".aac", ".mp3", ".flac" });
     if(files.empty()) {
+        SPDLOG_DEBUG("音频嵌入文件为空");
         return true;
     }
     for(const auto& file : files) {
@@ -190,10 +198,11 @@ bool lifuren::audio::embedding(const std::string& path, std::ofstream& stream, l
             SPDLOG_INFO("加载文件没有标记文件：{}", file);
             continue;
         }
-        pool.enqueue([&pool, &file, &stream, &target_file]() {
+        pool.enqueue([&pool, &stream, file, target_file]() {
             SPDLOG_DEBUG("加载文件：{} - {}", file, target_file);
             if(lifuren::audio::toPcm(file) && lifuren::audio::toPcm(target_file)) {
                 SPDLOG_DEBUG("转换PCM成功：{} - {}", file, target_file);
+                ::embedding(toPcmFilePath(file), toPcmFilePath(target_file), stream);
             } else {
                 SPDLOG_WARN("转换PCM失败：{} - {}", file, target_file);
             }
@@ -320,14 +329,18 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 }
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
-    AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
+    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
     *swrCtx = swr_alloc();
-    av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
-    av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
     av_opt_set_int       (*swrCtx, "in_sample_rate",     frame->sample_rate,         0);
     av_opt_set_int       (*swrCtx, "out_sample_rate",    48000,                      0);
+    av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
+    av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
     av_opt_set_sample_fmt(*swrCtx, "in_sample_fmt",      decodeCodecCtx->sample_fmt, 0);
     av_opt_set_sample_fmt(*swrCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,          0);
+    #if FF_API_OLD_CHANNEL_LAYOUT
+    av_opt_set_channel_layout(*swrCtx, "in_channel_layout",  frame->channel_layout,  0);
+    av_opt_set_channel_layout(*swrCtx, "out_channel_layout", AV_CH_LAYOUT_MONO,      0);
+    #endif
     if(swr_init(*swrCtx) != 0) {
         SPDLOG_WARN("初始化重采样失败");
         return false;
@@ -450,11 +463,13 @@ static void embedding(const std::string& source, const std::string& target, std:
     }
     std::vector<short> source_pcm;
     std::vector<short> target_pcm;
+    SPDLOG_DEBUG("开始音频嵌入：{} - {}", source, target);
     source_pcm.resize(DATASET_PCM_LENGTH);
     target_pcm.resize(DATASET_PCM_LENGTH);
     while(
         source_stream.read(reinterpret_cast<char*>(source_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
-        target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short))
+        target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
+        source_stream.gcount() == target_stream.gcount()
     ) {
         float norm_factor;
         // 短时傅里叶变换
@@ -465,10 +480,15 @@ static void embedding(const std::string& source, const std::string& target, std:
     }
     source_stream.close();
     target_stream.close();
+    stream.flush();
+    SPDLOG_DEBUG("音频嵌入完成：{} - {}", source, target);
 }
 
 inline static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple) {
     auto tensor = torch::stack({ std::get<0>(tuple), std::get<1>(tuple) }).squeeze();
-    stream.write(reinterpret_cast<char*>(&norm_factor), sizeof(norm_factor));
-    stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
+    {
+        std::lock_guard<std::mutex> lock(embedding_mutex);
+        stream.write(reinterpret_cast<char*>(&norm_factor), sizeof(norm_factor));
+        stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
+    }
 }
