@@ -13,6 +13,8 @@
 #include "lifuren/Lifuren.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
+static std::mutex embedding_mutex;
+
 // 避免单次重复索引
 static std::set<std::string> promptCache;
 // 索引计数
@@ -21,13 +23,12 @@ static std::atomic<int> share_count(0);
 static std::mutex mutex;
 
 // 诗词嵌入
-static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client, size_t& wCount);
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* client, std::atomic_int& wCount);
 
 lifuren::RAGClient::RAGClient(
     const std::string& path,
     const std::string& embedding
-) :
-    path(path),
+) : path(path),
     embeddingClient(lifuren::EmbeddingClient::getClient(path, embedding))
 {
     ++share_count;
@@ -74,79 +75,60 @@ std::unique_ptr<lifuren::RAGClient> lifuren::RAGClient::getClient(const std::str
     return nullptr;
 }
 
-bool lifuren::RAGClient::rag(const std::string& rag, const std::string& path, const std::string& embedding) {
-    auto client = lifuren::RAGClient::getClient(rag, path, embedding);
-    if(!client) {
+bool lifuren::rag::embedding(const std::shared_ptr<lifuren::RAGClient> ragClient, const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+    if(!ragClient) {
+        SPDLOG_WARN("RAGClient无效：{}", dataset);
         return false;
     }
-    SPDLOG_INFO("开始执行RAG任务：{}", path);
-    // 打开Embedding文件
-    const std::filesystem::path embeddingPath = lifuren::file::join({ path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::EMBEDDING_MODEL_FILE });
-    lifuren::file::createFolder(embeddingPath.parent_path());
-    std::ofstream stream;
-    stream.open(embeddingPath, std::ios_base::out | std::ios_base::app | std::ios_base::binary);
-    if(!stream.is_open()) {
-        SPDLOG_DEBUG("打开Embedding文件失败：{}", embeddingPath.string());
-        stream.close();
-        return false;
-    }
-    // 文件总数
-    uint32_t fileCount = 0;
-    // 处理文件总数
-    uint32_t doneFileCount = 0;
-    SPDLOG_DEBUG("保存词嵌入文件：{}", embeddingPath.string());
+    SPDLOG_INFO("开始执行RAG任务：{}", dataset);
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, { ".json" });
-    fileCount = files.size();
-    SPDLOG_DEBUG("RAG任务文件总量：{} - {}", path, fileCount);
-    size_t count = 0; // 处理成功诗词总数
-    size_t total = 0; // 累计读取诗词总数
-    size_t wCount = 0; // 累计处理词语总数
+    lifuren::file::listFile(files, dataset, { ".json" });
+    static std::atomic_int count  = 0; // 处理成功诗词总数
+    static std::atomic_int total  = 0; // 累计读取诗词总数
+    static std::atomic_int wCount = 0; // 累计处理词语总数
+    static std::atomic_int fileCount     = 0; // 文件总数
+    static std::atomic_int doneFileCount = 0; // 处理文件总数
+    count  = 0;
+    total  = 0;
+    wCount = 0;
+    fileCount     = files.size();
+    doneFileCount = 0;
+    SPDLOG_DEBUG("RAG任务文件总量：{} - {}", dataset, fileCount.load());
     for(const auto& file : files) {
-        // if(stop) {
-        //     break;
-        // }
-        if(!lifuren::file::isFile(file)) {
-            SPDLOG_DEBUG("RAG任务跳过其他文件：{}", file);
-            continue;
-        }
-        SPDLOG_DEBUG("RAG任务处理文件：{}", file);
-        const std::string content = std::move(lifuren::file::loadFile(file));
-        if(content.empty()) {
-            SPDLOG_WARN("RAG任务文件内容为空：{}", file);
-            continue;
-        }
-        const nlohmann::json poetries = std::move(nlohmann::json::parse(content));
-        for(const auto& poetry : poetries) {
-            ++total;
-            // if(stop) {
-            //     // 注意这里直接跳出提前结束导致数据缺失
-            //     // 如果需要保证数据完整建议不要直接跳出
-            //     break;
-            // }
-            if(poetry.empty() || !poetry.is_object()) {
-                SPDLOG_WARN("RAG任务文件格式错误：{}", file);
-                continue;
+        pool.submit([file, &stream, ragClient]() {
+            if(!lifuren::file::isFile(file)) {
+                SPDLOG_DEBUG("RAG任务跳过其他文件：{}", file);
+                return;
             }
-            if(::embedding(poetry, stream, client.get(), wCount)) {
-                ++count;
-            } else {
-                // SPDLOG_WARN("RAG任务嵌入失败：{}", file);
+            SPDLOG_DEBUG("RAG任务处理文件：{}", file);
+            const std::string content = std::move(lifuren::file::loadFile(file));
+            if(content.empty()) {
+                SPDLOG_WARN("RAG任务文件内容为空：{}", file);
+                return;
             }
-            if(total % 100 == 0) {
-                SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count, total);
+            const nlohmann::json poetries = std::move(nlohmann::json::parse(content));
+            for(const auto& poetry : poetries) {
+                ++total;
+                if(poetry.empty() || !poetry.is_object()) {
+                    SPDLOG_WARN("RAG任务文件格式错误：{}", file);
+                    continue;
+                }
+                if(::embedding(poetry, stream, ragClient.get(), wCount)) {
+                    ++count;
+                } else {
+                    SPDLOG_WARN("RAG任务嵌入失败：{}", file);
+                }
+                if(total % 100 == 0) {
+                    SPDLOG_DEBUG("当前处理诗词数量：{} / {}", count.load(), total.load());
+                }
             }
-        }
-        ++doneFileCount;
+            ++doneFileCount;
+        });
     }
-    SPDLOG_DEBUG("累计处理诗词数量：{} / {} / {}", count, total, wCount);
-    lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_DATASET);
-    stream.close();
-    SPDLOG_INFO("RAG任务执行完成：{}", path);
     return true;
 }
 
-static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient, size_t& wCount) {
+static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren::RAGClient* ragClient, std::atomic_int& wCount) {
     const std::string& participle = lifuren::config::CONFIG.poetry.embedding_participle;
     lifuren::poetry::Poetry poetry = json;
     poetry.preproccess();
@@ -181,7 +163,10 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
     std::transform(words.begin(), words.end(), ret.begin() + padding, [&ragClient](const auto& word) {
         return ragClient->index(word);
     });
-    lifuren::dataset::poetry::write(stream, ret);
+    {
+        std::lock_guard<std::mutex> lock(embedding_mutex);
+        lifuren::dataset::poetry::write(stream, ret);
+    }
     wCount += ret.size();
     return true;
 }

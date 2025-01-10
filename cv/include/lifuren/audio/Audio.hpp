@@ -32,7 +32,7 @@ extern bool toFile(const std::string& pcmFile);
  * 1. PCM
  * 2. STFT
  */
-extern bool embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
+extern bool embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
 } // END OF audio
 } // END OF lifuren

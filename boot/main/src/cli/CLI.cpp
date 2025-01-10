@@ -183,7 +183,7 @@ static void poetry(const std::vector<std::string>& args) {
             .prompts = prompts
         };
         std::string result = client->pred(params);
-        lifuren::message::sendMessage(result.c_str());
+        SPDLOG_INFO("{}", result);
     } else {
         SPDLOG_WARN("无效类型：{}", type);
         return;
@@ -211,35 +211,40 @@ static void embedding(const std::vector<std::string>& args) {
 static void embeddingAudio(const std::vector<std::string>& args) {
     lifuren::message::registerMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING, messageCallback);
     if(args.empty()) {
-        lifuren::message::sendMessage("缺少参数");
+        SPDLOG_WARN("缺少参数");
         return;
     }
     if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
-        lifuren::message::sendMessage("音频嵌入成功");
+        SPDLOG_INFO("音频嵌入成功");
     } else {
-        lifuren::message::sendMessage("音频嵌入失败");
+        SPDLOG_INFO("音频嵌入失败");
     }
     lifuren::message::unregisterMessageCallback(lifuren::message::Type::AUDIO_EMBEDDING);
 }
 
 static void embeddingPepper(const std::vector<std::string>& args) {
+    lifuren::message::registerMessageCallback(lifuren::message::Type::POETRY_EMBEDDING_PEPPER, messageCallback);
     if(args.empty()) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::embedding)) {
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::pepper::embedding, true)) {
         SPDLOG_INFO("辣椒嵌入成功");
     } else {
         SPDLOG_WARN("辣椒嵌入失败");
     }
+    lifuren::message::unregisterMessageCallback(lifuren::message::Type::POETRY_EMBEDDING_PEPPER);
 }
 
 static void embeddingPoetry(const std::vector<std::string>& args) {
-    if(args.size() < 3) {
+    if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    if(lifuren::RAGClient::rag(args[2], args[0], args[3])) {
+    std::shared_ptr<lifuren::RAGClient> client = std::move(lifuren::RAGClient::getClient(args[2], args[0], args[3]));
+    // std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)>
+    auto embedding = std::bind(&lifuren::rag::embedding, client, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
+    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::EMBEDDING_MODEL_FILE, embedding)) {
         SPDLOG_INFO("诗词嵌入成功");
     } else {
         SPDLOG_WARN("诗词嵌入失败");

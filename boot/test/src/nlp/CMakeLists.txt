@@ -1,6 +1,13 @@
+add_executable(testLidu TestLidu.cpp)
+add_test(NAME testLidu COMMAND testLidu)
+set_target_properties(testLidu PROPERTIES FOLDER "test-nlp")
+target_link_libraries(
+    testLidu
+    lifurennlp
+)
 add_executable(testSuxin TestSuxin.cpp)
 add_test(NAME testSuxin COMMAND testSuxin)
-set_target_properties(testSuxin PROPERTIES FOLDER "test/nlp")
+set_target_properties(testSuxin PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testSuxin
     lifurennlp
@@ -8,7 +15,7 @@ target_link_libraries(
 
 add_executable(testPoetry TestPoetry.cpp)
 add_test(NAME testPoetry COMMAND testPoetry)
-set_target_properties(testPoetry PROPERTIES FOLDER "test/nlp")
+set_target_properties(testPoetry PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testPoetry
     lifurennlp
@@ -16,7 +23,7 @@ target_link_libraries(
 
 add_executable(testRAGClient TestRAGClient.cpp)
 add_test(NAME testRAGClient COMMAND testRAGClient)
-set_target_properties(testRAGClient PROPERTIES FOLDER "test/nlp")
+set_target_properties(testRAGClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testRAGClient
     lifurennlp
@@ -24,7 +31,7 @@ target_link_libraries(
 
 add_executable(testEmbeddingClient TestEmbeddingClient.cpp)
 add_test(NAME testEmbeddingClient COMMAND testEmbeddingClient)
-set_target_properties(testEmbeddingClient PROPERTIES FOLDER "test/nlp")
+set_target_properties(testEmbeddingClient PROPERTIES FOLDER "test-nlp")
 target_link_libraries(
     testEmbeddingClient
     lifurennlp

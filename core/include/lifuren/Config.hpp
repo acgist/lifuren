@@ -13,6 +13,8 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <cstdint>
 
 namespace lifuren::config {
 
@@ -85,6 +87,13 @@ extern const std::string CONFIG_POETRY_SUXIN;
 extern lifuren::config::Config CONFIG;
 // 全局格律：rhythm.yml
 extern std::map<std::string, Rhythm> RHYTHM;
+
+/**
+ * 注意：一秒钟的并发不能超过一万
+ * 
+ * @return ID(yyyyMMddHHmmssxxxx)
+ */
+extern size_t uuid() noexcept;
 
 /**
  * @return 所有格律

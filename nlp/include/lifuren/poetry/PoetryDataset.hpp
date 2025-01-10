@@ -22,9 +22,6 @@ namespace lifuren::dataset {
 
 namespace poetry {
 
-const short END_OF_POETRY  = -1; // 诗词结束
-const short END_OF_DATASET = -2; // 数据集结束
-
 /**
  * @param stream 文件流
  * @param vector 诗词数据

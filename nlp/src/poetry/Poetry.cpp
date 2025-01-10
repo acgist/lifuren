@@ -6,6 +6,8 @@
 #include "lifuren/String.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
+static std::mutex embedding_mutex;
+
 lifuren::poetry::Poetry& lifuren::poetry::Poetry::preproccess() {
     if(this->title.empty() && !this->rhythmic.empty()) {
         this->title = this->rhythmic;
@@ -94,15 +96,15 @@ bool lifuren::poetry::Poetry::operator==(const lifuren::poetry::Poetry& poetry) 
     return this->paragraphs == poetry.paragraphs;
 }
 
-bool lifuren::poetry::embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+bool lifuren::poetry::pepper::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
     // 分词
     int64_t fSize = 0; // 文件数量
     int64_t wSize = 0; // 分词数量
-    int64_t count = 0; // 诗词匹配格律数量
+    int64_t count = 0; // 格律数量
     int64_t total = 0; // 诗词数量
     std::set<std::string>    words;
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, { ".json" });
+    lifuren::file::listFile(files, dataset, { ".json" });
     for(const auto& file : files) {
         ++fSize;
         std::string json = std::move(lifuren::file::loadFile(file));
@@ -122,31 +124,38 @@ bool lifuren::poetry::embedding(const std::string& path, std::ofstream& stream, 
                 // 匹配失败
             }
             if(total % 1000 == 0) {
-                SPDLOG_DEBUG("当前数量：{} / {} / {} / {}", fSize, wSize, count, total);
+                SPDLOG_DEBUG("词语数量：{} / {} / {} / {}", fSize, wSize, count, total);
             }
         }
     }
-    SPDLOG_DEBUG("开始嵌入分词：{}", words.size());
+    SPDLOG_DEBUG("词语数量：{} / {} / {} / {}", fSize, wSize, count, total);
     // 嵌入
     auto iter = words.begin();
     std::shared_ptr<lifuren::EmbeddingClient> embeddingClient = std::move(lifuren::EmbeddingClient::getClient(path, "ollama"));
     const int batch_size = 512;
+    static size_t wDoneSize = 0;
+    wDoneSize = 0;
     for(int i = 0; i < wSize; i += batch_size) {
         std::vector<std::string> vector;
         for(int j = 0; j < batch_size && iter != words.end(); ++j, ++iter) {
             vector.push_back(std::move(*iter));
         }
-        pool.enqueue([&stream, words = std::move(vector), embeddingClient]() {
+        pool.submit([&stream, wSize, words = std::move(vector), embeddingClient]() {
             for(const auto& word : words) {
-                auto x = std::move(embeddingClient->getVector(word));
                 SPDLOG_DEBUG("处理词语：{}", word);
+                auto x = std::move(embeddingClient->getVector(word));
                 {
+                    std::lock_guard<std::mutex> lock(embedding_mutex);
+                    ++wDoneSize;
                     size_t iSize = word.size();
                     stream.write(reinterpret_cast<char*>(&iSize), sizeof(size_t));
                     stream.write(word.data(), word.size());
                     size_t xSize = x.size();
                     stream.write(reinterpret_cast<char*>(&xSize), sizeof(size_t));
                     stream.write(reinterpret_cast<char*>(x.data()), xSize * sizeof(float));
+                }
+                if(wDoneSize % 100 == 0) {
+                    SPDLOG_DEBUG("处理词汇数量：{} / {}", wDoneSize, wSize);
                 }
             }
         });

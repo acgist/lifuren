@@ -101,7 +101,6 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
     worker->thread = std::make_shared<std::thread>([type, task, worker, title, window, callback]() {
         lifuren::message::thread_message_type = type;
         SPDLOG_DEBUG("任务开始：{}", title);
-        lifuren::message::sendMessage("任务开始");
         lifuren::thread::ThreadWorker::this_thread_worker = worker.get();
         try {
             task();
@@ -109,7 +108,6 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
             SPDLOG_ERROR("任务执行异常：{} - {}", title, e.what());
         }
         lifuren::thread::ThreadWorker::this_thread_worker = nullptr;
-        lifuren::message::sendMessage("任务完成");
         SPDLOG_DEBUG("任务完成：{}", title);
         window->closeable = true;
         Fl::awake(task_finish, window);

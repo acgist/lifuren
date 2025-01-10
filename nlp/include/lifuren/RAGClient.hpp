@@ -10,8 +10,10 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <fstream>
 #include <functional>
 
+#include "lifuren/Thread.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
 namespace faiss {
@@ -50,8 +52,10 @@ public:
     size_t id = 10001000;
 
 protected:
-    // 文档路径
+    // 文档路径：pepper.model/indexDB.model/mapping.model
     std::string path;
+    // 数据集路径：embedding.model
+    std::string dataset_path;
     // 词嵌入终端
     std::unique_ptr<lifuren::EmbeddingClient> embeddingClient{ nullptr };
 
@@ -107,8 +111,6 @@ public:
     inline static std::unique_ptr<lifuren::RAGClient> getClient(const RAGTask& task) {
         return RAGClient::getClient(task.rag, task.path, task.embedding);
     }
-
-    static bool rag(const std::string& rag, const std::string& path, const std::string& embedding);
 
 };
 
@@ -167,6 +169,12 @@ public:
     std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
 
 };
+
+namespace rag {
+
+extern bool embedding(const std::shared_ptr<lifuren::RAGClient> ragClient, const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
+
+} // END OF rag
 
 } // END OF lifuren
 

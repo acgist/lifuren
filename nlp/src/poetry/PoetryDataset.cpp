@@ -13,10 +13,7 @@ bool lifuren::dataset::poetry::read(std::ifstream& stream, std::vector<std::vect
         stream.read(reinterpret_cast<char*>(v.data()), sizeof(float) * size);
         vector.push_back(std::move(v));
     }
-    if(stream.eof()) {
-        return true;
-    }
-    return size == lifuren::dataset::poetry::END_OF_DATASET;
+    return stream.eof() || stream.fail();
 }
 
 void lifuren::dataset::poetry::write(std::ofstream& stream, const std::vector<std::vector<float>>& vector) {
@@ -25,7 +22,6 @@ void lifuren::dataset::poetry::write(std::ofstream& stream, const std::vector<st
         stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
         stream.write(reinterpret_cast<const char*>(v.data()), sizeof(float) * size);
     });
-    lifuren::dataset::poetry::writeEnd(stream, lifuren::dataset::poetry::END_OF_POETRY);
 }
 
 bool lifuren::dataset::poetry::fillRhythm(const int& dims, std::vector<std::vector<float>>& vector, const lifuren::config::Rhythm* rhythm) {

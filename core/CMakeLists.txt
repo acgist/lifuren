@@ -10,9 +10,7 @@ add_library(
     src/Rhythm.cpp
     src/String.cpp
     src/Thread.cpp
-    src/Lifuren.cpp
     src/Message.cpp
-    src/Exception.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

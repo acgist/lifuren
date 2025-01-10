@@ -82,7 +82,11 @@ public:
 
 };
 
-extern bool embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
+namespace pepper {
+
+extern bool embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
+
+} // END OF pepper
 
 } // END OF poetry
 } // END OF lifuren

@@ -35,7 +35,12 @@ extern std::vector<std::string> allDataset(const std::string& path);
 /**
  * 数据集前置处理
  */
-extern bool allDatasetPreprocessing(const std::string& path, const std::string& model_name, std::function<bool(const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing);
+extern bool allDatasetPreprocessing(
+    const std::string& path,
+    const std::string& model_name,
+    std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing,
+    bool model_base = false
+);
 
 /**
  * 裸数据集

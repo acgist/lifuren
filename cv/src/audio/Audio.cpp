@@ -165,11 +165,11 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     return true;
 }
 
-bool lifuren::audio::embedding(const std::string& path, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+bool lifuren::audio::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
     const std::string source = "source";
     const std::string target = "target";
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, { ".aac", ".mp3", ".flac" });
+    lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".flac" });
     if(files.empty()) {
         SPDLOG_DEBUG("音频嵌入文件为空");
         return true;
@@ -198,7 +198,7 @@ bool lifuren::audio::embedding(const std::string& path, std::ofstream& stream, l
             SPDLOG_INFO("加载文件没有标记文件：{}", file);
             continue;
         }
-        pool.enqueue([&pool, &stream, file, target_file]() {
+        pool.submit([&stream, file, target_file]() {
             SPDLOG_DEBUG("加载文件：{} - {}", file, target_file);
             if(lifuren::audio::toPcm(file) && lifuren::audio::toPcm(target_file)) {
                 SPDLOG_DEBUG("转换PCM成功：{} - {}", file, target_file);

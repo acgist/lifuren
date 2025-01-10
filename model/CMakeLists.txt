@@ -13,19 +13,11 @@ add_library(
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 
-if(CMAKE_HOST_WIN32)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurencore
-        ${TORCH_LIBRARIES}
-    )
-else()
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurencore
-        ${TORCH_LIBRARIES}
-    )
-endif()
+target_link_libraries(
+    ${PROJECT_NAME}
+    lifurencore
+    ${TORCH_LIBRARIES}
+)
 
 target_include_directories(
     ${PROJECT_NAME}

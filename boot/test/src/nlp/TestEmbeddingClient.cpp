@@ -22,17 +22,7 @@
     SPDLOG_DEBUG("释放3");
 }
 
-[[maybe_unused]] static void testPepperEmbeddingFile() {
-    auto client = std::make_unique<lifuren::PepperEmbeddingClient>();
-    auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "mark", "ci" }).string();
-    // auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "mark", "shi" }).string();
-    // auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "mark", "songshi" }).string();
-    // auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren", "mark", "tangshi" }).string();
-    client->embedding(path);
-}
-
 LFR_TEST(
     // testOllamaEmbedding();
-    // testPepperEmbedding();
-    testPepperEmbeddingFile();
+    testPepperEmbedding();
 );
