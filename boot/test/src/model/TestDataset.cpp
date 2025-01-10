@@ -45,61 +45,6 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
     SPDLOG_DEBUG("RAW标签：\n{}", label.sizes());
 }
 
-[[maybe_unused]] static void testFileDataset() {
-    // lifuren::dataset::FileDataset dataset(
-    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "gender", "train" }).string(),
-    //     { ".jpg" },
-    //     {
-    //         { "man",   1.0F },
-    //         { "woman", 0.0F }
-    //     },
-    //     [](const std::string& path) {
-    //         return torch::rand({ 2, 2});
-    //     }
-    // );
-    // lifuren::dataset::FileDataset dataset(
-    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset1", "file.txt" }).string(),
-    //     [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
-    //         labels.push_back(torch::rand({ 2, 2}));
-    //         features.push_back(torch::rand({ 2, 2}));
-    //     }
-    // );
-    // lifuren::dataset::FileDataset dataset(
-    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset2" }).string(),
-    //     { ".txt", ".json" },
-    //     [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
-    //         labels.push_back(torch::rand({ 2, 2}));
-    //         features.push_back(torch::rand({ 2, 2}));
-    //     }
-    // );
-    // lifuren::dataset::FileDataset dataset(
-    //     lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset3" }).string(),
-    //     ".json",
-    //     { ".txt" },
-    //     [](const std::string& file, const std::string& label, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
-    //         labels.push_back(torch::rand({ 2, 2}));
-    //         features.push_back(torch::rand({ 2, 2}));
-    //     }
-    // );
-    lifuren::dataset::FileDataset dataset(
-        lifuren::file::join({ lifuren::config::CONFIG.tmp, "dataset4" }).string(),
-        "source",
-        "target",
-        { ".txt" },
-        [](const std::string& file, const std::string& label, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& type) {
-            labels.push_back(torch::rand({ 2, 2}));
-            features.push_back(torch::rand({ 2, 2}));
-        }
-    );
-    SPDLOG_DEBUG("文件数量：{}", dataset.size().value());
-    auto [
-        feature,
-        label
-    ] = std::move(dataset.get(0));
-    SPDLOG_DEBUG("文件特征：\n{}", feature.sizes());
-    SPDLOG_DEBUG("文件标签：\n{}", label.sizes());
-}
-
 [[maybe_unused]] static void testLoadAudioFileDataset() {
     auto loader = lifuren::dataset::loadAudioFileStyleDataset(200, lifuren::file::join({lifuren::config::CONFIG.tmp, "audio", "train"}).string());
     SPDLOG_DEBUG("音频特征：\n{}", loader->begin()->data.sizes());
@@ -170,7 +115,6 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 LFR_TEST(
     // testRawDataset();
-    // testFileDataset();
     testLoadAudioFileDataset();
     // testLoadImageFileDataset();
     // testLoadVideoFileDataset();

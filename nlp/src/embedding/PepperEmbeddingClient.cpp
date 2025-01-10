@@ -76,7 +76,6 @@ static void initVectors(const std::string& pepperPath) {
     SPDLOG_DEBUG("加载pepper耗时：{}毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(zTime - aTime).count());
 }
 
-// TODO: 多个文件
 static void loadVectors(const std::string& path) {
     if(path.empty()) {
         SPDLOG_WARN("加载pepper失败（没有配置文件）：{}", path);

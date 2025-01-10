@@ -4,7 +4,7 @@
 #include "lifuren/EmbeddingClient.hpp"
 
 [[maybe_unused]] static void testOllamaEmbedding() {
-    lifuren::OllamaEmbeddingClient client{};
+    lifuren::OllamaEmbeddingClient client{ lifuren::config::CONFIG.tmp };
     const auto v = std::move(client.getVector("李夫人"));
     SPDLOG_DEBUG("v length = {}", v.size());
 }
@@ -12,7 +12,7 @@
 [[maybe_unused]] static void testPepperEmbedding() {
     // lifuren::PepperEmbeddingClient ref{};
     {
-        lifuren::PepperEmbeddingClient client{};
+        lifuren::PepperEmbeddingClient client{ lifuren::config::CONFIG.tmp };
         auto v = std::move(client.getVector("东风"));
         // auto v = std::move(client.getVector({ "李", "夫", "人"}));
         SPDLOG_DEBUG("v length = {}", v.size());

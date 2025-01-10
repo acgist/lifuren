@@ -9,7 +9,6 @@
 #include "faiss/MetaIndexes.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Lifuren.hpp"
 
 // 公用一个锁不考虑并发
 static std::mutex mutex;
@@ -53,7 +52,7 @@ std::vector<float> lifuren::FaissRAGClient::index(const std::string& prompt) {
     if(vector.empty()) {
         return vector;
     }
-    const int64_t id = lifuren::uuid();
+    const int64_t id = lifuren::config::uuid();
     if(!this->mapping || !this->indexDB) {
         SPDLOG_WARN("没有初始化");
         return vector;
