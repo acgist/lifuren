@@ -34,7 +34,6 @@
         lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren"}).string(),
         "ollama"
     );
-    ragClient->loadIndex();
     const int sequenceLength = lifuren::config::CONFIG.poetry.length;
     torch::Tensor pred;
     std::vector<float> indexVector(dims, 0.0F);
