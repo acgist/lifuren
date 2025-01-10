@@ -26,6 +26,7 @@ void lifuren::message::sendMessage(const char* message, bool finish) {
 }
 
 void lifuren::message::sendMessage(lifuren::message::Type type, const char* message, bool finish) {
+    SPDLOG_DEBUG("{} - {}", static_cast<int>(type), message);
     const auto iter = message_callback.find(type);
     if(iter == message_callback.end()) {
         return;

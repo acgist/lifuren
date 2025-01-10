@@ -100,9 +100,9 @@ static void embeddingCallback(Fl_Widget*, void*) {
         "音频嵌入",
         []() {
             if(lifuren::dataset::allDatasetPreprocessing(pathPathPtr->value(), lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
-                SPDLOG_INFO("音频嵌入成功");
+                lifuren::message::sendMessage("音频嵌入成功");
             } else {
-                SPDLOG_INFO("音频嵌入失败");
+                lifuren::message::sendMessage("音频嵌入失败");
             }
         }
     );

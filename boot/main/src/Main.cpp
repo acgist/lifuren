@@ -31,20 +31,26 @@ static std::condition_variable condition;
  */
 static void launch() {
     #if LFR_ENABLE_REST
-    ++count;
+    count++;
     std::thread httpServerThread([]() {
         lifuren::initHttpServer();
-        --count;
-        condition.notify_all();
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            count--;
+            condition.notify_all();
+        }
     });
     httpServerThread.detach();
     #endif
     #if LFR_ENABLE_FLTK
-    ++count;
+    count++;
     std::thread fltkWindowThread([]() {
         lifuren::initFltkWindow();
-        --count;
-        condition.notify_all();
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            count--;
+            condition.notify_all();
+        }
     });
     fltkWindowThread.detach();
     #endif
