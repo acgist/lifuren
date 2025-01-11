@@ -254,9 +254,9 @@ static void embeddingPoetry(const std::vector<std::string>& args) {
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] paint     [paint-wudaozi                ] [pred|train] [model image_file|dataset model_name]
-./lifuren[.exe] compose   [compose-shikuang             ] [pred|train] [model audio_file|dataset model_name]
-./lifuren[.exe] poetize   [poetize-lidu | poetize-suxin ] [pred|train] [model rhythm prompt1 prompt2|dataset model_name]
+./lifuren[.exe] paint     [paint-wudaozi             ] [pred|train] [model image_file|dataset model_name]
+./lifuren[.exe] compose   [compose-shikuang          ] [pred|train] [model audio_file|dataset model_name]
+./lifuren[.exe] poetize   [poetize-lidu|poetize-suxin] [pred|train] [model rhythm prompt1 prompt2|dataset model_name]
 ./lifuren[.exe] embedding dataset [audio|pepper|poetry] [faiss|elasticsearch] [pepper|ollama]
 ./lifuren[.exe] [?|help]
     )" << std::endl;

@@ -23,7 +23,6 @@ lifuren::AboutWindow::~AboutWindow() {
 }
 
 void lifuren::AboutWindow::drawElement() {
-    // 关于内容
     aboutDisplayPtr = new Fl_Text_Display(10, 30, this->w() - 20, this->h() - 90, "关于");
     aboutBufferPtr  = new Fl_Text_Buffer();
     aboutDisplayPtr->begin();
@@ -35,8 +34,10 @@ void lifuren::AboutWindow::drawElement() {
     aboutBufferPtr->append("Github：https://github.com/acgist/lifuren\n");
     aboutBufferPtr->append("作者：碧螺萧萧（acgist）");
     aboutDisplayPtr->end();
-    // 主页按钮
     homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
+}
+
+void lifuren::AboutWindow::bindEvent() {
     homePagePtr->callback([](Fl_Widget* widgetPtr, void* voidPtr) -> void {
         const int ret = fl_open_uri("https://gitee.com/acgist/lifuren");
         SPDLOG_DEBUG("打开主页：{}", ret);

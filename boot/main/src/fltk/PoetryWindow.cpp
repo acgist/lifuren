@@ -70,7 +70,6 @@ void lifuren::PoetryWindow::saveConfig() {
 }
 
 void lifuren::PoetryWindow::drawElement() {
-    // 绘制界面
     clientPtr        = new Fl_Choice(80,  10,  200, 30, "终端名称");
     ragTypePtr       = new Fl_Choice(80,  50,  200, 30, "RAG向量库");
     embeddingTypePtr = new Fl_Choice(80,  90,  200, 30, "嵌入终端");
@@ -85,7 +84,9 @@ void lifuren::PoetryWindow::drawElement() {
     trainPtr         = new Fl_Button(280, 290, 100, 30, "训练模型");
     generatePtr      = new Fl_Button(380, 290, 100, 30, "生成诗词");
     modelReleasePtr  = new Fl_Button(480, 290, 100, 30, "释放模型");
-    // 绑定事件
+}
+
+void lifuren::PoetryWindow::bindEvent() {
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
@@ -96,7 +97,7 @@ void lifuren::PoetryWindow::drawElement() {
     modelReleasePtr->callback(modelReleaseCallback, this);
     // 功能提示
     pepperPtr->tooltip("诗词分词去重通过ollama转为词嵌入文件加速诗词嵌入");
-    // 默认数据
+    // 数据填充
     const auto& poetryConfig = lifuren::config::CONFIG.poetry;
     lifuren::fillChoice(clientPtr, poetryConfig.clients, poetryConfig.client);
     lifuren::fillChoice(ragTypePtr, { lifuren::config::CONFIG_FAISS, lifuren::config::CONFIG_ELASTICSEARCH }, lifuren::config::CONFIG_FAISS);

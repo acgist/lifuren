@@ -140,6 +140,7 @@ void lifuren::Window::init() {
     this->center();
     this->drawElement();
     this->end();
+    this->bindEvent();
 }
 
 void lifuren::Window::icon() {

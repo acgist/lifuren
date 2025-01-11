@@ -1,8 +1,21 @@
 /**
- * Win32配置
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * https://learn.microsoft.com/zh-cn/windows/win32/menurc/versioninfo-resource
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
  */
 #pragma code_page(65001)
+
+#ifndef LFR_RC
+#define LFR_RC
 
 #include <verrsrc.h>
 
@@ -15,11 +28,10 @@ FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 #ifndef _DEBUG
 FILEFLAGS       VS_FF_DEBUG
 #else
-// FILEFLAGS    0x0L
-FILEFLAGS       VS_FF_SPECIALBUILD
+FILEFLAGS       VS_FF_DEBUG | VS_FF_PRERELEASE
 #endif
 FILEOS          VOS__WINDOWS32
-FILETYPE        VFT_DLL | VFT_APP | VFT_STATIC_LIB
+FILETYPE        VFT_APP | VFT_DLL | VFT_STATIC_LIB
 FILESUBTYPE     VFT2_UNKNOWN
 BEGIN
     BLOCK "StringFileInfo"
@@ -42,3 +54,5 @@ BEGIN
         VALUE "Translation", 0x804, 1252
     END
 END
+
+#endif // LFR_RC

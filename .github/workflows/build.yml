@@ -6,7 +6,8 @@ jobs:
   lifuren:
     name: Build lifuren
     # https://docs.github.com/zh/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    # runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -71,7 +72,6 @@ jobs:
           cd ../../
       - name: Deploy lifuren
         run: |
-          pwd
           gcc -v
           g++ -v
           cmake -version

@@ -74,7 +74,6 @@ lifuren::MainWindow::~MainWindow() {
 }
 
 void lifuren::MainWindow::drawElement() {
-    // 绘制界面
     audioButtonPtr  = new Fl_Button(20,                      10,             LFR_HALF_WIDTH(60), 80, "音频生成");
     videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10,             LFR_HALF_WIDTH(60), 80, "视频生成");
     poetryButtonPtr = new Fl_Button(20,                      100,            this->w() - 40,     80, "诗词生成");
@@ -82,7 +81,9 @@ void lifuren::MainWindow::drawElement() {
     aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
     // 大小修改
     this->resizable(this);
-    // 绑定事件
+}
+
+void lifuren::MainWindow::bindEvent() {
     audioButtonPtr ->callback(audioCallback , this);
     videoButtonPtr ->callback(videoCallback , this);
     poetryButtonPtr->callback(poetryCallback, this);

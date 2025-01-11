@@ -61,7 +61,6 @@ void lifuren::AudioWindow::saveConfig() {
 }
 
 void lifuren::AudioWindow::drawElement() {
-    // 绘制界面
     clientPtr       = new Fl_Choice( 80, 10,  200, 30, "终端名称");
     pathPathPtr     = new Fl_Input(  80, 50,  400, 30, "数据集路径");
     pathChoosePtr   = new Fl_Button(480, 50,  100, 30, "选择数据集");
@@ -73,7 +72,9 @@ void lifuren::AudioWindow::drawElement() {
     trainPtr        = new Fl_Button(180, 170, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(280, 170, 100, 30, "生成音频");
     modelReleasePtr = new Fl_Button(380, 170, 100, 30, "释放模型");
-    // 绑定事件
+}
+
+void lifuren::AudioWindow::bindEvent() {
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);
@@ -82,7 +83,7 @@ void lifuren::AudioWindow::drawElement() {
     trainPtr->callback(trainCallback, this);
     generatePtr->callback(generateCallback, this);
     modelReleasePtr->callback(modelReleaseCallback, this);
-    // 默认数据
+    // 数据填充
     const auto& audioConfig = lifuren::config::CONFIG.audio;
     lifuren::fillChoice(clientPtr, audioConfig.clients, audioConfig.client);
     pathPathPtr->value(audioConfig.path.c_str());

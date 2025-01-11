@@ -1,15 +1,19 @@
-cmake_minimum_required(VERSION 3.22.0)
-
 #[[
-    李夫人
-    北方有佳人，绝世而独立。
-    一顾倾人城，再顾倾人国。
-    宁不知倾城与倾国，佳人难再得。
-    https://gitee.com/acgist/lifuren
-    https://github.com/acgist/lifuren
+Copyright(c) 2024-present acgist. ALl Rights Reserved.
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+gitee : https://gitee.com/acgist/lifuren
+github: https://github.com/acgist/lifuren
+
+李夫人
+北方有佳人，绝世而独立。
+一顾倾人城，再顾倾人国。
+宁不知倾城与倾国，佳人难再得。
 ]]
 
 # https://cmake.org/cmake/help/latest/
+cmake_minimum_required(VERSION 3.22.0)
 
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 

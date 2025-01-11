@@ -56,7 +56,6 @@ void lifuren::VideoWindow::saveConfig() {
 }
 
 void lifuren::VideoWindow::drawElement() {
-    // 绘制界面
     clientPtr       = new Fl_Choice( 80,  10, 200, 30, "终端名称");
     pathPathPtr     = new Fl_Input(  80,  50, 400, 30, "数据集路径");
     pathChoosePtr   = new Fl_Button(480,  50, 100, 30, "选择数据集");
@@ -67,7 +66,9 @@ void lifuren::VideoWindow::drawElement() {
     trainPtr        = new Fl_Button( 80, 170, 100, 30, "训练模型");
     generatePtr     = new Fl_Button(180, 170, 100, 30, "生成视频");
     modelReleasePtr = new Fl_Button(280, 170, 100, 30, "释放模型");
-    // 绑定事件
+}
+
+void lifuren::VideoWindow::bindEvent() {
     clientPtr->callback(clientCallback, this);
     pathChoosePtr->callback(chooseDirectoryCallback, pathPathPtr);
     modelChoosePtr->callback(chooseFileCallback, modelPathPtr);

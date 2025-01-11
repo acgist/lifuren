@@ -1,4 +1,11 @@
 /**
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * FLTK GUI API
  * 
  * https://www.fltk.org/doc-1.3/index.html
@@ -35,19 +42,11 @@
 #include "lifuren/Message.hpp"
 
 class Fl_Choice;
-class Fl_RGB_Image;
 
 namespace lifuren {
 
-/**
- * 加载FLTK窗口
- */
-extern void initFltkWindow();
-
-/**
- * 关闭FLTK窗口
- */
-extern void shutdownFltkWindow();
+extern void initFltkWindow();     // 加载FLTK窗口
+extern void shutdownFltkWindow(); // 关闭FLTK窗口
 
 /**
  * 抽象窗口
@@ -58,34 +57,21 @@ protected:
     Fl_RGB_Image* windowIcon{ nullptr }; // 窗口图标
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    Window(int width, int height, const char* title);
+    Window(
+        int width,        // 窗口宽度
+        int height,       // 窗口高度
+        const char* title // 窗口名称
+    );
     virtual ~Window();
 
 public:
-    /**
-     * 初始化窗口
-     */
-    virtual void init();
+    virtual void init(); // 初始化窗口
 
 protected:
-    /**
-     * 绘制组件
-     * 绑定事件
-     */
-    virtual void drawElement() = 0;
-    /**
-     * 设置图标
-     */
-    void icon();
-    /**
-     * 窗口居中
-     */
-    void center();
+    void icon  (); // 设置图标
+    void center(); // 窗口居中
+    virtual void drawElement() = 0; // 绘制组件
+    virtual void bindEvent  () = 0; // 绑定事件
 
 };
 
@@ -95,18 +81,9 @@ protected:
 class Configuration {
 
 public:
-    /**
-     * 保存配置
-     */
-    virtual void saveConfig();
+    virtual void saveConfig(); // 保存配置
 
 };
-
-class MainWindow;
-class AudioWindow;
-class VideoWindow;
-class PoetryWindow;
-class AboutWindow;
 
 /**
  * 主窗口
@@ -114,16 +91,16 @@ class AboutWindow;
 class MainWindow : public Window {
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    MainWindow(int width, int height, const char* title = "李夫人");
+    MainWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口高度
+        const char* title = "李夫人" // 窗口名称
+    );
     virtual ~MainWindow();
 
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 };
 
@@ -133,12 +110,11 @@ protected:
 class AudioWindow : public Window, public Configuration {
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    AudioWindow(int width, int height, const char* title = "音频生成");
+    AudioWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口高度
+        const char* title = "音频生成" // 窗口名称
+    );
     virtual ~AudioWindow();
 
 public:
@@ -146,6 +122,7 @@ public:
     
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 };
 
@@ -155,12 +132,11 @@ protected:
 class VideoWindow : public Window, public Configuration {
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    VideoWindow(int width, int height, const char* title = "视频生成");
+    VideoWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口高度
+        const char* title = "视频生成" // 窗口名称
+    );
     virtual ~VideoWindow();
 
 public:
@@ -168,6 +144,7 @@ public:
     
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 };
 
@@ -177,12 +154,11 @@ protected:
 class PoetryWindow : public Window, public Configuration {
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    PoetryWindow(int width, int height, const char* title = "诗词生成");
+    PoetryWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口高度
+        const char* title = "诗词生成" // 窗口名称
+    );
     virtual ~PoetryWindow();
 
 public:
@@ -190,6 +166,7 @@ public:
 
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 };
 
@@ -199,16 +176,16 @@ protected:
 class AboutWindow : public Window {
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    AboutWindow(int width, int height, const char* title = "关于");
+    AboutWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口宽度
+        const char* title = "关于" // 窗口名称
+    );
     virtual ~AboutWindow();
 
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 };
 
@@ -218,63 +195,86 @@ protected:
 class ThreadWindow : public Window {
 
 public:
-    // 是否可以关闭：隐藏时释放资源
+    // 是否可以关闭：任务执行完成后隐藏时释放资源
     bool closeable { false };
     // 任务类型
     lifuren::message::Type type { lifuren::message::Type::NONE };
 
 public:
-    /**
-     * @param width  窗口宽度
-     * @param height 窗口高度
-     * @param title  窗口名称
-     */
-    ThreadWindow(int width, int height, const char* title = "后台任务");
+    ThreadWindow(
+        int width,  // 窗口宽度
+        int height, // 窗口高度
+        const char* title = "后台任务" // 窗口名称
+    );
     virtual ~ThreadWindow();
 
 protected:
     virtual void drawElement() override;
+    virtual void bindEvent  () override;
 
 public:
-    static void showThread (lifuren::message::Type type);
-    static bool checkThread(lifuren::message::Type type); // 判断是否还有相同后台任务
-    static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr);
-    static bool stopThread (lifuren::message::Type type);
-    static bool checkAudioThread();
-    static bool checkImageThread();
-    static bool checkVideoThread();
-    static bool checkPoetryThread();
+    static void showThread (lifuren::message::Type type); // 显示任务
+    static bool checkThread(lifuren::message::Type type); // 判断是否含有相同类型任务
+    static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr); // 开始任务
+    static bool stopThread (lifuren::message::Type type); // 结束任务
+    static bool checkAudioThread (); // 判断是否含有音频任务
+    static bool checkImageThread (); // 判断是否含有图片任务
+    static bool checkVideoThread (); // 判断是否含有视频任务
+    static bool checkPoetryThread(); // 判断是否含有诗词任务
 
 };
 
 /**
- * @param title     窗口标题
- * @param filter    文件过滤：*.{cxx,cpp}
- * @param directory 当前目录
+ * 选择文件
  * 
  * @return 选择文件路径
  */
-extern std::string fileChooser(const char* title, const char* filter = "*.*", const char* directory = "");
-
-extern void fileChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* filter = "*.*", const char* directory = "");
+extern std::string fileChooser(
+    const char* title, // 窗口标题
+    const char* filter    = "*.*", // 文件过滤：*.{cxx,cpp}
+    const char* directory = ""     // 当前目录
+);
 
 /**
- * @param title     窗口标题
- * @param directory 当前目录
+ * 选择文件同时设置到输入框
+ */
+extern void fileChooser(
+    Fl_Widget * widget,  // 来源组件
+    void      * voidPtr, // 输入框指针
+    const char* title,   // 窗口标题
+    const char* filter    = "*.*", // 文件过滤：*.{cxx,cpp}
+    const char* directory = ""     // 当前目录
+);
+
+/**
+ * 选择目录
  * 
  * @return 选择目录路径
  */
-extern std::string directoryChooser(const char* title, const char* directory = "");
-
-extern void directoryChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* directory = "");
+extern std::string directoryChooser(
+    const char* title, // 窗口标题
+    const char* directory = "" // 当前目录
+);
 
 /**
- * @param choice 选择框
- * @param set    选项列表
- * @param value  默认选项
+ * 选择目录同时设置到输入框
  */
-extern void fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value = "");
+extern void directoryChooser(
+    Fl_Widget * widget,  // 来源组件
+    void      * voidPtr, // 输入框指针
+    const char* title,   // 窗口标题
+    const char* directory = "" // 当前目录
+);
 
-} // END lifuren
+/**
+ * 填充选择框
+ */
+extern void fillChoice(
+    Fl_Choice* choice,                // 选择框
+    const std::set<std::string>& set, // 选项列表
+    const std::string& value = ""     // 默认选项
+);
+
+} // END OF lifuren
 
 #endif // LFR_HEADER_BOOT_FLTK_HPP

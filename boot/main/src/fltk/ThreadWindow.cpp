@@ -39,7 +39,6 @@ lifuren::ThreadWindow::~ThreadWindow() {
 }
 
 void lifuren::ThreadWindow::drawElement() {
-    // 绘制界面
     display = new Fl_Text_Display(10, 20, this->w() - 20, this->h() - 90, "任务消息");
     buffer  = new Fl_Text_Buffer();
     display->begin();
@@ -47,7 +46,9 @@ void lifuren::ThreadWindow::drawElement() {
     display->wrap_mode(display->WRAP_AT_COLUMN, display->textfont());
     display->end();
     cancel = new Fl_Button((this->w() - 200) / 2, this->h() - 50, 200, 30, "取消任务");
-    // 注册回调
+}
+
+void lifuren::ThreadWindow::bindEvent() {
     lifuren::message::registerMessageCallback(this->type, [](bool finish, const char* message) {
         if(buffer) {
             buffer->append(message);

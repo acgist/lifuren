@@ -101,7 +101,7 @@ static bool indexCreate(const size_t& id, std::shared_ptr<lifuren::RestClient> c
     return client->putJson("/" + std::to_string(id), body.dump());
 }
 
-static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
+[[maybe_unused]] static bool indexDelete(const size_t& id, std::shared_ptr<lifuren::RestClient> client) {
     SPDLOG_DEBUG("删除ElasticSearch索引：{}", id);
     return client->del("/" + std::to_string(id));
 }
