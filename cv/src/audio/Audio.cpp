@@ -139,7 +139,7 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
         nb_samples = size / sample_size;
         frame->pts            = AV_NOPTS_VALUE;
         frame->format         = AV_SAMPLE_FMT_S16;
-        #ifdef FF_API_OLD_CHANNEL_LAYOUT
+        #if FF_API_OLD_CHANNEL_LAYOUT
         frame->channel_layout = AV_CH_LAYOUT_MONO;
         #else
         frame->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
@@ -333,13 +333,13 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 }
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
-    #ifndef FF_API_OLD_CHANNEL_LAYOUT
+    #if !FF_API_OLD_CHANNEL_LAYOUT
     static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
     #endif
     *swrCtx = swr_alloc();
     av_opt_set_int       (*swrCtx, "in_sample_rate",     frame->sample_rate,         0);
     av_opt_set_int       (*swrCtx, "out_sample_rate",    48000,                      0);
-    #ifndef FF_API_OLD_CHANNEL_LAYOUT
+    #if !FF_API_OLD_CHANNEL_LAYOUT
     av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
     av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
     #endif
@@ -391,7 +391,7 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
     #else
     (*encodeCodecCtx)->sample_fmt     = AV_SAMPLE_FMT_S16;
     #endif
-    #ifdef FF_API_OLD_CHANNEL_LAYOUT
+    #if FF_API_OLD_CHANNEL_LAYOUT
     (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
     #else
     (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
