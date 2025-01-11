@@ -139,7 +139,11 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
         nb_samples = size / sample_size;
         frame->pts            = AV_NOPTS_VALUE;
         frame->format         = AV_SAMPLE_FMT_S16;
+        #ifdef FF_API_OLD_CHANNEL_LAYOUT
+        frame->channel_layout = AV_CH_LAYOUT_MONO;
+        #else
         frame->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
+        #endif
         frame->nb_samples     = nb_samples;
         frame->sample_rate    = 48000;
         // 申请空间
@@ -329,12 +333,16 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 }
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
+    #ifndef FF_API_OLD_CHANNEL_LAYOUT
     static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
+    #endif
     *swrCtx = swr_alloc();
     av_opt_set_int       (*swrCtx, "in_sample_rate",     frame->sample_rate,         0);
     av_opt_set_int       (*swrCtx, "out_sample_rate",    48000,                      0);
+    #ifndef FF_API_OLD_CHANNEL_LAYOUT
     av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
     av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
+    #endif
     av_opt_set_sample_fmt(*swrCtx, "in_sample_fmt",      decodeCodecCtx->sample_fmt, 0);
     av_opt_set_sample_fmt(*swrCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,          0);
     #if FF_API_OLD_CHANNEL_LAYOUT
@@ -379,13 +387,16 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
         return false;
     }
     #if defined(__MP3__) && (defined(__linux) || defined(__linux__))
-    // 单声道不用重采样
-    (*encodeCodecCtx)->sample_fmt  = AV_SAMPLE_FMT_S16P;
+    (*encodeCodecCtx)->sample_fmt     = AV_SAMPLE_FMT_S16P;
     #else
-    (*encodeCodecCtx)->sample_fmt  = AV_SAMPLE_FMT_S16;
+    (*encodeCodecCtx)->sample_fmt     = AV_SAMPLE_FMT_S16;
     #endif
-    (*encodeCodecCtx)->ch_layout   = AV_CHANNEL_LAYOUT_MONO;
-    (*encodeCodecCtx)->sample_rate = 48000;
+    #ifdef FF_API_OLD_CHANNEL_LAYOUT
+    (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
+    #else
+    (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
+    #endif
+    (*encodeCodecCtx)->sample_rate    = 48000;
     if(avcodec_open2(*encodeCodecCtx, encoder, nullptr) != 0) {
         SPDLOG_WARN("打开编码器上下文失败");
         return false;

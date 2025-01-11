@@ -7,6 +7,7 @@
 #include <functional>
 
 #ifndef MESSAGE_LIMITS
+#define MESSAGE_CONSOLE    0
 #define MESSAGE_AUDIO_MIN  1000
 #define MESSAGE_IMAGE_MIN  2000
 #define MESSAGE_VIDEO_MIN  3000
@@ -19,6 +20,7 @@ namespace lifuren::message {
 // 消息类型
 enum class Type {
     
+    CLI_CONSOLE             = MESSAGE_CONSOLE,
     AUDIO_EMBEDDING         = MESSAGE_AUDIO_MIN,
     AUDIO_MODEL_TRAIN       = MESSAGE_AUDIO_MIN + 1,
     AUDIO_MODEL_PRED        = MESSAGE_AUDIO_MIN + 2,
