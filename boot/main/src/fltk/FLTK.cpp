@@ -141,6 +141,7 @@ void lifuren::Window::init() {
     this->drawElement();
     this->end();
     this->bindEvent();
+    this->fillData();
 }
 
 void lifuren::Window::icon() {
@@ -155,6 +156,15 @@ void lifuren::Window::center() {
     const int width  = this->w();
     const int height = this->h();
     this->position(std::abs(fullWidth - width) / 2, std::abs(fullHeight - height) / 2);
+}
+
+void lifuren::Window::drawElement() {
+}
+
+void lifuren::Window::bindEvent() {
+}
+
+void lifuren::Window::fillData() {
 }
 
 void lifuren::Configuration::saveConfig() {

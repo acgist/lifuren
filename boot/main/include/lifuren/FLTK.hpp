@@ -70,8 +70,9 @@ public:
 protected:
     void icon  (); // 设置图标
     void center(); // 窗口居中
-    virtual void drawElement() = 0; // 绘制组件
-    virtual void bindEvent  () = 0; // 绑定事件
+    virtual void drawElement(); // 绘制组件
+    virtual void bindEvent  (); // 绑定事件
+    virtual void fillData   (); // 数据填充
 
 };
 
@@ -186,6 +187,7 @@ public:
 protected:
     virtual void drawElement() override;
     virtual void bindEvent  () override;
+    virtual void fillData   () override;
 
 };
 

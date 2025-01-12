@@ -9,8 +9,8 @@
 
 #include "lifuren/Raii.hpp"
 
-static Fl_Button*       homePagePtr    { nullptr };
-static Fl_Text_Buffer*  aboutBufferPtr { nullptr };
+static Fl_Button      * homePagePtr    { nullptr };
+static Fl_Text_Buffer * aboutBufferPtr { nullptr };
 static Fl_Text_Display* aboutDisplayPtr{ nullptr };
 
 lifuren::AboutWindow::AboutWindow(int width, int height, const char* title) : Window(width, height, title) {
@@ -29,10 +29,6 @@ void lifuren::AboutWindow::drawElement() {
     aboutDisplayPtr->color(FL_BACKGROUND_COLOR);
     aboutDisplayPtr->buffer(aboutBufferPtr);
     aboutDisplayPtr->wrap_mode(aboutDisplayPtr->WRAP_AT_COLUMN, aboutDisplayPtr->textfont());
-    aboutBufferPtr->text("李夫人，这是一个研究生成网络、机器视觉、自然语言处理的程序。\n");
-    aboutBufferPtr->append("Gitee：https://gitee.com/acgist/lifuren\n");
-    aboutBufferPtr->append("Github：https://github.com/acgist/lifuren\n");
-    aboutBufferPtr->append("作者：碧螺萧萧（acgist）");
     aboutDisplayPtr->end();
     homePagePtr = new Fl_Button(this->w() / 2 - 40, this->h() - 40, 80, 30, "主页");
 }
@@ -42,4 +38,22 @@ void lifuren::AboutWindow::bindEvent() {
         const int ret = fl_open_uri("https://gitee.com/acgist/lifuren");
         SPDLOG_DEBUG("打开主页：{}", ret);
     }, this);
+}
+
+void lifuren::AboutWindow::fillData() {
+    aboutBufferPtr->text(R"(李夫人
+    
+北方有佳人，绝世而独立。
+一顾倾人城，再顾倾人国。
+宁不知倾城与倾国，佳人难再得。
+
+项目主要研发方向是生成网络、机器视觉、自然语言处理。    
+
+https://gitee.com/acgist/lifuren
+https://github.com/acgist/lifuren
+
+Copyright(c) 2024-present acgist. ALl Rights Reserved.
+
+http://www.apache.org/licenses/LICENSE-2.0
+)");
 }
