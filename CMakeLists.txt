@@ -20,6 +20,7 @@ project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 if(NOT CMAKE_BUILD_TYPE)
     # VSCode要和变体保持一致
     set(CMAKE_BUILD_TYPE Debug)
+    # set(CMAKE_BUILD_TYPE Release)
 endif()
 
 option(ENABLE_TEST "打开测试"     ON)

@@ -1,7 +1,5 @@
 #include "lifuren/Test.hpp"
 
-#include <cassert>
-
 #include "lifuren/String.hpp"
 
 [[maybe_unused]] static void testJoin() {
@@ -14,6 +12,7 @@
 }
 
 [[maybe_unused]] static void testSplit() {
+    // string
     std::vector<std::string> split = lifuren::string::split("", ",", false, false);
     assert(split.size() == 1);
     split = lifuren::string::split("1", ",");
@@ -42,10 +41,8 @@
     assert(split.size() == 2);
     split = lifuren::string::split("1，2", "，");
     assert(split.size() == 2);
-}
-
-[[maybe_unused]] static void testSplitMulti() {
-    std::vector<std::string> split = lifuren::string::split("", std::vector<std::string>{ "，", "。" }, false, false);
+    // vector
+    split = lifuren::string::split("", std::vector<std::string>{ "，", "。" }, false, false);
     assert(split.size() == 1);
     split = lifuren::string::split("1", std::vector<std::string>{ "，", "。" });
     assert(split.size() == 1);
@@ -71,7 +68,6 @@
     assert("lifuren" == value);
     lifuren::string::toUpper(value);
     assert("LIFUREN" == value);
-    value = " 1234 ";
 }
 
 [[maybe_unused]] static void testTrim() {
@@ -80,27 +76,33 @@
     std::string trim  = lifuren::string::trim(value);
     assert("1234" == trim);
     value = " 1234";
-    trim = lifuren::string::trim(value);
+    trim  = lifuren::string::trim(value);
     assert("1234" == trim);
     value = "1234 ";
-    trim = lifuren::string::trim(value);
+    trim  = lifuren::string::trim(value);
     assert("1234" == trim);
     value = "1234";
-    trim = lifuren::string::trim(value);
+    trim  = lifuren::string::trim(value);
     assert("1234" == trim);
+    value = " 12 34 ";
+    trim  = lifuren::string::trim(value);
+    assert("12 34" == trim);
     // char*
-    char value1[]{' ', '1', '2', '3', '4', ' ', '\0'};
-    char* chars  = lifuren::string::trim(value1);
+    char value1[] {' ', '1', '2', '3', '4', ' ', '\0'};
+    char* chars = lifuren::string::trim(value1);
     assert(std::strcmp("1234", chars) == 0);
-    char value2[]{' ', '1', '2', '3', '4', '\0'};
+    char value2[] {' ', '1', '2', '3', '4', '\0'};
     chars = lifuren::string::trim(value2);
     assert(std::strcmp("1234", chars) == 0);
-    char value3[]{'1', '2', '3', '4', ' ', '\0'};
+    char value3[] {'1', '2', '3', '4', ' ', '\0'};
     chars = lifuren::string::trim(value3);
     assert(std::strcmp("1234", chars) == 0);
-    char value4[]{'1', '2', '3', '4', '\0'};
+    char value4[] {'1', '2', '3', '4', '\0'};
     chars = lifuren::string::trim(value4);
     assert(std::strcmp("1234", chars) == 0);
+    char value5[] {' ', '1', '2', ' ', '3', '4', ' ', '\0'};
+    chars = lifuren::string::trim(value5);
+    assert(std::strcmp("12 34", chars) == 0);
 }
 
 [[maybe_unused]] static void testLength() {
@@ -122,7 +124,7 @@
 }
 
 [[maybe_unused]] static void testToChars() {
-    auto&& vector = lifuren::string::toChars("你好啊！abc测试1234 1234李夫人?!好吧");
+    auto vector = std::move(lifuren::string::toChars("你好啊！abc测试1234 1234李夫人?!好吧"));
     std::vector<std::string> diff{ "你", "好", "啊", "！", "a", "b", "c", "测", "试", "1", "2", "3", "4", "1", "2", "3", "4", "李", "夫", "人", "?", "!", "好", "吧" };
     assert(diff == vector);
 }
@@ -148,7 +150,6 @@
 LFR_TEST(
     testJoin();
     testSplit();
-    testSplitMulti();
     testLowerUpper();
     testTrim();
     testLength();

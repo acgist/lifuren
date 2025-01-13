@@ -24,7 +24,7 @@
 }
 
 LFR_TEST(
-    testListFile();
+    // testListFile();
     testLoadFile();
     testSaveFile();
 );

@@ -60,7 +60,7 @@ inline size_t loop(
     }
     const auto z = std::chrono::system_clock::now();
     size_t ret = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    SPDLOG_DEBUG("{}：{}", label, ret);
+    SPDLOG_INFO("{}：{}", label, ret);
     return ret;
 }
 
