@@ -36,21 +36,14 @@ static void close_output(AVFormatContext** outputCtx);
 static void embedding(const std::string& source, const std::string& target, std::ofstream& stream);
 static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
 
-inline static std::string toPcmFilePath(const std::string& audioFile) {
-    auto pos = audioFile.find_last_of('.') + 1;
-    auto ext = audioFile.substr(pos, audioFile.length() - pos);
-    auto pcmFile = audioFile.substr(0, pos) + "pcm";
-    return pcmFile;
-}
-
 static std::mutex embedding_mutex;
 
-bool lifuren::audio::toPcm(const std::string& audioFile) {
+std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile) {
     AVPacket       * packet  { nullptr };
     AVFormatContext* inputCtx{ nullptr };
     if(!open_input(&packet, &inputCtx, audioFile)) {
         close_input(&packet, &inputCtx);
-        return false;
+        return {false, {}};
     }
     auto pos = audioFile.find_last_of('.') + 1;
     auto ext = audioFile.substr(pos, audioFile.length() - pos);
@@ -60,7 +53,7 @@ bool lifuren::audio::toPcm(const std::string& audioFile) {
     if(!open_decoder(&frame, &decodeCodecCtx, ext)) {
         close_input(&packet, &inputCtx);
         close_decoder(&frame, &decodeCodecCtx);
-        return false;
+        return {false, pcmFile};
     }
     std::ofstream output;
     output.open(pcmFile, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
@@ -69,7 +62,7 @@ bool lifuren::audio::toPcm(const std::string& audioFile) {
         close_input(&packet, &inputCtx);
         close_decoder(&frame, &decodeCodecCtx);
         SPDLOG_WARN("打开音频输出文件失败：{}", pcmFile);
-        return false;
+        return {false, pcmFile};
     }
     std::vector<char> buffer;
     buffer.resize(16 * 1024);
@@ -86,16 +79,16 @@ bool lifuren::audio::toPcm(const std::string& audioFile) {
     close_swr(&swrCtx);
     close_input(&packet, &inputCtx);
     close_decoder(&frame, &decodeCodecCtx);
-    return true;
+    return {true, pcmFile};
 }
 
-bool lifuren::audio::toFile(const std::string& pcmFile) {
+std::tuple<bool, std::string> lifuren::audio::toFile(const std::string& pcmFile) {
     AVFrame       * frame { nullptr };
     AVPacket      * packet{ nullptr };
     AVCodecContext* encodeCodecCtx{ nullptr };
     if(!open_encoder(&frame, &packet, &encodeCodecCtx)) {
         close_encoder(&frame, &packet, &encodeCodecCtx);
-        return false;
+        return {false, {}};
     }
     int stream_index;
     AVFormatContext* outputCtx{ nullptr };
@@ -108,7 +101,7 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     if(!open_output(&outputCtx, encodeCodecCtx, stream_index, outputFile)) {
         close_encoder(&frame, &packet, &encodeCodecCtx);
         close_output(&outputCtx);
-        return false;
+        return {false, outputFile};
     }
     const int sample_size = av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
     #ifdef __MP3__
@@ -128,7 +121,7 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
         close_encoder(&frame, &packet, &encodeCodecCtx);
         close_output(&outputCtx);
         SPDLOG_WARN("打开音频输入文件失败：{}", pcmFile);
-        return false;
+        return {false, outputFile};
     }
     // 写入头部
     if(avformat_write_header(outputCtx, NULL) != 0) {
@@ -166,7 +159,7 @@ bool lifuren::audio::toFile(const std::string& pcmFile) {
     input.close();
     close_encoder(&frame, &packet, &encodeCodecCtx);
     close_output(&outputCtx);
-    return true;
+    return {true, outputFile};
 }
 
 bool lifuren::audio::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
@@ -178,37 +171,39 @@ bool lifuren::audio::embedding(const std::string& path, const std::string& datas
         SPDLOG_DEBUG("音频嵌入文件为空");
         return true;
     }
-    for(const auto& file : files) {
-        const auto index = file.find_last_of('.');
+    for(const auto& source_file : files) {
+        const auto index = source_file.find_last_of('.');
         if(index == std::string::npos) {
-            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
             continue;
         }
         if(index < source.size()) {
-            SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+            SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
             continue;
         }
-        const auto label = file.substr(index - source.size(), source.size());
+        const auto label = source_file.substr(index - source.size(), source.size());
         if(label != source) {
             if(label != target) {
-                SPDLOG_INFO("加载文件匹配规则失败：{}", file);
+                SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
             }
             continue;
         }
-        auto target_file(file);
+        auto target_file(source_file);
         target_file.replace(index - source.size(), source.size(), target);
         const auto iterator = std::find(files.begin(), files.end(), target_file);
         if(iterator == files.end()) {
-            SPDLOG_INFO("加载文件没有标记文件：{}", file);
+            SPDLOG_INFO("加载文件没有标记文件：{}", source_file);
             continue;
         }
-        pool.submit([&stream, file, target_file]() {
-            SPDLOG_DEBUG("加载文件：{} - {}", file, target_file);
-            if(lifuren::audio::toPcm(file) && lifuren::audio::toPcm(target_file)) {
-                SPDLOG_DEBUG("转换PCM成功：{} - {}", file, target_file);
-                ::embedding(toPcmFilePath(file), toPcmFilePath(target_file), stream);
+        pool.submit([&stream, source_file, target_file]() {
+            SPDLOG_DEBUG("加载文件：{} - {}", source_file, target_file);
+            const auto [source_success, source_pcm] = lifuren::audio::toPcm(source_file);
+            const auto [target_success, target_pcm] = lifuren::audio::toPcm(target_file);
+            if(source_success && target_success) {
+                SPDLOG_DEBUG("转换PCM成功：{} - {}", source_file, target_file);
+                ::embedding(source_pcm, target_pcm, stream);
             } else {
-                SPDLOG_WARN("转换PCM失败：{} - {}", file, target_file);
+                SPDLOG_WARN("转换PCM失败：{} - {}", source_file, target_file);
             }
         });
     }

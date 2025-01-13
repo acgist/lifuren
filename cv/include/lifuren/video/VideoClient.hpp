@@ -36,7 +36,7 @@ public:
     virtual ~VideoClient();
 
 public:
-    std::string pred(const VideoParams& input) override;
+    std::tuple<bool, std::string> pred(const VideoParams& input) override;
 
 };
 

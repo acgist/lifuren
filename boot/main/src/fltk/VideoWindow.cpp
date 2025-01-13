@@ -135,8 +135,12 @@ static void generateCallback(Fl_Widget*, void*) {
                 .video  = video,
                 .output = output
             };
-            videoClient->pred(params);
-            SPDLOG_INFO("视频生成完成：{}", output);
+            const auto [success, output_file] = videoClient->pred(params);
+            if(success) {
+                SPDLOG_INFO("视频生成完成：{}", output_file);
+            } else {
+                SPDLOG_WARN("视频生成完成：{}", output_file);
+            }
         }
     );
 }

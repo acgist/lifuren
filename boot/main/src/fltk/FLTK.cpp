@@ -41,7 +41,7 @@ void lifuren::shutdownFltkWindow() {
         return;
     }
     fltkClose = true;
-    // 隐藏所有窗口
+    SPDLOG_INFO("关闭FLTK服务");
     while(Fl::first_window()) {
         Fl::first_window()->hide();
     }

@@ -98,9 +98,12 @@ static void generateAudio(const std::vector<std::string>& args) {
             .audio  = audio,
             .output = output
         };
-        client->pred(params);
-        lifuren::audio::toFile(output);
-        SPDLOG_INFO("音频生成完成：{}", output);
+        const auto [success, output_file] = client->pred(params);
+        if(success) {
+            SPDLOG_INFO("音频生成完成：{}", output_file);
+        } else {
+            SPDLOG_WARN("音频生成失败：{}", output_file);
+        }
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -141,8 +144,12 @@ static void generateVideo(const std::vector<std::string>& args) {
             .video  = video,
             .output = output
         };
-        client->pred(params);
-        SPDLOG_INFO("视频生成完成：{}", output);
+        const auto [success, output_file] = client->pred(params);
+        if(success) {
+            SPDLOG_INFO("视频生成完成：{}", output_file);
+        } else {
+            SPDLOG_WARN("视频生成失败：{}", output_file);
+        }
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -185,10 +192,14 @@ static void generatePoetry(const std::vector<std::string>& args) {
         lifuren::PoetryParams params {
             .model   = model,
             .rhythm  = rhythm,
-            .prompts = prompts
+            .prompts = std::move(prompts)
         };
-        std::string result = client->pred(params);
-        SPDLOG_INFO("诗词生成完成：{}", result);
+        const auto [success, result] = client->pred(params);
+        if(success) {
+            SPDLOG_INFO("诗词生成完成：{}", result);
+        } else {
+            SPDLOG_WARN("诗词生成失败：{}", result);
+        }
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -265,7 +276,7 @@ static void help() {
 ./lifuren[.exe] poetry    [poetize-lidu|poetize-suxin] [pred|train] [model rhythm prompt1 prompt2|dataset model_name]
 ./lifuren[.exe] embedding dataset [audio|pepper|poetry] [faiss|elasticsearch] [pepper|ollama]
 ./lifuren[.exe] [?|help]
-    )" << std::endl;
+)" << std::endl;
 }
 
 static void messageCallback(bool finish, const char* message) {

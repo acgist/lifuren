@@ -1,11 +1,12 @@
 @baseUrl = http://localhost:8080
 
 # @name 诗词生成
-POST {{baseUrl}}/poetry/generate HTTP/1.1
+POST {{baseUrl}}/poetry/generate?model=poetry-lidu HTTP/1.1
 Content-Type: application/json
 
 {
-  "prompt": "雨天"
+  "rhythm": "绝句",
+  "prompt": [ "雨天" ]
 }
 
 ###

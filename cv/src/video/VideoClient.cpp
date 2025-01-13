@@ -11,7 +11,7 @@ lifuren::VideoClient<M>::~VideoClient() {
 }
 
 template<typename M>
-std::string lifuren::VideoClient<M>::pred(const VideoParams& input) {
+std::tuple<bool, std::string> lifuren::VideoClient<M>::pred(const VideoParams& input) {
     // TODO: 实现
     return {};
 };

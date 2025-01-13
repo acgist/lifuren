@@ -39,7 +39,7 @@ public:
     virtual ~AudioClient();
 
 public:
-    std::string pred(const AudioParams& input) override;
+    std::tuple<bool, std::string> pred(const AudioParams& input) override;
 
 };
 

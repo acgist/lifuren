@@ -18,14 +18,16 @@ namespace audio   {
  * 
  * @param audioFile 音频文件
  * 
- * @return 是否成功
+ * @return <是否成功, PCM文件路径>
  */
-extern bool toPcm(const std::string& audioFile);
+extern std::tuple<bool, std::string> toPcm(const std::string& audioFile);
 
 /**
  * PCM文件转为音频文件
+ * 
+ * @return <是否成功, 音频文件路径>
  */
-extern bool toFile(const std::string& pcmFile);
+extern std::tuple<bool, std::string> toFile(const std::string& pcmFile);
 
 /**
  * 音频嵌入

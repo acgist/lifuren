@@ -49,7 +49,7 @@ public:
     virtual ~PoetryClient();
 
 public:
-    std::string pred(const PoetryParams& input) override;
+    std::tuple<bool, std::string> pred(const PoetryParams& input) override;
 
 };
 

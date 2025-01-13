@@ -8,6 +8,7 @@
 
 #include <map>
 #include <list>
+#include <tuple>
 #include <memory>
 #include <string>
 #include <functional>
@@ -36,7 +37,7 @@ public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt") = 0;
     virtual void trainValAndTest(C params, const bool& val = true, const bool& test = true) = 0;
-    virtual O    pred(const I& input) = 0;
+    virtual std::tuple<bool, O> pred(const I& input) = 0;
 
 };
 
@@ -61,7 +62,7 @@ public:
     virtual bool save(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual bool load(const std::string& path = "./", const std::string& filename = "lifuren.pt");
     virtual void trainValAndTest(C params, const bool& val = true, const bool& test = true);
-    virtual O    pred(const I& input) = 0;
+    virtual std::tuple<bool, O> pred(const I& input) = 0;
 
 };
 

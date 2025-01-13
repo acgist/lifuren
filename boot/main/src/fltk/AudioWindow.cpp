@@ -161,9 +161,12 @@ static void generateCallback(Fl_Widget*, void*) {
                 .audio  = audio,
                 .output = output
             };
-            audioClient->pred(params);
-            lifuren::audio::toFile(output);
-            SPDLOG_INFO("音频生成完成：{}", output);
+            const auto [success, output_file] = audioClient->pred(params);
+            if(success) {
+                SPDLOG_INFO("音频生成完成：{}", output_file);
+            } else {
+                SPDLOG_WARN("音频生成失败：{}", output_file);
+            }
         }
     );
 }

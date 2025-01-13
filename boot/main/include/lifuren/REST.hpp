@@ -10,6 +10,12 @@
  * 
  * 只提供生成接口不提供训练等其他接口
  * 
+ * 响应编码：
+ * 0000 = 成功
+ * 9999 = 未知错误
+ * 1xxx = 前置错误：参数错误等等
+ * 2xxx = 系统错误：配置错误等等
+ * 
  * @author acgist
  * 
  * @version 1.0.0
@@ -46,10 +52,7 @@ extern void initHttpServer();     // 加载HTTP服务
 extern void shutdownHttpServer(); // 关闭HTTP服务
 
 extern void restAPI();       // 公共接口
-extern void restAudioAPI();  // 音频接口
-extern void restImageAPI();  // 图片接口
-extern void restVideoAPI();  // 视频接口
-extern void restPoetryAPI(); // 诗词接口
+extern void restModelAPI();  // 模型接口
 
 /**
  * 成功响应

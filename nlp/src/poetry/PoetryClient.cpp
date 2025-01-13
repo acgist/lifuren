@@ -11,7 +11,7 @@ lifuren::PoetryClient<M>::~PoetryClient() {
 }
 
 template<typename M>
-std::string lifuren::PoetryClient<M>::pred(const PoetryParams& input) {
+std::tuple<bool, std::string> lifuren::PoetryClient<M>::pred(const PoetryParams& input) {
     // TODO: 实现
     return {};
 };

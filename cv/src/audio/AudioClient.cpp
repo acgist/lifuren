@@ -11,8 +11,9 @@ lifuren::AudioClient<M>::~AudioClient() {
 }
 
 template<typename M>
-std::string lifuren::AudioClient<M>::pred(const AudioParams& input) {
+std::tuple<bool, std::string> lifuren::AudioClient<M>::pred(const AudioParams& input) {
     // TODO: 实现
+    // lifuren::audio::toFile(output)
     return {};
 };
 

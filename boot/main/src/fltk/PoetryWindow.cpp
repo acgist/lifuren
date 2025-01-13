@@ -207,8 +207,12 @@ static void generateCallback(Fl_Widget*, void* voidPtr) {
                 .rhythm  = rhythm,
                 .prompts = prompts
             };
-            std::string result = poetryClient->pred(params);
-            SPDLOG_INFO("诗词生成完成：{}", result);
+            const auto [success, result] = poetryClient->pred(params);
+            if(success) {
+                SPDLOG_INFO("诗词生成完成：{}", result);
+            } else {
+                SPDLOG_WARN("诗词生成失败：{}", result);
+            }
         }
     );
 }
