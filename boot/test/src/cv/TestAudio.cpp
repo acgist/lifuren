@@ -23,7 +23,6 @@
 }
 
 LFR_TEST(
-// LFR_MEM_TEST(
     // testToPcm();
     // testToFile();
     testEmbedding();
