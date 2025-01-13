@@ -3,7 +3,6 @@
 #include <map>
 #include <memory>
 #include <thread>
-#include <vector>
 #include <algorithm>
 
 #include "spdlog/spdlog.h"
@@ -21,7 +20,6 @@ static Fl_Button      * cancel { nullptr };
 static Fl_Text_Buffer * buffer { nullptr };
 static Fl_Text_Display* display{ nullptr };
 
-// 映射
 static std::map<lifuren::message::Type, std::shared_ptr<lifuren::thread::ThreadWorker>> thread_worker;
 
 static void task_finish(void* voidPtr);
@@ -30,9 +28,6 @@ lifuren::ThreadWindow::ThreadWindow(int width, int height, const char* title) : 
 }
 
 lifuren::ThreadWindow::~ThreadWindow() {
-    // 取消回调
-    lifuren::message::unregisterMessageCallback(this->type);
-    // 释放资源
     LFR_DELETE_PTR(cancel);
     LFR_DELETE_PTR(display);
     LFR_DELETE_PTR(buffer);
@@ -91,6 +86,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
         this_window->hide();
         if(this_window->closeable) {
             delete this_window;
+            this_window = nullptr;
         }
     }, window);
     auto worker = std::make_shared<lifuren::thread::ThreadWorker>();
@@ -101,7 +97,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
     worker->source = window;
     worker->thread = std::make_shared<std::thread>([type, task, worker, title, window, callback]() {
         lifuren::message::thread_message_type = type;
-        SPDLOG_DEBUG("任务开始：{}", title);
+        SPDLOG_DEBUG("开始任务：{}", title);
         lifuren::thread::ThreadWorker::this_thread_worker = worker.get();
         try {
             task();
@@ -116,7 +112,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
             callback();
         }
         thread_worker.erase(type);
-        lifuren::message::thread_message_type = lifuren::message::Type::NONE;
+        lifuren::message::unregisterMessageCallback(type);
     });
     worker->thread->detach();
     window->show();
@@ -126,7 +122,7 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
 bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
     const auto iter = thread_worker.find(type);
     if(iter == thread_worker.end()) {
-        return false;
+        return true;
     }
     iter->second->stop = true;
     // iter->second->thread->join();
@@ -134,28 +130,21 @@ bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
 }
 
 bool lifuren::ThreadWindow::checkAudioThread() {
-    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+    return !thread_worker.empty() && std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
         const int value = static_cast<int>(entry.first);
-        return value >= MESSAGE_AUDIO_MIN && value < MESSAGE_IMAGE_MIN;
-    });
-}
-
-bool lifuren::ThreadWindow::checkImageThread() {
-    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
-        const int value = static_cast<int>(entry.first);
-        return value >= MESSAGE_IMAGE_MIN && value < MESSAGE_VIDEO_MIN;
+        return value >= MESSAGE_AUDIO_MIN && value < MESSAGE_VIDEO_MIN;
     });
 }
 
 bool lifuren::ThreadWindow::checkVideoThread() {
-    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+    return !thread_worker.empty() && std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
         const int value = static_cast<int>(entry.first);
         return value >= MESSAGE_VIDEO_MIN && value < MESSAGE_POETRY_MIN;
     });
 }
 
 bool lifuren::ThreadWindow::checkPoetryThread() {
-    return std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
+    return !thread_worker.empty() && std::all_of(thread_worker.begin(), thread_worker.end(), [](const auto& entry) {
         const int value = static_cast<int>(entry.first);
         return value >= MESSAGE_POETRY_MIN && value < MESSAGE_MAX;
     });

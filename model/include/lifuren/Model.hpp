@@ -137,6 +137,7 @@ bool lifuren::Model<D, L, P, M>::save(const std::string& path, const std::string
         return false;
     }
     const std::string fullpath = lifuren::file::join({ path, filename }).string();
+    lifuren::file::createParent(fullpath);
     SPDLOG_DEBUG("保存模型：{}", fullpath);
     this->model->eval();
     torch::save(this->model, fullpath);

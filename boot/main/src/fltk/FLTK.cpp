@@ -19,11 +19,8 @@
 #include "FL/Fl_PNG_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
-// 是否关闭
-static bool fltkClose = false;
-
-// 上次选择路径
-static const char* last_directory = "";
+static bool        fltkClose      = false;
+static std::string last_directory = "";
 
 void lifuren::initFltkWindow() {
     SPDLOG_INFO("启动FLTK服务");
@@ -32,6 +29,7 @@ void lifuren::initFltkWindow() {
     mainPtr->show();
     const int code = Fl::run();
     LFR_DELETE_PTR(mainPtr);
+    fltkClose = true;
     SPDLOG_INFO("结束FLTK服务：{}", code);
     #if LFR_ENABLE_REST
     lifuren::shutdownHttpServer();
@@ -43,7 +41,8 @@ void lifuren::shutdownFltkWindow() {
         return;
     }
     fltkClose = true;
-    while (Fl::first_window()) {
+    // 隐藏所有窗口
+    while(Fl::first_window()) {
         Fl::first_window()->hide();
     }
 }
@@ -54,15 +53,15 @@ std::string lifuren::fileChooser(const char* title, const char* filter, const ch
     chooser.filter(filter);
     if(std::strlen(directory) > 0) {
         chooser.directory(directory);
-    } else if(std::strlen(last_directory) > 0) {
-        chooser.directory(last_directory);
+    } else if(!last_directory.empty()) {
+        chooser.directory(last_directory.c_str());
     } else {
     }
     const int code = chooser.show();
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
-            last_directory = lifuren::file::parent(filename).c_str();
+            last_directory = lifuren::file::parent(filename);
             SPDLOG_DEBUG("文件选择成功：{} - {}", title, filename);
             return filename;
         }
@@ -87,15 +86,15 @@ std::string lifuren::directoryChooser(const char* title, const char* directory) 
     chooser.title(title);
     if(std::strlen(directory) > 0) {
         chooser.directory(directory);
-    } else if(std::strlen(last_directory) > 0) {
-        chooser.directory(last_directory);
+    } else if(!last_directory.empty()) {
+        chooser.directory(last_directory.c_str());
     } else {
     }
     const int code = chooser.show();
     switch(code) {
         case 0: {
             std::string filename = chooser.filename();
-            last_directory = filename.c_str();
+            last_directory = filename;
             SPDLOG_DEBUG("目录选择成功：{} - {}", title, filename);
             return filename;
         }
@@ -116,7 +115,7 @@ void lifuren::directoryChooser(Fl_Widget* widget, void* voidPtr, const char* tit
 }
 
 void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value) {
-    std::for_each(set.begin(), set.end(), [&value, &choice](const auto& v) {
+    std::for_each(set.begin(), set.end(), [&value, choice](const auto& v) {
         const int index = choice->add(v.c_str());
         if(v == value) {
             choice->value(index);
@@ -139,13 +138,19 @@ void lifuren::Window::init() {
     this->icon();
     this->center();
     this->drawElement();
+    this->resizable(this);
     this->end();
     this->bindEvent();
     this->fillData();
 }
 
 void lifuren::Window::icon() {
-    Fl_PNG_Image iconImage(lifuren::config::baseFile("./logo.png").c_str());
+    const auto logo_path = lifuren::config::baseFile("./logo.png");
+    Fl_PNG_Image iconImage(logo_path.c_str());
+    if(iconImage.fail()) {
+        SPDLOG_WARN("图标加载失败：{}", logo_path);
+        return;
+    }
     this->windowIcon = static_cast<Fl_RGB_Image*>(iconImage.copy(32, 32));
     Fl_Window::default_icon(this->windowIcon);
 }
@@ -165,6 +170,10 @@ void lifuren::Window::bindEvent() {
 }
 
 void lifuren::Window::fillData() {
+}
+
+lifuren::Configuration::~Configuration() {
+    this->saveConfig();
 }
 
 void lifuren::Configuration::saveConfig() {

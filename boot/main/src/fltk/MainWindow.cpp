@@ -1,12 +1,3 @@
-/**
- * FLTK主界面
- * 
- * 主要功能入口
- * 
- * @author acgist
- * 
- * @version 1.0.0
- */
 #include "lifuren/FLTK.hpp"
 
 #include "lifuren/Raii.hpp"
@@ -32,12 +23,7 @@ static void poetryCallback(Fl_Widget*, void*);
 static void aboutCallback (Fl_Widget*, void*);
 static void reloadCallback(Fl_Widget*, void*);
 
-// 窗口宽度
-#ifndef LFR_HALF_WIDTH
-#define LFR_HALF_WIDTH(padding) (this->w() - padding) / 2
-#endif
-
-// 回调函数
+// 窗口函数
 #ifndef LFR_BUTTON_CALLBACK_FUNCTION
 #define LFR_BUTTON_CALLBACK_FUNCTION(methodName, WindowName, windowPtr, width, height) \
     static void methodName(Fl_Widget*, void* voidPtr) {                                \
@@ -74,13 +60,11 @@ lifuren::MainWindow::~MainWindow() {
 }
 
 void lifuren::MainWindow::drawElement() {
-    audioButtonPtr  = new Fl_Button(20,                      10,             LFR_HALF_WIDTH(60), 80, "音频生成");
-    videoButtonPtr  = new Fl_Button(LFR_HALF_WIDTH(60) + 40, 10,             LFR_HALF_WIDTH(60), 80, "视频生成");
-    poetryButtonPtr = new Fl_Button(20,                      100,            this->w() - 40,     80, "诗词生成");
-    reloadButtonPtr = new Fl_Button(this->w() - 260,         this->h() - 40, 120,                30, "加载配置");
-    aboutButtonPtr  = new Fl_Button(this->w() - 140,         this->h() - 40, 120,                30, "关于项目");
-    // 大小修改
-    this->resizable(this);
+    audioButtonPtr  = new Fl_Button(20,                 10,             this->w() / 2 - 30, 80, "音频生成");
+    videoButtonPtr  = new Fl_Button(this->w() / 2 + 10, 10,             this->w() / 2 - 30, 80, "视频生成");
+    poetryButtonPtr = new Fl_Button(20,                 100,            this->w() - 40,     80, "诗词生成");
+    reloadButtonPtr = new Fl_Button(this->w() - 260,    this->h() - 40, 120,                30, "加载配置");
+    aboutButtonPtr  = new Fl_Button(this->w() - 140,    this->h() - 40, 120,                30, "关于项目");
 }
 
 void lifuren::MainWindow::bindEvent() {

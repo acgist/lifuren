@@ -30,7 +30,6 @@ inline static std::string buildResponse(
     const char* message // 响应描述
 );
 
-// 是否关闭
 static bool restClose = false;
 
 static void restHandler();
@@ -50,6 +49,7 @@ void lifuren::initHttpServer() {
     // httpServer.set_read_timeout(60);
     // httpServer.set_write_timeout(60);
     // httpServer.set_keep_alive_timeout(60);
+    restClose = true;
     SPDLOG_INFO("REST服务已经结束：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
     #if LFR_ENABLE_FLTK
     lifuren::shutdownFltkWindow();

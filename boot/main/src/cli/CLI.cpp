@@ -100,7 +100,7 @@ static void generateAudio(const std::vector<std::string>& args) {
         };
         client->pred(params);
         lifuren::audio::toFile(output);
-        SPDLOG_INFO("音频生成完成");
+        SPDLOG_INFO("音频生成完成：{}", output);
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -142,7 +142,7 @@ static void generateVideo(const std::vector<std::string>& args) {
             .output = output
         };
         client->pred(params);
-        SPDLOG_INFO("视频生成完成");
+        SPDLOG_INFO("视频生成完成：{}", output);
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -188,8 +188,7 @@ static void generatePoetry(const std::vector<std::string>& args) {
             .prompts = prompts
         };
         std::string result = client->pred(params);
-        SPDLOG_INFO("诗词内容：{}", result);
-        SPDLOG_INFO("诗词生成完成");
+        SPDLOG_INFO("诗词生成完成：{}", result);
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }

@@ -82,6 +82,9 @@ protected:
 class Configuration {
 
 public:
+    virtual ~Configuration();
+
+protected:
     virtual void saveConfig(); // 保存配置
 
 };
@@ -118,12 +121,10 @@ public:
     );
     virtual ~AudioWindow();
 
-public:
-    virtual void saveConfig() override;
-    
 protected:
     virtual void drawElement() override;
     virtual void bindEvent  () override;
+    virtual void fillData   () override;
 
 };
 
@@ -140,12 +141,10 @@ public:
     );
     virtual ~VideoWindow();
 
-public:
-    virtual void saveConfig() override;
-    
 protected:
     virtual void drawElement() override;
     virtual void bindEvent  () override;
+    virtual void fillData   () override;
 
 };
 
@@ -162,12 +161,10 @@ public:
     );
     virtual ~PoetryWindow();
 
-public:
-    virtual void saveConfig() override;
-
 protected:
     virtual void drawElement() override;
     virtual void bindEvent  () override;
+    virtual void fillData   () override;
 
 };
 
@@ -199,7 +196,7 @@ class ThreadWindow : public Window {
 public:
     // 是否可以关闭：任务执行完成后隐藏时释放资源
     bool closeable { false };
-    // 任务类型
+    // 后台任务类型
     lifuren::message::Type type { lifuren::message::Type::NONE };
 
 public:
@@ -220,7 +217,6 @@ public:
     static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr); // 开始任务
     static bool stopThread (lifuren::message::Type type); // 结束任务
     static bool checkAudioThread (); // 判断是否含有音频任务
-    static bool checkImageThread (); // 判断是否含有图片任务
     static bool checkVideoThread (); // 判断是否含有视频任务
     static bool checkPoetryThread(); // 判断是否含有诗词任务
 
@@ -272,7 +268,7 @@ extern void directoryChooser(
  * 填充选择框
  */
 extern void fillChoice(
-    Fl_Choice* choice,                // 选择框
+    Fl_Choice* choice, // 选择框
     const std::set<std::string>& set, // 选项列表
     const std::string& value = ""     // 默认选项
 );

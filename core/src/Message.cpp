@@ -16,9 +16,9 @@ void lifuren::message::registerMessageCallback(lifuren::message::Type type, std:
 }
 
 void lifuren::message::unregisterMessageCallback(lifuren::message::Type type) {
-    SPDLOG_DEBUG("取消消息回调：{}", static_cast<int>(type));
-    thread_message_type = lifuren::message::Type::NONE;
     message_callback.erase(type);
+    thread_message_type = lifuren::message::Type::NONE;
+    SPDLOG_DEBUG("取消消息回调：{}", static_cast<int>(type));
 }
 
 void lifuren::message::sendMessage(const char* message, bool finish) {

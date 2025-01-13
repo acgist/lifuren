@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 3.22.0)
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
+    # VSCode要和变体保持一致
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
