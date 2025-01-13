@@ -132,10 +132,10 @@ std::tuple<bool, std::string> lifuren::audio::toFile(const std::string& pcmFile)
         nb_samples = size / sample_size;
         frame->pts            = AV_NOPTS_VALUE;
         frame->format         = AV_SAMPLE_FMT_S16;
-        #if !defined(FF_API_OLD_CHANNEL_LAYOUT) || !FF_API_OLD_CHANNEL_LAYOUT
-        frame->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
-        #else
+        #if FF_API_OLD_CHANNEL_LAYOUT
         frame->channel_layout = AV_CH_LAYOUT_MONO;
+        #else
+        frame->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
         #endif
         frame->nb_samples     = nb_samples;
         frame->sample_rate    = 48000;
@@ -328,20 +328,18 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 }
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
-    #if !defined(FF_API_OLD_CHANNEL_LAYOUT) || !FF_API_OLD_CHANNEL_LAYOUT
-    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
-    #endif
     *swrCtx = swr_alloc();
     av_opt_set_int       (*swrCtx, "in_sample_rate",     frame->sample_rate,         0);
     av_opt_set_int       (*swrCtx, "out_sample_rate",    48000,                      0);
     av_opt_set_sample_fmt(*swrCtx, "in_sample_fmt",      decodeCodecCtx->sample_fmt, 0);
     av_opt_set_sample_fmt(*swrCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,          0);
-    #if !defined(FF_API_OLD_CHANNEL_LAYOUT) || !FF_API_OLD_CHANNEL_LAYOUT
-    av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
-    av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
-    #else
+    #if FF_API_OLD_CHANNEL_LAYOUT
     av_opt_set_channel_layout(*swrCtx, "in_channel_layout",  frame->channel_layout,  0);
     av_opt_set_channel_layout(*swrCtx, "out_channel_layout", AV_CH_LAYOUT_MONO,      0);
+    #else
+    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
+    av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
+    av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
     #endif
     if(swr_init(*swrCtx) != 0) {
         SPDLOG_WARN("初始化重采样失败");
@@ -385,10 +383,10 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
     #else
     (*encodeCodecCtx)->sample_fmt     = AV_SAMPLE_FMT_S16;
     #endif
-    #if !defined(FF_API_OLD_CHANNEL_LAYOUT) || !FF_API_OLD_CHANNEL_LAYOUT
-    (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
-    #else
+    #if FF_API_OLD_CHANNEL_LAYOUT
     (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
+    #else
+    (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
     #endif
     (*encodeCodecCtx)->sample_rate    = 48000;
     if(avcodec_open2(*encodeCodecCtx, encoder, nullptr) != 0) {
