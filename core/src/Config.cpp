@@ -56,13 +56,12 @@ target[#key] = source.name;
 #endif
 
 std::string lifuren::config::base           = "";
-std::string lifuren::config::httpServerHost = "0.0.0.0";
-int         lifuren::config::httpServerPort = 8080;
+std::string lifuren::config::restServerHost = "0.0.0.0";
+int         lifuren::config::restServerPort = 8080;
 
 const std::string lifuren::config::CONFIG_CONFIG         = "config";
-const std::string lifuren::config::CONFIG_HTTP_SERVER    = "http-server";
+const std::string lifuren::config::CONFIG_REST_SERVER    = "rest-server";
 const std::string lifuren::config::CONFIG_AUDIO          = "audio";
-const std::string lifuren::config::CONFIG_IMAGE          = "image";
 const std::string lifuren::config::CONFIG_VIDEO          = "video";
 const std::string lifuren::config::CONFIG_POETRY         = "poetry";
 const std::string lifuren::config::CONFIG_MARK           = "mark";
@@ -107,14 +106,14 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(tmp) {
             config.tmp = tmp.as<std::string>();
         }
-    } else if(name == lifuren::config::CONFIG_HTTP_SERVER) {
+    } else if(name == lifuren::config::CONFIG_REST_SERVER) {
         const auto& host = yaml["host"];
         const auto& port = yaml["port"];
         if(host) {
-            lifuren::config::httpServerHost = host.as<std::string>();
+            lifuren::config::restServerHost = host.as<std::string>();
         }
         if(port) {
-            lifuren::config::httpServerPort = port.as<int>();
+            lifuren::config::restServerPort = port.as<int>();
         }
     } else if(lifuren::config::CONFIG_AUDIO == name) {
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, path,   path,   std::string);
@@ -124,16 +123,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
                 config.audio.clients.emplace(client.template as<std::string>());
-            });
-        }
-    } else if(lifuren::config::CONFIG_IMAGE == name) {
-        LFR_CONFIG_YAML_GETTER(config.image, yaml, path,   path,   std::string);
-        LFR_CONFIG_YAML_GETTER(config.image, yaml, model,  model,  std::string);
-        LFR_CONFIG_YAML_GETTER(config.image, yaml, client, client, std::string);
-        const YAML::Node& clients = yaml["clients"];
-        if(clients) {
-            std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
-                config.image.clients.emplace(client.template as<std::string>());
             });
         }
     } else if(lifuren::config::CONFIG_VIDEO == name) {
@@ -199,9 +188,9 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node http;
-        http["host"] = lifuren::config::httpServerHost;
-        http["port"] = lifuren::config::httpServerPort;
-        yaml[lifuren::config::CONFIG_HTTP_SERVER] = http;
+        http["host"] = lifuren::config::restServerHost;
+        http["port"] = lifuren::config::restServerPort;
+        yaml[lifuren::config::CONFIG_REST_SERVER] = http;
     }
     {
         YAML::Node audio;
@@ -214,18 +203,6 @@ static YAML::Node toYaml() {
         });
         audio["clients"] = clients;
         yaml[lifuren::config::CONFIG_AUDIO] = audio;
-    }
-    {
-        YAML::Node image;
-        LFR_CONFIG_YAML_SETTER(image, config.image, path,   path);
-        LFR_CONFIG_YAML_SETTER(image, config.image, model,  model);
-        LFR_CONFIG_YAML_SETTER(image, config.image, client, client);
-        YAML::Node clients;
-        std::for_each(config.image.clients.begin(), config.image.clients.end(), [&clients](auto& v) {
-            clients.push_back(v);
-        });
-        image["clients"] = clients;
-        yaml[lifuren::config::CONFIG_IMAGE] = image;
     }
     {
         YAML::Node video;
@@ -348,12 +325,11 @@ void lifuren::config::loadConfig() noexcept {
     // lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
 }
 
-static std::mutex mutex;
-
 size_t lifuren::config::uuid() noexcept {
     static int index = 0;
+    static std::mutex mutex;
     const static int MIN_INDEX = 0;
-    const static int MAX_INDEX = 10000;
+    const static int MAX_INDEX = 100000;
     auto timePoint = std::chrono::system_clock::now();
     auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
     auto localtime = std::localtime(&timestamp);
@@ -365,12 +341,12 @@ size_t lifuren::config::uuid() noexcept {
             index = MIN_INDEX;
         }
     }
-    size_t id = 100000000000000 * (localtime->tm_year + 1900) +
-                1000000000000   * (localtime->tm_mon  +    1) +
-                10000000000     *  localtime->tm_mday         +
-                100000000       *  localtime->tm_hour         +
-                1000000         *  localtime->tm_min          +
-                10000           *  localtime->tm_sec          +
+    size_t id = 1000000000000000LL * (localtime->tm_year - 100) + // + 1900 - 2000
+                10000000000000LL   * (localtime->tm_mon  +   1) +
+                100000000000LL     *  localtime->tm_mday        +
+                1000000000LL       *  localtime->tm_hour        +
+                10000000LL         *  localtime->tm_min         +
+                100000LL           *  localtime->tm_sec         +
                 i;
     return id;
 }

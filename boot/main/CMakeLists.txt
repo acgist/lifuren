@@ -25,8 +25,11 @@ if(CMAKE_HOST_WIN32)
     )
     # /SUBSYSTEM:CONSOLE
     # /SUBSYSTEM:WINDOWS
+    # add_link_options(${PROJECT_NAME} PRIVATE -mconsole)
     # add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    # target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:CONSOLE")
     # target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
+    # set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG   "/SUBSYSTEM:CONSOLE")
     # set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:CONSOLE")

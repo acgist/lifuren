@@ -22,7 +22,7 @@
 static bool        fltkClose      = false;
 static std::string last_directory = "";
 
-void lifuren::initFltkWindow() {
+void lifuren::initFltkService() {
     SPDLOG_INFO("启动FLTK服务");
     lifuren::MainWindow* mainPtr = new lifuren::MainWindow(LFR_WINDOW_WIDTH, LFR_WINDOW_HEIGHT, "李夫人");
     mainPtr->init();
@@ -32,19 +32,21 @@ void lifuren::initFltkWindow() {
     fltkClose = true;
     SPDLOG_INFO("结束FLTK服务：{}", code);
     #if LFR_ENABLE_REST
-    lifuren::shutdownHttpServer();
+    lifuren::shutdownRestService();
     #endif
 }
 
-void lifuren::shutdownFltkWindow() {
+void lifuren::shutdownFltkService() {
     if(fltkClose) {
         return;
     }
     fltkClose = true;
     SPDLOG_INFO("关闭FLTK服务");
-    while(Fl::first_window()) {
-        Fl::first_window()->hide();
-    }
+    Fl::awake([](void*) {
+        while(Fl::first_window()) {
+            Fl::first_window()->hide();
+        }
+    });
 }
 
 std::string lifuren::fileChooser(const char* title, const char* filter, const char* directory) {

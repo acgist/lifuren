@@ -46,10 +46,10 @@ namespace content::type {
 
 }; // END OF content::type
 
-extern httplib::Server httpServer; // HTTP Server
+extern httplib::Server restServer; // REST Server
 
-extern void initHttpServer();     // 加载HTTP服务
-extern void shutdownHttpServer(); // 关闭HTTP服务
+extern void initRestService();     // 加载REST服务
+extern void shutdownRestService(); // 关闭REST服务
 
 extern void restAPI();       // 公共接口
 extern void restModelAPI();  // 模型接口

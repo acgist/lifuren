@@ -33,7 +33,7 @@ void lifuren::restModelAPI() {
 }
 
 static void restPostAudioGenerate() {
-    lifuren::httpServer.Post("/audio/generate", [](const httplib::Request& request, httplib::Response& response, const httplib::ContentReader& content_reader) {
+    lifuren::restServer.Post("/audio/generate", [](const httplib::Request& request, httplib::Response& response, const httplib::ContentReader& content_reader) {
         httplib::MultipartFormDataItems files;
         recvFile(files, content_reader);
         auto iterator = std::find_if(files.begin(), files.end(), [](const auto& file) {
@@ -84,7 +84,7 @@ static void restPostAudioGenerate() {
 }
 
 static void restPostVideoGenerate() {
-    lifuren::httpServer.Post("/video/generate", [](const httplib::Request& request, httplib::Response& response, const httplib::ContentReader& content_reader) {
+    lifuren::restServer.Post("/video/generate", [](const httplib::Request& request, httplib::Response& response, const httplib::ContentReader& content_reader) {
         httplib::MultipartFormDataItems files;
         recvFile(files, content_reader);
         auto iterator = std::find_if(files.begin(), files.end(), [](const auto& file) {
@@ -132,7 +132,7 @@ static void restPostVideoGenerate() {
 }
 
 static void restPostPoetryGenerate() {
-    lifuren::httpServer.Post("/poetry/generate", [](const httplib::Request& request, httplib::Response& response) {
+    lifuren::restServer.Post("/poetry/generate", [](const httplib::Request& request, httplib::Response& response) {
         const std::string model = request.get_param_value("model");
         if(model.empty()) {
             lifuren::response(response, "1400", "缺少终端类型");

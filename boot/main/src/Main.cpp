@@ -1,61 +1,19 @@
-/**
- * 李夫人 - 玉簪花神
- * 
- * @author acgist
- */
 #include "lifuren/CLI.hpp"
-#if LFR_ENABLE_REST
-#include "lifuren/REST.hpp"
-#endif
 #if LFR_ENABLE_FLTK
 #include "lifuren/FLTK.hpp"
 #endif
+#if LFR_ENABLE_REST
+#include "lifuren/REST.hpp"
+#endif
 
-#include <mutex>
-#include <atomic>
 #include <thread>
-#include <exception>
-#include <condition_variable>
 
 #include "spdlog/spdlog.h"
 
 #include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 
-static std::mutex mutex;
-static std::atomic<int> count(0);
-static std::condition_variable condition;
-
-/**
- * 启动项目
- */
-static void launch() {
-    #if LFR_ENABLE_REST
-    ++count;
-    std::thread httpServerThread([]() {
-        lifuren::initHttpServer();
-        --count;
-        condition.notify_all();
-    });
-    httpServerThread.detach();
-    #endif
-    #if LFR_ENABLE_FLTK
-    ++count;
-    std::thread fltkWindowThread([]() {
-        lifuren::initFltkWindow();
-        --count;
-        condition.notify_all();
-    });
-    fltkWindowThread.detach();
-    #endif
-    SPDLOG_DEBUG("启动完成");
-    {
-        std::unique_lock<std::mutex> lock(mutex);
-        condition.wait(lock, [] {
-            return count <= 0;
-        });
-    }
-}
+static void launch();
 
 int main(const int argc, const char* const argv[]) {
     std::set_terminate([]() {
@@ -69,11 +27,31 @@ int main(const int argc, const char* const argv[]) {
     lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
     if(lifuren::cli(argc, argv)) {
-        // 执行命令行时不会启动FLTK和HTTP
+        // 执行命令行时不会启动FLTK和REST服务
     } else {
         launch();
     }
     SPDLOG_DEBUG("系统退出");
     lifuren::logger::shutdown();
     return 0;
+}
+
+inline static void launch() {
+    #if LFR_ENABLE_FLTK
+    std::thread fltkThread([]() {
+        lifuren::initFltkService();
+    });
+    #endif
+    #if LFR_ENABLE_REST
+    std::thread restThread([]() {
+        lifuren::initRestService();
+    });
+    #endif
+    SPDLOG_DEBUG("启动完成");
+    #if LFR_ENABLE_FLTK
+    fltkThread.join();
+    #endif
+    #if LFR_ENABLE_REST
+    restThread.join();
+    #endif
 }

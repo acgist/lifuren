@@ -8,6 +8,11 @@
 #include "lifuren/String.hpp"
 #include "lifuren/poetry/Poetry.hpp"
 
+[[maybe_unused]] static void testUuid() {
+    SPDLOG_DEBUG("uuid : {}", lifuren::config::uuid());
+    SPDLOG_DEBUG("uuid : {}", lifuren::config::uuid());
+}
+
 [[maybe_unused]] static void testConfig() {
     auto& config = lifuren::config::CONFIG;
     std::stringstream stream;
@@ -87,7 +92,8 @@
 }
 
 LFR_TEST(
+    testUuid();
     // testConfig();
-    testRhythm();
-    testGeneratePoetryConfig();
+    // testRhythm();
+    // testGeneratePoetryConfig();
 );

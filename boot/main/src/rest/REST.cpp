@@ -13,7 +13,7 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
 
-httplib::Server lifuren::httpServer;
+httplib::Server lifuren::restServer;
 
 static bool restClose = false;
 
@@ -25,31 +25,31 @@ static void restGetShutdown();
 static std::string buildResponse(const char* body);
 static std::string buildResponse(const char* code, const char* message);
 
-void lifuren::initHttpServer() {
+void lifuren::initRestService() {
     restHandler();
     lifuren::restAPI();
     lifuren::restModelAPI();
-    SPDLOG_INFO("启动REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
-    const bool success = httpServer.listen(lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
-    httpServer.set_read_timeout(60);
-    httpServer.set_write_timeout(60);
-    httpServer.set_keep_alive_timeout(60);
-    httpServer.set_keep_alive_max_count(8);
-    httpServer.set_payload_max_length(128 * 1024 * 1024);
+    SPDLOG_INFO("启动REST服务：{} - {}", lifuren::config::restServerHost, lifuren::config::restServerPort);
+    restServer.set_read_timeout(60);
+    restServer.set_write_timeout(60);
+    restServer.set_keep_alive_timeout(60);
+    restServer.set_keep_alive_max_count(8);
+    restServer.set_payload_max_length(128 * 1024 * 1024);
+    const bool success = restServer.listen(lifuren::config::restServerHost, lifuren::config::restServerPort);
     restClose = true;
-    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::httpServerHost.c_str(), lifuren::config::httpServerPort);
+    SPDLOG_INFO("结束REST服务：{} - {}", lifuren::config::restServerHost, lifuren::config::restServerPort);
     #if LFR_ENABLE_FLTK
-    lifuren::shutdownFltkWindow();
+    lifuren::shutdownFltkService();
     #endif
 }
 
-void lifuren::shutdownHttpServer() {
+void lifuren::shutdownRestService() {
     if(restClose) {
         return;
     }
     restClose = true;
     SPDLOG_INFO("关闭REST服务");
-    httpServer.stop();
+    restServer.stop();
 }
 
 void lifuren::response(httplib::Response& response, const char* body) {
@@ -80,7 +80,7 @@ inline static std::string buildResponse(const char* code, const char* message) {
 }
 
 static void restHandler() {
-    lifuren::httpServer.set_error_handler([](const httplib::Request& request, httplib::Response& response) {
+    lifuren::restServer.set_error_handler([](const httplib::Request& request, httplib::Response& response) {
         SPDLOG_ERROR("系统错误：{} - {} - {} - {}", request.path, request.body, response.status, response.body);
         if(response.status == httplib::StatusCode::OK_200) {
             response.status = httplib::StatusCode::InternalServerError_500;
@@ -89,7 +89,7 @@ static void restHandler() {
             response.set_content(::buildResponse(std::to_string(2000 + response.status).c_str(), "未知错误"), lifuren::content::type::JSON);
         }
     });
-    lifuren::httpServer.set_exception_handler([](const httplib::Request& request, httplib::Response& response, std::exception_ptr e) {
+    lifuren::restServer.set_exception_handler([](const httplib::Request& request, httplib::Response& response, std::exception_ptr e) {
         SPDLOG_ERROR("系统异常：{} - {} - {} - {}", request.path, request.body, response.status, response.body);
         std::string message;
         try {
@@ -111,7 +111,7 @@ void lifuren::restAPI() {
 }
 
 static void restGetIndex() {
-    lifuren::httpServer.Get("/", [](const httplib::Request& /* request */, httplib::Response& response) {
+    lifuren::restServer.Get("/", [](const httplib::Request& /* request */, httplib::Response& response) {
         response.set_content(R"(<!DOCTYPE html>
 <html>
 <head>
@@ -132,7 +132,7 @@ static void restGetIndex() {
 }
 
 static void restGetFavicon() {
-    lifuren::httpServer.Get("/favicon.ico", [](const httplib::Request& /* request */, httplib::Response& response) {
+    lifuren::restServer.Get("/favicon.ico", [](const httplib::Request& /* request */, httplib::Response& response) {
         char * data  { nullptr };
         size_t length{ 0       };
         lifuren::file::loadFile(lifuren::config::baseFile("./favicon.ico"), &data, length);
@@ -146,8 +146,8 @@ static void restGetFavicon() {
 }
 
 static void restGetShutdown() {
-    lifuren::httpServer.Get("/shutdown", [](const httplib::Request& /* request */, httplib::Response& response) {
+    lifuren::restServer.Get("/shutdown", [](const httplib::Request& /* request */, httplib::Response& response) {
         response.set_content(::buildResponse("正在关机..."), lifuren::content::type::JSON);
-        lifuren::shutdownHttpServer();
+        lifuren::shutdownRestService();
     });
 }

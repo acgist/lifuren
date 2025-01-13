@@ -45,8 +45,8 @@ class Fl_Choice;
 
 namespace lifuren {
 
-extern void initFltkWindow();     // 加载FLTK窗口
-extern void shutdownFltkWindow(); // 关闭FLTK窗口
+extern void initFltkService();     // 加载FLTK服务
+extern void shutdownFltkService(); // 关闭FLTK服务
 
 /**
  * 抽象窗口

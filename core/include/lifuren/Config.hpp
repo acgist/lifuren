@@ -23,17 +23,17 @@ namespace lifuren::config {
  */
 struct ModelParams {
 
-    float       lr         { 0.001F    }; // 学习率
-    size_t      batch_size { 100LL     }; // 批量大小
-    size_t      epoch_count{ 128LL     }; // 训练次数
-    bool        classify   { false     }; // 分类任务
-    bool        check_point{ false     }; // 保存快照
-    std::string check_path { "./"      }; // 快照路径
-    std::string model_name { "lifuren" }; // 模型名称
-    std::string train_path {}; // 训练数据集路径
-    std::string val_path   {}; // 验证数据集路径
-    std::string test_path  {}; // 测试数据集路径
-    size_t      thread_size{}; // 线程数量
+    float       lr         { 0.001F      }; // 学习率
+    size_t      batch_size { 100LL       }; // 批量大小
+    size_t      epoch_count{ 128LL       }; // 训练次数
+    bool        classify   { false       }; // 分类任务
+    bool        check_point{ false       }; // 保存快照
+    std::string check_path { "./lifuren" }; // 快照路径
+    std::string model_name { "lifuren"   }; // 模型名称
+    std::string train_path { "./train"   }; // 训练数据集路径
+    std::string val_path   { "./val"     }; // 验证数据集路径
+    std::string test_path  { "./test"    }; // 测试数据集路径
+    size_t      thread_size{ 0LL         }; // 线程数量
 
 };
 
@@ -51,8 +51,8 @@ const char* const CONFIG_PATH = "../config/config.yml";
 const char* const RHYTHM_PATH = "../config/rhythm.yml";
 
 extern std::string base;           // 启动路径：项目启动绝对路径
-extern std::string httpServerHost; // 监听地址
-extern int         httpServerPort; // 监听端口
+extern std::string restServerHost; // 监听地址
+extern int         restServerPort; // 监听端口
 
 const int LIFUREN_POETRY_DATASET_HEAD = 3; // 诗词前缀：段落规则、分词规则、词语序号
 
@@ -68,9 +68,8 @@ const std::string DATASET_TEST  = "test";  // 测试数据集
 
 // 全局配置名称
 extern const std::string CONFIG_CONFIG;
-extern const std::string CONFIG_HTTP_SERVER;
+extern const std::string CONFIG_REST_SERVER;
 extern const std::string CONFIG_AUDIO;
-extern const std::string CONFIG_IMAGE;
 extern const std::string CONFIG_VIDEO;
 extern const std::string CONFIG_POETRY;
 extern const std::string CONFIG_MARK;
@@ -89,9 +88,9 @@ extern lifuren::config::Config CONFIG;
 extern std::map<std::string, Rhythm> RHYTHM;
 
 /**
- * 注意：一秒钟的并发不能超过一万
+ * 注意：一秒钟的并发不能超过十万
  * 
- * @return ID(yyyyMMddHHmmssxxxx)
+ * @return ID(yyMMddHHmmss'xxxxx)
  */
 extern size_t uuid() noexcept;
 

@@ -44,7 +44,7 @@ void lifuren::logger::init() {
     sinks.reserve(2);
     #endif
     // 文件日志
-    auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("../logs/lifuren.log", 0, 0, false, 7);
+    auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/lifuren.log", 0, 0, false, 7);
     sinks.push_back(dailyFileSinkSPtr);
     // 消息日志
     auto messageSinkSPtr = std::make_shared<message_sink_mt>();
