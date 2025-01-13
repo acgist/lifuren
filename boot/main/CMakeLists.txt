@@ -23,6 +23,16 @@ if(CMAKE_HOST_WIN32)
         ${REST_FILES}
         resources/win.rc
     )
+    # /SUBSYSTEM:CONSOLE
+    # /SUBSYSTEM:WINDOWS
+    # add_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    # target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
+    # set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:CONSOLE")
+    else()
+        target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
+    endif()
 else()
     add_executable(
         ${PROJECT_NAME}
@@ -76,7 +86,7 @@ if(CMAKE_HOST_WIN32)
     # /MDd MSVCPRTD.LIB 多线程DLL的Debug版本
     # /MT  LIBCPMT.LIB  多线程静态链接的Release版本
     # /MTd LIBCPMTD.LIB 多线程静态链接的Debug版本
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
     else()
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD")

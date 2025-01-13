@@ -34,7 +34,22 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # TODO: 使用C23/C++23
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
-if(CMAKE_HOST_UNIX)
+if(CMAKE_HOST_WIN32)
+    if(MSVC)
+        # https://learn.microsoft.com/zh-cn/cpp/build/reference/compiler-options-listed-by-category
+        # https://learn.microsoft.com/zh-cn/cpp/error-messages/compiler-warnings/compiler-warnings-c4000-c5999
+        set(CMAKE_C_STANDARD   17)
+        set(CMAKE_CXX_STANDARD 20)
+        set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /std:c17 /std:c++20")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20")
+        set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /wd4804 /wd4819")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4804 /wd4819")
+        add_compile_options("/utf-8")
+        add_compile_options("/Zc:__cplusplus")
+    else()
+        message(FATAL_ERROR "需要安装MSVC")
+    endif()
+elseif(CMAKE_HOST_UNIX)
     # https://gcc.gnu.org/releases.html
     # https://gcc.gnu.org/projects/cxx-status.html
     # https://gcc.gnu.org/onlinedocs/gcc/Standards.html
@@ -53,21 +68,6 @@ if(CMAKE_HOST_UNIX)
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fPIC")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
-elseif(CMAKE_HOST_WIN32)
-    if(MSVC)
-        # https://learn.microsoft.com/zh-cn/cpp/build/reference/compiler-options-listed-by-category
-        # https://learn.microsoft.com/zh-cn/cpp/error-messages/compiler-warnings/compiler-warnings-c4000-c5999
-        set(CMAKE_C_STANDARD   17)
-        set(CMAKE_CXX_STANDARD 20)
-        set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /std:c17 /std:c++20")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c17 /std:c++20")
-        set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /wd4804 /wd4819")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4804 /wd4819")
-        add_compile_options("/utf-8")
-        add_compile_options("/Zc:__cplusplus")
-    else()
-        message(WARNING "需要安装MSVC")
-    endif()
 else()
     message(FATAL_ERROR "不支持的系统：${CMAKE_HOST_SYSTEM_NAME}")
 endif()
@@ -76,7 +76,7 @@ message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
 add_definitions(-DSPDLOG_COMPILED_LIB)
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
     message(STATUS "C_FLAGS  : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
     message(STATUS "CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -86,7 +86,10 @@ else()
     message(STATUS "CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # ${CMAKE_SOURCE_DIR}
+    # ${CMAKE_HOME_DIRECTORY}
+    # ${CMAKE_CURRENT_SOURCE_DIR}
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 endif()
 
@@ -121,7 +124,7 @@ if(CMAKE_HOST_WIN32)
         deps/cpp-httplib
     )
 
-    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
 
         file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")

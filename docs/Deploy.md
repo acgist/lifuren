@@ -2,12 +2,6 @@
 
 ## 源码编译
 
-#### 常见选项
-
-* `--config Debug|Release`
-* `-DBUILD_SHARED_LIBS=ON|OFF`
-* `-DCMAKE_BUILD_TYPE=Debug|Release`
-
 #### Linux
 
 ###### 编译环境
@@ -34,13 +28,13 @@ sudo update-alternatives --display gcc
 ```
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug|Release ..
 make -j
 make install
 
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug|Release ..
 cmake --build . -j
 cmake --build . --parallel 8
 cmake --install .
@@ -83,14 +77,11 @@ vcpkg export cpp-httplib --zip
 ```
 mkdir build
 cd build
-cmake -G "Visual Studio 17 2022" ..
-cmake --build . -j
-cmake --build . --parallel 8
+cmake -DCMAKE_BUILD_TYPE=Debug|Release -T host=x64 -A x64 -G "Visual Studio 17 2022" ..
+cmake --config Debug|Release --build . -j
+cmake --config Debug|Release --build . --parallel 8
 cmake --install .
 ```
-
-* `cmake -A x64 ..`
-* `cmake -G "Visual Studio 17 2022 Win64" ..`
 
 ## 开发环境
 

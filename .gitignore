@@ -4,16 +4,11 @@
 *.exe
 *.lib
 *.out
-
 *.log
 
-.vs
 .vscode
 
-out
-logs
 build
-target
 
 deps/fltk
 deps/faiss
