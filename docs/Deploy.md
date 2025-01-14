@@ -17,6 +17,8 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
 
 sudo update-alternatives --config  gcc
 sudo update-alternatives --display gcc
+
+apt install --reinstall --print-uris libfaiss-dev
 ```
 
 ###### 依赖下载

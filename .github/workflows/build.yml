@@ -22,29 +22,35 @@ jobs:
           git switch -c v3.11.2
           cd ../
           ################################ faiss
-          sudo  apt install libfaiss-dev -y
-          apt-cache madison libfaiss-dev
+          # sudo  apt install libfaiss-dev -y
+          # apt-cache madison libfaiss-dev
+          git clone https://github.com/facebookresearch/faiss.git
+          cd faiss
+          git switch -c v1.7.4
+          mkdir build ; cd $_
+          cmake .. -DBUILD_SHARED_LIBS=ON
+          make -j 2
+          sudo make install
+          cd ../../
           ################################ ffmpeg
           sudo  apt install ffmpeg -y
           apt-cache madison ffmpeg
           ################################ spdlog
           # sudo  apt install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
-          # fmt
           git clone https://github.com/fmtlib/fmt.git
           cd fmt
           git switch -c 10.2.0
           mkdir build ; cd $_
-          cmake .. -DFMT_TEST=OFF
+          cmake .. -DFMT_TEST=OFF -DBUILD_SHARED_LIBS=ON
           make -j 2
           sudo make install
           cd ../../
-          # spdlog
           git clone https://github.com/gabime/spdlog.git
           cd spdlog
           git switch -c v1.12.0
           mkdir build ; cd $_
-          cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF
+          cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF -DBUILD_SHARED_LIBS=ON
           make -j 2
           sudo make install
           cd ../../
@@ -60,12 +66,11 @@ jobs:
           ################################ cpp-httplib
           # sudo  apt install libcpp-httplib-dev -y
           # apt-cache madison libcpp-httplib-dev
-          # cpp-httplib
           git clone https://github.com/yhirose/cpp-httplib.git
           cd cpp-httplib
           git switch -c v0.16.2
           mkdir build ; cd $_
-          cmake ..
+          cmake .. -DBUILD_SHARED_LIBS=ON
           make -j 2
           sudo make install
           cd ../../
