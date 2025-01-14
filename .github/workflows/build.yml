@@ -28,7 +28,7 @@ jobs:
           cd faiss
           git switch -c v1.7.4
           mkdir build ; cd $_
-          cmake .. -DBUILD_SHARED_LIBS=ON
+          cmake .. -DBUILD_SHARED_LIBS=ON -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF
           make -j 2
           sudo make install
           cd ../../
