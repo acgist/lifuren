@@ -22,9 +22,9 @@
 }
 
 [[maybe_unused]] static void testRAGClientSearch() {
-    // lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     // lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
-    lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
     // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
     auto a = client.search("狗");
     for(const auto& v : a) {
@@ -48,7 +48,7 @@
 }
 
 LFR_TEST(
-    testRAGClientIndex();
-    // testRAGClientSearch();
-    testRAGEmbedding();
+    // testRAGClientIndex();
+    testRAGClientSearch();
+    // testRAGEmbedding();
 );

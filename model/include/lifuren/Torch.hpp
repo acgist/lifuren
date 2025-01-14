@@ -4,15 +4,17 @@
 #ifndef LFR_HEADER_MODEL_TORCH_HPP
 #define LFR_HEADER_MODEL_TORCH_HPP
 
+#include <string>
+
 #include "torch/types.h"
 
 namespace lifuren {
 
 extern void setDevice(torch::DeviceType& type);
 
-extern void logTensor(const char* message, const torch::Tensor& tensor);
+extern void logTensor(const std::string& message, const torch::Tensor& tensor);
 
-extern void logTensor(const char* message, const c10::IntArrayRef& tensor);
+extern void logTensor(const std::string& message, const c10::IntArrayRef& tensor);
 
 } // END OF lifuren
 

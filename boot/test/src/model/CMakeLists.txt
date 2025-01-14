@@ -1,11 +1,3 @@
-add_executable(testJit TestJit.cpp)
-add_test(NAME testJit COMMAND testJit)
-set_target_properties(testJit PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testJit
-    lifurenmodel
-)
-
 add_executable(testModel TestModel.cpp)
 add_test(NAME testModel COMMAND testModel)
 set_target_properties(testModel PROPERTIES FOLDER "test-model")

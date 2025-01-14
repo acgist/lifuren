@@ -78,7 +78,7 @@ public:
     // 定义模型
     virtual bool define();
     // 打印模型
-    virtual void print();
+    virtual void print(bool details = false);
     // 训练模型
     virtual void train(size_t epoch);
     virtual void train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
@@ -173,13 +173,16 @@ bool lifuren::Model<D, L, P, M>::initParameters() {
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::print() {
+void lifuren::Model<D, L, P, M>::print(bool details) {
     size_t total_numel = 0;
     for(const auto& parameter : this->model->named_parameters()) {
         total_numel += parameter.value().numel();
-        SPDLOG_DEBUG("parameter: {} = {}", parameter.key(), parameter.value().numel());
+        SPDLOG_DEBUG("模型参数数量: {} = {}", parameter.key(), parameter.value().numel());
+        if(details) {
+            lifuren::logTensor(parameter.key(), parameter.value());
+        }
     }
-    SPDLOG_DEBUG("model parameter: {}", total_numel);
+    SPDLOG_DEBUG("模型参数总量: {}", total_numel);
 }
 
 template<typename D, typename L, typename P, typename M>

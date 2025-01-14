@@ -4,20 +4,16 @@
 
 #include "torch/torch.h"
 
-#include "spdlog/fmt/ostr.h"
-
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Torch.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/image/ImageDataset.hpp"
 #include "lifuren/video/VideoDataset.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
-
-LFR_FORMAT_LOG_STREAM(at::Tensor);
-LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 [[maybe_unused]] static void testRawDataset() {
     std::random_device device;
@@ -36,19 +32,19 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
         features.push_back(torch::from_blob(feature.data(), { 10 }, torch::kFloat32).clone());
     }
     lifuren::dataset::RawDataset dataset(labels, features);
-    SPDLOG_DEBUG("RAW数量：{}", dataset.size().value());
+    lifuren::logTensor("RAW数量", dataset.size().value());
     auto [
         feature,
         label
     ] = std::move(dataset.get(0));
-    SPDLOG_DEBUG("RAW特征：\n{}", feature.sizes());
-    SPDLOG_DEBUG("RAW标签：\n{}", label.sizes());
+    lifuren::logTensor("RAW特征", feature.sizes());
+    lifuren::logTensor("RAW标签", label.sizes());
 }
 
 [[maybe_unused]] static void testLoadAudioFileDataset() {
     auto loader = lifuren::dataset::loadAudioFileStyleDataset(200, lifuren::file::join({lifuren::config::CONFIG.tmp, "audio", "train"}).string());
-    SPDLOG_DEBUG("音频特征：\n{}", loader->begin()->data.sizes());
-    SPDLOG_DEBUG("音频标签：\n{}", loader->begin()->target.sizes());
+    lifuren::logTensor("音频特征", loader->begin()->data.sizes());
+    lifuren::logTensor("音频标签", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadImageFileDataset() {
@@ -62,62 +58,26 @@ LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
             { "woman", 0.0F }
         }
     );
-    SPDLOG_DEBUG("图片特征：\n{}", loader->begin()->data.sizes());
-    SPDLOG_DEBUG("图片标签：\n{}", loader->begin()->target.sizes());
+    lifuren::logTensor("图片特征", loader->begin()->data.sizes());
+    lifuren::logTensor("图片标签", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadVideoFileDataset() {
     auto loader = lifuren::dataset::loadVideoFileGANDataset(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
-    SPDLOG_DEBUG("视频特征：\n{}", loader->begin()->data.sizes());
-    SPDLOG_DEBUG("视频标签：\n{}", loader->begin()->target.sizes());
+    lifuren::logTensor("视频特征", loader->begin()->data.sizes());
+    lifuren::logTensor("视频标签", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
     auto loader = lifuren::dataset::loadPoetryFileGANDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
-    SPDLOG_DEBUG("诗词特征：\n{}", loader->begin()->data.sizes());
-    SPDLOG_DEBUG("诗词标签：\n{}", loader->begin()->target.sizes());
-}
-
-[[maybe_unused]] static void testStftIstft() {
-    std::ifstream input;
-    std::ofstream output;
-    input .open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"      }).string(), std::ios_base::binary);
-    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise_copy.pcm" }).string(), std::ios_base::binary);
-    std::vector<short> data;
-    data.resize(DATASET_PCM_LENGTH);
-    float norm_factor;
-    while(input.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
-        // 其他处理
-        auto tuple = std::move(lifuren::dataset::audio::pcm_mag_pha_stft(data, norm_factor));
-        SPDLOG_DEBUG("mag size: {}", std::get<0>(tuple).sizes());
-        SPDLOG_DEBUG("pha size: {}", std::get<1>(tuple).sizes());
-        auto pcm   = std::move(lifuren::dataset::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple), norm_factor));
-        // 原始函数
-        // int n_fft    = 400;
-        // int hop_size = 100;
-        // int win_size = 400;
-        // auto window = torch::hann_window(win_size);
-        // auto pcm_tensor = torch::zeros({1, static_cast<int>(data.size())}, torch::kFloat32);
-        // float* tensor_data = reinterpret_cast<float*>(pcm_tensor.data_ptr());
-        // std::copy_n(data.data(), data.size(), tensor_data);
-        // auto spec   = torch::stft(pcm_tensor, n_fft, hop_size, win_size, window, true, "reflect", false, std::nullopt, true);
-        // auto result = torch::istft(spec, n_fft, hop_size, win_size, window, true);
-        // tensor_data = reinterpret_cast<float*>(result.data_ptr());
-        // std::vector<short> pcm;
-        // pcm.resize(result.sizes()[1]);
-        // std::copy_n(tensor_data, pcm.size(), pcm.data());
-        output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
-        output.flush();
-    }
-    input.close();
-    output.close();
+    lifuren::logTensor("诗词特征", loader->begin()->data.sizes());
+    lifuren::logTensor("诗词标签", loader->begin()->target.sizes());
 }
 
 LFR_TEST(
-    // testRawDataset();
-    testLoadAudioFileDataset();
+    testRawDataset();
+    // testLoadAudioFileDataset();
     // testLoadImageFileDataset();
     // testLoadVideoFileDataset();
     // testLoadPoetryFileDataset();
-    // testStftIstft();
 );

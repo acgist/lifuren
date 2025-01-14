@@ -5,17 +5,13 @@
 
 #include "torch/torch.h"
 
-#include "spdlog/fmt/ostr.h"
-
 #include "opencv2/opencv.hpp"
 
-#include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
+#include "lifuren/Model.hpp"
+#include "lifuren/Torch.hpp"
 #include "lifuren/Tensor.hpp"
 #include "lifuren/image/ImageDataset.hpp"
-
-LFR_FORMAT_LOG_STREAM(at::Tensor)
-LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
 class GenderModuleImpl : public torch::nn::Module {
 
@@ -97,10 +93,10 @@ public:
 public:
     bool defineDataset() override {
         std::filesystem::path data_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "gender"});
-        std::string path_val   = (data_path / "val").string();
         std::string path_train = (data_path / "train").string();
+        std::string path_val   = (data_path / "val"  ).string();
         std::map<std::string, float> mapping = {
-            { "man"  , 1.0F },
+            { "man",   1.0F },
             { "woman", 0.0F }
         };
         this->trainDataset = std::move(lifuren::dataset::loadImageFileClassifyDataset(200, 200, this->params.batch_size, path_train, mapping));
@@ -124,7 +120,7 @@ public:
     torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32).div(255.0);
     auto prediction = linear.pred(image_tensor);
     prediction = torch::softmax(prediction, 1);
-    SPDLOG_DEBUG("预测结果：{}", prediction);
+    lifuren::logTensor("预测结果", prediction);
     auto class_id = prediction.argmax(1);
     int class_val = class_id.item<int>();
     SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());

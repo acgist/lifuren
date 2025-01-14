@@ -1,7 +1,7 @@
 #include "lifuren/Test.hpp"
 
-#include <random>
 #include <memory>
+#include <random>
 
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
@@ -37,8 +37,8 @@ class LinearModel : public lifuren::Model<
 
 public:
     LinearModel(lifuren::config::ModelParams params = {
-        .lr = 0.001F,
-        .batch_size = 10,
+        .lr          = 0.001F,
+        .batch_size  = 10,
         .epoch_count = 256
     }) : Model(params) {
     }
@@ -76,7 +76,7 @@ public:
     auto output = linear.pred(torch::tensor({ 3.0F }, torch::kFloat32));
     float pred = output.template item<float>();
     SPDLOG_DEBUG("当前预测：{}", pred);
-    linear.print();
+    linear.print(true);
     linear.save();
 }
 

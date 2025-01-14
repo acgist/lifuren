@@ -10,8 +10,8 @@
         .epoch_count = 16,
         .model_name = "baicai",
         .train_path = lifuren::file::join({path, "baicai", lifuren::config::DATASET_TRAIN}).string(),
-        .val_path   = lifuren::file::join({path, "baicai", lifuren::config::DATASET_VAL}).string(),
-        .test_path  = lifuren::file::join({path, "baicai", lifuren::config::DATASET_TEST}).string(),
+        .val_path   = lifuren::file::join({path, "baicai", lifuren::config::DATASET_VAL  }).string(),
+        .test_path  = lifuren::file::join({path, "baicai", lifuren::config::DATASET_TEST }).string(),
     });
     model.define();
     model.trainValAndTest();

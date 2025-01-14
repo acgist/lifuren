@@ -1,12 +1,8 @@
 #include "lifuren/Test.hpp"
 
+#include <map>
 #include <set>
-#include <mutex>
 #include <regex>
-#include <thread>
-#include <atomic>
-#include <fstream>
-#include <condition_variable>
 
 #include "nlohmann/json.hpp"
 
@@ -192,6 +188,6 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
 
 LFR_TEST(
     // testPoetry();
-    // testDataset();
-    testPepperEmbedding();
+    testDataset();
+    // testPepperEmbedding();
 );
