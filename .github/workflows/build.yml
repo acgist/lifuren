@@ -15,8 +15,8 @@ jobs:
           git submodule update --init --recursive
           cd ./deps
           ################################ fltk
-          sudo  apt install libfltk1.4-dev -y
-          apt-cache madison libfltk1.4-dev
+          sudo  apt install libfltk1.3-dev -y
+          apt-cache madison libfltk1.3-dev
           ################################ json
           cd ./json
           git switch -c v3.11.2
