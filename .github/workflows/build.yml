@@ -6,8 +6,7 @@ jobs:
   lifuren:
     name: Build lifuren
     # https://docs.github.com/zh/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners
-    runs-on: ubuntu-22.04
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -16,8 +15,8 @@ jobs:
           git submodule update --init --recursive
           cd ./deps
           ################################ fltk
-          sudo  apt install libfltk1.3-dev -y
-          apt-cache madison libfltk1.3-dev
+          sudo  apt install libfltk1.4-dev -y
+          apt-cache madison libfltk1.4-dev
           ################################ json
           cd ./json
           git switch -c v3.11.2
