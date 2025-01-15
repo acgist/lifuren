@@ -9,6 +9,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include "lifuren/Client.hpp"
+
 // 检测索引
 static bool indexExists(const size_t& id, std::shared_ptr<lifuren::RestClient> client);
 // 创建索引

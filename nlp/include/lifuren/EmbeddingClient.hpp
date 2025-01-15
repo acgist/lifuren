@@ -6,12 +6,13 @@
 #ifndef LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 #define LFR_HEADER_NLP_EMBEDDING_CLIENT_HPP
 
-#include <vector>
+#include <memory>
 #include <string>
-
-#include "lifuren/Client.hpp"
+#include <vector>
 
 namespace lifuren {
+
+class RestClient;
 
 /**
  * 词嵌入终端

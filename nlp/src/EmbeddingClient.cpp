@@ -2,6 +2,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "lifuren/Config.hpp"
+
 lifuren::EmbeddingClient::EmbeddingClient(const std::string& path) : path(path) {
 }
 

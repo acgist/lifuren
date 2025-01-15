@@ -19,10 +19,7 @@ target_link_libraries(
     ${TORCH_LIBRARIES}
 )
 
-target_include_directories(
-    ${PROJECT_NAME}
-    PUBLIC ${HEADER_DIR}
-)
+target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets

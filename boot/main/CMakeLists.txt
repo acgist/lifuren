@@ -3,13 +3,13 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 aux_source_directory(src/cli/ CLI_FILES)
 
 if(ENABLE_FLTK)
-    message(STATUS "开启FLTK界面")
+    message(STATUS "编译FLTK界面")
     add_definitions(-DLFR_ENABLE_FLTK=true)
     aux_source_directory(src/fltk/ FLTK_FILES)
 endif()
     
 if(ENABLE_REST)
-    message(STATUS "开启REST接口")
+    message(STATUS "编译REST接口")
     add_definitions(-DLFR_ENABLE_REST=true)
     aux_source_directory(src/rest/ REST_FILES)
 endif()
@@ -66,10 +66,7 @@ else()
     )
 endif()
 
-target_include_directories(
-    ${PROJECT_NAME}
-    PUBLIC ${HEADER_DIR}
-)
+target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 
 install(
     TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets

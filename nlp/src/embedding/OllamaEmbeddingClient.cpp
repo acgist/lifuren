@@ -4,6 +4,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include "lifuren/Client.hpp"
+
 lifuren::OllamaEmbeddingClient::OllamaEmbeddingClient(const std::string& path) : EmbeddingClient(path) {
     const auto& ollamaConfig = lifuren::config::CONFIG.ollama;
     this->restClient = std::make_unique<lifuren::RestClient>(ollamaConfig.api);

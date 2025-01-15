@@ -1,18 +1,18 @@
 # 公共配置
 config:
   tmp: D:\tmp
-# HTTP监听
+# REST监听
 rest-server:
   host: 0.0.0.0
   port: 8080
-# 音频页面配置
+# 音频配置
 audio:
   path: D:\tmp\lifuren\audio
   model: 
   client: audio-shikuang
   clients:
     - audio-shikuang
-# 视频页面配置
+# 视频配置
 video:
   path: D:\tmp\lifuren\video
   model: 
@@ -20,7 +20,7 @@ video:
   client: video-wudaozi
   clients:
     - video-wudaozi
-# 诗词页面配置
+# 诗词配置
 poetry:
   path: D:\tmp\lifuren\poetry
   model: 

@@ -30,7 +30,7 @@ namespace lifuren {
  * @return 是否执行命令成功
  */
 extern bool cli(
-    const int argc, // 参数数量
+    const int         argc,  // 参数数量
     const char* const argv[] // 命令参数
 );
 

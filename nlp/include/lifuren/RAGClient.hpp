@@ -13,11 +13,14 @@
 #include <fstream>
 #include <functional>
 
+#include "lifuren/Config.hpp"
 #include "lifuren/Thread.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 
 namespace faiss {
+    
     struct Index;
+
 }
 
 namespace lifuren {
@@ -33,6 +36,29 @@ struct RAGTask {
     std::string path;
     // 词嵌入方式：ollama|pepper
     std::string embedding;
+
+};
+
+/**
+ * RAG搜索终端
+ */
+class RAGSearchClient {
+
+public:
+    /**
+     * @return 文档内容
+     */
+    virtual std::vector<std::string> search(
+        const std::string& prompt,  // 搜索内容
+        const uint8_t      size = 4 // 结果数量
+    ) const = 0;
+    /**
+     * @return 文档内容
+     */
+    virtual std::vector<std::string> search(
+        const std::vector<float>& prompt,  // 搜索向量
+        const uint8_t             size = 4 // 结果数量
+    ) const = 0;
 
 };
 

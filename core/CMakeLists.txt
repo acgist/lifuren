@@ -32,10 +32,7 @@ else()
     )
 endif()
 
-target_include_directories(
-    ${PROJECT_NAME}
-    PUBLIC ${HEADER_DIR}
-)
+target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 
 if(CMAKE_HOST_WIN32)
     set(CONFIG_FILES "config/config-win.yml" "config/rhythm.yml")
