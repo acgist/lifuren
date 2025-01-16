@@ -16,21 +16,20 @@ audio:
 video:
   path: /data/lifuren/video
   model: 
-  length: 24
   client: video-wudaozi
   clients:
     - video-wudaozi
+  length: 24
 # 诗词配置
 poetry:
   path: /data/lifuren/poetry
   model: 
-  size: 768
-  length: 4
   client: poetry-lidu
   clients:
     - poetry-lidu
     - poetry-suxin
-  # 返回数量
+  dims: 768
+  length: 4
   rag-size: 4
   # char|rhythm
   embedding-participle: rhythm
@@ -45,17 +44,16 @@ elasticsearch:
 # https://github.com/ollama/ollama/blob/main/docs/api.md
 ollama:
   api: http://localhost:11434
-  dims: 768
   username: 
   password: 
   # NONE|Basic|Token
   auth-type: NONE
-  embedding:
-    path: /api/embed
-    model: quentinz/bge-base-zh-v1.5
-    # model: quentinz/bge-large-zh-v1.5
-    # model: quentinz/bge-small-zh-v1.5
-    options: {}
+  dims: 768
+  path: /api/embed
+  model: quentinz/bge-base-zh-v1.5
+  # model: quentinz/bge-large-zh-v1.5
+  # model: quentinz/bge-small-zh-v1.5
+  options: {}
 # pepper配置
 pepper:
   dims: 768

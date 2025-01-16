@@ -133,15 +133,11 @@ static void restGetIndex() {
 
 static void restGetFavicon() {
     lifuren::restServer.Get("/favicon.ico", [](const httplib::Request& /* request */, httplib::Response& response) {
-        char * data  { nullptr };
-        size_t length{ 0       };
-        lifuren::file::loadFile(lifuren::config::baseFile("./favicon.ico"), &data, length);
-        if(length == 0) {
+        auto blob = lifuren::file::loadBlobFile(lifuren::config::baseFile("./favicon.ico"));
+        if(blob.empty()) {
             return;
         }
-        response.set_content(data, length, lifuren::content::type::ICON);
-        delete[] data;
-        data = nullptr;
+        response.set_content(blob.data(), blob.size(), lifuren::content::type::ICON);
     });
 }
 

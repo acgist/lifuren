@@ -48,7 +48,7 @@
     sequence[6] = torch::from_blob(ragClient->index("独上").data(), { dims }, torch::kFloat32).to(device).clone();
     while(true) {
         // 不能用resize
-        auto feature = torch::cat(sequence).reshape({ sequenceLength + lifuren::config::LIFUREN_POETRY_DATASET_HEAD, dims });
+        auto feature = torch::cat(sequence).reshape({ sequenceLength + 3, dims });
         // SPDLOG_DEBUG("f sizes: {}", feature.sizes());
         // SPDLOG_DEBUG("f sizes: {}", feature.unsqueeze(0).permute({ 1, 0, 2 }).sizes());
         pred = model.pred(feature.unsqueeze(0).permute({ 1, 0, 2 }));

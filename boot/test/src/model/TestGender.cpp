@@ -79,12 +79,12 @@ class GenderModel : public lifuren::Model<
 public:
     GenderModel(lifuren::config::ModelParams params = {
         .lr          = 0.001F,
-        .batch_size  = 10LL,
-        .epoch_count = 64LL,
+        .batch_size  = 10,
+        .epoch_count = 64,
         .classify    = true,
         .check_point = true,
+        .model_name  = "gender",
         .check_path  = lifuren::config::CONFIG.tmp,
-        .model_name  = "gender"
     }) : Model(params) {
     }
     virtual ~GenderModel() {

@@ -80,8 +80,8 @@ static void generateAudio(const std::vector<std::string>& args) {
         const std::string& path       = args[2];
         const std::string& model_name = args[3];
         lifuren::config::ModelParams params {
-            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .model_name = model_name,
+            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
             .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL  }).string(),
             .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
@@ -126,8 +126,8 @@ static void generateVideo(const std::vector<std::string>& args) {
         const std::string& path       = args[2];
         const std::string& model_name = args[3];
         lifuren::config::ModelParams params {
-            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .model_name = model_name,
+            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
             .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL  }).string(),
             .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
@@ -172,8 +172,8 @@ static void generatePoetry(const std::vector<std::string>& args) {
         const std::string& path       = args[2];
         const std::string& model_name = args[3];
         lifuren::config::ModelParams params {
-            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .model_name = model_name,
+            .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
             .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
             .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL  }).string(),
             .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),

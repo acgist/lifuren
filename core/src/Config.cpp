@@ -55,7 +55,7 @@ if(name && !name.IsNull() && name.IsSequence()) {                    \
 target[#key] = source.name;
 #endif
 
-std::string lifuren::config::base           = "";
+std::string lifuren::config::base_dir       = "";
 std::string lifuren::config::restServerHost = "0.0.0.0";
 int         lifuren::config::restServerPort = 8080;
 
@@ -64,7 +64,6 @@ const std::string lifuren::config::CONFIG_REST_SERVER    = "rest-server";
 const std::string lifuren::config::CONFIG_AUDIO          = "audio";
 const std::string lifuren::config::CONFIG_VIDEO          = "video";
 const std::string lifuren::config::CONFIG_POETRY         = "poetry";
-const std::string lifuren::config::CONFIG_MARK           = "mark";
 const std::string lifuren::config::CONFIG_FAISS          = "faiss";
 const std::string lifuren::config::CONFIG_ELASTICSEARCH  = "elasticsearch";
 const std::string lifuren::config::CONFIG_OLLAMA         = "ollama";
@@ -128,8 +127,8 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
     } else if(lifuren::config::CONFIG_VIDEO == name) {
         LFR_CONFIG_YAML_GETTER(config.video, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, model,  model,  std::string);
-        LFR_CONFIG_YAML_GETTER(config.video, yaml, length, length, int);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, client, client, std::string);
+        LFR_CONFIG_YAML_GETTER(config.video, yaml, length, length, int);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
@@ -139,9 +138,9 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
     } else if(lifuren::config::CONFIG_POETRY == name) {
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, path,     path,     std::string);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, model,    model,    std::string);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, size,     size,     int);
-        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length,   length,   int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, client,   client,   std::string);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, dims,     dims,     int);
+        LFR_CONFIG_YAML_GETTER(config.poetry, yaml, length,   length,   int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, rag-size, rag_size, int);
         LFR_CONFIG_YAML_GETTER(config.poetry, yaml, embedding-participle, embedding_participle, std::string);
         const YAML::Node& clients = yaml["clients"];
@@ -157,20 +156,15 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.elasticsearch, yaml, auth-type, authType, std::string);
     } else if(lifuren::config::CONFIG_OLLAMA == name) {
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, api,       api,      std::string);
-        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, dims,      dims,     int);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, username,  username, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, password,  password, std::string);
         LFR_CONFIG_YAML_GETTER(config.ollama, yaml, auth-type, authType, std::string);
-        const YAML::Node& embeddingClientNode = yaml["embedding"];
-        if(embeddingClientNode) {
-            lifuren::config::EmbeddingClientConfig embeddingClient{};
-            LFR_CONFIG_YAML_GETTER(embeddingClient, embeddingClientNode, path,    path,    std::string);
-            LFR_CONFIG_YAML_GETTER(embeddingClient, embeddingClientNode, model,   model,   std::string);
-            std::map<std::string, std::string> map;
-            LFR_CONFIG_YAML_MAP_GETTER(map, embeddingClientNode, options, options, std::string);
-            embeddingClient.options.insert(map.begin(), map.end());
-            config.ollama.embeddingClient = embeddingClient;
-        }
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, dims,      dims,     int);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, path,      path,     std::string);
+        LFR_CONFIG_YAML_GETTER(config.ollama, yaml, model,     model,    std::string);
+        std::map<std::string, std::string> map;
+        LFR_CONFIG_YAML_MAP_GETTER(map, yaml, options, options, std::string);
+        config.ollama.options.insert(map.begin(), map.end());
     } else if(lifuren::config::CONFIG_PEPPER == name) {
         LFR_CONFIG_YAML_GETTER(config.pepper, yaml, dims, dims, int);
     } else {
@@ -208,8 +202,8 @@ static YAML::Node toYaml() {
         YAML::Node video;
         LFR_CONFIG_YAML_SETTER(video, config.video, path,   path);
         LFR_CONFIG_YAML_SETTER(video, config.video, model,  model);
-        LFR_CONFIG_YAML_SETTER(video, config.video, length, length);
         LFR_CONFIG_YAML_SETTER(video, config.video, client, client);
+        LFR_CONFIG_YAML_SETTER(video, config.video, length, length);
         YAML::Node clients;
         std::for_each(config.video.clients.begin(), config.video.clients.end(), [&clients](auto& v) {
             clients.push_back(v);
@@ -221,9 +215,9 @@ static YAML::Node toYaml() {
         YAML::Node poetry;
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, path,     path);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, model,    model);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, size,     size);
-        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length,   length);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, client,   client);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, dims,     dims);
+        LFR_CONFIG_YAML_SETTER(poetry, config.poetry, length,   length);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, rag_size, rag-size);
         LFR_CONFIG_YAML_SETTER(poetry, config.poetry, embedding_participle, embedding-participle);
         YAML::Node clients;
@@ -244,16 +238,13 @@ static YAML::Node toYaml() {
     {
         YAML::Node ollama;
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, api,      api);
-        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, dims,     dims);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, username, username);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, password, password);
         LFR_CONFIG_YAML_SETTER(ollama, config.ollama, authType, auth-type);
-        YAML::Node embeddingClientNode;
-        const lifuren::config::EmbeddingClientConfig& embeddingClient = config.ollama.embeddingClient;
-        embeddingClientNode["path"]    = embeddingClient.path;
-        embeddingClientNode["model"]   = embeddingClient.model;
-        embeddingClientNode["options"] = embeddingClient.options;
-        ollama["embedding"] = embeddingClientNode;
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, dims,     dims);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, path,     path);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, model,    model);
+        LFR_CONFIG_YAML_SETTER(ollama, config.ollama, options,  options);
         yaml[lifuren::config::CONFIG_OLLAMA] = ollama;
     }
     {
@@ -264,18 +255,8 @@ static YAML::Node toYaml() {
     return yaml;
 }
 
-lifuren::config::Config lifuren::config::loadFile() {
-    try {
-        return lifuren::config::loadFile(lifuren::config::baseFile(lifuren::config::CONFIG_PATH));
-    } catch(const std::exception& e) {
-        SPDLOG_ERROR("加载配置异常：{}", e.what());
-    } catch(...) {
-        SPDLOG_ERROR("加载配置异常：未知原因");
-    }
-    return {};
-}
-
-lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
+lifuren::config::Config lifuren::config::Config::loadFile() {
+    const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
     SPDLOG_DEBUG("加载配置文件：{}", path);
     lifuren::config::Config config{};
     YAML::Node yaml = lifuren::yaml::loadFile(path);
@@ -294,32 +275,29 @@ lifuren::config::Config lifuren::config::loadFile(const std::string& path) {
     return config;
 }
 
-bool lifuren::config::saveFile() {
-    return lifuren::config::saveFile(lifuren::config::baseFile(lifuren::config::CONFIG_PATH));
-}
-
-bool lifuren::config::saveFile(const std::string& path) {
+bool lifuren::config::Config::saveFile() {
+    const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
     SPDLOG_INFO("保存配置文件：{}", path);
     return lifuren::yaml::saveFile(::toYaml(), path);
 }
 
 void lifuren::config::init(const int argc, const char* const argv[]) {
     if(argc > 0) {
-        lifuren::config::base = std::filesystem::absolute(std::filesystem::u8path(argv[0]).parent_path()).string();
+        lifuren::config::base_dir = std::filesystem::absolute(std::filesystem::path(argv[0]).parent_path()).string();
     }
-    SPDLOG_DEBUG("执行目录：{}", lifuren::config::base);
+    SPDLOG_DEBUG("执行目录：{}", lifuren::config::base_dir);
     lifuren::config::loadConfig();
 }
 
 std::string lifuren::config::baseFile(const std::string& path) {
-    return lifuren::file::join({lifuren::config::base, path}).string();
+    return lifuren::file::join({lifuren::config::base_dir, path}).string();
 }
 
 void lifuren::config::loadConfig() noexcept {
     // 配置
-    lifuren::config::CONFIG = std::move(lifuren::config::loadFile());
+    lifuren::config::CONFIG = std::move(lifuren::config::Config::loadFile());
     // 格律
-    auto rhythm = lifuren::config::Rhythm::loadFile(lifuren::config::RHYTHM_PATH);
+    auto rhythm = lifuren::config::Rhythm::loadFile();
     lifuren::config::RHYTHM.clear();
     std::swap(lifuren::config::RHYTHM, rhythm);
     // lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());

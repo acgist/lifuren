@@ -95,7 +95,7 @@ bool lifuren::rag::embedding(const std::shared_ptr<lifuren::RAGClient> ragClient
     SPDLOG_DEBUG("RAG任务文件总量：{} - {}", dataset, fileCount.load());
     for(const auto& file : files) {
         pool.submit([file, &stream, ragClient]() {
-            if(!lifuren::file::isFile(file)) {
+            if(!lifuren::file::is_file(file)) {
                 SPDLOG_DEBUG("RAG任务跳过其他文件：{}", file);
                 return;
             }

@@ -179,5 +179,5 @@ lifuren::Configuration::~Configuration() {
 }
 
 void lifuren::Configuration::saveConfig() {
-    lifuren::config::saveFile();
+    lifuren::config::Config::saveFile();
 }

@@ -161,8 +161,8 @@ static void trainCallback(Fl_Widget*, void*) {
         "诗词模型训练",
         [path, model_name]() {
             lifuren::config::ModelParams params {
-                .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
                 .model_name = model_name,
+                .check_path = lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
                 .train_path = lifuren::file::join({path, lifuren::config::DATASET_TRAIN}).string(),
                 .val_path   = lifuren::file::join({path, lifuren::config::DATASET_VAL  }).string(),
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),

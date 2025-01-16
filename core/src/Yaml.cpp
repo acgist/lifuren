@@ -9,7 +9,7 @@
 #include "lifuren/File.hpp"
 
 YAML::Node lifuren::yaml::loadFile(const std::string& path) {
-    if(!lifuren::file::exists(path) || !lifuren::file::isFile(path)) {
+    if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         return YAML::Node();
     }
     return YAML::LoadFile(path);

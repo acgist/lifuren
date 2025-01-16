@@ -16,13 +16,12 @@ lifuren::OllamaEmbeddingClient::~OllamaEmbeddingClient() {
 }
 
 std::vector<float> lifuren::OllamaEmbeddingClient::getVector(const std::string& prompt) const {
-    const auto& ollamaConfig    = lifuren::config::CONFIG.ollama;
-    const auto& embeddingConfig = ollamaConfig.embeddingClient;
+    const auto& ollamaConfig = lifuren::config::CONFIG.ollama;
     nlohmann::json body = {
-        { "model", embeddingConfig.model },
-        { "input", prompt                }
+        { "model", ollamaConfig.model },
+        { "input", prompt             }
     };
-    const auto response = std::move(this->restClient->postJson(embeddingConfig.path, body.dump()));
+    const auto response = std::move(this->restClient->postJson(ollamaConfig.path, body.dump()));
     if(!response) {
         return {};
     }

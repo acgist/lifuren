@@ -2,9 +2,9 @@
 
 lifuren::SuxinModuleImpl::SuxinModuleImpl() {
     const auto& poetry = lifuren::config::CONFIG.poetry;
-    torch::nn::GRU gru(torch::nn::GRUOptions(poetry.size, poetry.size));
+    torch::nn::GRU gru(torch::nn::GRUOptions(poetry.dims, poetry.dims));
     this->gru = register_module("gru", gru);
-    torch::nn::Linear linear(torch::nn::LinearOptions(poetry.length + lifuren::config::LIFUREN_POETRY_DATASET_HEAD, 1));
+    torch::nn::Linear linear(torch::nn::LinearOptions(poetry.length + 3, 1));
     this->linear = register_module("linear", linear);
 }
 

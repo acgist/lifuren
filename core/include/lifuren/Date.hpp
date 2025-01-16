@@ -1,7 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * 日期工具
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_CORE_DATE_HPP
 #define LFR_HEADER_CORE_DATE_HPP
@@ -15,75 +24,74 @@
 #define LFR_DATE_TIME_FORMAT "%Y-%m-%d %H:%M:%S"
 #endif
 
-namespace lifuren {
-namespace date    {
+namespace lifuren::date {
 
 /**
- * @param datetime 日期时间
- * @param format   格式
- * 
- * @return 格式化后日期时间
+ * @return 格式日期时间
  */
-extern std::string format(const std::tm& datetime, const std::string& format);
+extern std::string format(
+    const std::tm    & datetime, // 日期时间
+    const std::string& format    // 格式
+);
 
 /**
- * @param datetime 日期时间
- * @param format   格式
- * 
- * @return 格式化后日期时间
+ * @return 格式日期时间
  */
-extern std::string format(const std::chrono::system_clock::time_point& datetime, const std::string& format);
+extern std::string format(
+    const std::chrono::system_clock::time_point& datetime, // 日期时间
+    const std::string& format // 格式
+);
 
 /**
- * @param datetime 格式化后日期时间
- * @param format   格式
- * 
  * @return 日期时间
  */
-extern std::tm parseTm(const std::string& datetime, const std::string& format);
+extern std::tm parse_tm(
+    const std::string& datetime, // 格式日期时间
+    const std::string& format    // 格式
+);
 
 /**
- * @param datetime 格式化后日期时间
- * @param format   格式
- * 
  * @return 日期时间
  */
-extern std::chrono::system_clock::time_point parseTp(const std::string& datetime, const std::string& format);
+extern std::chrono::system_clock::time_point parse_time_point(
+    const std::string& datetime, // 格式日期时间
+    const std::string& format    // 格式
+);
 
 /**
- * @param datetime 日期时间
- * 
  * @return 毫秒
  */
-extern uint64_t toMillis(std::tm& datetime);
+extern uint64_t to_millis(
+    std::tm& datetime // 日期时间
+);
 
 /**
- * @param datetime 日期时间
- * 
  * @return 毫秒
  */
-extern uint64_t toMillis(const std::chrono::system_clock::time_point& datetime);
+extern uint64_t to_millis(
+    const std::chrono::system_clock::time_point& datetime // 日期时间
+);
 
 /**
- * @param millis 毫秒
- * 
  * @return 日期时间
  */
-extern std::tm parseTm(const uint64_t& millis);
+extern std::tm parse_tm(
+    const uint64_t& millis // 毫秒
+);
 
 /**
- * @param millis 毫秒
- * 
  * @return 日期时间
  */
-extern std::chrono::system_clock::time_point parseTp(const uint64_t& millis);
+extern std::chrono::system_clock::time_point parse_time_point(
+    const uint64_t& millis // 毫秒
+);
 
 /**
  * 设置时区
- * 
- * @param timezone 时区
  */
-inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
+inline void setTimeZone(
+    const char* timezone = "Asia/Shanghai" // 时区
+) {
     #ifdef _WIN32
     _putenv_s("TZ", timezone);
     _tzset();
@@ -91,11 +99,10 @@ inline void setTimeZone(const char* timezone = "Asia/Shanghai") {
     setenv("TZ", timezone, true);
     tzset();
     #else
-    // 其他
+    // -
     #endif
 }
 
-} // END OF data
-} // END OF lifuren
+} // END OF lifuren::data
 
 #endif // LFR_HEADER_CORE_DATE_HPP

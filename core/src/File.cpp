@@ -29,11 +29,11 @@ void lifuren::file::listFile(std::vector<std::string>& vector, const std::string
 }
 
 void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate) {
-    if(!exists(path) || !isDirectory(path)) {
+    if(!exists(path) || !is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
-    const auto iterator = std::filesystem::directory_iterator(std::filesystem::u8path(path));
+    const auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
     for(const auto& entry : iterator) {
         // TODO: utf8
         std::string filepath = entry.path().string();
@@ -68,21 +68,23 @@ std::string lifuren::file::loadFile(const std::string& path) {
     return lines;
 }
 
-void lifuren::file::loadFile(const std::string& path, char** data, size_t& length) {
-    length = std::filesystem::file_size(std::filesystem::u8path(path));
-    if(length == 0LL) {
-        return;
+std::vector<char> lifuren::file::loadBlobFile(const std::string& path) {
+    const size_t length = std::filesystem::file_size(std::filesystem::path(path));
+    if(length == 0) {
+        return {};
     }
     std::ifstream input;
     input.open(path, std::ios_base::in | std::ios_base::binary);
     if(!input.is_open()) {
         SPDLOG_WARN("打开文件失败：{}", path);
         input.close();
-        return;
+        return {};
     }
-    *data = new char[length];
-    input.read(*data, length);
+    std::vector<char> blob;
+    blob.resize(length);
+    input.read(blob.data(), length);
     input.close();
+    return blob;
 }
 
 bool lifuren::file::saveFile(const std::string& path, const std::string& value) {
@@ -99,33 +101,11 @@ bool lifuren::file::saveFile(const std::string& path, const std::string& value) 
     return true;
 }
 
-bool lifuren::file::createParent(const std::string& path) {
-    const std::filesystem::path file { std::filesystem::u8path(path) };
-    const auto parent = file.parent_path();
-    if(std::filesystem::exists(parent)) {
-        return true;
-    } else {
-        return std::filesystem::create_directories(parent);
-    }
-}
-
-bool lifuren::file::createFolder(const std::string& path) {
-    const std::filesystem::path file { std::filesystem::u8path(path) };
-    if(std::filesystem::exists(file)) {
-        return true;
-    } else {
-        return std::filesystem::create_directories(file);
-    }
-}
-
 std::string lifuren::file::fileType(const std::string& path) {
-     const std::filesystem::path file { std::filesystem::u8path(path) };
+     const std::filesystem::path file { std::filesystem::path(path) };
      std::string extension = file.extension().string();
      if(extension.empty()) {
         return extension;
-     }
-     if(extension.at(0) == '.') {
-        return extension.substr(1);
      }
      return extension;
 }

@@ -15,8 +15,8 @@
 
 [[maybe_unused]] static void testParse() {
     std::string datetime = "2024-05-27 18:08:18";
-    auto date  = lifuren::date::parseTp(datetime, LFR_DATE_TIME_FORMAT);
-    std::tm tm = lifuren::date::parseTm(datetime, LFR_DATE_TIME_FORMAT);
+    auto date  = lifuren::date::parse_time_point(datetime, LFR_DATE_TIME_FORMAT);
+    std::tm tm = lifuren::date::parse_tm        (datetime, LFR_DATE_TIME_FORMAT);
     SPDLOG_DEBUG("字符串转为日期时间：{}", date);
     SPDLOG_DEBUG("字符串转为日期时间：{}-{:#02d}-{:#02d} {:#02d}:{:#02d}:{:#02d}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
@@ -24,25 +24,25 @@
 
 [[maybe_unused]] static void testMillis() {
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    const uint64_t millis = lifuren::date::toMillis(now);
-    std::tm tm = lifuren::date::parseTm(millis);
-    SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::toMillis(now));
-    SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::toMillis(tm));
-    SPDLOG_DEBUG("时间戳转日期时间：{}", lifuren::date::parseTp(millis));
+    const uint64_t millis = lifuren::date::to_millis(now);
+    std::tm tm = lifuren::date::parse_tm(millis);
+    SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::to_millis(now));
+    SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::to_millis(tm));
+    SPDLOG_DEBUG("时间戳转日期时间：{}", lifuren::date::parse_tm(millis));
     SPDLOG_DEBUG("时间戳转日期时间：{}-{:#02d}-{:#02d} {:#02d}:{:#02d}:{:#02d}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
 [[maybe_unused]] static void testPerformance() {
-    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    const uint64_t millis  = lifuren::date::toMillis(now);
     const std::string date = "2012-12-12 12:12:12";
+    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    const uint64_t millis = lifuren::date::to_millis(now);
     lifuren::test::loop(100'000, [&now, date, millis]() {
-        // lifuren::date::toMillis(now);
-        // lifuren::date::parseTm(millis);
-        // lifuren::date::parseTp(millis);
         lifuren::date::format(now, LFR_DATE_TIME_FORMAT);
-        // lifuren::date::parseTm(date, LFR_DATE_TIME_FORMAT);
-        // lifuren::date::parseTp(date, LFR_DATE_TIME_FORMAT);
+        // lifuren::date::to_millis(now);
+        // lifuren::date::parse_tm(millis);
+        // lifuren::date::parse_tm(date, LFR_DATE_TIME_FORMAT);
+        // lifuren::date::parse_time_point(millis);
+        // lifuren::date::parse_time_point(date, LFR_DATE_TIME_FORMAT);
     });
 }
 

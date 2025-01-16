@@ -120,11 +120,11 @@
 }
 
 LFR_TEST(
-    testPrint();
+    // testPrint();
     // testTensor();
-    testLayer();
+    // testLayer();
     // testLoss();
     // testGRU();
-    // testLSTM();
+    testLSTM();
     // testJit();
 );

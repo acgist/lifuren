@@ -39,7 +39,7 @@ std::string lifuren::date::format(const std::chrono::system_clock::time_point& d
     return lifuren::date::format(tm, format);
 }
 
-std::tm lifuren::date::parseTm(const std::string& datetime, const std::string& format) {
+std::tm lifuren::date::parse_tm(const std::string& datetime, const std::string& format) {
     std::tm tm;
     #ifdef _WIN32
     std::istringstream input(datetime);
@@ -50,22 +50,22 @@ std::tm lifuren::date::parseTm(const std::string& datetime, const std::string& f
     return tm;
 }
 
-std::chrono::system_clock::time_point lifuren::date::parseTp(const std::string& datetime, const std::string& format) {
-	std::tm tm = lifuren::date::parseTm(datetime, format);
+std::chrono::system_clock::time_point lifuren::date::parse_time_point(const std::string& datetime, const std::string& format) {
+	std::tm tm = lifuren::date::parse_tm(datetime, format);
 	const std::time_t timestamp = std::mktime(&tm);
 	return std::chrono::system_clock::from_time_t(timestamp);
 }
 
-uint64_t lifuren::date::toMillis(std::tm& datetime) {
+uint64_t lifuren::date::to_millis(std::tm& datetime) {
     const std::time_t timestamp = std::mktime(&datetime);
-    return lifuren::date::toMillis(std::chrono::system_clock::from_time_t(timestamp));
+    return lifuren::date::to_millis(std::chrono::system_clock::from_time_t(timestamp));
 }
 
-uint64_t lifuren::date::toMillis(const std::chrono::system_clock::time_point& datetime) {
+uint64_t lifuren::date::to_millis(const std::chrono::system_clock::time_point& datetime) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
 }
 
-std::tm lifuren::date::parseTm(const uint64_t& millis) {
+std::tm lifuren::date::parse_tm(const uint64_t& millis) {
     const auto duration  = std::chrono::milliseconds(millis);
     const auto timePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(duration);
     const auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
@@ -81,7 +81,7 @@ std::tm lifuren::date::parseTm(const uint64_t& millis) {
     return tm;
 }
 
-std::chrono::system_clock::time_point lifuren::date::parseTp(const uint64_t& millis) {
+std::chrono::system_clock::time_point lifuren::date::parse_time_point(const uint64_t& millis) {
     const auto duration  = std::chrono::milliseconds(millis);
     const auto timePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(duration);
     const auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
