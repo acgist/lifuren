@@ -1,7 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * RAII工具
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_CORE_RAII_HPP
 #define LFR_HEADER_CORE_RAII_HPP
@@ -60,14 +69,13 @@ private:
     std::function<void(void)> finally{ nullptr };
 
 public:
-    Finally(Finally&)  = delete;
+    Finally(Finally& ) = delete;
     Finally(Finally&&) = delete;
     Finally operator=(Finally& ) = delete;
     Finally operator=(Finally&&) = delete;
-    /**
-     * @param finally 资源释放
-     */
-    Finally(std::function<void(void)> finally) : finally(finally) {
+    Finally(
+        std::function<void(void)> finally // 资源释放
+    ) : finally(finally) {
     }
     ~Finally() {
         this->finally();

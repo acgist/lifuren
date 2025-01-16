@@ -1,5 +1,12 @@
 /**
- * Logger
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
+ * 日期工具
  * 
  * st：单线程版本（效率更高）
  * mt：多线程版本（线程安全）
@@ -7,33 +14,9 @@
  * https://fmt.dev/11.0/
  * https://fmt.dev/11.0/syntax/
  * 
- * 
- * replacement_field ::= "{" [arg_id] [":" (format_spec | chrono_format_spec)] "}"
- * 
- * arg_id            ::= integer | identifier
- * 
- * format_spec ::= [[fill]align][sign]["#"]["0"][width]["." precision]["L"][type]
- * fill        ::= <a character other than '{' or '}'>
- * align       ::= "<" | ">" | "^"
- * sign        ::= "+" | "-" | " "
- * width       ::= integer | "{" [arg_id] "}"
- * precision   ::= integer | "{" [arg_id] "}"
- * type        ::= "a" | "A" | "b" | "B" | "c" | "d" | "e" | "E" | "f" | "F" |
- *                 "g" | "G" | "o" | "p" | "s" | "x" | "X" | "?"
- * 
- * chrono_format_spec ::= [[fill]align][width]["." precision][chrono_specs]
- * chrono_specs       ::= conversion_spec | chrono_specs (conversion_spec | literal_char)
- * conversion_spec    ::= "%" [padding_modifier] [locale_modifier] chrono_type
- * literal_char       ::= <a character other than '{', '}' or '%'>
- * padding_modifier   ::= "-" | "_"  | "0"
- * locale_modifier    ::= "E" | "O"
- * chrono_type        ::= "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" |
- *                        "F" | "g" | "G" | "h" | "H" | "I" | "j" | "m" | "M" |
- *                        "n" | "p" | "q" | "Q" | "r" | "R" | "S" | "t" | "T" |
- *                        "u" | "U" | "V" | "w" | "W" | "x" | "X" | "y" | "Y" |
- *                        "z" | "Z" | "%"
- * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_CORE_LOGGER_HPP
 #define LFR_HEADER_CORE_LOGGER_HPP
@@ -54,29 +37,17 @@ struct fmt::formatter<type> : ostream_formatter { \
 };
 #endif
 
-namespace lifuren {
-namespace logger  {
+namespace lifuren::logger {
 
-/**
- * 加载日志
- */
-extern void init();
-
-/**
- * 关闭日志
- */
-extern void shutdown();
+extern void init();     // 加载日志
+extern void shutdown(); // 关闭日志
 
 namespace opencv {
 
-/**
- * 加载OpenCV日志
- */
-extern void init();
+extern void init(); // 加载OpenCV日志
 
-} // END OF cv
+} // END OF opencv
 
-} // END OF logger
-} // END OF lifuren
+} // END OF lifuren::logger
 
 #endif // LFR_HEADER_CORE_LOGGER_HPP

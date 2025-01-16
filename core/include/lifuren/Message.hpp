@@ -1,5 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * 消息通知
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_BOOT_MESSAGE_HPP
 #define LFR_HEADER_BOOT_MESSAGE_HPP
@@ -16,7 +27,9 @@
 
 namespace lifuren::message {
 
-// 消息类型
+/**
+ * 消息类型
+ */
 enum class Type {
     
     CLI_CONSOLE             = MESSAGE_CONSOLE,
@@ -34,12 +47,39 @@ enum class Type {
 
 };
 
-extern thread_local lifuren::message::Type thread_message_type;
+extern thread_local lifuren::message::Type thread_message_type; // 当前线程消息类型
 
-extern void registerMessageCallback  (Type type, std::function<void(bool, const char*)> callback);
-extern void unregisterMessageCallback(Type type);
-extern void sendMessage(           const char* message, bool finish = false);
-extern void sendMessage(Type type, const char* message, bool finish = false);
+/**
+ * 注册消息通知
+ */
+extern void registerMessageCallback(
+    Type type, // 消息类型
+    std::function<void(bool, const char*)> callback // 通知回调
+);
+
+/**
+ * 取消消息通知
+ */
+extern void unregisterMessageCallback(
+    Type type // 消息类型
+);
+
+/**
+ * 发送消息通知
+ */
+extern void sendMessage(
+    const char* message, // 消息内容
+    bool finish = false  // 是否完成
+);
+
+/**
+ * 发送消息通知
+ */
+extern void sendMessage(
+    Type type, // 消息类型
+    const char* message, // 消息内容
+    bool finish = false  // 是否完成
+);
 
 } // END OF lifuren::message
 
