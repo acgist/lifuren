@@ -199,10 +199,6 @@ public:
     lifuren::config::PepperConfig pepper{};
 
 public:
-    Config();
-    virtual ~Config();
-
-public:
     /**
      * @return YAML
      */
@@ -241,9 +237,12 @@ public:
     std::vector<uint32_t> participleRule; // 分词规则
 
 public:
-    Rhythm();
+    Rhythm() = default;
     Rhythm(const std::string& rhythm);
-    virtual ~Rhythm();
+    Rhythm(const Rhythm& ) = default;
+    Rhythm(      Rhythm&&) = default;
+    Rhythm& operator= (const Rhythm& ) = default;
+    Rhythm& operator= (      Rhythm&&) = default;
 
 public:
     /**

@@ -86,12 +86,6 @@ static void loadYaml(lifuren::config::Config& config, const std::string& name, c
  */
 static YAML::Node toYaml();
 
-lifuren::config::Config::Config() {
-}
-
-lifuren::config::Config::~Config() {
-}
-
 std::string lifuren::config::Config::toYaml() {
     YAML::Node&& node = ::toYaml();
     std::stringstream stream;

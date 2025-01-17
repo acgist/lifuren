@@ -69,10 +69,10 @@ private:
     std::function<void(void)> finally{ nullptr };
 
 public:
-    Finally(Finally& ) = delete;
-    Finally(Finally&&) = delete;
-    Finally operator=(Finally& ) = delete;
-    Finally operator=(Finally&&) = delete;
+    Finally(const Finally& ) = delete;
+    Finally(      Finally&&) = delete;
+    Finally& operator=(const Finally& ) = delete;
+    Finally& operator=(      Finally&&) = delete;
     Finally(
         std::function<void(void)> finally // 资源释放
     ) : finally(finally) {

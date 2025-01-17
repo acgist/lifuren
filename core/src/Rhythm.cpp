@@ -19,13 +19,7 @@ if(key##Node) {                                             \
 
 std::map<std::string, lifuren::config::Rhythm> lifuren::config::RHYTHM{};
 
-lifuren::config::Rhythm::Rhythm() {
-}
-
 lifuren::config::Rhythm::Rhythm(const std::string& rhythm) : rhythm(rhythm) {
-}
-
-lifuren::config::Rhythm::~Rhythm() {
 }
 
 std::string lifuren::config::Rhythm::toYaml() {
