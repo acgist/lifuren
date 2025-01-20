@@ -1,5 +1,6 @@
 #include "lifuren/Config.hpp"
 
+#include <list>
 #include <mutex>
 #include <chrono>
 #include <algorithm>
@@ -27,8 +28,8 @@ if(name && !name.IsNull() && name.IsScalar()) {               \
 const auto& name = yaml[#key];                                      \
 if(name && !name.IsNull() && name.IsMap()) {                        \
     std::for_each(name.begin(), name.end(), [&map](const auto& v) { \
-        const std::string& vk = v.first.template as<std::string>(); \
-        const auto&        vv = v.second;                           \
+        const auto& vk = v.first.template as<std::string>();        \
+        const auto& vv = v.second;                                  \
         if(vv && !vv.IsNull() && vv.IsScalar()) {                   \
             map.emplace(vk, vv.template as<type>());                \
         }                                                           \
@@ -76,30 +77,32 @@ const std::string lifuren::config::CONFIG_POETRY_SUXIN   = "poetry-suxin";
 lifuren::config::Config lifuren::config::CONFIG{};
 
 /**
- * @param config 配置
- * @param name   配置名称
- * @param yaml   配置内容
+ * 加载配置
  */
-static void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml);
+static void loadYaml(
+    lifuren::config::Config& config, // 配置
+    const std::string& name, // 配置名称
+    const YAML::Node & yaml  // 配置内容
+);
 /**
  * @return YAML
  */
 static YAML::Node toYaml();
 
 std::string lifuren::config::Config::toYaml() {
-    YAML::Node&& node = ::toYaml();
+    YAML::Node node = ::toYaml();
     std::stringstream stream;
     stream << node;
     return stream.str();
 }
 
 void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
-    if(name == lifuren::config::CONFIG_CONFIG) {
+    if(lifuren::config::CONFIG_CONFIG == name) {
         const auto& tmp = yaml["tmp"];
         if(tmp) {
             config.tmp = tmp.as<std::string>();
         }
-    } else if(name == lifuren::config::CONFIG_REST_SERVER) {
+    } else if(lifuren::config::CONFIG_REST_SERVER == name) {
         const auto& host = yaml["host"];
         const auto& port = yaml["port"];
         if(host) {
@@ -175,10 +178,10 @@ static YAML::Node toYaml() {
         yaml[lifuren::config::CONFIG_CONFIG] = config;
     }
     {
-        YAML::Node http;
-        http["host"] = lifuren::config::restServerHost;
-        http["port"] = lifuren::config::restServerPort;
-        yaml[lifuren::config::CONFIG_REST_SERVER] = http;
+        YAML::Node restServer;
+        restServer["host"] = lifuren::config::restServerHost;
+        restServer["port"] = lifuren::config::restServerPort;
+        yaml[lifuren::config::CONFIG_REST_SERVER] = restServer;
     }
     {
         YAML::Node audio;
@@ -254,12 +257,12 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
     SPDLOG_DEBUG("加载配置文件：{}", path);
     lifuren::config::Config config{};
     YAML::Node yaml = lifuren::yaml::loadFile(path);
-    if(!yaml || yaml.IsNull() || yaml.size() == 0LL) {
+    if(!yaml || yaml.IsNull() || yaml.size() == 0) {
         return config;
     }
     for(auto iterator = yaml.begin(); iterator != yaml.end(); ++iterator) {
-        const std::string& key   = iterator->first.as<std::string>();
-        const auto&        value = iterator->second;
+        const auto& key   = iterator->first.as<std::string>();
+        const auto& value = iterator->second;
         try {
             loadYaml(config, key, value);
         } catch(...) {
@@ -289,17 +292,14 @@ std::string lifuren::config::baseFile(const std::string& path) {
 
 void lifuren::config::loadConfig() noexcept {
     // 配置
-    lifuren::config::CONFIG = std::move(lifuren::config::Config::loadFile());
+    lifuren::config::CONFIG = lifuren::config::Config::loadFile();
     // 格律
-    auto rhythm = lifuren::config::Rhythm::loadFile();
-    lifuren::config::RHYTHM.clear();
-    std::swap(lifuren::config::RHYTHM, rhythm);
-    // lifuren::config::RHYTHM.insert(rhythm.begin(), rhythm.end());
+    lifuren::config::RHYTHM = lifuren::config::Rhythm::loadFile();
 }
 
 size_t lifuren::config::uuid() noexcept {
-    static int index = 0;
     static std::mutex mutex;
+          static int index     = 0;
     const static int MIN_INDEX = 0;
     const static int MAX_INDEX = 100000;
     auto timePoint = std::chrono::system_clock::now();
