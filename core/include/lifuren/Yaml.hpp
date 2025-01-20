@@ -1,7 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. ALl Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * YAML工具
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_CORE_YAML_HPP
 #define LFR_HEADER_CORE_YAML_HPP
@@ -38,27 +47,29 @@ namespace YAML {
 
 class Node;
 
-}
+} // END OF YAML
 
-namespace lifuren {
-namespace yaml    {
+namespace lifuren::yaml {
 
 /**
- * @param path 文件路径
+ * 加载配置文件
  * 
  * @return YAML
  */
-extern YAML::Node loadFile(const std::string& path);
+extern YAML::Node loadFile(
+    const std::string& path // 文件路径
+);
 
 /**
- * @param yaml YAML
- * @param path 文件路径
+ * 保存配置文件
  * 
  * @return 是否成功
  */
-extern bool saveFile(const YAML::Node& yaml, const std::string& path);
+extern bool saveFile(
+    const YAML::Node & yaml, // YAML
+    const std::string& path  // 文件路径
+);
 
-} // END OF yaml
-} // END OF lifuren
+} // END OF lifuren::yaml
 
 #endif // LFR_HEADER_CORE_YAML_HPP

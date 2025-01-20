@@ -12,6 +12,22 @@
     pool.wait_finish();
 }
 
+[[maybe_unused]] static void testThreadTimer() {
+    int time = 0;
+    lifuren::thread::ThreadTimer timer;
+    timer.schedule(2, [&time]() {
+        SPDLOG_INFO("2 timer = {}", time++);
+    });
+    timer.schedule(5, [&time]() {
+        SPDLOG_INFO("5 timer = {}", time++);
+    });
+    // std::this_thread::sleep_for(std::chrono::seconds(5));
+    // timer.shutdown();
+    std::this_thread::sleep_for(std::chrono::seconds(15));
+    timer.shutdown();
+}
+
 LFR_TEST(
-    testThreadPool();
+    // testThreadPool();
+    testThreadTimer();
 );
