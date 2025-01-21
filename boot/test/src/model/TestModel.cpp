@@ -2,6 +2,9 @@
 
 #include <random>
 
+#include "torch/nn.h"
+#include "torch/optim.h"
+
 #include "lifuren/Model.hpp"
 #include "lifuren/Dataset.hpp"
 

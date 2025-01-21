@@ -4,12 +4,11 @@
 #ifndef LFR_HEADER_NLP_POETRY_MODEL_HPP
 #define LFR_HEADER_NLP_POETRY_MODEL_HPP
 
-#include "lifuren/Model.hpp"
-
-#include "lifuren/poetry/PoetryDataset.hpp"
-
 #include "torch/nn.h"
 #include "torch/optim.h"
+
+#include "lifuren/Model.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 namespace lifuren {
 

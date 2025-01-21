@@ -1,5 +1,5 @@
 #[[
-Copyright(c) 2024-present acgist. ALl Rights Reserved.
+Copyright(c) 2024-present acgist. All Rights Reserved.
 
 http://www.apache.org/licenses/LICENSE-2.0
 

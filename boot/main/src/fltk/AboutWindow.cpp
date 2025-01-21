@@ -52,7 +52,7 @@ void lifuren::AboutWindow::fillData() {
 https://gitee.com/acgist/lifuren
 https://github.com/acgist/lifuren
 
-Copyright(c) 2024-present acgist. ALl Rights Reserved.
+Copyright(c) 2024-present acgist. All Rights Reserved.
 
 http://www.apache.org/licenses/LICENSE-2.0
 )");

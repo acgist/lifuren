@@ -12,7 +12,7 @@ namespace lifuren {
 
 extern void setDevice(torch::DeviceType& type);
 
-extern void logTensor(const std::string& message, const torch::Tensor& tensor);
+extern void logTensor(const std::string& message, const at::Tensor& tensor);
 
 extern void logTensor(const std::string& message, const c10::IntArrayRef& tensor);
 

@@ -4,12 +4,11 @@
 #ifndef LFR_HEADER_CV_VIDEO_MODEL_HPP
 #define LFR_HEADER_CV_VIDEO_MODEL_HPP
 
-#include "lifuren/Model.hpp"
-
-#include "lifuren/video/VideoDataset.hpp"
-
 #include "torch/nn.h"
 #include "torch/optim.h"
+
+#include "lifuren/Model.hpp"
+#include "lifuren/video/VideoDataset.hpp"
 
 namespace lifuren {
 

@@ -3,6 +3,9 @@
 #include <memory>
 #include <random>
 
+#include "torch/nn.h"
+#include "torch/optim.h"
+
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Tensor.hpp"

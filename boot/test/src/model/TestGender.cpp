@@ -1,9 +1,10 @@
 #include "lifuren/Test.hpp"
 
-#include <random>
 #include <memory>
+#include <random>
 
-#include "torch/torch.h"
+#include "torch/nn.h"
+#include "torch/optim.h"
 
 #include "opencv2/opencv.hpp"
 
