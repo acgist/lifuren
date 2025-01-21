@@ -9,8 +9,9 @@
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-static size_t duration{ 0LL };
+static size_t duration{ 0 }; // 系统运行持续时间
 
+// 消息日志
 template<typename M>
 class MessageLogger : public spdlog::sinks::base_sink<M> {
 
@@ -50,7 +51,7 @@ void lifuren::logger::init() {
     auto messageSinkSPtr = std::make_shared<message_sink_mt>();
     sinks.push_back(messageSinkSPtr);
     // 默认日志
-    auto logger = std::make_shared<spdlog::logger>("lifurenLogger", sinks.begin(), sinks.end());
+    auto logger = std::make_shared<spdlog::logger>("lfr-logger", sinks.begin(), sinks.end());
     #if defined(_DEBUG) || !defined(NDEBUG)
     logger->set_level(spdlog::level::debug);
     #else

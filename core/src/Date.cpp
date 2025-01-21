@@ -1,6 +1,3 @@
-/**
- * https://zh.cppreference.com/w/cpp/io/manip/get_time
- */
 #include "lifuren/Date.hpp"
 
 #include <ctime>
@@ -19,8 +16,9 @@ std::string lifuren::date::format(const std::tm& datetime, const std::string& fo
     return output.str();
     #else
     // 性能较高
-    char output[20];
-    std::strftime(output, 20, format.c_str(), &datetime);
+    std::string output;
+    output.resize(20);
+    std::strftime(output.data(), 20, format.c_str(), &datetime);
     return output;
     #endif
 }

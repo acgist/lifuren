@@ -98,13 +98,13 @@ public:
      * path/classify2/file2.ext
      * 
      * @param path      数据路径
-     * @param exts      文件后缀
+     * @param suffix    文件后缀
      * @param classify  标签映射
      * @param transform 文件转换
      */
     FileDataset(
         const std::string                 & path,
-        const std::vector<std::string>    & exts,
+        const std::vector<std::string>    & suffix,
         const std::map<std::string, float>& classify,
         const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
     );
@@ -123,12 +123,12 @@ public:
      * path/file2.ext
      * 
      * @param path      数据路径
-     * @param exts      文件后缀
+     * @param suffix    文件后缀
      * @param transform 文件转换
      */
     FileDataset(
         const std::string             & path,
-        const std::vector<std::string>& exts,
+        const std::vector<std::string>& suffix,
         const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
     virtual ~FileDataset();

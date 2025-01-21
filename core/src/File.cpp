@@ -8,34 +8,35 @@
 #include "lifuren/String.hpp"
 
 void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path) {
-    listFile(vector, path, [](const std::string&) { return true; });
+    listFile(vector, path, [](const std::string&) {
+        return true;
+    });
 }
 
-void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& exts) {
+void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix) {
     listFile(vector, path, [&](const std::string& filename) -> bool {
-        if(exts.empty()) {
+        if(suffix.empty()) {
             return true;
         } else {
             const size_t pos = filename.find_last_of('.');
             if(pos == std::string::npos) {
                 return false;
             }
-            std::string ext = filename.substr(pos);
-            lifuren::string::toLower(ext);
-            const auto ret = std::find(exts.begin(), exts.end(), ext);
-            return ret != exts.end();
+            std::string file_suffix = filename.substr(pos);
+            lifuren::string::toLower(file_suffix);
+            const auto ret = std::find(suffix.begin(), suffix.end(), file_suffix);
+            return ret != suffix.end();
         }
     });
 }
 
-void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate) {
+void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string&)>& predicate) {
     if(!exists(path) || !is_directory(path)) {
         SPDLOG_DEBUG("目录无效：{}", path);
         return;
     }
     const auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
     for(const auto& entry : iterator) {
-        // TODO: utf8
         std::string filepath = entry.path().string();
         if(entry.is_regular_file()) {
             std::string filename = entry.path().filename().string();
@@ -56,11 +57,10 @@ std::string lifuren::file::loadFile(const std::string& path) {
     if(!input.is_open()) {
         SPDLOG_WARN("打开文件失败：{}", path);
         input.close();
-        return "";
+        return {};
     }
     std::string line;
     std::string lines;
-    // TODO: 优化速度
     while(std::getline(input, line)) {
         lines += line + '\n';
     }
@@ -101,11 +101,15 @@ bool lifuren::file::saveFile(const std::string& path, const std::string& value) 
     return true;
 }
 
-std::string lifuren::file::fileType(const std::string& path) {
-     const std::filesystem::path file { std::filesystem::path(path) };
-     std::string extension = file.extension().string();
-     if(extension.empty()) {
-        return extension;
-     }
-     return extension;
+std::string lifuren::file::fileSuffix(const std::string& path) {
+    if(path.empty()) {
+        return {};
+    }
+    const auto pos = path.find_last_of('.');
+    if(pos == path.npos) {
+        return {};
+    }
+    auto suffix = path.substr(pos);
+    lifuren::string::toLower(suffix);
+    return suffix;
 }

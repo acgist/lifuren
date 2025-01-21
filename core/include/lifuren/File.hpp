@@ -98,7 +98,7 @@ extern void listFile(
 extern void listFile(
     std::vector<std::string>      & vector, // 文件列表
     const std::string             & path,   // 路径
-    const std::vector<std::string>& exts    // 文件后缀
+    const std::vector<std::string>& suffix  // 文件后缀
 );
 
 /**
@@ -196,7 +196,7 @@ inline bool createParent(
 /**
  * @return 文件后缀：.cpp/.hpp/.zip
  */
-extern std::string fileType(
+extern std::string fileSuffix(
     const std::string& path // 文件路径
 );
 

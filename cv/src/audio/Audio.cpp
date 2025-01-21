@@ -25,7 +25,7 @@ static bool decode(AVFrame* frame, AVPacket* packet, SwrContext** swrCtx, AVCode
 static bool encode(int64_t& pts, const int64_t& nb_samples, AVFrame* frame, AVPacket* packet, AVCodecContext* encodeCodecCtx, AVFormatContext* outputCtx);
 static bool open_input (AVPacket** packet, AVFormatContext** inputCtx, const std::string& file);
 static void close_input(AVPacket** packet, AVFormatContext** inputCtx);
-static bool open_decoder (AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& ext);
+static bool open_decoder (AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& suffix);
 static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx);
 static bool open_swr (SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx);
 static void close_swr(SwrContext** swrCtx);
@@ -45,12 +45,12 @@ std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile
         close_input(&packet, &inputCtx);
         return {false, {}};
     }
-    auto pos = audioFile.find_last_of('.') + 1;
-    auto ext = audioFile.substr(pos, audioFile.length() - pos);
+    auto pos     = audioFile.find_last_of('.') + 1;
+    auto suffix  = audioFile.substr(pos, audioFile.length() - pos);
     auto pcmFile = audioFile.substr(0, pos) + "pcm";
     AVFrame       * frame         { nullptr };
     AVCodecContext* decodeCodecCtx{ nullptr };
-    if(!open_decoder(&frame, &decodeCodecCtx, ext)) {
+    if(!open_decoder(&frame, &decodeCodecCtx, suffix)) {
         close_input(&packet, &inputCtx);
         close_decoder(&frame, &decodeCodecCtx);
         return {false, pcmFile};
@@ -285,32 +285,32 @@ static void close_input(AVPacket** packet, AVFormatContext** inputCtx) {
     }
 }
 
-static bool open_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& ext) {
+static bool open_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& suffix) {
     *frame = av_frame_alloc();
     if(!*frame) {
         return false;
     }
     const AVCodec* decoder;
-    if("aac" == ext || "AAC" == ext) {
+    if("aac" == suffix || "AAC" == suffix) {
         decoder = avcodec_find_decoder(AV_CODEC_ID_AAC);
-    } else if("mp3" == ext || "MP3" == ext) {
+    } else if("mp3" == suffix || "MP3" == suffix) {
         decoder = avcodec_find_decoder(AV_CODEC_ID_MP3);
-    } else if("flac" == ext || "FLAC" == ext) {
+    } else if("flac" == suffix || "FLAC" == suffix) {
         decoder = avcodec_find_decoder(AV_CODEC_ID_FLAC);
     } else {
         return false;
     }
     if(!decoder) {
-        SPDLOG_WARN("不支持的解码格式：{}", ext);
+        SPDLOG_WARN("不支持的解码格式：{}", suffix);
         return false;
     }
     *decodeCodecCtx = avcodec_alloc_context3(decoder);
     if(!*decodeCodecCtx) {
-        SPDLOG_WARN("创建解码器上下文失败：{}", ext);
+        SPDLOG_WARN("创建解码器上下文失败：{}", suffix);
         return false;
     }
     if(avcodec_open2(*decodeCodecCtx, decoder, nullptr) != 0) {
-        SPDLOG_WARN("打开解码器上下文失败：{}", ext);
+        SPDLOG_WARN("打开解码器上下文失败：{}", suffix);
         return false;
     }
     return true;

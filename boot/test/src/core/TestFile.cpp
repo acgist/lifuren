@@ -11,7 +11,8 @@
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "/", "/", "1" }).string());
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "/", "2", "1" }).string());
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "3", "2", "1" }).string());
-    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileType("/path/filename.m.zip"));
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename"));
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename.m.zip"));
 }
 
 [[maybe_unused]] static void testListFile() {

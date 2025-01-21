@@ -11,7 +11,7 @@
 
 lifuren::dataset::FileDataset::FileDataset(
     const std::string                 & path,
-    const std::vector<std::string>    & exts,
+    const std::vector<std::string>    & suffix,
     const std::map<std::string, float>& classify,
     const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
 ) {
@@ -25,7 +25,7 @@ lifuren::dataset::FileDataset::FileDataset(
         const auto path = entry.path();
         if(entry.is_directory() && path.string() != lifuren::config::LIFUREN_HIDDEN_FILE) {
             std::vector<std::string> files;
-            lifuren::file::listFile(files, path.string(), exts);
+            lifuren::file::listFile(files, path.string(), suffix);
             for(const auto& file : files) {
                 SPDLOG_DEBUG("加载文件：{}", file);
                 this->features.push_back(std::move(transform(file, this->device)));
@@ -52,7 +52,7 @@ lifuren::dataset::FileDataset::FileDataset(
 
 lifuren::dataset::FileDataset::FileDataset(
     const std::string             & path,
-    const std::vector<std::string>& exts,
+    const std::vector<std::string>& suffix,
     const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
 ) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
@@ -61,7 +61,7 @@ lifuren::dataset::FileDataset::FileDataset(
     }
     lifuren::setDevice(this->device);
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, exts);
+    lifuren::file::listFile(files, path, suffix);
     for(const auto& file : files) {
         SPDLOG_DEBUG("加载文件：{}", file);
         transform(file, this->labels, this->features, this->device);

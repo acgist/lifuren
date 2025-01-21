@@ -36,8 +36,10 @@
     const std::string date = "2012-12-12 12:12:12";
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     const uint64_t millis = lifuren::date::to_millis(now);
-    lifuren::test::loop(100'000, [&now, date, millis]() {
-        lifuren::date::format(now, LFR_DATE_TIME_FORMAT);
+    const std::tm tm = lifuren::date::parse_tm(millis);
+    lifuren::test::loop(100'000, [&tm, &now, date, millis]() {
+        lifuren::date::format(tm, LFR_DATE_TIME_FORMAT);
+        // lifuren::date::format(now, LFR_DATE_TIME_FORMAT);
         // lifuren::date::to_millis(now);
         // lifuren::date::parse_tm(millis);
         // lifuren::date::parse_tm(date, LFR_DATE_TIME_FORMAT);
