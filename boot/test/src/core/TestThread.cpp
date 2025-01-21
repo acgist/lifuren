@@ -21,7 +21,7 @@
     timer.schedule(5, [&time]() {
         SPDLOG_INFO("5 timer = {}", time++);
     });
-    // std::this_thread::sleep_for(std::chrono::seconds(5));
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
     // timer.shutdown();
     std::this_thread::sleep_for(std::chrono::seconds(15));
     timer.shutdown();

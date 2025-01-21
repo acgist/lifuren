@@ -49,13 +49,13 @@ class ThreadWorker {
 
 public:
     thread_local static ThreadWorker* this_thread_worker; // 当前执行线程
+
+public:
     bool stop    { true       }; // 是否停止
     Type type    { Type::NONE }; // 线程类型
     void* source { nullptr    }; // 线程来源
     std::shared_ptr<std::thread> thread{ nullptr }; // 执行线程
-
-public:
-    ~ThreadWorker();
+    // ~ this->thread.join();
 
 public:
     static bool is_running();     // 是否运行
@@ -152,8 +152,9 @@ auto ThreadPool::submit(F&& func, Args&&... args) -> std::future<typename std::i
         if(this->stop) {
             throw std::runtime_error("线程池已关闭");
         }
-        // std::move(task)
-        this->tasks.emplace([task](){ (*task)(); });
+        this->tasks.emplace([task]() {
+            (*task)();
+        });
         ++this->tasks_count;
     }
     this->condition.notify_one();

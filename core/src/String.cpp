@@ -5,23 +5,23 @@
 #include <cstring>
 
 std::vector<std::string> lifuren::string::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
-    std::vector<std::string> vector;
-    size_t pos   = 0LL;
-    size_t index = 0LL;
+    size_t pos   = 0;
+    size_t index = 0;
     std::string substr;
+    std::vector<std::string> vector;
     while(true) {
         pos = content.find(delim, index);
         if(pos == std::string::npos) {
             break;
         }
-        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        substr = content.substr(index, retain ? (pos - index + delim.length()) : (pos - index));
         if(filter) {
             substr = lifuren::string::trim(substr);
             if(!substr.empty()) {
-                vector.push_back(substr);
+                vector.push_back(std::move(substr));
             }
         } else {
-            vector.push_back(substr);
+            vector.push_back(std::move(substr));
         }
         index = pos + delim.length();
     }
@@ -30,21 +30,21 @@ std::vector<std::string> lifuren::string::split(const std::string& content, cons
         if(filter) {
             substr = lifuren::string::trim(substr);
             if(!substr.empty()) {
-                vector.push_back(substr);
+                vector.push_back(std::move(substr));
             }
         } else {
-            vector.push_back(substr);
+            vector.push_back(std::move(substr));
         }
     }
     return vector;
 }
 
 std::vector<std::string> lifuren::string::split(const std::string& content, const std::vector<std::string>& multi, bool retain, bool filter) {
-    std::vector<std::string> vector;
-    size_t pos   = 0LL;
-    size_t index = 0LL;
+    size_t pos   = 0;
+    size_t index = 0;
     std::string delim;
     std::string substr;
+    std::vector<std::string> vector;
     while(true) {
         size_t min = std::string::npos;
         for(const auto& value : multi) {
@@ -58,14 +58,14 @@ std::vector<std::string> lifuren::string::split(const std::string& content, cons
         if(pos == std::string::npos) {
             break;
         }
-        substr = content.substr(index, retain ? pos - index + delim.length() : pos - index);
+        substr = content.substr(index, retain ? (pos - index + delim.length()) : (pos - index));
         if(filter) {
             substr = lifuren::string::trim(substr);
             if(!substr.empty()) {
-                vector.push_back(substr);
+                vector.push_back(std::move(substr));
             }
         } else {
-            vector.push_back(substr);
+            vector.push_back(std::move(substr));
         }
         index = pos + delim.length();
     }
@@ -74,10 +74,10 @@ std::vector<std::string> lifuren::string::split(const std::string& content, cons
         if(filter) {
             substr = lifuren::string::trim(substr);
             if(!substr.empty()) {
-                vector.push_back(substr);
+                vector.push_back(std::move(substr));
             }
         } else {
-            vector.push_back(substr);
+            vector.push_back(std::move(substr));
         }
     }
     return vector;
@@ -86,22 +86,22 @@ std::vector<std::string> lifuren::string::split(const std::string& content, cons
 std::string lifuren::string::trim(const std::string& value) {
     std::size_t index = value.find_first_not_of(EMPTY_CHARS);
     if(index == std::string::npos) {
-        return std::string();
+        return {};
     }
     std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
     return value.substr(index, jndex + 1 - index);
 }
 
 char* lifuren::string::trim(char* value) {
-    const int size = std::strlen(value);
-    char* index = value;
-    char* jndex = value + size - 1;
-    int length = size;
-    while(index >= value && std::strchr(EMPTY_CHARS, *index)) {
+    const int   size   = std::strlen(value);
+          char* index  = value;
+          char* jndex  = value + size - 1;
+          int   length = size;
+    while(length >= 0 && std::strchr(EMPTY_CHARS, *index)) {
         ++index;
         --length;
     }
-    while(*jndex != '\0' && std::strchr(EMPTY_CHARS, *jndex)) {
+    while(length >= 0 && std::strchr(EMPTY_CHARS, *jndex)) {
         *jndex = '\0';
         --jndex;
         --length;
@@ -113,8 +113,8 @@ char* lifuren::string::trim(char* value) {
 }
 
 size_t lifuren::string::length(const char* value) {
-    size_t index = 0LL;
-    size_t jndex = 0LL;
+    size_t index = 0;
+    size_t jndex = 0;
     while (value[index]) {
         if ((value[index] & 0xC0) != 0x80) {
             ++jndex;
@@ -149,19 +149,18 @@ std::vector<std::string> lifuren::string::toChars(const std::string& segment, bo
             if(filter) {
                 ret = lifuren::string::trim(ret);
                 if(!ret.empty()) {
-                    vector.push_back(ret);
+                    vector.push_back(std::move(ret));
                 }
             } else {
-                vector.push_back(ret);
+                vector.push_back(std::move(ret));
             }
-            ret.clear();
         };
     }
     return vector;
 }
 
 void lifuren::string::replace(std::string& value, const std::string& oldValue, const std::string& newValue) {
-    std::string::size_type index = 0LL;
+    std::string::size_type index = 0;
     std::string::size_type oldValueLength = oldValue.length();
     std::string::size_type newValueLength = newValue.length();
     while(true) {

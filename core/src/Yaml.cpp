@@ -10,7 +10,7 @@
 
 YAML::Node lifuren::yaml::loadFile(const std::string& path) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
-        return YAML::Node();
+        return {};
     }
     return YAML::LoadFile(path);
 }
@@ -20,7 +20,7 @@ bool lifuren::yaml::saveFile(const YAML::Node& yaml, const std::string& path) {
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
-        SPDLOG_WARN("配置打开文件失败：{}", path);
+        SPDLOG_WARN("打开文件失败：{}", path);
         output.close();
         return false;
     }

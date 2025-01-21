@@ -1,12 +1,12 @@
 #include "lifuren/Message.hpp"
 
 #include <map>
-#include <thread>
 
 #include "spdlog/spdlog.h"
 
 thread_local lifuren::message::Type lifuren::message::thread_message_type = lifuren::message::Type::NONE;
 
+// 消息类型 = 消息回调
 static std::map<lifuren::message::Type, std::function<void(bool, const char*)>> message_callback;
 
 void lifuren::message::registerMessageCallback(lifuren::message::Type type, std::function<void(bool, const char*)> callback) {
@@ -26,9 +26,9 @@ void lifuren::message::sendMessage(const char* message, bool finish) {
 }
 
 void lifuren::message::sendMessage(lifuren::message::Type type, const char* message, bool finish) {
-    const auto iter = message_callback.find(type);
-    if(iter == message_callback.end()) {
+    const auto iterator = message_callback.find(type);
+    if(iterator == message_callback.end()) {
         return;
     }
-    iter->second(finish, message);
+    iterator->second(finish, message);
 }

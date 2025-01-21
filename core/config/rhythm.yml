@@ -6,10 +6,10 @@
   example: |
     床前明月光，疑是地上霜。
     举头望明月，低头思故乡。
-  fontSize: 20
-  segmentSize: 4
-  segmentRule: [ 5, 5, 5, 5 ]
-  participleRule: [
+  font-size: 20
+  segment-size: 4
+  segment-rule: [ 5, 5, 5, 5 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 3, 2, 3
   ]
@@ -20,10 +20,10 @@
   example: |
     月落乌啼霜满天，江枫渔火对愁眠。
     姑苏城外寒山寺，夜半钟声到客船。
-  fontSize: 28
-  segmentSize: 4
-  segmentRule: [ 7, 7, 7, 7 ]
-  participleRule: [
+  font-size: 28
+  segment-size: 4
+  segment-rule: [ 7, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3
   ]
@@ -36,10 +36,10 @@
     感时花溅泪，恨别鸟惊心。
     烽火连三月，家书抵万金。
     白头掻更短，浑欲不胜簪。
-  fontSize: 40
-  segmentSize: 8
-  segmentRule: [ 5, 5, 5, 5, 5, 5, 5, 5 ]
-  participleRule: [
+  font-size: 40
+  segment-size: 8
+  segment-rule: [ 5, 5, 5, 5, 5, 5, 5, 5 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 3, 2, 3,
     2, 3, 2, 3,
@@ -54,10 +54,10 @@
     无边落木萧萧下，不尽长江滚滚来。
     万里悲秋常作客，百年多病独登台。
     艰难苦恨繁霜鬓，潦倒新停浊酒杯。
-  fontSize: 56
-  segmentSize: 8
-  segmentRule: [ 7, 7, 7, 7, 7, 7, 7, 7 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 8
+  segment-rule: [ 7, 7, 7, 7, 7, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
@@ -79,10 +79,10 @@
     小楼昨夜又东风，故国不堪回首月明中。
     雕栏玉砌应犹在，只是朱颜改。
     问君能有几多愁？恰似一江春水向东流。
-  fontSize: 56
-  segmentSize: 8
-  segmentRule: [ 7, 5, 7, 9, 7, 5, 7, 9 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 8
+  segment-rule: [ 7, 5, 7, 9, 7, 5, 7, 9 ]
+  participle-rule: [
     2, 2, 3, 2, 3,
     2, 2, 3, 2, 2, 2, 3,
     2, 2, 3, 2, 3,
@@ -97,10 +97,10 @@
     夜阑风细得香迟。不道晓来开遍、向南枝。
     玉台弄粉花应妒。飘到眉心住。
     平生个里愿杯深。去国十年老尽、少年心。
-  fontSize: 56
-  segmentSize: 10
-  segmentRule: [ 7, 5, 7, 6, 3, 7, 5, 7, 6, 3 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 10
+  segment-rule: [ 7, 5, 7, 6, 3, 7, 5, 7, 6, 3 ]
+  participle-rule: [
     2, 2, 3, 2, 3,
     2, 2, 3, 2, 2, 2, 3,
     2, 2, 3, 2, 3,
@@ -115,10 +115,10 @@
     玉勒雕鞍游冶处，楼高不见章台路。
     雨横风狂三月暮，门掩黄昏，无计留春住。
     泪眼问花花不语，乱红飞过秋千去。
-  fontSize: 60
-  segmentSize: 10
-  segmentRule: [ 7, 4, 5, 7, 7, 7, 4, 5, 7, 7 ]
-  participleRule: [
+  font-size: 60
+  segment-size: 10
+  segment-rule: [ 7, 4, 5, 7, 7, 7, 4, 5, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 2, 3, 2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 2, 3, 2, 2, 3, 2, 2, 3
   ]
@@ -131,10 +131,10 @@
     山映斜阳天接水，芳草无情，更在斜阳外。
     黯乡魂，追旅思，夜夜除非，好梦留人睡。
     明月楼高休独倚，酒入愁肠，化作相思泪。
-  fontSize: 62
-  segmentSize: 14
-  segmentRule: [ 3, 3, 4, 5, 7, 4, 5, 3, 3, 4, 5, 7, 4, 5 ]
-  participleRule: [
+  font-size: 62
+  segment-size: 14
+  segment-rule: [ 3, 3, 4, 5, 7, 4, 5, 3, 3, 4, 5, 7, 4, 5 ]
+  participle-rule: [
     3, 3, 2, 2, 2, 3,
     2, 2, 3, 2, 2, 2, 3,
     3, 3, 2, 2, 2, 3,
@@ -149,10 +149,10 @@
     佳节又重阳，玉枕纱厨，半夜凉初透。
     东篱把酒黄昏后，有暗香盈袖。
     莫道不销魂，帘卷西风，人比黄花瘦。
-  fontSize: 52
-  segmentSize: 10
-  segmentRule: [ 7, 5, 5, 4, 5, 7, 5, 5, 4, 5 ]
-  participleRule: [
+  font-size: 52
+  segment-size: 10
+  segment-rule: [ 7, 5, 5, 4, 5, 7, 5, 5, 4, 5 ]
+  participle-rule: [
     2, 2, 3, 2, 3,
     2, 3, 2, 2, 2, 3,
     2, 2, 3, 2, 3,
@@ -171,10 +171,10 @@
     羽扇纶巾，谈笑间、樯橹灰飞烟灭。
     故国神游，多情应笑我，早生华发。
     人生如梦，一尊还酹江月。
-  fontSize: 100
-  segmentSize: 22
-  segmentRule: [ 4, 3, 6, 4, 3, 6, 4, 4, 5, 4, 6, 6, 5, 4, 4, 3, 6, 4, 5, 4, 4, 6 ]
-  participleRule: [
+  font-size: 100
+  segment-size: 22
+  segment-rule: [ 4, 3, 6, 4, 3, 6, 4, 4, 5, 4, 6, 6, 5, 4, 4, 3, 6, 4, 5, 4, 4, 6 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 2,
     2, 2, 3, 2, 2, 2,
     2, 2, 2, 2, 2, 3,
@@ -197,10 +197,10 @@
     起舞徘徊风露下，今夕不知何夕？
     便欲乘风，翻然归去，何用骑鹏翼。
     水晶宫里，一声吹断横笛。
-  fontSize: 100
-  segmentSize: 21
-  segmentRule: [ 4, 5, 4, 4, 3, 6, 4, 4, 5, 4, 6, 6, 4, 5, 7, 6, 4, 4, 5, 4, 6 ]
-  participleRule: [
+  font-size: 100
+  segment-size: 21
+  segment-rule: [ 4, 5, 4, 4, 3, 6, 4, 4, 5, 4, 6, 6, 4, 5, 7, 6, 4, 4, 5, 4, 6 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 2,
     2, 2, 3, 2, 2, 2,
     2, 2, 2, 2, 2, 3,
@@ -218,10 +218,10 @@
     团扇，团扇，美人病来遮面。
     玉颜憔悴三年，谁复商量管弦。
     弦管，弦管，春草昭阳路断。
-  fontSize: 32
-  segmentSize: 8
-  segmentRule: [ 2, 2, 6, 6, 6, 2, 2, 6 ]
-  participleRule: [
+  font-size: 32
+  segment-size: 8
+  segment-rule: [ 2, 2, 6, 6, 6, 2, 2, 6 ]
+  participle-rule: [
     2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2
@@ -239,10 +239,10 @@
     四十三年，望中犹记，烽火扬州路。
     可堪回首，佛狸祠下，一片神鸦社鼓。
     凭谁问：廉颇老矣，尚能饭否？
-  fontSize: 104
-  segmentSize: 24
-  segmentRule: [ 4, 4, 4, 4, 4, 5, 4, 4, 6, 3, 4, 6, 4, 4, 6, 4, 4, 5, 4, 4, 6, 3, 4, 4 ]
-  participleRule: [
+  font-size: 104
+  segment-size: 24
+  segment-rule: [ 4, 4, 4, 4, 4, 5, 4, 4, 6, 3, 4, 6, 4, 4, 6, 4, 4, 5, 4, 4, 6, 3, 4, 4 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 3,
     2, 2, 2, 2, 2, 2, 2,
@@ -261,10 +261,10 @@
     谁见幽人独往来？缥缈孤鸿影。
     惊起却回头，有恨无人省。
     拣尽寒枝不肯栖，寂寞沙洲冷。
-  fontSize: 44
-  segmentSize: 8
-  segmentRule: [ 5, 5, 7, 5, 5, 5, 7, 5 ]
-  participleRule: [
+  font-size: 44
+  segment-size: 8
+  segment-rule: [ 5, 5, 7, 5, 5, 5, 7, 5 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 2, 3, 2, 3,
     2, 3, 2, 3,
@@ -278,10 +278,10 @@
     曾宴桃源深洞，一曲舞鸾歌凤。
     长记别伊时，和泪出门相送。
     如梦，如梦，残月落花烟重。
-  fontSize: 33
-  segmentSize: 7
-  segmentRule: [ 6, 6, 5, 6, 2, 2, 6 ]
-  participleRule: [
+  font-size: 33
+  segment-size: 7
+  segment-rule: [ 6, 6, 5, 6, 2, 2, 6 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2,
     2, 3, 2, 2, 2,
     2, 2, 2, 2, 2
@@ -295,10 +295,10 @@
     行到小溪深处，有黄鹂千百。
     飞云当面化龙蛇，夭矫转空碧。
     醉卧古藤阴下，了不知南北。
-  fontSize: 45
-  segmentSize: 8
-  segmentRule: [ 5, 6, 6, 5, 7, 5, 6, 5 ]
-  participleRule: [
+  font-size: 45
+  segment-size: 8
+  segment-rule: [ 5, 6, 6, 5, 7, 5, 6, 5 ]
+  participle-rule: [
     2, 3, 2, 2, 2,
     2, 2, 2, 3, 2,
     2, 2, 3, 2, 3,
@@ -313,10 +313,10 @@
     金风玉露一相逢，便胜却人间无数。
     柔情似水，佳期如梦，忍顾鹊桥归路。
     两情若是久长时，又岂在朝朝暮暮。
-  fontSize: 56
-  segmentSize: 10
-  segmentRule: [ 4, 4, 6, 7, 7, 4, 4, 6, 7, 7 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 10
+  segment-rule: [ 4, 4, 6, 7, 7, 4, 4, 6, 7, 7 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2, 2,
     2, 2, 3, 3, 2, 2,
     2, 2, 2, 2, 2, 2, 2,
@@ -329,10 +329,10 @@
   example: |
     一曲新词酒一杯，去年天气旧亭台。夕阳西下几时回？
     无可奈何花落去，似曾相识燕归来。小园香径独徘徊。
-  fontSize: 42
-  segmentSize: 6
-  segmentRule: [ 7, 7, 7, 7, 7, 7 ]
-  participleRule: [
+  font-size: 42
+  segment-size: 6
+  segment-rule: [ 7, 7, 7, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3, 2, 2, 3
   ]
@@ -349,10 +349,10 @@
     求田问舍，怕应羞见，刘郎才气。
     可惜流年，忧愁风雨，树犹如此！
     倩何人唤取，红巾翠袖，揾英雄泪！
-  fontSize: 102
-  segmentSize: 24
-  segmentRule: [ 6, 7, 4, 4, 4, 4, 4, 4, 5, 4, 3, 3, 6, 3, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4 ]
-  participleRule: [
+  font-size: 102
+  segment-size: 24
+  segment-rule: [ 6, 7, 4, 4, 4, 4, 4, 4, 5, 4, 3, 3, 6, 3, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 3,
     2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2,
@@ -370,10 +370,10 @@
     梳洗罢，独倚望江楼。
     过尽千帆皆不是，斜晖脉脉水悠悠。
     肠断白蘋洲。
-  fontSize: 27
-  segmentSize: 5
-  segmentRule: [ 3, 5, 7, 7, 5 ]
-  participleRule: [
+  font-size: 27
+  segment-size: 5
+  segment-rule: [ 3, 5, 7, 7, 5 ]
+  participle-rule: [
     3, 2, 3,
     2, 2, 3, 2, 2, 3,
     2, 3
@@ -389,10 +389,10 @@
     寒食后，酒醒却咨嗟。
     休对故人思故国，且将新火试新茶。
     诗酒趁年华。
-  fontSize: 54
-  segmentSize: 10
-  segmentRule: [ 3, 5, 7, 7, 5, 3, 5, 7, 7, 5 ]
-  participleRule: [
+  font-size: 54
+  segment-size: 10
+  segment-rule: [ 3, 5, 7, 7, 5, 3, 5, 7, 7, 5 ]
+  participle-rule: [
     3, 2, 3,
     2, 2, 3, 2, 2, 3,
     2, 3,
@@ -411,10 +411,10 @@
     白发渔樵江渚上，惯看秋月春风。
     一壶浊酒喜相逢。
     古今多少事，都付笑谈中。
-  fontSize: 60
-  segmentSize: 10
-  segmentRule: [ 7, 6, 7, 5, 5, 7, 6, 7, 5, 5 ]
-  participleRule: [
+  font-size: 60
+  segment-size: 10
+  segment-rule: [ 7, 6, 7, 5, 5, 7, 6, 7, 5, 5 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 2,
     2, 2, 3,
     2, 3, 2, 3,
@@ -431,10 +431,10 @@
     眉翠薄，鬓云残，夜长衾枕寒。
     梧桐树，三更雨，不道离情正苦。
     一叶叶，一声声，空阶滴到明。
-  fontSize: 46
-  segmentSize: 12
-  segmentRule: [ 3, 3, 6, 3, 3, 5, 3, 3, 6, 3, 3, 5 ]
-  participleRule: [
+  font-size: 46
+  segment-size: 12
+  segment-rule: [ 3, 3, 6, 3, 3, 5, 3, 3, 6, 3, 3, 5 ]
+  participle-rule: [
     3, 3, 2, 2, 2,
     3, 3, 2, 3,
     3, 3, 2, 2, 2,
@@ -453,10 +453,10 @@
     且陶陶、乐尽天真。
     几时归去，作个闲人。
     对一张琴，一壶酒，一溪云。
-  fontSize: 66
-  segmentSize: 18
-  segmentRule: [ 4, 4, 3, 4, 4, 4, 4, 3, 3, 4, 4, 3, 4, 4, 4, 4, 3, 3 ]
-  participleRule: [
+  font-size: 66
+  segment-size: 18
+  segment-rule: [ 4, 4, 3, 4, 4, 4, 4, 3, 3, 4, 4, 3, 4, 4, 4, 4, 3, 3 ]
+  participle-rule: [
     2, 2, 2, 2,
     3, 2, 2,
     2, 2, 2, 2,
@@ -475,10 +475,10 @@
     小楼昨夜又东风，故国不堪回首月明中。
     雕栏玉砌应犹在，只是朱颜改。
     问君能有几多愁？恰似一江春水向东流。
-  fontSize: 56
-  segmentSize: 8
-  segmentRule: [ 7, 5, 7, 9, 7, 5, 7, 9 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 8
+  segment-rule: [ 7, 5, 7, 9, 7, 5, 7, 9 ]
+  participle-rule: [
     2, 2, 3, 2, 3,
     2, 2, 3, 2, 2, 2, 3,
     2, 2, 3, 2, 3,
@@ -495,10 +495,10 @@
     驿寄梅花，鱼传尺素。
     砌成此恨无重数。
     郴江幸自绕郴山，为谁流下潇湘去。
-  fontSize: 58
-  segmentSize: 10
-  segmentRule: [ 4, 4, 7, 7, 7, 4, 4, 7, 7, 7 ]
-  participleRule: [
+  font-size: 58
+  segment-size: 10
+  segment-rule: [ 4, 4, 7, 7, 7, 4, 4, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 2, 2,
     2, 2, 3,
     2, 2, 3, 2, 2, 3,
@@ -515,10 +515,10 @@
     露浓花瘦，薄汗轻衣透。
     见客入来，袜刬金钗溜。
     和羞走，倚门回首，却把青梅嗅。
-  fontSize: 41
-  segmentSize: 9
-  segmentRule: [ 4, 7, 4, 5, 4, 5, 3, 4, 5 ]
-  participleRule: [
+  font-size: 41
+  segment-size: 9
+  segment-rule: [ 4, 7, 4, 5, 4, 5, 3, 4, 5 ]
+  participle-rule: [
     2, 2, 2, 2, 3,
     2, 2, 2, 3,
     2, 2, 2, 3,
@@ -533,10 +533,10 @@
     舞低杨柳楼心月，歌尽桃花扇底风。
     从别后，忆相逢。几回魂梦与君同。
     今宵剩把银釭照，犹恐相逢是梦中。
-  fontSize: 55
-  segmentSize: 9
-  segmentRule: [ 7, 7, 7, 7, 3, 3, 7, 7, 7 ]
-  participleRule: [
+  font-size: 55
+  segment-size: 9
+  segment-rule: [ 7, 7, 7, 7, 3, 3, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
     3, 3, 2, 2, 3,
@@ -551,10 +551,10 @@
     绿杨烟外晓寒轻，红杏枝头春意闹。
     浮生长恨欢娱少，肯爱千金轻一笑。
     为君持酒劝斜阳，且向花间留晚照。
-  fontSize: 56
-  segmentSize: 8
-  segmentRule: [ 7, 7, 7, 7, 7, 7, 7, 7 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 8
+  segment-rule: [ 7, 7, 7, 7, 7, 7, 7, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
@@ -569,10 +569,10 @@
     西北望长安，可怜无数山。
     青山遮不住，毕竟东流去。
     江晚正愁余，山深闻鹧鸪。
-  fontSize: 44
-  segmentSize: 8
-  segmentRule: [ 7, 7, 5, 5, 5, 5, 5, 5 ]
-  participleRule: [
+  font-size: 44
+  segment-size: 8
+  segment-rule: [ 7, 7, 5, 5, 5, 5, 5, 5 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 3, 2, 3,
     2, 3, 2, 3,
@@ -587,10 +587,10 @@
     四面边声连角起，千嶂里，长烟落日孤城闭。
     浊酒一杯家万里，燕然未勒归无计。
     羌管悠悠霜满地，人不寐，将军白发征夫泪。
-  fontSize: 62
-  segmentSize: 10
-  segmentRule: [ 7, 7, 7, 3, 7, 7, 7, 7, 3, 7 ]
-  participleRule: [
+  font-size: 62
+  segment-size: 10
+  segment-rule: [ 7, 7, 7, 3, 7, 7, 7, 7, 3, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     2, 2, 3, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 3,
@@ -603,10 +603,10 @@
   example: |
     西塞山前白鹭飞，桃花流水鳜鱼肥。
     青箬笠，绿蓑衣，斜风细雨不须归。
-  fontSize: 27
-  segmentSize: 5
-  segmentRule: [ 7, 7, 3, 3, 7 ]
-  participleRule: [
+  font-size: 27
+  segment-size: 5
+  segment-rule: [ 7, 7, 3, 3, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 3,
     3, 3, 2, 2, 3
   ]
@@ -619,10 +619,10 @@
     碧烟中，明月下，小艇垂纶初罢。
     水为乡，篷作舍，鱼羹稻饭常餐也。
     酒盈杯，书满架，名利不将心挂。
-  fontSize: 50
-  segmentSize: 12
-  segmentRule: [ 3, 3, 7, 3, 3, 6, 3, 3, 7, 3, 3, 6 ]
-  participleRule: [
+  font-size: 50
+  segment-size: 12
+  segment-rule: [ 3, 3, 7, 3, 3, 6, 3, 3, 7, 3, 3, 6 ]
+  participle-rule: [
     3, 3, 2, 2, 3,
     3, 3, 2, 2, 2,
     3, 3, 2, 2, 3,
@@ -639,10 +639,10 @@
     飞云冉冉蘅皋暮，彩笔新题断肠句。
     试问闲情都几许？
     一川烟草，满城风絮，梅子黄时雨。
-  fontSize: 67
-  segmentSize: 13
-  segmentRule: [ 7, 3, 3, 7, 4, 4, 5, 7, 7, 7, 4, 4, 5 ]
-  participleRule: [
+  font-size: 67
+  segment-size: 13
+  segment-rule: [ 7, 3, 3, 7, 4, 4, 5, 7, 7, 7, 4, 4, 5 ]
+  participle-rule: [
     2, 2, 3, 3, 3,
     2, 2, 3,
     2, 2, 2, 2, 2, 3,
@@ -659,10 +659,10 @@
     若有人知春去处，唤取归来同住。
     春无踪迹谁知？除非问取黄鹂。
     百啭无人能解，因风飞过蔷薇。
-  fontSize: 46
-  segmentSize: 8
-  segmentRule: [ 4, 5, 7, 6, 6, 6, 6, 6 ]
-  participleRule: [
+  font-size: 46
+  segment-size: 8
+  segment-rule: [ 4, 5, 7, 6, 6, 6, 6, 6 ]
+  participle-rule: [
     2, 2, 2, 3,
     2, 2, 3, 2, 2, 2,
     2, 2, 2, 2, 2, 2,
@@ -677,10 +677,10 @@
     千古兴亡多少事？悠悠。不尽长江滚滚流。
     年少万兜鍪，坐断东南战未休。
     天下英雄谁敌手？曹刘。生子当如孙仲谋。
-  fontSize: 56
-  segmentSize: 10
-  segmentRule: [ 5, 7, 7, 2, 7, 5, 7, 7, 2, 7 ]
-  participleRule: [
+  font-size: 56
+  segment-size: 10
+  segment-rule: [ 5, 7, 7, 2, 7, 5, 7, 7, 2, 7 ]
+  participle-rule: [
     2, 3, 2, 2, 3,
     2, 2, 3, 2, 2, 2, 3,
     2, 3, 2, 2, 3,
@@ -697,10 +697,10 @@
     翠贴莲蓬小，金销藕叶稀。
     旧时天气旧时衣。
     只有情怀不似、旧家时。
-  fontSize: 52
-  segmentSize: 10
-  segmentRule: [ 5, 5, 7, 6, 3, 5, 5, 7, 6, 3 ]
-  participleRule: [
+  font-size: 52
+  segment-size: 10
+  segment-rule: [ 5, 5, 7, 6, 3, 5, 5, 7, 6, 3 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 2, 3,
     2, 2, 2, 3,
@@ -715,10 +715,10 @@
   example: |
     时光只解催人老，不信多情，长恨离亭，泪滴春衫酒易醒。
     梧桐昨夜西风急，淡月胧明，好梦频惊，何处高楼雁一声？
-  fontSize: 44
-  segmentSize: 8
-  segmentRule: [ 7, 4, 4, 7, 7, 4, 4, 7 ]
-  participleRule: [
+  font-size: 44
+  segment-size: 8
+  segment-rule: [ 7, 4, 4, 7, 7, 4, 4, 7 ]
+  participle-rule: [
     2, 2, 3, 2, 2, 2, 2, 2, 2, 3,
     2, 2, 3, 2, 2, 2, 2, 2, 2, 3
   ]
@@ -731,10 +731,10 @@
     夜来风叶已鸣廊。看取眉头鬓上。
     酒贱常愁客少，月明多被云妨。
     中秋谁与共孤光。把盏凄然北望。
-  fontSize: 50
-  segmentSize: 8
-  segmentRule: [ 6, 6, 7, 6, 6, 6, 7, 6 ]
-  participleRule: [
+  font-size: 50
+  segment-size: 8
+  segment-rule: [ 6, 6, 7, 6, 6, 6, 7, 6 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 2,
     2, 2, 2, 2, 2, 2,
@@ -749,10 +749,10 @@
     关河梦断何处？尘暗旧貂裘。
     胡未灭，鬓先秋，泪空流。
     此生谁料，心在天山，身老沧洲。
-  fontSize: 44
-  segmentSize: 10
-  segmentRule: [ 7, 5, 6, 5, 3, 3, 3, 4, 4, 4 ]
-  participleRule: [
+  font-size: 44
+  segment-size: 10
+  segment-rule: [ 7, 5, 6, 5, 3, 3, 3, 4, 4, 4 ]
+  participle-rule: [
     2, 2, 3, 2, 3,
     2, 2, 2, 2, 3,
     3, 3, 3,
@@ -771,10 +771,10 @@
     惜秦皇汉武，略输文采；唐宗宋祖，稍逊风骚。
     一代天骄，成吉思汗，只识弯弓射大雕。
     俱往矣，数风流人物，还看今朝。
-  fontSize: 114
-  segmentSize: 25
-  segmentRule: [ 4, 4, 4, 5, 4, 4, 4, 4, 4, 7, 3, 5, 4, 6, 8, 5, 4, 4, 4, 4, 4, 7, 3, 5, 4 ]
-  participleRule: [
+  font-size: 114
+  segment-size: 25
+  segment-rule: [ 4, 4, 4, 5, 4, 4, 4, 4, 4, 7, 3, 5, 4, 6, 8, 5, 4, 4, 4, 4, 4, 7, 3, 5, 4 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2,
     1, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 3,
@@ -793,10 +793,10 @@
     朱粉不深匀，闲花淡淡春。
     细看诸处好，人人道，柳腰身。
     昨日乱山昏，来时衣上云。
-  fontSize: 42
-  segmentSize: 10
-  segmentRule: [ 5, 3, 3, 5, 5, 5, 3, 3, 5, 5 ]
-  participleRule: [
+  font-size: 42
+  segment-size: 10
+  segment-rule: [ 5, 3, 3, 5, 5, 5, 3, 3, 5, 5 ]
+  participle-rule: [
     2, 3, 3, 3,
     2, 3, 2, 3,
     2, 3, 3, 3,
@@ -817,10 +817,10 @@
     回首叫、云飞风起。
     不恨古人吾不见，恨古人不见吾狂耳。
     知我者，二三子。
-  fontSize: 116
-  segmentSize: 24
-  segmentRule: [ 5, 3, 4, 4, 7, 6, 3, 4, 7, 8, 3, 3, 7, 3, 4, 4, 7, 6, 3, 4, 7, 8, 3, 3 ]
-  participleRule: [
+  font-size: 116
+  segment-size: 24
+  segment-rule: [ 5, 3, 4, 4, 7, 6, 3, 4, 7, 8, 3, 3, 7, 3, 4, 4, 7, 6, 3, 4, 7, 8, 3, 3 ]
+  participle-rule: [
     2, 3, 3, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 2,
     3, 2, 2,
@@ -845,10 +845,10 @@
     谩赢得、青楼薄幸名存。
     此去何时见也？襟袖上、空惹啼痕。
     伤情处，高城望断，灯火已黄昏。
-  fontSize: 95
-  segmentSize: 22
-  segmentRule: [ 4, 4, 6, 4, 5, 6, 3, 4, 3, 4, 5, 5, 4, 4, 3, 6, 6, 3, 4, 3, 4, 5 ]
-  participleRule: [
+  font-size: 95
+  segment-size: 22
+  segment-rule: [ 4, 4, 6, 4, 5, 6, 3, 4, 3, 4, 5, 5, 4, 4, 3, 6, 6, 3, 4, 3, 4, 5 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 3,
     2, 2, 2, 3, 2, 2,
@@ -871,10 +871,10 @@
     驾长车，踏破贺兰山缺。
     壮志饥餐胡虏肉，笑谈渴饮匈奴血。
     待从头、收拾旧山河，朝天阙。
-  fontSize: 93
-  segmentSize: 22
-  segmentRule: [ 4, 3, 4, 3, 4, 4, 7, 7, 3, 5, 3, 3, 3, 3, 3, 3, 6, 7, 7, 3, 5, 3 ]
-  participleRule: [
+  font-size: 93
+  segment-size: 22
+  segment-rule: [ 4, 3, 4, 3, 4, 4, 7, 7, 3, 5, 3, 3, 3, 3, 3, 3, 6, 7, 7, 3, 5, 3 ]
+  participle-rule: [
     2, 2, 3, 2, 2,
     3, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 3,
@@ -897,10 +897,10 @@
     一万年太久，只争朝夕。
     四海翻腾云水怒，五洲震荡风雷激。
     要扫除一切害人虫，全无敌。
-  fontSize: 93
-  segmentSize: 19
-  segmentRule: [ 4, 7, 3, 4, 4, 7, 7, 8, 3, 3, 3, 3, 3, 5, 4, 7, 7, 8, 3 ]
-  participleRule: [
+  font-size: 93
+  segment-size: 19
+  segment-rule: [ 4, 7, 3, 4, 4, 7, 7, 8, 3, 3, 3, 3, 3, 5, 4, 7, 7, 8, 3 ]
+  participle-rule: [
     2, 2, 3, 2, 2,
     3, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 3,
@@ -923,10 +923,10 @@
     叹十常八九，欲磨还缺。
     但愿长圆如此夜，人情未必看承别。
     把从前、离恨总成欢，归时说。
-  fontSize: 93
-  segmentSize: 22
-  segmentRule: [ 4, 3, 4, 3, 4, 4, 7, 7, 3, 5, 3, 3, 3, 3, 3, 5, 4, 7, 7, 3, 5, 3 ]
-  participleRule: [
+  font-size: 93
+  segment-size: 22
+  segment-rule: [ 4, 3, 4, 3, 4, 4, 7, 7, 3, 5, 3, 3, 3, 3, 3, 5, 4, 7, 7, 3, 5, 3 ]
+  participle-rule: [
     2, 2, 3, 2, 2,
     3, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 3,
@@ -949,10 +949,10 @@
     算箪瓢金玉，所争多少。
     一瞬光阴何足道，便思行乐常不早。
     待春来携酒殢东风，眠芳草。
-  fontSize: 94
-  segmentSize: 20
-  segmentRule: [ 4, 4, 4, 3, 4, 4, 7, 7, 8, 3, 3, 3, 3, 3, 5, 4, 7, 7, 8, 3 ]
-  participleRule: [
+  font-size: 94
+  segment-size: 20
+  segment-rule: [ 4, 4, 4, 3, 4, 4, 7, 7, 8, 3, 3, 3, 3, 3, 5, 4, 7, 7, 8, 3 ]
+  participle-rule: [
     2, 2, 2, 2, 2, 2,
     3, 2, 2, 2, 2,
     2, 2, 3, 2, 2, 3,
@@ -975,10 +975,10 @@
     不应有恨，何事长向别时圆？
     人有悲欢离合，月有阴晴圆缺，此事古难全。
     但愿人长久，千里共婵娟。
-  fontSize: 95
-  segmentSize: 19
-  segmentRule: [ 5, 5, 6, 5, 6, 6, 5, 5, 5, 3, 3, 3, 4, 7, 6, 6, 5, 5, 5 ]
-  participleRule: [
+  font-size: 95
+  segment-size: 19
+  segment-rule: [ 5, 5, 6, 5, 6, 6, 5, 5, 5, 3, 3, 3, 4, 7, 6, 6, 5, 5, 5 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 2, 2, 2, 3,
     2, 2, 2, 2, 2, 2, 2, 3,
@@ -1001,10 +1001,10 @@
     诗书万卷，致身须到古伊周。
     莫学班超投笔，纵得封侯万里，憔悴老边州。
     何处依刘客，寂寞赋登楼。
-  fontSize: 95
-  segmentSize: 19
-  segmentRule: [ 5, 5, 4, 7, 6, 6, 5, 5, 5, 3, 3, 3, 4, 7, 6, 6, 5, 5, 5 ]
-  participleRule: [
+  font-size: 95
+  segment-size: 19
+  segment-rule: [ 5, 5, 4, 7, 6, 6, 5, 5, 5, 3, 3, 3, 4, 7, 6, 6, 5, 5, 5 ]
+  participle-rule: [
     2, 3, 2, 3,
     2, 2, 2, 2, 3,
     2, 2, 2, 2, 2, 2, 2, 3,
@@ -1023,10 +1023,10 @@
     微雨如酥，草色遥看近却无。
     休辞醉倒，花不看开人易老。
     莫待春回，颠倒红英间绿苔。
-  fontSize: 44
-  segmentSize: 8
-  segmentRule: [ 4, 7, 4, 7, 4, 7, 4, 7 ]
-  participleRule: [
+  font-size: 44
+  segment-size: 8
+  segment-rule: [ 4, 7, 4, 7, 4, 7, 4, 7 ]
+  participle-rule: [
     2, 2, 2, 2, 3,
     2, 2, 2, 2, 3,
     2, 2, 2, 2, 3,

@@ -1,9 +1,5 @@
 #include "lifuren/Thread.hpp"
 
-lifuren::thread::ThreadWorker::~ThreadWorker() {
-    // this->thread->join();
-}
-
 thread_local lifuren::thread::ThreadWorker* lifuren::thread::ThreadWorker::this_thread_worker = nullptr;
 
 bool lifuren::thread::ThreadWorker::is_running() {
@@ -31,7 +27,9 @@ void lifuren::thread::ThreadTimer::schedule(int interval, std::function<void()> 
         while(!this->stop) {
             std::unique_lock<std::mutex> lock(this->mutex);
             this->condition.wait_for(lock, std::chrono::seconds(interval));
-            if(!this->stop) {
+            if(this->stop) {
+                this->condition.notify_one();
+            } else {
                 function();
             }
         }
