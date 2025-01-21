@@ -17,9 +17,9 @@
 #include <thread>
 #include <concepts>
 
-#include "torch/nn.h"
-#include "torch/optim.h"
-#include "torch/script.h"
+#include "torch/data.h"
+#include "torch/utils.h"
+#include "torch/nn/module.h"
 #include "torch/serialize.h"
 
 #include "spdlog/spdlog.h"

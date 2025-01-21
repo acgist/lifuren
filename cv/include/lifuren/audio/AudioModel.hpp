@@ -5,7 +5,11 @@
 #define LFR_HEADER_CV_AUDIO_MODEL_HPP
 
 #include "lifuren/Model.hpp"
+
 #include "lifuren/audio/AudioDataset.hpp"
+
+#include "torch/nn.h"
+#include "torch/optim.h"
 
 namespace lifuren {
 

@@ -5,7 +5,11 @@
 #define LFR_HEADER_CV_VIDEO_MODEL_HPP
 
 #include "lifuren/Model.hpp"
+
 #include "lifuren/video/VideoDataset.hpp"
+
+#include "torch/nn.h"
+#include "torch/optim.h"
 
 namespace lifuren {
 

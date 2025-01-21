@@ -3,14 +3,6 @@
 #include "lifuren/video/VideoModel.hpp"
 
 template<typename M>
-lifuren::VideoClient<M>::VideoClient() {
-}
-
-template<typename M>
-lifuren::VideoClient<M>::~VideoClient() {
-}
-
-template<typename M>
 std::tuple<bool, std::string> lifuren::VideoClient<M>::pred(const VideoParams& input) {
     // TODO: 实现
     return {};

@@ -8,6 +8,9 @@
 
 #include "lifuren/poetry/PoetryDataset.hpp"
 
+#include "torch/nn.h"
+#include "torch/optim.h"
+
 namespace lifuren {
 
 /**

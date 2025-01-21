@@ -23,9 +23,12 @@
 
 namespace lifuren {
 
+/**
+ * 诗词推理配置
+ */
 struct PoetryParams {
 
-    std::string model;                // 模型
+    std::string model;                // 模型文件
     std::string rhythm;               // 格律
     std::vector<std::string> prompts; // 提示
 
@@ -36,17 +39,11 @@ using PoetryModelClient = ModelClient<lifuren::config::ModelParams, PoetryParams
 template<typename M>
 using PoetryModelImplClient = ModelImplClient<lifuren::config::ModelParams, PoetryParams, std::string, M>;
 
-extern std::unique_ptr<lifuren::PoetryModelClient> getPoetryClient(const std::string& client);
-
 /**
  * 诗词终端
  */
 template<typename M>
 class PoetryClient : public PoetryModelImplClient<M> {
-
-public:
-    PoetryClient();
-    virtual ~PoetryClient();
 
 public:
     std::tuple<bool, std::string> pred(const PoetryParams& input) override;
@@ -55,6 +52,8 @@ public:
 
 template<typename M>
 using PoetizeClient = PoetryClient<M>;
+
+extern std::unique_ptr<lifuren::PoetryModelClient> getPoetryClient(const std::string& client);
 
 } // END OF lifuren
 

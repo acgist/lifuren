@@ -3,14 +3,6 @@
 #include "lifuren/audio/AudioModel.hpp"
 
 template<typename M>
-lifuren::AudioClient<M>::AudioClient() {
-}
-
-template<typename M>
-lifuren::AudioClient<M>::~AudioClient() {
-}
-
-template<typename M>
 std::tuple<bool, std::string> lifuren::AudioClient<M>::pred(const AudioParams& input) {
     // TODO: 实现
     // lifuren::audio::toFile(output)

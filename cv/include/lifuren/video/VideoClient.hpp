@@ -10,9 +10,12 @@
 
 namespace lifuren {
 
+/**
+ * 视频推理配置
+ */
 struct VideoParams {
 
-    std::string model;  // 模型
+    std::string model;  // 模型文件
     std::string video;  // 视频文件
     std::string output; // 输出文件
     
@@ -23,17 +26,11 @@ using VideoModelClient = ModelClient<lifuren::config::ModelParams, VideoParams, 
 template<typename M>
 using VideoModelImplClient = ModelImplClient<lifuren::config::ModelParams, VideoParams, std::string, M>;
 
-extern std::unique_ptr<lifuren::VideoModelClient> getVideoClient(const std::string& client);
-
 /**
  * 视频终端
  */
 template<typename M>
 class VideoClient : public VideoModelImplClient<M> {
-
-public:
-    VideoClient();
-    virtual ~VideoClient();
 
 public:
     std::tuple<bool, std::string> pred(const VideoParams& input) override;
@@ -42,6 +39,8 @@ public:
 
 template<typename M>
 using PaintClient = VideoClient<M>;
+
+extern std::unique_ptr<lifuren::VideoModelClient> getVideoClient(const std::string& client);
 
 } // END OF lifuren
 

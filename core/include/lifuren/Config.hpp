@@ -95,7 +95,7 @@ extern std::map<std::string, Rhythm> RHYTHM;
  * 
  * @return ID(yyMMddHHmmss'xxxxx)
  */
-extern size_t uuid() noexcept;
+extern size_t uuid() noexcept(true);
 
 /**
  * @return 所有格律名称
@@ -278,7 +278,7 @@ extern std::string baseFile(
  * @see #CONFIG_PATH
  * @see #RHYTHM_PATH
  */
-extern void loadConfig() noexcept;
+extern void loadConfig() noexcept(true);
 
 } // END OF lifuren::config
 

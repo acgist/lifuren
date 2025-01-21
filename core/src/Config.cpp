@@ -290,14 +290,14 @@ std::string lifuren::config::baseFile(const std::string& path) {
     return lifuren::file::join({lifuren::config::base_dir, path}).string();
 }
 
-void lifuren::config::loadConfig() noexcept {
+void lifuren::config::loadConfig() noexcept(true) {
     // 配置
     lifuren::config::CONFIG = lifuren::config::Config::loadFile();
     // 格律
     lifuren::config::RHYTHM = lifuren::config::Rhythm::loadFile();
 }
 
-size_t lifuren::config::uuid() noexcept {
+size_t lifuren::config::uuid() noexcept(true) {
     static std::mutex mutex;
           static int index     = 0;
     const static int MIN_INDEX = 0;

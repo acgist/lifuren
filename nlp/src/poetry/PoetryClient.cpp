@@ -3,14 +3,6 @@
 #include "lifuren/poetry/PoetryModel.hpp"
 
 template<typename M>
-lifuren::PoetryClient<M>::PoetryClient() {
-}
-
-template<typename M>
-lifuren::PoetryClient<M>::~PoetryClient() {
-}
-
-template<typename M>
 std::tuple<bool, std::string> lifuren::PoetryClient<M>::pred(const PoetryParams& input) {
     // TODO: 实现
     return {};
