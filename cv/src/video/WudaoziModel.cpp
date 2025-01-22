@@ -1,4 +1,4 @@
-#include "lifuren/video/Video.hpp"
+#include "lifuren/video/VideoModel.hpp"
 
 #include "lifuren/File.hpp"
 

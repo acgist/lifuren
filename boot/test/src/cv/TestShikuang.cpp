@@ -1,10 +1,10 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/audio/AudioModel.hpp"
+#include "lifuren/audio/Audio.hpp"
 
 [[maybe_unused]] static void testShikuang() {
     const std::string path = lifuren::config::CONFIG.tmp;
-    lifuren::ShikuangModel model({
+    lifuren::audio::ShikuangModel model({
         .lr         = 0.01F,
         .batch_size = 100,
         .epoch_count = 16,

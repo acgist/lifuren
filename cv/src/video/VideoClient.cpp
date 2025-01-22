@@ -1,5 +1,7 @@
 #include "lifuren/video/Video.hpp"
 
+#include "lifuren/video/VideoModel.hpp"
+
 template<typename M>
 std::tuple<bool, std::string> lifuren::video::VideoClient<M>::pred(const VideoParams& input) {
     // TODO: 实现

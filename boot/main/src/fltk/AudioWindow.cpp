@@ -10,8 +10,8 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/audio/Audio.hpp"
+#include "lifuren/audio/AudioDataset.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };

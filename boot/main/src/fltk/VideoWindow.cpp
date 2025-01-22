@@ -11,6 +11,7 @@
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/video/Video.hpp"
+#include "lifuren/video/VideoDataset.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };

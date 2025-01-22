@@ -1,10 +1,10 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/video/VideoModel.hpp"
+#include "lifuren/video/Video.hpp"
 
 [[maybe_unused]] static void testWudaozi() {
     const std::string path = lifuren::config::CONFIG.tmp;
-    lifuren::WudaoziModel model({
+    lifuren::video::WudaoziModel model({
         .lr         = 0.01F,
         .batch_size = 100,
         .epoch_count = 16,

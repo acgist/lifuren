@@ -573,3 +573,32 @@ inline static void embedding(std::ofstream& stream, float norm_factor, std::tupl
         stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
     }
 }
+
+lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const size_t& batch_size, const std::string& path) {
+    auto dataset = lifuren::dataset::FileDataset(
+        path,
+        [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+            std::ifstream stream;
+            stream.open(file, std::ios_base::binary);
+            if(!stream.is_open()) {
+                stream.close();
+                return;
+            }
+            float source_norm_factor;
+            float target_norm_factor;
+            torch::Tensor source_tensor = torch::zeros({ 1 });
+            torch::Tensor target_tensor = torch::zeros({ 1 });
+            while(
+                stream.read(reinterpret_cast<char*>(&source_norm_factor), sizeof(float)) &&
+                stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), source_tensor.numel() * source_tensor.element_size()) &&
+                stream.read(reinterpret_cast<char*>(&target_norm_factor), sizeof(float)) &&
+                stream.read(reinterpret_cast<char*>(target_tensor.data_ptr()), target_tensor.numel() * target_tensor.element_size())
+            ) {
+                features.push_back(std::move(source_tensor.to(device)));
+                labels  .push_back(std::move(target_tensor.to(device)));
+            }
+            stream.close();
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}

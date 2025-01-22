@@ -14,6 +14,7 @@
 #include "lifuren/Dataset.hpp"
 #include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 static Fl_Choice* clientPtr       { nullptr };
 static Fl_Choice* ragTypePtr      { nullptr };

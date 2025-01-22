@@ -1,10 +1,10 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/poetry/PoetryModel.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 [[maybe_unused]] static void testLidu() {
     const std::string path = lifuren::config::CONFIG.tmp;
-    lifuren::LiduModel model({
+    lifuren::poetry::LiduModel model({
         .lr         = 0.01F,
         .batch_size = 100,
         .epoch_count = 16,

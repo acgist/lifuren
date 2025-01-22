@@ -16,8 +16,7 @@
 
 #include "lifuren/Thread.hpp"
 
-namespace lifuren {
-namespace dataset {
+namespace lifuren::dataset {
 
 /**
  * path => [ path/train, path/val, path/test ]
@@ -169,7 +168,6 @@ using FileDatasetLoader = decltype(torch::data::make_data_loader<torch::data::sa
     torch::data::DataLoaderOptions{}
 ));
 
-} // END OF dataset
-} // END OF lifuren
+} // END OF lifuren::dataset
 
 #endif // LFR_HEADER_MODEL_DATASET_HPP

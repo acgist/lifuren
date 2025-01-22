@@ -12,8 +12,11 @@
 #include "lifuren/Message.hpp"
 #include "lifuren/RAGClient.hpp"
 #include "lifuren/audio/Audio.hpp"
+#include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/video/Video.hpp"
+#include "lifuren/video/VideoDataset.hpp"
 #include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 static void generateAudio  (const std::vector<std::string>&); // 生成音频
 static void generateVideo  (const std::vector<std::string>&); // 生成视频

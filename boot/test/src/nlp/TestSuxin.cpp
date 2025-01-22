@@ -1,10 +1,10 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/RAGClient.hpp"
-#include "lifuren/poetry/PoetryModel.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 [[maybe_unused]] static void testSuxinTrain() {
-    lifuren::SuxinModel model({
+    lifuren::poetry::SuxinModel model({
         // .epoch_count = 8,
         .check_point = true,
         // .train_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string()
@@ -18,7 +18,7 @@
 }
 
 [[maybe_unused]] static void testSuxinPred() {
-    lifuren::SuxinModel model;
+    lifuren::poetry::SuxinModel model;
     model.load(lifuren::config::CONFIG.tmp, "suxin.pt");
     // 预测
     const int dims = 768;

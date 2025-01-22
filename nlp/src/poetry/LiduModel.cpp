@@ -1,4 +1,4 @@
-#include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/poetry/PoetryModel.hpp"
 
 #include "lifuren/File.hpp"
 

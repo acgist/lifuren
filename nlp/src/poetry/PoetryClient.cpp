@@ -1,5 +1,7 @@
 #include "lifuren/poetry/Poetry.hpp"
 
+#include "lifuren/poetry/PoetryModel.hpp"
+
 template<typename M>
 std::tuple<bool, std::string> lifuren::poetry::PoetryClient<M>::pred(const PoetryParams& input) {
     // TODO: 实现

@@ -1,4 +1,4 @@
-#include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/poetry/PoetryModel.hpp"
 
 lifuren::poetry::SuxinModuleImpl::SuxinModuleImpl() {
     const auto& poetry = lifuren::config::CONFIG.poetry;

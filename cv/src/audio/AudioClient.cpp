@@ -1,5 +1,7 @@
 #include "lifuren/audio/Audio.hpp"
 
+#include "lifuren/audio/AudioModel.hpp"
+
 template<typename M>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<M>::pred(const AudioParams& input) {
     // TODO: 实现

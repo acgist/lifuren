@@ -1,4 +1,4 @@
-#include "lifuren/audio/Audio.hpp"
+#include "lifuren/audio/AudioModel.hpp"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Tensor.hpp"

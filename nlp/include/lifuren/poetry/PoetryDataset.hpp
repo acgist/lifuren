@@ -149,46 +149,10 @@ inline torch::Tensor cat(
  * 
  * @return 诗词数据集
  */
-inline lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
+extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const size_t& batch_size,
     const std::string& path
-) {
-    auto dataset = lifuren::dataset::FileDataset(
-        path,
-        [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
-            std::ifstream stream;
-            stream.open(file, std::ios_base::in | std::ios_base::binary);
-            if(!stream.is_open()) {
-                stream.close();
-                return;
-            }
-            std::vector<torch::Tensor> data;
-            std::vector<std::vector<float>> vector;
-            while(!lifuren::poetry::read(stream, vector)) {
-                for(auto& v : vector) {
-                    data.push_back(torch::from_blob(v.data(), { static_cast<int>(v.size()) }, torch::kFloat32).to(device).clone());
-                }
-                int index = 0;
-                auto beg = data.begin();
-                auto end = data.end();
-                auto segmentRule    = beg++;
-                auto participleRule = beg++;
-                const int sequenceLength = lifuren::config::CONFIG.poetry.length;
-                for(; beg + sequenceLength != end; ++beg, ++index) {
-                    labels.push_back(*(beg + sequenceLength));
-                    features.push_back(cat(segmentRule, participleRule, beg, index, device));
-                }
-                // EOF
-                labels.push_back(torch::zeros({ beg->sizes()[0] }).to(device).clone());
-                features.push_back(cat(segmentRule, participleRule, beg, index, device));
-                data.clear();
-                vector.clear();
-            }
-            stream.close();
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
+);
 
 } // END OF lifuren::dataset
 
