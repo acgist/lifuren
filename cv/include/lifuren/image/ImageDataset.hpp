@@ -6,17 +6,7 @@
 #ifndef LFR_HEADER_CV_IMAGE_DATASET_HPP
 #define LFR_HEADER_CV_IMAGE_DATASET_HPP
 
-#include <cstdint>
-#include <cstdlib>
-
-#include "spdlog/spdlog.h"
-
-#include "nlohmann/json.hpp"
-
-#include "lifuren/File.hpp"
-#include "lifuren/String.hpp"
 #include "lifuren/Dataset.hpp"
-#include "lifuren/image/Image.hpp"
 
 namespace lifuren::dataset {
 
@@ -39,13 +29,13 @@ inline torch::Tensor feature(char* data, const int& width, const int& height, co
  * 
  * @return 图片数据集
  */
-inline auto loadImageFileClassifyDataset(
+inline FileDatasetLoader loadImageFileClassifyDataset(
     const int& width,
     const int& height,
     const size_t batch_size,
     const std::string& path,
     const std::map<std::string, float>& classify
-) -> decltype(auto) {
+) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
         { ".jpg", ".png", ".jpeg" },
@@ -56,15 +46,6 @@ inline auto loadImageFileClassifyDataset(
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
-
-using ImageFileClassifyDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadImageFileClassifyDataset),
-    const int&,
-    const int&,
-    const size_t&,
-    const std::string&,
-    const std::map<std::string, float>&
->::type;
 
 } // END OF lifuren::dataset
 

@@ -15,12 +15,12 @@ extern void feature(const int& width, const int& height, const std::string& sour
 
 }
 
-inline auto loadVideoFileGANDataset(
+inline FileDatasetLoader loadVideoFileGANDataset(
     const int& width,
     const int& height,
     const size_t& batch_size,
     const std::string& path
-) -> decltype(auto) {
+) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
         { ".mp4" },
@@ -30,14 +30,6 @@ inline auto loadVideoFileGANDataset(
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
-
-using VideoFileGANDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadVideoFileGANDataset),
-    const int&,
-    const int&,
-    const size_t&,
-    const std::string&
->::type;
 
 }
 

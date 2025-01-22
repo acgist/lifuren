@@ -71,7 +71,7 @@ public:
 TORCH_MODULE(GenderModule);
 
 class GenderModel : public lifuren::Model<
-    lifuren::dataset::ImageFileClassifyDatasetLoader,
+    lifuren::dataset::FileDatasetLoader,
     torch::nn::CrossEntropyLoss,
     torch::optim::Adam,
     GenderModule

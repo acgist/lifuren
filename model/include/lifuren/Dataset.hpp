@@ -1,10 +1,6 @@
 /**
  * Dataset
  * 
- * GANDatasetLoader      : 生成模型
- * StyleDatasetLoader    : 风格迁移模型
- * ClassifyDatasetLoader : 分类模型
- * 
  * @author acgist
  */
 #ifndef LFR_HEADER_MODEL_DATASET_HPP
@@ -91,6 +87,11 @@ private:
     std::vector<torch::Tensor> features;
 
 public:
+    FileDataset() = default;
+    FileDataset(const FileDataset& ) = default;
+    FileDataset(      FileDataset&&) = default;
+    FileDataset& operator=(const FileDataset& ) = delete;
+    FileDataset& operator=(      FileDataset&&) = delete;
     /**
      * path/classify1/file1.ext
      * path/classify1/file2.ext
@@ -162,6 +163,11 @@ using RawDatasetLoader = std::invoke_result<
     std::vector<torch::Tensor>&,
     std::vector<torch::Tensor>&
 >::type;
+
+using FileDatasetLoader = decltype(torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
+    lifuren::dataset::FileDataset{}.map(torch::data::transforms::Stack<>()),
+    torch::data::DataLoaderOptions{})
+);
 
 } // END OF dataset
 } // END OF lifuren

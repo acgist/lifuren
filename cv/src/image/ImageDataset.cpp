@@ -1,5 +1,7 @@
 #include "lifuren/image/ImageDataset.hpp"
 
+#include "lifuren/image/Image.hpp"
+
 torch::Tensor lifuren::dataset::image::feature(const int& width, const int& height, const std::string& file, const torch::DeviceType& type) {
     size_t length{ 0 };
     std::vector<char> feature;

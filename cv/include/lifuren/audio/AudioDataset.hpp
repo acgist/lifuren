@@ -6,15 +6,6 @@
 
 #include "lifuren/Dataset.hpp"
 
-#include <fstream>
-
-#include "spdlog/spdlog.h"
-
-#include "nlohmann/json.hpp"
-
-#include "lifuren/File.hpp"
-#include "lifuren/String.hpp"
-
 #ifndef DATASET_PCM_LENGTH
 #define DATASET_PCM_LENGTH 480
 #endif
@@ -105,10 +96,10 @@ extern torch::Tensor feature(const int& length, const std::string& file, const t
 
 }
 
-inline auto loadAudioFileStyleDataset(
+inline FileDatasetLoader loadAudioFileStyleDataset(
     const size_t& batch_size,
     const std::string& path
-) -> decltype(auto) {
+) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
         [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
@@ -136,12 +127,6 @@ inline auto loadAudioFileStyleDataset(
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
-
-using AudioFileStyleDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadAudioFileStyleDataset),
-    const size_t&,
-    const std::string&
->::type;
 
 } // END OF lifuren::dataset
 

@@ -35,7 +35,7 @@ TORCH_MODULE(LiduModule);
  * 李杜模型
  */
 class LiduModel : public lifuren::Model<
-    lifuren::dataset::PoetryFileGANDatasetLoader,
+    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     LiduModule
@@ -75,7 +75,7 @@ TORCH_MODULE(SuxinModule);
  * 苏辛模型
  */
 class SuxinModel : public lifuren::Model<
-    lifuren::dataset::PoetryFileGANDatasetLoader,
+    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     SuxinModule

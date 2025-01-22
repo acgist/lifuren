@@ -45,7 +45,7 @@ TORCH_MODULE(ShikuangModule);
  * 师旷模型
  */
 class ShikuangModel : public lifuren::Model<
-    lifuren::dataset::AudioFileStyleDatasetLoader,
+    lifuren::dataset::FileDatasetLoader,
     // torch::nn::L1Loss,
     torch::nn::MSELoss,
     torch::optim::SGD,

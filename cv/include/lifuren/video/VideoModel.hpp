@@ -35,7 +35,7 @@ TORCH_MODULE(WudaoziModule);
  * 吴道子模型
  */
 class WudaoziModel : public lifuren::Model<
-    lifuren::dataset::VideoFileGANDatasetLoader,
+    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
     WudaoziModule

@@ -11,12 +11,8 @@
 #ifndef LFR_HEADER_NLP_POETRY_DATASET_HPP
 #define LFR_HEADER_NLP_POETRY_DATASET_HPP
 
+#include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
-#include "lifuren/poetry/Poetry.hpp"
-
-#include <fstream>
-
-#include "spdlog/spdlog.h"
 
 namespace lifuren::dataset {
 
@@ -81,17 +77,16 @@ inline torch::Tensor cat(
  * 
  * @return 诗词数据集
  */
-inline auto loadPoetryFileGANDataset(
+inline FileDatasetLoader loadPoetryFileGANDataset(
     const size_t& batch_size,
     const std::string& path
-) -> decltype(auto) {
+) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
         [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
             std::ifstream stream;
             stream.open(file, std::ios_base::in | std::ios_base::binary);
             if(!stream.is_open()) {
-                SPDLOG_WARN("文件打开失败：{}", file);
                 stream.close();
                 return;
             }
@@ -122,12 +117,6 @@ inline auto loadPoetryFileGANDataset(
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
-
-using PoetryFileGANDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadPoetryFileGANDataset),
-    const size_t&,
-    const std::string&
->::type;
 
 } // END OF lifuren::dataset
 

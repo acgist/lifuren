@@ -1,6 +1,6 @@
 #include "lifuren/poetry/PoetryDataset.hpp"
 
-#include <functional>
+#include <algorithm>
 
 #include "spdlog/spdlog.h"
 

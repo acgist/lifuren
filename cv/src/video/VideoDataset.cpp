@@ -5,6 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Config.hpp"
+#include "lifuren/image/Image.hpp"
 #include "lifuren/image/ImageDataset.hpp"
 
 void lifuren::dataset::video::feature(const int& width, const int& height, const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
