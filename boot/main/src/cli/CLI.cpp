@@ -14,9 +14,6 @@
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/video/Video.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/audio/AudioClient.hpp"
-#include "lifuren/video/VideoClient.hpp"
-#include "lifuren/poetry/PoetryClient.hpp"
 
 static void generateAudio  (const std::vector<std::string>&); // 生成音频
 static void generateVideo  (const std::vector<std::string>&); // 生成视频
@@ -70,7 +67,7 @@ static void generateAudio(const std::vector<std::string>& args) {
         return;
     }
     const auto& client_name = args[0];
-    auto client = lifuren::getAudioClient(client_name);
+    auto client = lifuren::audio::getAudioClient(client_name);
     if(!client) {
         SPDLOG_WARN("没有终端类型：{}", client_name);
         return;
@@ -93,7 +90,7 @@ static void generateAudio(const std::vector<std::string>& args) {
         const std::string& model = args[2];
         const std::string& audio = args[3];
         const std::string output = audio + ".output.pcm";
-        lifuren::AudioParams params {
+        lifuren::audio::AudioParams params {
             .model  = model,
             .audio  = audio,
             .output = output
@@ -116,7 +113,7 @@ static void generateVideo(const std::vector<std::string>& args) {
         return;
     }
     const auto& client_name = args[0];
-    auto client = lifuren::getVideoClient(client_name);
+    auto client = lifuren::video::getVideoClient(client_name);
     if(!client) {
         SPDLOG_WARN("没有终端类型：{}", client_name);
         return;
@@ -139,7 +136,7 @@ static void generateVideo(const std::vector<std::string>& args) {
         const std::string& model = args[2];
         const std::string& video = args[3];
         const std::string output = video + ".output.mp4";
-        lifuren::VideoParams params {
+        lifuren::video::VideoParams params {
             .model  = model,
             .video  = video,
             .output = output
@@ -162,7 +159,7 @@ static void generatePoetry(const std::vector<std::string>& args) {
         return;
     }
     const auto& client_name = args[0];
-    auto client = lifuren::getPoetryClient(client_name);
+    auto client = lifuren::poetry::getPoetryClient(client_name);
     if(!client) {
         SPDLOG_WARN("没有终端类型：{}", client_name);
         return;
@@ -189,7 +186,7 @@ static void generatePoetry(const std::vector<std::string>& args) {
         const std::string& model  = args[2];
         const std::string& rhythm = args[3];
         std::vector<std::string> prompts(args.begin() + 4, args.end());
-        lifuren::PoetryParams params {
+        lifuren::poetry::PoetryParams params {
             .model   = model,
             .rhythm  = rhythm,
             .prompts = std::move(prompts)

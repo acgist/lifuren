@@ -42,13 +42,13 @@
 }
 
 [[maybe_unused]] static void testLoadAudioFileDataset() {
-    auto loader = lifuren::dataset::loadAudioFileStyleDataset(200, lifuren::file::join({lifuren::config::CONFIG.tmp, "audio", "train"}).string());
+    auto loader = lifuren::audio::loadFileDatasetLoader(200, lifuren::file::join({lifuren::config::CONFIG.tmp, "audio", "train"}).string());
     lifuren::logTensor("音频特征", loader->begin()->data.sizes());
     lifuren::logTensor("音频标签", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadImageFileDataset() {
-    auto loader = lifuren::dataset::loadImageFileClassifyDataset(
+    auto loader = lifuren::image::loadFileDatasetLoader(
         200,
         200,
         5,
@@ -63,13 +63,13 @@
 }
 
 [[maybe_unused]] static void testLoadVideoFileDataset() {
-    auto loader = lifuren::dataset::loadVideoFileGANDataset(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
+    auto loader = lifuren::video::loadFileDatasetLoader(640, 640, 200, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
     lifuren::logTensor("视频特征", loader->begin()->data.sizes());
     lifuren::logTensor("视频标签", loader->begin()->target.sizes());
 }
 
 [[maybe_unused]] static void testLoadPoetryFileDataset() {
-    auto loader = lifuren::dataset::loadPoetryFileGANDataset(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
+    auto loader = lifuren::poetry::loadFileDatasetLoader(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
     lifuren::logTensor("诗词特征", loader->begin()->data.sizes());
     lifuren::logTensor("诗词标签", loader->begin()->target.sizes());
 }

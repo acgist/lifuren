@@ -3,13 +3,10 @@ project(lifurencv VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/OpenCV.cpp
-    src/audio/Audio.cpp
     src/audio/AudioClient.cpp
     src/audio/AudioDataset.cpp
     src/audio/ShikuangModel.cpp
-    src/image/Image.cpp
     src/image/ImageDataset.cpp
-    src/video/Video.cpp
     src/video/VideoClient.cpp
     src/video/VideoDataset.cpp
     src/video/WudaoziModel.cpp

@@ -10,7 +10,7 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/video/VideoClient.hpp"
+#include "lifuren/video/Video.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };
@@ -23,7 +23,7 @@ static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
-static std::unique_ptr<lifuren::VideoModelClient> videoClient{ nullptr };
+static std::unique_ptr<lifuren::video::VideoModelClient> videoClient{ nullptr };
 
 static void trainCallback          (Fl_Widget*, void*);
 static void generateCallback       (Fl_Widget*, void*);
@@ -130,7 +130,7 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::VIDEO_MODEL_PRED,
         "生成视频",
         [model, video, output]() {
-            lifuren::VideoParams params {
+            lifuren::video::VideoParams params {
                 .model  = model,
                 .video  = video,
                 .output = output
@@ -168,7 +168,7 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
 }
 
 static bool loadModelClient() {
-    videoClient = lifuren::getVideoClient(clientPtr->text());
+    videoClient = lifuren::video::getVideoClient(clientPtr->text());
     if(!videoClient) {
         fl_message("不支持的模型终端");
         return false;

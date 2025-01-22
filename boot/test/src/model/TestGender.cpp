@@ -100,8 +100,8 @@ public:
             { "man",   1.0F },
             { "woman", 0.0F }
         };
-        this->trainDataset = std::move(lifuren::dataset::loadImageFileClassifyDataset(200, 200, this->params.batch_size, path_train, mapping));
-        this->valDataset   = std::move(lifuren::dataset::loadImageFileClassifyDataset(200, 200, this->params.batch_size, path_val,   mapping));
+        this->trainDataset = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_train, mapping));
+        this->valDataset   = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_val,   mapping));
         return true;
     }
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {

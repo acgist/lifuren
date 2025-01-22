@@ -5,10 +5,9 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Config.hpp"
-#include "lifuren/image/Image.hpp"
 #include "lifuren/image/ImageDataset.hpp"
 
-void lifuren::dataset::video::feature(const int& width, const int& height, const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+void lifuren::video::feature(const int& width, const int& height, const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
     cv::VideoCapture video(file);
     if(!video.isOpened()) {
         video.release();
@@ -25,9 +24,9 @@ void lifuren::dataset::video::feature(const int& width, const int& height, const
         feature.resize(width * height * 3);
         lifuren::image::read(frame, feature.data(), width, height);
         if(++index <= frame_length) {
-            tensors.push_back(std::move(lifuren::dataset::image::feature(feature.data(), width, height, device)));
+            tensors.push_back(std::move(lifuren::image::feature(feature.data(), width, height, device)));
         } else {
-            auto next = lifuren::dataset::image::feature(feature.data(), width, height, device);
+            auto next = lifuren::image::feature(feature.data(), width, height, device);
             features.push_back(torch::stack(tensors));
             labels.push_back(next);
             tensors.erase(tensors.begin());
@@ -37,7 +36,7 @@ void lifuren::dataset::video::feature(const int& width, const int& height, const
     video.release();
 }
 
-void lifuren::dataset::video::feature(const int& width, const int& height, const std::string& source, const std::string& target, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
+void lifuren::video::feature(const int& width, const int& height, const std::string& source, const std::string& target, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {
     cv::VideoCapture source_video(source);
     cv::VideoCapture target_video(target);
     if(!source_video.isOpened() || !target_video.isOpened()) {
@@ -52,9 +51,9 @@ void lifuren::dataset::video::feature(const int& width, const int& height, const
         std::vector<char> feature;
         feature.resize(width * height * 3);
         lifuren::image::read(source_frame, feature.data(), width, height);
-        features.push_back(std::move(lifuren::dataset::image::feature(feature.data(), width, height, device)));
+        features.push_back(std::move(lifuren::image::feature(feature.data(), width, height, device)));
         lifuren::image::read(target_frame, feature.data(), width, height);
-        labels.push_back(std::move(lifuren::dataset::image::feature(feature.data(), width, height, device)));
+        labels.push_back(std::move(lifuren::image::feature(feature.data(), width, height, device)));
     }
     source_video.release();
     target_video.release();

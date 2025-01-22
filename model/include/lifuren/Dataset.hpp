@@ -166,8 +166,8 @@ using RawDatasetLoader = std::invoke_result<
 
 using FileDatasetLoader = decltype(torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
     lifuren::dataset::FileDataset{}.map(torch::data::transforms::Stack<>()),
-    torch::data::DataLoaderOptions{})
-);
+    torch::data::DataLoaderOptions{}
+));
 
 } // END OF dataset
 } // END OF lifuren

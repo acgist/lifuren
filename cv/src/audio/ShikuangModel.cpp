@@ -1,9 +1,9 @@
-#include "lifuren/audio/AudioModel.hpp"
+#include "lifuren/audio/Audio.hpp"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Tensor.hpp"
 
-lifuren::ShikuangModuleImpl::ShikuangModuleImpl() {
+lifuren::audio::ShikuangModuleImpl::ShikuangModuleImpl() {
     // [200, 2, 201, 5]
     this->downsample = this->register_module("downsample", torch::nn::Conv2d(torch::nn::Conv2dOptions(2, 4, {3, 1}).stride({2, 1}).bias(true)));
     // this->norm1      = this->register_module("norm1",      torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(4).eps(1e-06).momentum(0.1)));
@@ -25,7 +25,7 @@ lifuren::ShikuangModuleImpl::ShikuangModuleImpl() {
     }
 }
 
-lifuren::ShikuangModuleImpl::~ShikuangModuleImpl() {
+lifuren::audio::ShikuangModuleImpl::~ShikuangModuleImpl() {
     this->unregister_module("downsample");
     this->unregister_module("norm1");
     this->unregister_module("norm2");
@@ -38,7 +38,7 @@ lifuren::ShikuangModuleImpl::~ShikuangModuleImpl() {
     this->unregister_module("upsample6");
 }
 
-torch::Tensor lifuren::ShikuangModuleImpl::forward(torch::Tensor input) {
+torch::Tensor lifuren::audio::ShikuangModuleImpl::forward(torch::Tensor input) {
     // lifuren::logTensor("output", input);
     auto input1 = input.slice(1, 0, 1);
     auto input2 = input.slice(1, 1, 2);
@@ -77,26 +77,26 @@ torch::Tensor lifuren::ShikuangModuleImpl::forward(torch::Tensor input) {
     return output;
 }
 
-lifuren::ShikuangModel::ShikuangModel(lifuren::config::ModelParams params) : Model(params) {
+lifuren::audio::ShikuangModel::ShikuangModel(lifuren::config::ModelParams params) : Model(params) {
 }
 
-lifuren::ShikuangModel::~ShikuangModel() {
+lifuren::audio::ShikuangModel::~ShikuangModel() {
 }
 
-bool lifuren::ShikuangModel::defineDataset() {
+bool lifuren::audio::ShikuangModel::defineDataset() {
     if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::dataset::loadAudioFileStyleDataset(this->params.batch_size, this->params.train_path);
+        this->trainDataset = lifuren::audio::loadFileDatasetLoader(this->params.batch_size, this->params.train_path);
     }
     if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::dataset::loadAudioFileStyleDataset(this->params.batch_size, this->params.val_path);
+        this->valDataset = lifuren::audio::loadFileDatasetLoader(this->params.batch_size, this->params.val_path);
     }
     if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::dataset::loadAudioFileStyleDataset(this->params.batch_size, this->params.test_path);
+        this->testDataset = lifuren::audio::loadFileDatasetLoader(this->params.batch_size, this->params.test_path);
     }
     return true;
 }
 
-void lifuren::ShikuangModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+void lifuren::audio::ShikuangModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     pred = this->model->forward(feature);
     loss = this->loss->forward(pred, label);
     lifuren::logTensor("loss", loss);

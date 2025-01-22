@@ -2,11 +2,10 @@ project(lifurennlp VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/poetry/Poetry.cpp
-    src/poetry/PoetryClient.cpp
-    src/poetry/PoetryDataset.cpp
     src/poetry/LiduModel.cpp
     src/poetry/SuxinModel.cpp
+    src/poetry/PoetryClient.cpp
+    src/poetry/PoetryDataset.cpp
     src/RAGClient.cpp
     src/rag/FaissRAGClient.cpp
     src/rag/ElasticSearchRAGClient.cpp

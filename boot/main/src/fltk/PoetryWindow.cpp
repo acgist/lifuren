@@ -14,7 +14,6 @@
 #include "lifuren/Dataset.hpp"
 #include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/poetry/PoetryClient.hpp"
 
 static Fl_Choice* clientPtr       { nullptr };
 static Fl_Choice* ragTypePtr      { nullptr };
@@ -31,7 +30,7 @@ static Fl_Button* trainPtr        { nullptr };
 static Fl_Button* generatePtr     { nullptr };
 static Fl_Button* modelReleasePtr { nullptr };
 
-static std::unique_ptr<lifuren::PoetryModelClient> poetryClient{ nullptr };
+static std::unique_ptr<lifuren::poetry::PoetryModelClient> poetryClient{ nullptr };
 
 static void pepperCallback         (Fl_Widget*, void*);
 static void embeddingCallback      (Fl_Widget*, void*);
@@ -202,7 +201,7 @@ static void generateCallback(Fl_Widget*, void* voidPtr) {
         lifuren::message::Type::POETRY_MODEL_PRED,
         "生成诗词",
         [model, rhythm, prompts]() {
-            lifuren::PoetryParams params {
+            lifuren::poetry::PoetryParams params {
                 .model   = model,
                 .rhythm  = rhythm,
                 .prompts = prompts
@@ -240,7 +239,7 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
 }
 
 static bool loadModelClient() {
-    poetryClient = lifuren::getPoetryClient(clientPtr->text());
+    poetryClient = lifuren::poetry::getPoetryClient(clientPtr->text());
     if(!poetryClient) {
         fl_message("不支持的模型终端");
         return false;

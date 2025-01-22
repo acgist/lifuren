@@ -28,7 +28,7 @@
     lifuren::setDevice(device);
     const auto& rhythm = lifuren::config::RHYTHM.find("蝶恋花")->second;
     SPDLOG_DEBUG("当前格律：{}", rhythm.rhythm);
-    lifuren::dataset::poetry::fillRhythm(dims, rule, &rhythm);
+    lifuren::poetry::fillRhythm(dims, rule, &rhythm);
     const auto ragClient = lifuren::RAGClient::getClient(
         "faiss",
         lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren"}).string(),

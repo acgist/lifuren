@@ -16,9 +16,6 @@
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/video/Video.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/audio/AudioClient.hpp"
-#include "lifuren/video/VideoClient.hpp"
-#include "lifuren/poetry/PoetryClient.hpp"
 
 static void restPostAudioGenerate ();
 static void restPostVideoGenerate ();
@@ -58,14 +55,14 @@ static void restPostAudioGenerate() {
             lifuren::response(response, "1400", "缺少终端类型");
             return;
         }
-        auto client = lifuren::getAudioClient(model);
+        auto client = lifuren::audio::getAudioClient(model);
         if(!client) {
             lifuren::response(response, "2400", "不支持的终端类型");
             return;
         }
         const std::string audio_file = lifuren::file::join({ lifuren::config::CONFIG.tmp, audio.filename }).string();
         const std::string output = audio_file + ".output.pcm";
-        lifuren::AudioParams params {
+        lifuren::audio::AudioParams params {
             .model  = model,
             .audio  = audio_file,
             .output = output
@@ -106,14 +103,14 @@ static void restPostVideoGenerate() {
             lifuren::response(response, "1400", "缺少终端类型");
             return;
         }
-        auto client = lifuren::getVideoClient(model);
+        auto client = lifuren::video::getVideoClient(model);
         if(!client) {
             lifuren::response(response, "2400", "不支持的终端类型");
             return;
         }
         const std::string video_file = lifuren::file::join({ lifuren::config::CONFIG.tmp, video.filename }).string();
         const std::string output = video_file + ".output.mp4";
-        lifuren::VideoParams params {
+        lifuren::video::VideoParams params {
             .model  = model,
             .video  = video_file,
             .output = output
@@ -138,7 +135,7 @@ static void restPostPoetryGenerate() {
             lifuren::response(response, "1400", "缺少终端类型");
             return;
         }
-        auto client = lifuren::getPoetryClient(model);
+        auto client = lifuren::poetry::getPoetryClient(model);
         if(!client) {
             lifuren::response(response, "2400", "不支持的终端类型");
             return;
@@ -159,7 +156,7 @@ static void restPostPoetryGenerate() {
             return;
         }
         auto prompts = prompt->get<std::vector<std::string>>();
-        lifuren::PoetryParams params {
+        lifuren::poetry::PoetryParams params {
             .model   = model,
             .rhythm  = rhythm->get<std::string>(),
             .prompts = std::move(prompts)

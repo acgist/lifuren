@@ -4,15 +4,50 @@
 #ifndef LFR_HEADER_CV_AUDIO_DATASET_HPP
 #define LFR_HEADER_CV_AUDIO_DATASET_HPP
 
+#include "lifuren/Thread.hpp"
 #include "lifuren/Dataset.hpp"
 
 #ifndef DATASET_PCM_LENGTH
 #define DATASET_PCM_LENGTH 480
 #endif
 
-namespace lifuren::dataset {
+namespace lifuren::audio {
 
-namespace audio {
+/**
+ * 音频文件转为PCM文件
+ * 
+ * 支持音频文件格式：AAC/MP3/FLAC
+ * 
+ * PCM文件格式：48000Hz mono 16bit
+ * 
+ * @return <是否成功, PCM文件路径>
+ */
+extern std::tuple<bool, std::string> toPcm(
+    const std::string& audioFile // 音频文件
+);
+
+/**
+ * PCM文件转为音频文件
+ * 
+ * PCM文件格式：48000Hz mono 16bit
+ * 
+ * @return <是否成功, 音频文件路径>
+ */
+extern std::tuple<bool, std::string> toFile(
+    const std::string& pcmFile // PCM文件
+);
+
+/**
+ * 音频嵌入
+ * 
+ * @return 是否成功
+ */
+extern bool embedding(
+    const std::string& path,    // 数据集上级目录
+    const std::string& dataset, // 数据集目录
+    std::ofstream    & stream,  // 嵌入文件流
+    lifuren::thread::ThreadPool& pool // 线程池
+);
 
 /**
  * 短时傅里叶变换
@@ -94,9 +129,7 @@ extern std::vector<short> pcm_mag_pha_istft(
 
 extern torch::Tensor feature(const int& length, const std::string& file, const torch::DeviceType& type);
 
-}
-
-inline FileDatasetLoader loadAudioFileStyleDataset(
+inline lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const size_t& batch_size,
     const std::string& path
 ) {
@@ -128,6 +161,6 @@ inline FileDatasetLoader loadAudioFileStyleDataset(
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-} // END OF lifuren::dataset
+} // END OF lifuren::audio
 
 #endif // END OF LFR_HEADER_CV_AUDIO_DATASET_HPP

@@ -154,7 +154,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
     // TODO: 平仄维度向量=音调
     size_t padding = 0;
     std::vector<std::vector<float>> ret;
-    if(lifuren::dataset::poetry::fillRhythm(ragClient->getDims(), ret, poetry.rhythmPtr)) {
+    if(lifuren::poetry::fillRhythm(ragClient->getDims(), ret, poetry.rhythmPtr)) {
         // 分段字数
         // 分词字数
         padding = 2;
@@ -165,7 +165,7 @@ static bool embedding(const nlohmann::json& json, std::ofstream& stream, lifuren
     });
     {
         std::lock_guard<std::mutex> lock(embedding_mutex);
-        lifuren::dataset::poetry::write(stream, ret);
+        lifuren::poetry::write(stream, ret);
     }
     wCount += ret.size();
     return true;

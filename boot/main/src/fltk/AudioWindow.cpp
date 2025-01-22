@@ -12,7 +12,6 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/audio/Audio.hpp"
-#include "lifuren/audio/AudioClient.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };
@@ -26,7 +25,7 @@ static Fl_Button* trainPtr       { nullptr };
 static Fl_Button* generatePtr    { nullptr };
 static Fl_Button* modelReleasePtr{ nullptr };
 
-static std::unique_ptr<lifuren::AudioModelClient> audioClient{ nullptr };
+static std::unique_ptr<lifuren::audio::AudioModelClient> audioClient{ nullptr };
 
 static void embeddingCallback      (Fl_Widget*, void*);
 static void trainCallback          (Fl_Widget*, void*);
@@ -156,7 +155,7 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_MODEL_PRED,
         "生成音频",
         [model, audio, output]() {
-            lifuren::AudioParams params {
+            lifuren::audio::AudioParams params {
                 .model  = model,
                 .audio  = audio,
                 .output = output
@@ -194,7 +193,7 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
 }
 
 static bool loadModelClient() {
-    audioClient = lifuren::getAudioClient(clientPtr->text());
+    audioClient = lifuren::audio::getAudioClient(clientPtr->text());
     if(!audioClient) {
         fl_message("不支持的模型终端");
         return false;

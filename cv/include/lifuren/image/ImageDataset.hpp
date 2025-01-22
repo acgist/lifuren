@@ -6,19 +6,43 @@
 #ifndef LFR_HEADER_CV_IMAGE_DATASET_HPP
 #define LFR_HEADER_CV_IMAGE_DATASET_HPP
 
+#include <string>
+#include <functional>
+
 #include "lifuren/Dataset.hpp"
 
-namespace lifuren::dataset {
+namespace cv {
+    class Mat;
+};
 
-namespace image {
+namespace lifuren::image {
+
+/**
+ * @param path   图片路径
+ * @param data   图片数据
+ * @param width  图片宽度
+ * @param height 图片高度
+ * 
+ * @return 是否成功
+ */
+extern bool read(const std::string& path,  char* data, const size_t& width, const size_t& height);
+extern bool read(      cv::Mat    & image, char* data, const size_t& width, const size_t& height);
+
+/**
+ * @param path    图片路径
+ * @param data    图片数据
+ * @param width   图片宽度
+ * @param height  图片高度
+ * 
+ * @return 是否成功
+ */
+extern bool write(const std::string& path, const char* data, const size_t& width, const size_t& height);
 
 extern torch::Tensor feature(const int& width, const int& height, const std::string& file, const torch::DeviceType& type);
 
 inline torch::Tensor feature(char* data, const int& width, const int& height, const torch::DeviceType& type) {
     return torch::from_blob(data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).clone().to(type);
 }
-
-} // END OF image
 
 /**
  * @param width      图片宽度
@@ -29,7 +53,7 @@ inline torch::Tensor feature(char* data, const int& width, const int& height, co
  * 
  * @return 图片数据集
  */
-inline FileDatasetLoader loadImageFileClassifyDataset(
+inline lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const int& width,
     const int& height,
     const size_t batch_size,
@@ -41,12 +65,12 @@ inline FileDatasetLoader loadImageFileClassifyDataset(
         { ".jpg", ".png", ".jpeg" },
         classify,
         [width, height] (const std::string& file, const torch::DeviceType& device) -> torch::Tensor {
-            return lifuren::dataset::image::feature(width, height, file, device);
+            return lifuren::image::feature(width, height, file, device);
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-} // END OF lifuren::dataset
+} // END OF lifuren::image
 
 #endif // END OF LFR_HEADER_CV_IMAGE_DATASET_HPP
