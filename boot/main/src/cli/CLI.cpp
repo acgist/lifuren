@@ -8,15 +8,10 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/Message.hpp"
-#include "lifuren/RAGClient.hpp"
 #include "lifuren/audio/Audio.hpp"
-#include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/video/Video.hpp"
-#include "lifuren/video/VideoDataset.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/poetry/PoetryDataset.hpp"
 
 static void generateAudio  (const std::vector<std::string>&); // 生成音频
 static void generateVideo  (const std::vector<std::string>&); // 生成视频
@@ -229,7 +224,7 @@ static void embeddingAudio(const std::vector<std::string>& args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
+    if(lifuren::audio::datasetPreprocessing(args[0])) {
         SPDLOG_INFO("音频嵌入成功");
     } else {
         SPDLOG_INFO("音频嵌入失败");
@@ -242,7 +237,7 @@ static void embeddingPepper(const std::vector<std::string>& args) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    if(lifuren::dataset::allDatasetPreprocessing(args[0], lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::pepper::embedding, true)) {
+    if(lifuren::poetry::datasetPepperPreprocessing(args[0])) {
         SPDLOG_INFO("辣椒嵌入成功");
     } else {
         SPDLOG_WARN("辣椒嵌入失败");
@@ -258,10 +253,7 @@ static void embeddingPoetry(const std::vector<std::string>& args) {
     const auto& dataset        = args[0];
     const auto& rag_type       = args[2];
     const auto& embedding_type = args[3];
-    std::shared_ptr<lifuren::RAGClient> client = std::move(lifuren::RAGClient::getClient(rag_type, dataset, embedding_type));
-    // std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)>
-    auto embedding = std::bind(&lifuren::rag::embedding, client, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
-    if(lifuren::dataset::allDatasetPreprocessing(dataset, lifuren::config::EMBEDDING_MODEL_FILE, embedding)) {
+    if(lifuren::poetry::datasetPoetryPreprocessing(dataset, rag_type, embedding_type)) {
         SPDLOG_INFO("诗词嵌入成功");
     } else {
         SPDLOG_WARN("诗词嵌入失败");

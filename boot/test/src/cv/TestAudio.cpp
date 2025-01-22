@@ -5,6 +5,7 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/audio/Audio.hpp"
+#include "lifuren/audio/AudioDataset.hpp"
 
 [[maybe_unused]] static void testToPcm() {
     // lifuren::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.aac"}).string());

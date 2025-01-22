@@ -11,7 +11,6 @@
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/audio/Audio.hpp"
-#include "lifuren/audio/AudioDataset.hpp"
 
 static Fl_Choice* clientPtr      { nullptr };
 static Fl_Input * pathPathPtr    { nullptr };
@@ -99,7 +98,7 @@ static void embeddingCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_EMBEDDING,
         "音频嵌入",
         [path]() {
-            if(lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding)) {
+            if(lifuren::audio::datasetPreprocessing(path)) {
                 SPDLOG_INFO("音频嵌入成功");
             } else {
                 SPDLOG_INFO("音频嵌入失败");

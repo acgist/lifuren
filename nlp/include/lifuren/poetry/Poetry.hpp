@@ -56,6 +56,10 @@ using PoetizeClient = PoetryClient<M>;
 
 extern std::unique_ptr<lifuren::poetry::PoetryModelClient> getPoetryClient(const std::string& client);
 
+extern bool datasetPepperPreprocessing(const std::string& path);
+
+extern bool datasetPoetryPreprocessing(const std::string& path, const std::string& rag_type, const std::string& embedding_type);
+
 } // END OF lifuren::poetry
 
 #endif // LFR_HEADER_NLP_POETRY_HPP

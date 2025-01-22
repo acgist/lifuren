@@ -1,6 +1,6 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/audio/Audio.hpp"
+#include "lifuren/audio/AudioModel.hpp"
 
 [[maybe_unused]] static void testShikuang() {
     const std::string path = lifuren::config::CONFIG.tmp;

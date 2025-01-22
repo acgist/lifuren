@@ -51,6 +51,8 @@ using ComposeClient = AudioClient<M>;
 
 extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(const std::string& client);
 
+extern bool datasetPreprocessing(const std::string& path);
+
 } // END OF lifuren::audio
 
 #endif // END OF LFR_HEADER_CV_AUDIO_HPP

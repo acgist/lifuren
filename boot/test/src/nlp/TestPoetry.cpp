@@ -12,7 +12,7 @@
 #include "lifuren/Dataset.hpp"
 #include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/EmbeddingClient.hpp"
+#include "lifuren/poetry/PoetryDataset.hpp"
 
 static bool enable_print_messy_code = false;
 

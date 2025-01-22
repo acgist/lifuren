@@ -11,10 +11,7 @@
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
-#include "lifuren/Dataset.hpp"
-#include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/Poetry.hpp"
-#include "lifuren/poetry/PoetryDataset.hpp"
 
 static Fl_Choice* clientPtr       { nullptr };
 static Fl_Choice* ragTypePtr      { nullptr };
@@ -116,7 +113,7 @@ static void pepperCallback(Fl_Widget*, void*) {
         lifuren::message::Type::POETRY_EMBEDDING_PEPPER,
         "辣椒嵌入",
         [path]() {
-            if(lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::pepper::embedding, true)) {
+            if(lifuren::poetry::datasetPepperPreprocessing(path)) {
                 SPDLOG_INFO("辣椒嵌入成功");
             } else {
                 SPDLOG_WARN("辣椒嵌入失败");
@@ -135,9 +132,7 @@ static void embeddingCallback(Fl_Widget*, void*) {
         lifuren::message::Type::POETRY_EMBEDDING_POETRY,
         "诗词嵌入",
         [path]() {
-            std::shared_ptr<lifuren::RAGClient> client = std::move(lifuren::RAGClient::getClient(ragTypePtr->text(), path, embeddingTypePtr->text()));
-            auto embedding = std::bind(&lifuren::rag::embedding, client, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
-            if(lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, embedding)) {
+            if(lifuren::poetry::datasetPoetryPreprocessing(path, ragTypePtr->text(), embeddingTypePtr->text())) {
                 SPDLOG_INFO("诗词嵌入成功");
             } else {
                 SPDLOG_WARN("诗词嵌入失败");

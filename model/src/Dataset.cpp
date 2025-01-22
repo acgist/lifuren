@@ -1,9 +1,9 @@
 #include "lifuren/Dataset.hpp"
 
+#include "spdlog/spdlog.h"
+
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-
-#include "spdlog/spdlog.h"
 
 std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     std::vector<std::string> ret;

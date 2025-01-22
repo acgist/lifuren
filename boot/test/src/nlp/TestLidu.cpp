@@ -1,6 +1,6 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/poetry/PoetryModel.hpp"
 
 [[maybe_unused]] static void testLidu() {
     const std::string path = lifuren::config::CONFIG.tmp;

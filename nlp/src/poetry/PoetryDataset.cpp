@@ -5,8 +5,10 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
-#include "lifuren/EmbeddingClient.hpp"
+#include "lifuren/RAGClient.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 
 static std::mutex embedding_mutex;
 
@@ -209,7 +211,7 @@ bool lifuren::poetry::fillRhythm(const int& dims, std::vector<std::vector<float>
     return true;
 }
 
-lifuren::dataset::FileDatasetLoader lifuren:poetry::loadFileDatasetLoader(
+lifuren::dataset::FileDatasetLoader lifuren::poetry::loadFileDatasetLoader(
     const size_t& batch_size,
     const std::string& path
 ) {
@@ -248,4 +250,15 @@ lifuren::dataset::FileDatasetLoader lifuren:poetry::loadFileDatasetLoader(
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+bool lifuren::poetry::datasetPepperPreprocessing(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::PEPPER_MODEL_FILE, &lifuren::poetry::pepper::embedding, true);
+}
+
+bool lifuren::poetry::datasetPoetryPreprocessing(const std::string& path, const std::string& rag_type, const std::string& embedding_type) {
+    std::shared_ptr<lifuren::RAGClient> client = std::move(lifuren::RAGClient::getClient(rag_type, path, embedding_type));
+    // std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)>
+    auto embedding = std::bind(&lifuren::rag::embedding, client, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
+    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, embedding);
 }

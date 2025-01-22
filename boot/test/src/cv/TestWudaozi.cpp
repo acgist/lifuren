@@ -1,6 +1,6 @@
 #include "lifuren/Test.hpp"
 
-#include "lifuren/video/Video.hpp"
+#include "lifuren/video/VideoModel.hpp"
 
 [[maybe_unused]] static void testWudaozi() {
     const std::string path = lifuren::config::CONFIG.tmp;

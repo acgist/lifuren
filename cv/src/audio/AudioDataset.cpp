@@ -6,7 +6,8 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/audio/AudioDataset.hpp"
+#include "lifuren/Config.hpp"
+#include "lifuren/audio/Audio.hpp"
 
 #ifndef MONO_NB_CHANNELS
 #define MONO_NB_CHANNELS 1
@@ -601,4 +602,8 @@ lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const 
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+bool lifuren::audio::datasetPreprocessing(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::audio::embedding);
 }
