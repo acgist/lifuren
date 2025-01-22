@@ -10,7 +10,6 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/String.hpp"
-#include "lifuren/poetry/Poetry.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 static std::mutex embedding_mutex;

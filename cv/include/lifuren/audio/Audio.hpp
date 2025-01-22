@@ -49,9 +49,21 @@ public:
 template<typename M>
 using ComposeClient = AudioClient<M>;
 
-extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(const std::string& client);
+/**
+ * @return 作曲终端
+ */
+extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(
+    const std::string& model // 模型名称
+);
 
-extern bool datasetPreprocessing(const std::string& path);
+/**
+ * 数据集预处理
+ * 
+ * @return 是否成功
+ */
+extern bool datasetPreprocessing(
+    const std::string& path // 数据集目录
+);
 
 } // END OF lifuren::audio
 

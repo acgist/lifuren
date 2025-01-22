@@ -108,15 +108,6 @@ std::vector<short> lifuren::audio::pcm_mag_pha_istft(
     return pcm;
 }
 
-torch::Tensor lifuren::audio::feature(const int& length, const std::string& file, const torch::DeviceType& type) {
-    std::ifstream stream;
-    stream.open(file, std::ios_base::binary);
-    std::vector<short> data;
-    data.resize(length);
-    stream.read(reinterpret_cast<char*>(data.data()), length * sizeof(short));
-    return torch::from_blob(data.data(), { length }, torch::kShort).to(torch::kFloat32).div(NORMALIZATION).clone().to(type);
-}
-
 std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile) {
     AVPacket       * packet  { nullptr };
     AVFormatContext* inputCtx{ nullptr };

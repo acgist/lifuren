@@ -10,9 +10,7 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/Message.hpp"
-#include "lifuren/RAGClient.hpp"
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/video/Video.hpp"
 #include "lifuren/poetry/Poetry.hpp"

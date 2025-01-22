@@ -127,8 +127,6 @@ extern std::vector<short> pcm_mag_pha_istft(
     float compress_factor = 1.0
 );
 
-extern torch::Tensor feature(const int& length, const std::string& file, const torch::DeviceType& type);
-
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const size_t& batch_size,
     const std::string& path

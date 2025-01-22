@@ -35,9 +35,9 @@
     float norm_factor;
     while(input.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
         auto tuple = std::move(lifuren::audio::pcm_mag_pha_stft(data, norm_factor));
-        lifuren::logTensor("mag size", std::get<0>(tuple).sizes());
-        lifuren::logTensor("pha size", std::get<1>(tuple).sizes());
-        auto pcm   = std::move(lifuren::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple), norm_factor));
+        // lifuren::logTensor("mag size", std::get<0>(tuple).sizes());
+        // lifuren::logTensor("pha size", std::get<1>(tuple).sizes());
+        auto pcm = std::move(lifuren::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple), norm_factor));
         output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
         output.flush();
     }
