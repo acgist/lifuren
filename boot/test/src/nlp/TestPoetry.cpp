@@ -11,6 +11,7 @@
 #include "lifuren/String.hpp"
 #include "lifuren/RAGClient.hpp"
 #include "lifuren/poetry/Poetry.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 static bool enable_print_messy_code = false;
@@ -194,9 +195,66 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     );
 }
 
+[[maybe_unused]] static void testOllamaEmbeddingClient() {
+    lifuren::OllamaEmbeddingClient client{ lifuren::config::CONFIG.tmp };
+    const auto v = std::move(client.getVector("李夫人"));
+    SPDLOG_DEBUG("v length = {}", v.size());
+}
+
+[[maybe_unused]] static void testPepperEmbeddingClient() {
+    // lifuren::PepperEmbeddingClient ref{};
+    {
+        lifuren::PepperEmbeddingClient client{ lifuren::config::CONFIG.tmp };
+        auto v = std::move(client.getVector("东风"));
+        // auto v = std::move(client.getVector({ "李", "夫", "人"}));
+        SPDLOG_DEBUG("v length = {}", v.size());
+    }
+    SPDLOG_DEBUG("释放1");
+    SPDLOG_DEBUG("释放2");
+    SPDLOG_DEBUG("释放3");
+}
+
+[[maybe_unused]] static void testRAGClientIndex() {
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
+    client.index("猪");
+    client.index("牛");
+    client.index("马");
+    client.index("马");
+    client.index("马");
+    client.index("桃子");
+    client.index("桃子");
+    client.index("桃子");
+    client.index("苹果");
+    client.index("李子");
+}
+
+[[maybe_unused]] static void testRAGClientSearch() {
+    lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::FaissRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "ollama" };
+    // lifuren::ElasticSearchRAGClient client{ lifuren::file::join({lifuren::config::CONFIG.tmp, "docs"}).string(), "pepper" };
+    auto a = client.search("狗");
+    for(const auto& v : a) {
+        SPDLOG_DEBUG("狗 = {}", v);
+    }
+    auto b = client.search("水果");
+    // auto b = client.search("草莓");
+    for(const auto& v : b) {
+        SPDLOG_DEBUG("水果 = {}", v);
+        // SPDLOG_DEBUG("草莓 = {}", v);
+    }
+}
+
 LFR_TEST(
     // testPoetry();
-    testDataset();
+    // testDataset();
     testRAGEmbedding();
     // testPepperEmbedding();
+    // testOllamaEmbeddingClient();
+    // testPepperEmbeddingClient();
+    // testRAGClientIndex();
+    // testRAGClientSearch();
 );

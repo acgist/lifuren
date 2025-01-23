@@ -20,19 +20,3 @@ target_link_libraries(
     testPoetry
     lifurennlp
 )
-
-add_executable(testRAGClient TestRAGClient.cpp)
-add_test(NAME testRAGClient COMMAND testRAGClient)
-set_target_properties(testRAGClient PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testRAGClient
-    lifurennlp
-)
-
-add_executable(testEmbeddingClient TestEmbeddingClient.cpp)
-add_test(NAME testEmbeddingClient COMMAND testEmbeddingClient)
-set_target_properties(testEmbeddingClient PROPERTIES FOLDER "test-nlp")
-target_link_libraries(
-    testEmbeddingClient
-    lifurennlp
-)
