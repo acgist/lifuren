@@ -219,14 +219,15 @@ void lifuren::Model<D, L, P, M>::train(size_t epoch) {
         loss.backward();
         this->optimizer->step();
         if(this->params.classify) {
+            auto target_size = target.numel();
             auto target_pred = pred.argmax(1);
             auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
-            data_val += target.numel();
+            data_val += target_size;
             // 混淆矩阵
-            long long* target_iter = target.data_ptr<long long>();
-            long long* target_pred_iter = target_pred.data_ptr<long long>();
-            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+            int64_t* target_iter = target.data_ptr<int64_t>();
+            int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
+            for (size_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
                 confusion_matrix[*target_iter][*target_pred_iter].add_(1);
             }
         }
@@ -264,14 +265,15 @@ void lifuren::Model<D, L, P, M>::val(size_t epoch) {
         torch::Tensor target = batch.target;
         this->val(data, target, pred, loss);
         if(this->params.classify) {
+            auto target_size = target.numel();
             auto target_pred = pred.argmax(1);
             auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
-            data_val += target.numel();
+            data_val += target_size;
             // 混淆矩阵
-            long long* target_iter = target.data_ptr<long long>();
-            long long* target_pred_iter = target_pred.data_ptr<long long>();
-            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+            int64_t* target_iter = target.data_ptr<int64_t>();
+            int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
+            for (size_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
                 confusion_matrix[*target_iter][*target_pred_iter].add_(1);
             }
         }
@@ -306,14 +308,15 @@ void lifuren::Model<D, L, P, M>::test() {
         torch::Tensor target = batch.target;
         this->test(data, target, pred, loss);
         if(this->params.classify) {
+            auto target_size = target.numel();
             auto target_pred = pred.argmax(1);
             auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
-            data_val += target.numel();
+            data_val += target_size;
             // 混淆矩阵
-            long long* target_iter = target.data_ptr<long long>();
-            long long* target_pred_iter = target_pred.data_ptr<long long>();
-            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+            int64_t* target_iter = target.data_ptr<int64_t>();
+            int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
+            for (int64_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
                 confusion_matrix[*target_iter][*target_pred_iter].add_(1);
             }
         }
