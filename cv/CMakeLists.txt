@@ -5,11 +5,9 @@ add_library(
     src/OpenCV.cpp
     src/audio/AudioClient.cpp
     src/audio/AudioDataset.cpp
-    src/audio/ShikuangModel.cpp
     src/image/ImageDataset.cpp
     src/video/VideoClient.cpp
     src/video/VideoDataset.cpp
-    src/video/WudaoziModel.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")

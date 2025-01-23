@@ -21,6 +21,12 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/Dataset.hpp"
 
+namespace lifuren {
+
+class RAGClient;
+
+} // END OF lifuren
+
 namespace lifuren::poetry {
 
 // 诗词符号
@@ -86,11 +92,9 @@ public:
 
 };
 
-namespace pepper {
+extern bool ragEmbedding(const std::shared_ptr<lifuren::RAGClient> ragClient, const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
-extern bool embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
-
-} // END OF pepper
+extern bool pepperEmbedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
 /**
  * @param stream 文件流

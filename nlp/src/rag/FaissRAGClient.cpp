@@ -9,6 +9,8 @@
 #include "faiss/MetaIndexes.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Config.hpp"
+#include "lifuren/EmbeddingClient.hpp"
 
 // 公用一个锁不考虑并发
 static std::mutex mutex;

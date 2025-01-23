@@ -5,17 +5,9 @@
 #define LIFUREN_HEADER_NLP_RAG_HPP
 
 #include <map>
-#include <set>
-#include <mutex>
+#include <memory>
 #include <string>
-#include <thread>
 #include <vector>
-#include <fstream>
-#include <functional>
-
-#include "lifuren/Config.hpp"
-#include "lifuren/Thread.hpp"
-#include "lifuren/EmbeddingClient.hpp"
 
 namespace faiss {
     
@@ -24,6 +16,9 @@ namespace faiss {
 }
 
 namespace lifuren {
+
+class RestClient;
+class EmbeddingClient;
 
 /**
  * RAG任务
@@ -195,12 +190,6 @@ public:
     std::vector<std::string> search(const std::vector<float>& prompt, const uint8_t size = 4) const override;
 
 };
-
-namespace rag {
-
-extern bool embedding(const std::shared_ptr<lifuren::RAGClient> ragClient, const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
-
-} // END OF rag
 
 } // END OF lifuren
 

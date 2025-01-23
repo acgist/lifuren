@@ -181,7 +181,7 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     lifuren::dataset::allDatasetPreprocessing(
         lifuren::file::join({ lifuren::config::CONFIG.tmp, "poetry-embedding" }).string(),
         lifuren::config::PEPPER_MODEL_FILE,
-        &lifuren::poetry::pepper::embedding,
+        &lifuren::poetry::pepperEmbedding,
         true
     );
 }
