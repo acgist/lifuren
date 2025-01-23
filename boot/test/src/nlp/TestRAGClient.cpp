@@ -1,7 +1,6 @@
 #include "lifuren/Test.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/RAGClient.hpp"
 
 [[maybe_unused]] static void testRAGClientIndex() {
@@ -38,17 +37,7 @@
     }
 }
 
-[[maybe_unused]] static void testRAGEmbedding() {
-    const std::string rag       = "faiss";
-    const std::string path      = lifuren::file::join({ lifuren::config::CONFIG.tmp, "poetry-embedding" }).string();
-    const std::string embedding = "pepper";
-    std::shared_ptr<lifuren::RAGClient> client = std::move(lifuren::RAGClient::getClient(rag, path, embedding));
-    auto embeddingFunction = std::bind(&lifuren::poetry::ragEmbedding, client, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
-    lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, embeddingFunction);
-}
-
 LFR_TEST(
     // testRAGClientIndex();
     testRAGClientSearch();
-    // testRAGEmbedding();
 );

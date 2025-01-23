@@ -5,7 +5,6 @@ add_library(
     src/Layer.cpp
     src/Torch.cpp
     src/Model.cpp
-    src/Tensor.cpp
     src/Dataset.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp

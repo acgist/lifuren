@@ -23,7 +23,6 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Model.hpp"
-#include "lifuren/Tensor.hpp"
 #include "lifuren/audio/AudioDataset.hpp"
 
 namespace lifuren::audio {

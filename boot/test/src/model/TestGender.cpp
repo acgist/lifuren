@@ -11,7 +11,6 @@
 #include "lifuren/Layer.hpp"
 #include "lifuren/Model.hpp"
 #include "lifuren/Torch.hpp"
-#include "lifuren/Tensor.hpp"
 #include "lifuren/image/ImageDataset.hpp"
 
 class GenderModuleImpl : public torch::nn::Module {

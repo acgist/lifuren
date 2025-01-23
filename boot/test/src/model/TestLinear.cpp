@@ -8,7 +8,6 @@
 
 #include "lifuren/Model.hpp"
 #include "lifuren/Layer.hpp"
-#include "lifuren/Tensor.hpp"
 #include "lifuren/Dataset.hpp"
 
 class LinearModuleImpl : public torch::nn::Module {

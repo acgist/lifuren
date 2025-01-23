@@ -8,7 +8,6 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/EmbeddingClient.hpp"
 #include "lifuren/audio/AudioDataset.hpp"
 #include "lifuren/image/ImageDataset.hpp"
