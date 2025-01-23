@@ -566,7 +566,7 @@ inline static void embedding(std::ofstream& stream, float norm_factor, std::tupl
     }
 }
 
-lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(size_t batch_size, const std::string& path) {
+lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const size_t batch_size, const std::string& path) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
         [](const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) {

@@ -14,6 +14,7 @@
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
 
+#include <array>
 #include <memory>
 #include <string>
 #include <thread>
@@ -102,6 +103,8 @@ protected:
     virtual bool initParameters();
     // 定义数据集
     virtual bool defineDataset() = 0;
+    // 输出评估信息
+    void printEvaluation(const char* name, const size_t epoch, const float loss, const size_t accu_val, const size_t data_val, const size_t duration, torch::Tensor confusion_matrix);
 
 };
 
@@ -167,7 +170,7 @@ bool lifuren::Model<D, L, P, M>::define() {
 }
 
 template<typename D, typename L, typename P, typename M>
-bool lifuren::Model<D, L, P, M>::initParameters() {
+inline bool lifuren::Model<D, L, P, M>::initParameters() {
     for(auto& parameter : this->model->named_parameters()) {
         // torch::nn::init::xavier_normal_(parameter.value());
     }
@@ -175,7 +178,7 @@ bool lifuren::Model<D, L, P, M>::initParameters() {
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::print(bool details) {
+inline void lifuren::Model<D, L, P, M>::print(bool details) {
     size_t total_numel = 0;
     for(const auto& parameter : this->model->named_parameters()) {
         total_numel += parameter.value().numel();
@@ -188,7 +191,7 @@ void lifuren::Model<D, L, P, M>::print(bool details) {
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+inline void lifuren::Model<D, L, P, M>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     pred = this->model->forward(feature);
     loss = this->loss(pred, label);
 }
@@ -204,6 +207,7 @@ void lifuren::Model<D, L, P, M>::train(size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->train();
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
         torch::Tensor pred;
@@ -215,35 +219,29 @@ void lifuren::Model<D, L, P, M>::train(size_t epoch) {
         loss.backward();
         this->optimizer->step();
         if(this->params.classify) {
-            auto accu = pred.argmax(1).eq(target).sum();
+            auto target_pred = pred.argmax(1);
+            auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
             data_val += target.numel();
+            // 混淆矩阵
+            long long* target_iter = target.data_ptr<long long>();
+            long long* target_pred_iter = target_pred.data_ptr<long long>();
+            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+                confusion_matrix[*target_iter][*target_pred_iter].add_(1);
+            }
         }
         loss_val += loss.template item<float>();
         ++batch_count;
+        if(batch_count % 10 == 0) {
+            SPDLOG_INFO("当前训练第 {} 轮第 {} 批", epoch + 1, batch_count);
+        }
     }
     const auto z = std::chrono::system_clock::now();
-    if(this->params.classify) {
-        SPDLOG_INFO(
-            "当前训练第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
-            epoch + 1,
-            loss_val / batch_count,
-            accu_val,
-            data_val,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    } else {
-        SPDLOG_INFO(
-            "当前训练第 {} 轮，损失值为：{:.6f}，耗时：{}。",
-            epoch + 1,
-            loss_val / batch_count,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    }
+    this->printEvaluation("训练", epoch + 1, loss_val / batch_count, accu_val, data_val, std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count(), confusion_matrix);
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+inline void lifuren::Model<D, L, P, M>::train(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
@@ -257,6 +255,7 @@ void lifuren::Model<D, L, P, M>::val(size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
     const auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->valDataset) {
         torch::Tensor pred;
@@ -265,35 +264,26 @@ void lifuren::Model<D, L, P, M>::val(size_t epoch) {
         torch::Tensor target = batch.target;
         this->val(data, target, pred, loss);
         if(this->params.classify) {
-            auto accu = pred.argmax(1).eq(target).sum();
+            auto target_pred = pred.argmax(1);
+            auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
             data_val += target.numel();
+            // 混淆矩阵
+            long long* target_iter = target.data_ptr<long long>();
+            long long* target_pred_iter = target_pred.data_ptr<long long>();
+            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+                confusion_matrix[*target_iter][*target_pred_iter].add_(1);
+            }
         }
         loss_val += loss.template item<float>();
         ++batch_count;
     }
     const auto z = std::chrono::system_clock::now();
-    if(this->params.classify) {
-        SPDLOG_INFO(
-            "当前验证第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
-            epoch + 1,
-            loss_val / batch_count,
-            accu_val,
-            data_val,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    } else {
-        SPDLOG_INFO(
-            "当前验证第 {} 轮，损失值为：{:.6f}，耗时：{}。",
-            epoch + 1,
-            loss_val / batch_count,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    }
+    this->printEvaluation("验证", epoch + 1, loss_val / batch_count, accu_val, data_val, std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count(), confusion_matrix);
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+inline void lifuren::Model<D, L, P, M>::val(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
@@ -307,6 +297,7 @@ void lifuren::Model<D, L, P, M>::test() {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
     const auto a = std::chrono::system_clock::now();
     for (auto& batch : *this->testDataset) {
         torch::Tensor pred;
@@ -315,33 +306,26 @@ void lifuren::Model<D, L, P, M>::test() {
         torch::Tensor target = batch.target;
         this->test(data, target, pred, loss);
         if(this->params.classify) {
-            auto accu = pred.argmax(1).eq(target).sum();
+            auto target_pred = pred.argmax(1);
+            auto accu = target_pred.eq(target).sum();
             accu_val += accu.template item<int>();
             data_val += target.numel();
+            // 混淆矩阵
+            long long* target_iter = target.data_ptr<long long>();
+            long long* target_pred_iter = target_pred.data_ptr<long long>();
+            for (size_t i = 0; i < target.numel(); ++i, ++target_iter, ++target_pred_iter) {
+                confusion_matrix[*target_iter][*target_pred_iter].add_(1);
+            }
         }
         loss_val += loss.template item<float>();
         ++batch_count;
     }
     const auto z = std::chrono::system_clock::now();
-    if(this->params.classify) {
-        SPDLOG_INFO(
-            "当前测试损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
-            loss_val / batch_count,
-            accu_val,
-            data_val,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    } else {
-        SPDLOG_INFO(
-            "当前测试损失值为：{:.6f}，耗时：{}。",
-            loss_val / batch_count,
-            std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count()
-        );
-    }
+    this->printEvaluation("测试", 0, loss_val / batch_count, accu_val, data_val, std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count(), confusion_matrix);
 }
 
 template<typename D, typename L, typename P, typename M>
-void lifuren::Model<D, L, P, M>::test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+inline void lifuren::Model<D, L, P, M>::test(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     this->logic(feature, label, pred, loss);
 }
 
@@ -359,7 +343,7 @@ void lifuren::Model<D, L, P, M>::trainValAndTest(const bool& val, const bool& te
                 this->val(epoch);
             }
             if(this->params.check_point) {
-                this->save(this->params.check_path, this->params.model_name + ".checkpoint.pt");
+                this->save(this->params.check_path, this->params.model_name + ".checkpoint." + std::to_string(epoch) + ".pt");
             }
         }
         if(test) {
@@ -369,13 +353,45 @@ void lifuren::Model<D, L, P, M>::trainValAndTest(const bool& val, const bool& te
         SPDLOG_ERROR("训练异常：{}", e.what());
     }
     const auto z = std::chrono::system_clock::now();
-    SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>((z - a)).count());
+    SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count());
 }
 
 template<typename D, typename L, typename P, typename M>
 torch::Tensor lifuren::Model<D, L, P, M>::pred(const torch::Tensor& input) {
     this->model->eval();
     return this->model->forward(input);
+}
+
+template<typename D, typename L, typename P, typename M>
+inline void lifuren::Model<D, L, P, M>::printEvaluation(
+    const char* name,
+    const size_t epoch,
+    const float loss,
+    const size_t accu_val,
+    const size_t data_val,
+    const size_t duration,
+    torch::Tensor confusion_matrix
+) {
+    if(this->params.classify) {
+        SPDLOG_INFO(
+            "当前{}第 {} 轮，损失值为：{:.6f}，正确率为：{} / {}，耗时：{}。",
+            name,
+            epoch,
+            loss,
+            accu_val,
+            data_val,
+            duration
+        );
+        lifuren::logTensor("混淆矩阵", confusion_matrix);
+    } else {
+        SPDLOG_INFO(
+            "当前{}第 {} 轮，损失值为：{:.6f}，耗时：{}。",
+            name,
+            epoch,
+            loss,
+            duration
+        );
+    }
 }
 
 #endif // LFR_HEADER_MODEL_MODEL_HPP

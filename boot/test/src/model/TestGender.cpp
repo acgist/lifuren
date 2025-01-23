@@ -8,7 +8,6 @@
 
 #include "opencv2/opencv.hpp"
 
-#include "lifuren/Layer.hpp"
 #include "lifuren/Model.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/image/ImageDataset.hpp"
@@ -80,7 +79,7 @@ public:
     GenderModel(lifuren::config::ModelParams params = {
         .lr          = 0.001F,
         .batch_size  = 10,
-        .epoch_count = 64,
+        .epoch_count = 8,
         .classify    = true,
         .check_point = true,
         .model_name  = "gender",
@@ -95,12 +94,14 @@ public:
         std::filesystem::path data_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "gender"});
         std::string path_train = (data_path / "train").string();
         std::string path_val   = (data_path / "val"  ).string();
+        std::string path_test  = (data_path / "test" ).string();
         std::map<std::string, float> mapping = {
             { "man",   1.0F },
             { "woman", 0.0F }
         };
         this->trainDataset = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_train, mapping));
         this->valDataset   = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_val,   mapping));
+        this->testDataset  = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_test,  mapping));
         return true;
     }
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
@@ -113,7 +114,7 @@ public:
 [[maybe_unused]] static void testGender() {
     GenderModel linear;
     linear.define();
-    linear.trainValAndTest(true, false);
+    linear.trainValAndTest(true, true);
     // 预测
     cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
     cv::resize(image, image, cv::Size(200, 200));

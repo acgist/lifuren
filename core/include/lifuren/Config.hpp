@@ -33,6 +33,7 @@ struct ModelParams {
     size_t      batch_size { 100         }; // 批量大小
     size_t      epoch_count{ 128         }; // 训练次数
     size_t      thread_size{ 0           }; // 线程数量
+    size_t      class_size { 2           }; // 分类数量
     bool        classify   { false       }; // 分类任务
     bool        check_point{ false       }; // 保存快照
     std::string model_name { "lifuren"   }; // 模型名称

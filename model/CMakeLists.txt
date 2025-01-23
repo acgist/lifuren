@@ -4,7 +4,6 @@ add_library(
     ${PROJECT_NAME}
     src/Layer.cpp
     src/Torch.cpp
-    src/Model.cpp
     src/Dataset.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp

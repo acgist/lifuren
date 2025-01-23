@@ -122,8 +122,8 @@ extern std::vector<short> pcm_mag_pha_istft(
 );
 
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
-    size_t batch_size,      // 批量大小
-    const std::string& path // 数据集路径
+    const size_t batch_size, // 批量大小
+    const std::string& path  // 数据集路径
 );
 
 } // END OF lifuren::audio
