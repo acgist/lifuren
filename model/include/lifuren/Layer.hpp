@@ -1,9 +1,12 @@
 /**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * Layer
- * 
- * @author acgist
- * 
- * 参考资料：
  * 
  * https://pytorch.org/docs/stable/nn.html
  * 
@@ -12,6 +15,10 @@
  * 
  * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/
  * https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/Loss.cpp
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_MODEL_LAYER_HPP
 #define LFR_HEADER_MODEL_LAYER_HPP
@@ -22,4 +29,4 @@ namespace layer   {
 } // END OF layer
 } // END OF lifuren
 
-#endif // LFR_HEADER_MODEL_LAYER_HPP
+#endif // END OF LFR_HEADER_MODEL_LAYER_HPP

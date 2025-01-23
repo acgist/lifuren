@@ -1,12 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * 诗词数据集
  * 
  * @author acgist
  * 
- * TODO:
- * 1. 词嵌入分离直接保存嵌入之后的文件不用每次都要嵌入
- * 2. 诗词断句
- * 3. 诗词长度
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_NLP_POETRY_DATASET_HPP
 #define LFR_HEADER_NLP_POETRY_DATASET_HPP

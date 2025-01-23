@@ -1,20 +1,16 @@
 /**
- * 诗词终端
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
  * 
- * 诗仙
- * 诗圣
- * 诗佛
- * 诗鬼
- * 诗魔
- * 李杜
- * 苏辛
- * 婉约
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * 模型实现：李杜、苏辛
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
  * 
- * RNN/GRU/LSTM/诗词填空/自监督学习
+ * 诗词
  * 
  * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_NLP_POETRY_HPP
 #define LFR_HEADER_NLP_POETRY_HPP
@@ -62,4 +58,4 @@ extern bool datasetPoetryPreprocessing(const std::string& path, const std::strin
 
 } // END OF lifuren::poetry
 
-#endif // LFR_HEADER_NLP_POETRY_HPP
+#endif // END OF LFR_HEADER_NLP_POETRY_HPP

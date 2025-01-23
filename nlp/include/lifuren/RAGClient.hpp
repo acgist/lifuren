@@ -1,5 +1,16 @@
 /**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * RAG（检索增强生成）
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
  */
 #ifndef LIFUREN_HEADER_NLP_RAG_HPP
 #define LIFUREN_HEADER_NLP_RAG_HPP

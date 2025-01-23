@@ -1,3 +1,28 @@
+/**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
+ * 诗词模型
+ * 
+ * 诗仙
+ * 诗圣
+ * 诗佛
+ * 诗鬼
+ * 诗魔
+ * 李杜
+ * 苏辛
+ * 婉约
+ * 
+ * 模型实现：李杜、苏辛
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
+ */
 #ifndef LFR_HEADER_CV_POETRY_MODEL_HPP
 #define LFR_HEADER_CV_POETRY_MODEL_HPP
 

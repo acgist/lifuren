@@ -1,15 +1,20 @@
 /**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
  * 模型
  * 
  * 模型输出向量不要使用任何逻辑判断语句
  * 
- * 所有模型直接在头文件中实现，避免编译太慢。
+ * https://pytorch.org/cppdocs/
  * 
  * @author acgist
  * 
- * TODO: GPU
- * 
- * https://pytorch.org/cppdocs/
+ * @version 1.0.0
  */
 #ifndef LFR_HEADER_MODEL_MODEL_HPP
 #define LFR_HEADER_MODEL_MODEL_HPP
@@ -227,7 +232,7 @@ void lifuren::Model<D, L, P, M>::train(size_t epoch) {
             // 混淆矩阵
             int64_t* target_iter = target.data_ptr<int64_t>();
             int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
-            for (size_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
+            for (int64_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
                 confusion_matrix[*target_iter][*target_pred_iter].add_(1);
             }
         }
@@ -273,7 +278,7 @@ void lifuren::Model<D, L, P, M>::val(size_t epoch) {
             // 混淆矩阵
             int64_t* target_iter = target.data_ptr<int64_t>();
             int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
-            for (size_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
+            for (int64_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
                 confusion_matrix[*target_iter][*target_pred_iter].add_(1);
             }
         }
@@ -397,4 +402,4 @@ inline void lifuren::Model<D, L, P, M>::printEvaluation(
     }
 }
 
-#endif // LFR_HEADER_MODEL_MODEL_HPP
+#endif // END OF LFR_HEADER_MODEL_MODEL_HPP
