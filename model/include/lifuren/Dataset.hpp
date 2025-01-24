@@ -6,7 +6,9 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * Dataset
+ * 数据集
+ * 
+ * 数据集已经自动洗牌
  * 
  * @author acgist
  * 

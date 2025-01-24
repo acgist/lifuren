@@ -83,7 +83,8 @@ jobs:
           cmake -version
           mkdir build ; cd $_
           cmake ..
-          make -j 2
+          make
+          # make -j 2
           ls -lh Debug/bin
           ls -lh Debug/lib
           sudo make install

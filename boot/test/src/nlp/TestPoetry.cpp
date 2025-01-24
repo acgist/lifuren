@@ -7,11 +7,12 @@
 #include "nlohmann/json.hpp"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/String.hpp"
 #include "lifuren/RAGClient.hpp"
-#include "lifuren/poetry/Poetry.hpp"
 #include "lifuren/EmbeddingClient.hpp"
+#include "lifuren/poetry/Poetry.hpp"
 #include "lifuren/poetry/PoetryDataset.hpp"
 
 static bool enable_print_messy_code = false;
@@ -248,6 +249,12 @@ static void print(const char* title, const std::map<std::string, int64_t>& map) 
     }
 }
 
+[[maybe_unused]] static void testLoadPoetryFileDataset() {
+    auto loader = lifuren::poetry::loadFileDatasetLoader(5, lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "embedding.model"}).string());
+    lifuren::logTensor("诗词特征", loader->begin()->data.sizes());
+    lifuren::logTensor("诗词标签", loader->begin()->target.sizes());
+}
+
 LFR_TEST(
     // testPoetry();
     // testDataset();
@@ -257,4 +264,5 @@ LFR_TEST(
     // testPepperEmbeddingClient();
     // testRAGClientIndex();
     // testRAGClientSearch();
+    // testLoadPoetryFileDataset();
 );

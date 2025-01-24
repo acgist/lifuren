@@ -9,10 +9,6 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/audio/Audio.hpp"
 
-#ifndef MONO_NB_CHANNELS
-#define MONO_NB_CHANNELS 1
-#endif
-
 extern "C" {
 
 #include "libavutil/opt.h"
@@ -22,91 +18,62 @@ extern "C" {
 
 }
 
-const static float NORMALIZATION = 32768.0F;
+#ifndef MONO_NB_CHANNELS
+#define MONO_NB_CHANNELS 1
+#endif
 
+// 解码
 static bool decode(AVFrame* frame, AVPacket* packet, SwrContext** swrCtx, AVCodecContext* decodeCodecCtx, std::vector<char>& buffer, std::ofstream& output);
-static bool encode(int64_t& pts, const int64_t& nb_samples, AVFrame* frame, AVPacket* packet, AVCodecContext* encodeCodecCtx, AVFormatContext* outputCtx);
+static bool open_swr (SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx);
+static void close_swr(SwrContext** swrCtx);
 static bool open_input (AVPacket** packet, AVFormatContext** inputCtx, const std::string& file);
 static void close_input(AVPacket** packet, AVFormatContext** inputCtx);
 static bool open_decoder (AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& suffix);
 static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx);
-static bool open_swr (SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx);
-static void close_swr(SwrContext** swrCtx);
-static bool open_encoder (AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx);
-static void close_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx);
+
+// 编码
+static bool encode(int64_t& pts, const int64_t& nb_samples, AVFrame* frame, AVPacket* packet, AVCodecContext* encodeCodecCtx, AVFormatContext* outputCtx);
 static bool open_output (AVFormatContext** outputCtx, AVCodecContext* encodeCodecCtx, int& stream_index, const std::string& file);
 static void close_output(AVFormatContext** outputCtx);
+static bool open_encoder (AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx);
+static void close_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx);
+
+// 嵌入
 static void embedding(const std::string& source, const std::string& target, std::ofstream& stream);
-static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
+static void embedding(std::ofstream& stream, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
+
+/**
+ * 短时傅里叶变换
+ * 
+ * 480 mag sizes = pha sizes = [1, 201, 5]
+ * 
+ * @return [mag, pha, com]
+ */
+static std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
+    torch::Tensor pcm_norm, // 一维时间序列或二维时间序列批次
+    int n_fft    = 400,     // 傅里叶变换的大小
+    int hop_size = 100,     // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
+    int win_size = 400,     // 窗口帧和STFT滤波器的大小：n_fft
+    float compress_factor = 1.0 // 压缩因子
+);
+
+/**
+ * 短时傅里叶逆变换
+ * 
+ * @return PCM
+ */
+static torch::Tensor mag_pha_istft(
+    torch::Tensor mag,  // mag
+    torch::Tensor pha,  // pha
+    int n_fft    = 400, // 傅里叶变换的大小
+    int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
+    int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
+    float compress_factor = 1.0 // 压缩因子
+);
 
 static std::mutex embedding_mutex;
 
-std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::audio::mag_pha_stft(
-    torch::Tensor pcm_norm,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto window = torch::hann_window(win_size);
-    auto spec = torch::stft(pcm_norm, n_fft, hop_size, win_size, window, true, "reflect", false, std::nullopt, true);
-         spec = torch::view_as_real(spec);
-    auto mag  = torch::sqrt(spec.pow(2).sum(-1) + (1e-9));
-    auto pha  = torch::atan2(spec.index({"...", 1}), spec.index({"...", 0}) + (1e-5));
-         mag  = torch::pow(mag, compress_factor);
-    auto com  = torch::stack((mag * torch::cos(pha), mag * torch::sin(pha)), -1);
-    return std::make_tuple<>(mag, pha, com);
-}
-
-std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::audio::pcm_mag_pha_stft(
-    std::vector<short>& pcm,
-    float& norm_factor,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto pcm_tensor = torch::zeros({1, static_cast<int>(pcm.size())}, torch::kFloat32);
-    float* data = reinterpret_cast<float*>(pcm_tensor.data_ptr());
-    std::copy_n(pcm.data(), pcm.size(), data);
-    pcm_tensor  = pcm_tensor / NORMALIZATION;
-    norm_factor = torch::sqrt(pcm_tensor.sizes()[1] / torch::sum(pcm_tensor.pow(2.0))).template item<float>();
-    pcm_tensor  = pcm_tensor * norm_factor;
-    return std::move(mag_pha_stft(pcm_tensor, n_fft, hop_size, win_size, compress_factor));
-}
-
-torch::Tensor lifuren::audio::mag_pha_istft(
-    torch::Tensor mag,
-    torch::Tensor pha,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto window = torch::hann_window(win_size);
-         mag = torch::pow(mag, (1.0 / compress_factor));
-    auto com = torch::complex(mag * torch::cos(pha), mag * torch::sin(pha));
-    return std::move(torch::istft(com, n_fft, hop_size, win_size, window, true));
-}
-
-std::vector<short> lifuren::audio::pcm_mag_pha_istft(
-    torch::Tensor mag,
-    torch::Tensor pha,
-    const float& norm_factor,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto result = mag_pha_istft(mag, pha, n_fft, hop_size, win_size, compress_factor);
-         result = result / norm_factor;
-         result = result * NORMALIZATION;
-    float* data = reinterpret_cast<float*>(result.data_ptr());
-    std::vector<short> pcm;
-    pcm.resize(result.sizes()[1]);
-    std::copy_n(data, pcm.size(), pcm.data());
-    return pcm;
-}
+const static float NORMALIZATION = 32768.0F;
 
 std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile) {
     AVPacket       * packet  { nullptr };
@@ -115,9 +82,9 @@ std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile
         close_input(&packet, &inputCtx);
         return {false, {}};
     }
-    auto pos     = audioFile.find_last_of('.') + 1;
-    auto suffix  = audioFile.substr(pos, audioFile.length() - pos);
-    auto pcmFile = audioFile.substr(0, pos) + "pcm";
+    const auto pos     = audioFile.find_last_of('.') + 1;
+    const auto suffix  = audioFile.substr(pos, audioFile.length() - pos);
+    const auto pcmFile = audioFile.substr(0, pos) + "pcm";
     AVFrame       * frame         { nullptr };
     AVCodecContext* decodeCodecCtx{ nullptr };
     if(!open_decoder(&frame, &decodeCodecCtx, suffix)) {
@@ -128,10 +95,9 @@ std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile
     std::ofstream output;
     output.open(pcmFile, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
     if(!output.is_open()) {
-        output.close();
+        SPDLOG_WARN("打开音频输出文件失败：{}", pcmFile);
         close_input(&packet, &inputCtx);
         close_decoder(&frame, &decodeCodecCtx);
-        SPDLOG_WARN("打开音频输出文件失败：{}", pcmFile);
         return {false, pcmFile};
     }
     std::vector<char> buffer;
@@ -139,12 +105,12 @@ std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile
     SwrContext* swrCtx{ nullptr };
     while(av_read_frame(inputCtx, packet) == 0) {
         if(!decode(frame, packet, &swrCtx, decodeCodecCtx, buffer, output)) {
+            av_packet_unref(packet);
             break;
         }
+        av_packet_unref(packet);
     }
-    // 刷出缓冲
     decode(frame, NULL, &swrCtx, decodeCodecCtx, buffer, output);
-    // 释放资源
     output.close();
     close_swr(&swrCtx);
     close_input(&packet, &inputCtx);
@@ -152,9 +118,146 @@ std::tuple<bool, std::string> lifuren::audio::toPcm(const std::string& audioFile
     return {true, pcmFile};
 }
 
+static bool open_input(AVPacket** packet, AVFormatContext** inputCtx, const std::string& file) {
+    *packet = av_packet_alloc();
+    if(!*packet) {
+        SPDLOG_WARN("申请数据包失败：{}", file);
+        return false;
+    }
+    *inputCtx = avformat_alloc_context();
+    if(!*inputCtx) {
+        SPDLOG_WARN("申请格式上下文失败：{}", file);
+        return false;
+    }
+    if(avformat_open_input(inputCtx, file.c_str(), NULL, NULL) != 0) {
+        SPDLOG_WARN("打开格式上下文失败：{}", file);
+        return false;
+    }
+    if((*inputCtx)->nb_streams != 1) {
+        SPDLOG_WARN("文件包含多个媒体轨道：{}", file);
+        return false;
+    }
+    if((*inputCtx)->streams[0]->codecpar->codec_type != AVMEDIA_TYPE_AUDIO) {
+        SPDLOG_WARN("文件没有音频轨道：{}", file);
+        return false;
+    }
+    return true;
+}
+
+static void close_input(AVPacket** packet, AVFormatContext** inputCtx) {
+    if(*packet) {
+        av_packet_free(packet);
+        *packet = nullptr;
+    }
+    if(*inputCtx) {
+        avformat_close_input(inputCtx);
+        *inputCtx = nullptr;
+    }
+}
+
+static bool open_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& suffix) {
+    *frame = av_frame_alloc();
+    if(!*frame) {
+        SPDLOG_WARN("申请数据帧失败：{}", suffix);
+        return false;
+    }
+    const AVCodec* decoder;
+    if("aac" == suffix || "AAC" == suffix) {
+        decoder = avcodec_find_decoder(AV_CODEC_ID_AAC);
+    } else if("mp3" == suffix || "MP3" == suffix) {
+        decoder = avcodec_find_decoder(AV_CODEC_ID_MP3);
+    } else if("flac" == suffix || "FLAC" == suffix) {
+        decoder = avcodec_find_decoder(AV_CODEC_ID_FLAC);
+    } else {
+        SPDLOG_WARN("不支持的音频格式：{}", suffix);
+        return false;
+    }
+    if(!decoder) {
+        SPDLOG_WARN("不支持的音频格式：{}", suffix);
+        return false;
+    }
+    *decodeCodecCtx = avcodec_alloc_context3(decoder);
+    if(!*decodeCodecCtx) {
+        SPDLOG_WARN("申请解码器上下文失败：{}", suffix);
+        return false;
+    }
+    if(avcodec_open2(*decodeCodecCtx, decoder, nullptr) != 0) {
+        SPDLOG_WARN("打开解码器上下文失败：{}", suffix);
+        return false;
+    }
+    return true;
+}
+
+static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
+    if(*frame) {
+        av_frame_free(frame);
+        *frame = nullptr;
+    }
+    if(*decodeCodecCtx) {
+        avcodec_free_context(decodeCodecCtx);
+        *decodeCodecCtx = nullptr;
+    }
+}
+
+static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
+    *swrCtx = swr_alloc();
+    if(!*swrCtx) {
+        SPDLOG_WARN("申请重采样上下文失败");
+        return false;
+    }
+    av_opt_set_int       (*swrCtx, "in_sample_rate",  frame->sample_rate,         0);
+    av_opt_set_int       (*swrCtx, "out_sample_rate", 48000,                      0);
+    av_opt_set_sample_fmt(*swrCtx, "in_sample_fmt",   decodeCodecCtx->sample_fmt, 0);
+    av_opt_set_sample_fmt(*swrCtx, "out_sample_fmt",  AV_SAMPLE_FMT_S16,          0);
+    #if FF_API_OLD_CHANNEL_LAYOUT
+    av_opt_set_channel_layout(*swrCtx, "in_channel_layout",  frame->channel_layout, 0);
+    av_opt_set_channel_layout(*swrCtx, "out_channel_layout", AV_CH_LAYOUT_MONO,     0);
+    #else
+    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
+    av_opt_set_chlayout(*swrCtx, "in_channel_layout",  &frame->ch_layout, 0);
+    av_opt_set_chlayout(*swrCtx, "out_channel_layout", &mono,             0);
+    #endif
+    if(swr_init(*swrCtx) != 0) {
+        SPDLOG_WARN("打开重采样上下文失败");
+        return false;
+    }
+    return true;
+}
+
+static void close_swr(SwrContext** swrCtx) {
+    if(*swrCtx) {
+        swr_free(swrCtx);
+        *swrCtx = nullptr;
+    }
+}
+
+static bool decode(AVFrame* frame, AVPacket* packet, SwrContext** swrCtx, AVCodecContext* decodeCodecCtx, std::vector<char>& buffer, std::ofstream& output) {
+    if(avcodec_send_packet(decodeCodecCtx, packet) != 0) {
+        return false;
+    }
+    while(avcodec_receive_frame(decodeCodecCtx, frame) == 0) {
+        if(!*swrCtx && !open_swr(swrCtx, frame, decodeCodecCtx)) {
+            av_frame_unref(frame);
+            return false;
+        }
+        uint8_t* buffer_data = reinterpret_cast<uint8_t*>(buffer.data());
+        const int swr_size = swr_convert(
+            *swrCtx,
+            &buffer_data,
+            frame->nb_samples,
+            const_cast<const uint8_t**>(frame->data),
+            frame->nb_samples
+        );
+        av_frame_unref(frame);
+        const int buffer_size = av_samples_get_buffer_size(NULL, MONO_NB_CHANNELS, swr_size, AV_SAMPLE_FMT_S16, 0);
+        output.write(buffer.data(), buffer_size);
+    }
+    return true;
+}
+
 std::tuple<bool, std::string> lifuren::audio::toFile(const std::string& pcmFile) {
-    AVFrame       * frame { nullptr };
-    AVPacket      * packet{ nullptr };
+    AVFrame * frame { nullptr };
+    AVPacket* packet{ nullptr };
     AVCodecContext* encodeCodecCtx{ nullptr };
     if(!open_encoder(&frame, &packet, &encodeCodecCtx)) {
         close_encoder(&frame, &packet, &encodeCodecCtx);
@@ -187,15 +290,13 @@ std::tuple<bool, std::string> lifuren::audio::toFile(const std::string& pcmFile)
     std::ifstream input;
     input.open(pcmFile, std::ios_base::in | std::ios_base::binary);
     if(!input.is_open()) {
-        input.close();
+        SPDLOG_WARN("打开音频输入文件失败：{}", pcmFile);
         close_encoder(&frame, &packet, &encodeCodecCtx);
         close_output(&outputCtx);
-        SPDLOG_WARN("打开音频输入文件失败：{}", pcmFile);
         return {false, outputFile};
     }
-    // 写入头部
     if(avformat_write_header(outputCtx, NULL) != 0) {
-        SPDLOG_WARN("写入头部失败");
+        SPDLOG_WARN("写入音频头部失败");
     }
     while(input.read(data.data(), buffer_size)) {
         size       = input.gcount();
@@ -209,229 +310,36 @@ std::tuple<bool, std::string> lifuren::audio::toFile(const std::string& pcmFile)
         #endif
         frame->nb_samples     = nb_samples;
         frame->sample_rate    = 48000;
-        // 申请空间
         if(av_frame_get_buffer(frame, 0) != 0) {
             av_frame_unref(frame);
             break;
         }
         std::memcpy(frame->buf[0]->data, data.data(), size);
         if(!encode(pts, nb_samples, frame, packet, encodeCodecCtx, outputCtx)) {
+            av_frame_unref(frame);
             break;
         }
+        av_frame_unref(frame);
     }
-    // 刷出缓冲
     encode(pts, nb_samples, NULL, packet, encodeCodecCtx, outputCtx);
-    // 写入尾部
     if(av_write_trailer(outputCtx)) {
-        SPDLOG_WARN("写入尾部失败");
+        SPDLOG_WARN("写入音频尾部失败");
     }
-    // 释放资源
     input.close();
-    close_encoder(&frame, &packet, &encodeCodecCtx);
     close_output(&outputCtx);
+    close_encoder(&frame, &packet, &encodeCodecCtx);
     return {true, outputFile};
-}
-
-bool lifuren::audio::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
-    const std::string source = "source";
-    const std::string target = "target";
-    std::vector<std::string> files;
-    lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".flac" });
-    if(files.empty()) {
-        SPDLOG_DEBUG("音频嵌入文件为空");
-        return true;
-    }
-    for(const auto& source_file : files) {
-        const auto index = source_file.find_last_of('.');
-        if(index == std::string::npos) {
-            SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
-            continue;
-        }
-        if(index < source.size()) {
-            SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
-            continue;
-        }
-        const auto label = source_file.substr(index - source.size(), source.size());
-        if(label != source) {
-            if(label != target) {
-                SPDLOG_INFO("加载文件匹配规则失败：{}", source_file);
-            }
-            continue;
-        }
-        auto target_file(source_file);
-        target_file.replace(index - source.size(), source.size(), target);
-        const auto iterator = std::find(files.begin(), files.end(), target_file);
-        if(iterator == files.end()) {
-            SPDLOG_INFO("加载文件没有标记文件：{}", source_file);
-            continue;
-        }
-        pool.submit([&stream, source_file, target_file]() {
-            SPDLOG_DEBUG("加载文件：{} - {}", source_file, target_file);
-            const auto [source_success, source_pcm] = lifuren::audio::toPcm(source_file);
-            const auto [target_success, target_pcm] = lifuren::audio::toPcm(target_file);
-            if(source_success && target_success) {
-                SPDLOG_DEBUG("转换PCM成功：{} - {}", source_file, target_file);
-                ::embedding(source_pcm, target_pcm, stream);
-            } else {
-                SPDLOG_WARN("转换PCM失败：{} - {}", source_file, target_file);
-            }
-        });
-    }
-    return true;
-}
-
-static bool decode(AVFrame* frame, AVPacket* packet, SwrContext** swrCtx, AVCodecContext* decodeCodecCtx, std::vector<char>& buffer, std::ofstream& output) {
-    if(avcodec_send_packet(decodeCodecCtx, packet) != 0) {
-        av_packet_unref(packet);
-        return false;
-    }
-    if(packet) {
-        av_packet_unref(packet);
-    }
-    while(avcodec_receive_frame(decodeCodecCtx, frame) == 0) {
-        if(!*swrCtx && !open_swr(swrCtx, frame, decodeCodecCtx)) {
-            av_frame_unref(frame);
-            return false;
-        }
-        uint8_t* buffer_data = reinterpret_cast<uint8_t*>(buffer.data());
-        const int swr_size = swr_convert(
-            *swrCtx,
-            &buffer_data,
-            frame->nb_samples,
-            const_cast<const uint8_t**>(frame->data),
-            frame->nb_samples
-        );
-        av_frame_unref(frame);
-        const int buffer_size = av_samples_get_buffer_size(NULL, MONO_NB_CHANNELS, swr_size, AV_SAMPLE_FMT_S16, 0);
-        output.write(buffer.data(), buffer_size);
-    }
-    av_frame_unref(frame);
-    return true;
-}
-
-static bool encode(int64_t& pts, const int64_t& nb_samples, AVFrame* frame, AVPacket* packet, AVCodecContext* encodeCodecCtx, AVFormatContext* outputCtx) {
-    if(avcodec_send_frame(encodeCodecCtx, frame) != 0) {
-        av_frame_unref(frame);
-        return false;
-    }
-    if(frame) {
-        av_frame_unref(frame);
-    }
-    while(avcodec_receive_packet(encodeCodecCtx, packet) == 0) {
-        packet->pts = pts;
-        packet->dts = pts;
-        pts += nb_samples;
-        av_write_frame(outputCtx, packet);
-        av_packet_unref(packet);
-    }
-    av_packet_unref(packet);
-    return true;
-}
-
-static bool open_input(AVPacket** packet, AVFormatContext** inputCtx, const std::string& file) {
-    *packet = av_packet_alloc();
-    if(!*packet) {
-        return false;
-    }
-    *inputCtx = avformat_alloc_context();
-    if(!*inputCtx) {
-        return false;
-    }
-    if(avformat_open_input(inputCtx, file.c_str(), NULL, NULL) != 0) {
-        SPDLOG_WARN("打开音频文件失败：{}", file);
-        return false;
-    }
-    return true;
-}
-
-static void close_input(AVPacket** packet, AVFormatContext** inputCtx) {
-    if(*packet) {
-        av_packet_free(packet);
-        *packet = nullptr;
-    }
-    if(*inputCtx) {
-        avformat_close_input(inputCtx);
-        *inputCtx = nullptr;
-    }
-}
-
-static bool open_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx, const std::string& suffix) {
-    *frame = av_frame_alloc();
-    if(!*frame) {
-        return false;
-    }
-    const AVCodec* decoder;
-    if("aac" == suffix || "AAC" == suffix) {
-        decoder = avcodec_find_decoder(AV_CODEC_ID_AAC);
-    } else if("mp3" == suffix || "MP3" == suffix) {
-        decoder = avcodec_find_decoder(AV_CODEC_ID_MP3);
-    } else if("flac" == suffix || "FLAC" == suffix) {
-        decoder = avcodec_find_decoder(AV_CODEC_ID_FLAC);
-    } else {
-        return false;
-    }
-    if(!decoder) {
-        SPDLOG_WARN("不支持的解码格式：{}", suffix);
-        return false;
-    }
-    *decodeCodecCtx = avcodec_alloc_context3(decoder);
-    if(!*decodeCodecCtx) {
-        SPDLOG_WARN("创建解码器上下文失败：{}", suffix);
-        return false;
-    }
-    if(avcodec_open2(*decodeCodecCtx, decoder, nullptr) != 0) {
-        SPDLOG_WARN("打开解码器上下文失败：{}", suffix);
-        return false;
-    }
-    return true;
-}
-
-static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
-    if(*frame) {
-        av_frame_free(frame);
-        *frame = nullptr;
-    }
-    if(*decodeCodecCtx) {
-        avcodec_free_context(decodeCodecCtx);
-        *decodeCodecCtx = nullptr;
-    }
-}
-
-static bool open_swr(SwrContext** swrCtx, AVFrame* frame, AVCodecContext* decodeCodecCtx) {
-    *swrCtx = swr_alloc();
-    av_opt_set_int       (*swrCtx, "in_sample_rate",     frame->sample_rate,         0);
-    av_opt_set_int       (*swrCtx, "out_sample_rate",    48000,                      0);
-    av_opt_set_sample_fmt(*swrCtx, "in_sample_fmt",      decodeCodecCtx->sample_fmt, 0);
-    av_opt_set_sample_fmt(*swrCtx, "out_sample_fmt",     AV_SAMPLE_FMT_S16,          0);
-    #if FF_API_OLD_CHANNEL_LAYOUT
-    av_opt_set_channel_layout(*swrCtx, "in_channel_layout",  frame->channel_layout,  0);
-    av_opt_set_channel_layout(*swrCtx, "out_channel_layout", AV_CH_LAYOUT_MONO,      0);
-    #else
-    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
-    av_opt_set_chlayout  (*swrCtx, "in_channel_layout",  &frame->ch_layout,          0);
-    av_opt_set_chlayout  (*swrCtx, "out_channel_layout", &mono,                      0);
-    #endif
-    if(swr_init(*swrCtx) != 0) {
-        SPDLOG_WARN("初始化重采样失败");
-        return false;
-    }
-    return true;
-}
-
-static void close_swr(SwrContext** swrCtx) {
-    if(*swrCtx) {
-        swr_free(swrCtx);
-        *swrCtx = nullptr;
-    }
 }
 
 static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** encodeCodecCtx) {
     *frame = av_frame_alloc();
     if(!*frame) {
+        SPDLOG_WARN("申请数据帧失败");
         return false;
     }
     *packet = av_packet_alloc();
     if(!*packet) {
+        SPDLOG_WARN("申请数据包失败");
         return false;
     }
     #ifdef __MP3__
@@ -445,7 +353,7 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
     }
     *encodeCodecCtx = avcodec_alloc_context3(encoder);
     if(!*encodeCodecCtx) {
-        SPDLOG_WARN("创建编码器上下文失败");
+        SPDLOG_WARN("申请编码器上下文失败");
         return false;
     }
     #if defined(__MP3__) && (defined(__linux) || defined(__linux__))
@@ -484,10 +392,11 @@ static void close_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** e
 static bool open_output(AVFormatContext** outputCtx, AVCodecContext* encodeCodecCtx, int& stream_index, const std::string& file) {
     *outputCtx = avformat_alloc_context();
     if(!*outputCtx) {
+        SPDLOG_WARN("申请格式上下文失败：{}", file);
         return false;
     }
-    if(avformat_alloc_output_context2(outputCtx, NULL, NULL, file.c_str()) != 0) {
-        SPDLOG_WARN("打开音频输出文件失败：{}", file);
+    if(avformat_alloc_output_context2(outputCtx, NULL, NULL, file.c_str()) < 0) {
+        SPDLOG_WARN("打开格式上下文失败：{}", file);
         return false;
     }
     #ifdef __MP3__
@@ -501,14 +410,14 @@ static bool open_output(AVFormatContext** outputCtx, AVCodecContext* encodeCodec
     }
     AVStream* stream = avformat_new_stream(*outputCtx, encoder);
     if(!stream) {
-        SPDLOG_WARN("打开音频流失败：{}", file);
+        SPDLOG_WARN("打开音频轨道失败：{}", file);
         return false;
     }
-    if(avcodec_parameters_from_context(stream->codecpar, encodeCodecCtx) != 0) {
-        SPDLOG_WARN("拷贝音频配置失败：{}", file);
+    if(avcodec_parameters_from_context(stream->codecpar, encodeCodecCtx) < 0) {
+        SPDLOG_WARN("设置音频配置失败：{}", file);
         return false;
     }
-    if(avio_open(&(*outputCtx)->pb, file.c_str(), AVIO_FLAG_WRITE) != 0) {
+    if(avio_open(&(*outputCtx)->pb, file.c_str(), AVIO_FLAG_WRITE) < 0) {
         SPDLOG_WARN("打开音频输出文件失败：{}", file);
         return false;
     }
@@ -523,6 +432,124 @@ static void close_output(AVFormatContext** outputCtx) {
     }
 }
 
+static bool encode(int64_t& pts, const int64_t& nb_samples, AVFrame* frame, AVPacket* packet, AVCodecContext* encodeCodecCtx, AVFormatContext* outputCtx) {
+    if(avcodec_send_frame(encodeCodecCtx, frame) != 0) {
+        return false;
+    }
+    while(avcodec_receive_packet(encodeCodecCtx, packet) == 0) {
+        packet->pts = pts;
+        packet->dts = pts;
+        pts += nb_samples;
+        av_write_frame(outputCtx, packet);
+        av_packet_unref(packet);
+    }
+    return true;
+}
+
+inline static std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
+    torch::Tensor pcm_norm,
+    int n_fft,
+    int hop_size,
+    int win_size,
+    float compress_factor
+) {
+    auto window = torch::hann_window(win_size);
+    auto spec = torch::stft(pcm_norm, n_fft, hop_size, win_size, window, true, "reflect", false, std::nullopt, true);
+         spec = torch::view_as_real(spec);
+    auto mag  = torch::sqrt(spec.pow(2).sum(-1) + (1e-9));
+    auto pha  = torch::atan2(spec.index({"...", 1}), spec.index({"...", 0}) + (1e-5));
+         mag  = torch::pow(mag, compress_factor);
+    auto com  = torch::stack((mag * torch::cos(pha), mag * torch::sin(pha)), -1);
+    return std::make_tuple<>(mag, pha, com);
+}
+
+std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::audio::pcm_mag_pha_stft(
+    std::vector<short>& pcm,
+    int n_fft,
+    int hop_size,
+    int win_size,
+    float compress_factor
+) {
+    auto pcm_tensor = torch::from_blob(pcm.data(), {1, static_cast<int>(pcm.size())}, torch::kShort).to(torch::kFloat32);
+         pcm_tensor = pcm_tensor / NORMALIZATION;
+    return mag_pha_stft(pcm_tensor, n_fft, hop_size, win_size, compress_factor);
+}
+
+inline static torch::Tensor mag_pha_istft(
+    torch::Tensor mag,
+    torch::Tensor pha,
+    int n_fft,
+    int hop_size,
+    int win_size,
+    float compress_factor
+) {
+    auto window = torch::hann_window(win_size);
+         mag = torch::pow(mag, (1.0 / compress_factor));
+    auto com = torch::complex(mag * torch::cos(pha), mag * torch::sin(pha));
+    return torch::istft(com, n_fft, hop_size, win_size, window, true);
+}
+
+std::vector<short> lifuren::audio::pcm_mag_pha_istft(
+    torch::Tensor mag,
+    torch::Tensor pha,
+    int n_fft,
+    int hop_size,
+    int win_size,
+    float compress_factor
+) {
+    auto result = mag_pha_istft(mag, pha, n_fft, hop_size, win_size, compress_factor);
+         result = result * NORMALIZATION;
+    float* data = reinterpret_cast<float*>(result.data_ptr());
+    std::vector<short> pcm;
+    pcm.resize(result.sizes()[1]);
+    std::copy_n(data, pcm.size(), pcm.data());
+    return pcm;
+}
+
+bool lifuren::audio::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+    const std::string source = "source";
+    const std::string target = "target";
+    std::vector<std::string> files;
+    lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".flac" });
+    if(files.empty()) {
+        SPDLOG_DEBUG("音频嵌入文件为空：{}", dataset);
+        return true;
+    }
+    for(const auto& source_file : files) {
+        const auto index = source_file.find_last_of('.');
+        if(index == std::string::npos) {
+            continue;
+        }
+        if(index < source.size()) {
+            continue;
+        }
+        const auto label = source_file.substr(index - source.size(), source.size());
+        if(label != source) {
+            continue;
+        }
+        auto target_file(source_file);
+        target_file.replace(index - source.size(), source.size(), target);
+        const auto iterator = std::find(files.begin(), files.end(), target_file);
+        if(iterator == files.end()) {
+            SPDLOG_WARN("音频文件没有目标文件：{}", source_file);
+            continue;
+        }
+        pool.submit([&stream, source_file, target_file]() {
+            const auto [source_success, source_pcm] = lifuren::audio::toPcm(source_file);
+            const auto [target_success, target_pcm] = lifuren::audio::toPcm(target_file);
+            if(source_success && target_success) {
+                SPDLOG_DEBUG("转换PCM成功：{} - {}", source_file, target_file);
+                ::embedding(source_pcm, target_pcm, stream);
+                std::filesystem::remove(source_pcm);
+                std::filesystem::remove(target_pcm);
+            } else {
+                SPDLOG_DEBUG("转换PCM失败：{} - {}", source_file, target_file);
+            }
+        });
+    }
+    return true;
+}
+
 static void embedding(const std::string& source, const std::string& target, std::ofstream& stream) {
     std::ifstream source_stream;
     std::ifstream target_stream;
@@ -534,9 +561,9 @@ static void embedding(const std::string& source, const std::string& target, std:
         target_stream.close();
         return;
     }
+    SPDLOG_DEBUG("开始音频嵌入：{} - {}", source, target);
     std::vector<short> source_pcm;
     std::vector<short> target_pcm;
-    SPDLOG_DEBUG("开始音频嵌入：{} - {}", source, target);
     source_pcm.resize(DATASET_PCM_LENGTH);
     target_pcm.resize(DATASET_PCM_LENGTH);
     while(
@@ -544,12 +571,15 @@ static void embedding(const std::string& source, const std::string& target, std:
         target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
         source_stream.gcount() == target_stream.gcount()
     ) {
-        float norm_factor;
         // 短时傅里叶变换
-        auto source_tuple = lifuren::audio::pcm_mag_pha_stft(source_pcm, norm_factor);
-        embedding(stream, norm_factor, source_tuple);
-        auto target_tuple = lifuren::audio::pcm_mag_pha_stft(target_pcm, norm_factor);
-        embedding(stream, norm_factor, target_tuple);
+        auto source_tuple = lifuren::audio::pcm_mag_pha_stft(source_pcm);
+        auto target_tuple = lifuren::audio::pcm_mag_pha_stft(target_pcm);
+        {
+            // 保证每次都是成对写入
+            std::lock_guard<std::mutex> lock(embedding_mutex);
+            ::embedding(stream, source_tuple);
+            ::embedding(stream, target_tuple);
+        }
     }
     source_stream.close();
     target_stream.close();
@@ -557,13 +587,12 @@ static void embedding(const std::string& source, const std::string& target, std:
     SPDLOG_DEBUG("音频嵌入完成：{} - {}", source, target);
 }
 
-inline static void embedding(std::ofstream& stream, float norm_factor, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple) {
-    auto tensor = torch::stack({ std::get<0>(tuple), std::get<1>(tuple) }).squeeze();
-    {
-        std::lock_guard<std::mutex> lock(embedding_mutex);
-        stream.write(reinterpret_cast<char*>(&norm_factor), sizeof(norm_factor));
-        stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
-    }
+inline static void embedding(std::ofstream& stream, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple) {
+    auto tensor = torch::stack({
+        std::get<0>(tuple),
+        std::get<1>(tuple)
+    }).squeeze();
+    stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
 }
 
 lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const size_t batch_size, const std::string& path) {
@@ -573,21 +602,20 @@ lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const 
             std::ifstream stream;
             stream.open(file, std::ios_base::binary);
             if(!stream.is_open()) {
+                SPDLOG_WARN("音频嵌入文件打开失败：{}", file);
                 stream.close();
                 return;
             }
-            float source_norm_factor;
-            float target_norm_factor;
-            torch::Tensor source_tensor = torch::zeros({ 1 });
-            torch::Tensor target_tensor = torch::zeros({ 1 });
+            // [mag, pha] = [1, 201, 5] + [1, 201, 5] = [2, 201, 5]
+            torch::Tensor source_tensor = torch::zeros({ 2, 201, 5 }, torch::kFloat32).to(device);
+            torch::Tensor target_tensor = torch::zeros({ 2, 201, 5 }, torch::kFloat32).to(device);
+            const auto size = source_tensor.numel() * source_tensor.element_size();
             while(
-                stream.read(reinterpret_cast<char*>(&source_norm_factor), sizeof(float)) &&
-                stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), source_tensor.numel() * source_tensor.element_size()) &&
-                stream.read(reinterpret_cast<char*>(&target_norm_factor), sizeof(float)) &&
-                stream.read(reinterpret_cast<char*>(target_tensor.data_ptr()), target_tensor.numel() * target_tensor.element_size())
+                stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), size) &&
+                stream.read(reinterpret_cast<char*>(target_tensor.data_ptr()), size)
             ) {
-                features.push_back(std::move(source_tensor.to(device)));
-                labels  .push_back(std::move(target_tensor.to(device)));
+                features.push_back(source_tensor.clone());
+                labels  .push_back(target_tensor.clone());
             }
             stream.close();
         }

@@ -278,6 +278,7 @@ lifuren::dataset::FileDatasetLoader lifuren::poetry::loadFileDatasetLoader(
             std::ifstream stream;
             stream.open(file, std::ios_base::in | std::ios_base::binary);
             if(!stream.is_open()) {
+                SPDLOG_WARN("诗词嵌入文件打开失败：{}", file);
                 stream.close();
                 return;
             }

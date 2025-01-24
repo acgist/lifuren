@@ -63,7 +63,7 @@ public:
             labels.push_back(torch::tensor({ l }));
             features.push_back(torch::tensor( { f } ));
         }
-        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features));
+        this->trainDataset = lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features);
         return true;
     }
 

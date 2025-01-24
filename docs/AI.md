@@ -315,15 +315,17 @@ ADMA + L2
 
 #### 正则化（Regularization）
 
-###### L1
-###### L2
+###### L1范数
+###### L2范数
+###### LP范数
 
 #### 丢弃法（Dropout）
-#### 批量归一化（Batch Normalization）
-
-#### 特征归一化（Feature Normalization）
+#### 归一化（Normalization）
 
 * Z值归一化（Z-score normalization）也叫标准化（standardization）
+
+###### 批量归一化（Batch Normalization）
+###### 特征归一化（Feature Normalization）
 
 #### 感受野（receptive field）
 #### 滤波器（filter）
@@ -389,12 +391,16 @@ ADMA + L2
 
 #### Normalization（归一化）
 
+提升模型精度：归一化后，不同维度之间的特征在数值上有一定比较性，可以大大提高分类器的准确性。
+
 ```
 1. (x - min(x))  / (max(x) - min(x)) [ 0, 1]
 2. (x - mean(x)) / (max(x) - min(x)) [-1, 1]
 ```
 
 #### Standardization（标准化）
+
+加速模型收敛：标准化后，最优解的寻优过程明显会变得平缓，更容易正确的收敛到最优解。如下图所示：
 
 ```
 1. (x - mean(x)) / std(x)

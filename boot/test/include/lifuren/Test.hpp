@@ -52,15 +52,23 @@ namespace lifuren::test {
 inline size_t loop(
     size_t count, // 循环次数
     std::function<void()> function, // 循环函数
-    const char* label = "消耗时间"   // 提示内容
+    const int loop_wait = 0,        // 循环等待时间
+    const int last_wait = 0,        // 最后等待时间
+    const char* label   = "消耗时间" // 提示内容
 ) {
     const auto a = std::chrono::system_clock::now();
     for(size_t i = 0; i < count; ++i) {
         function();
+        if(loop_wait > 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(loop_wait));
+        }
     }
     const auto z = std::chrono::system_clock::now();
     size_t ret = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
     SPDLOG_INFO("{}：{}", label, ret);
+    if(last_wait > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(last_wait));
+    } 
     return ret;
 }
 

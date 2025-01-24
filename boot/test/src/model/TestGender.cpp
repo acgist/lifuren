@@ -129,6 +129,22 @@ public:
     // linear.save();
 }
 
+[[maybe_unused]] static void testLoadImageFileDataset() {
+    auto loader = lifuren::image::loadFileDatasetLoader(
+        200,
+        200,
+        5,
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "gender", "train"}).string(),
+        {
+            { "man"  , 1.0F },
+            { "woman", 0.0F }
+        }
+    );
+    lifuren::logTensor("图片特征", loader->begin()->data.sizes());
+    lifuren::logTensor("图片标签", loader->begin()->target.sizes());
+}
+
 LFR_TEST(
     testGender();
+    // testLoadImageFileDataset();
 );

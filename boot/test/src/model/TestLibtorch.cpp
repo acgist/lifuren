@@ -14,31 +14,57 @@
 }
 
 [[maybe_unused]] static void testTensor() {
-    const size_t size = 24;
-    float data[size] { 0.0F };
-    std::for_each(data, data + size, [i = 0.0F](auto& v) mutable {
-        v = ++i;
-    });
-    torch::Tensor a = torch::from_blob(data, {4, 6}, torch::kFloat32);
-    // torch::Tensor a = torch::rand({4, 6});
+    // 函数
+    // const size_t size = 24;
+    // float data[size] { 0.0F };
+    // std::for_each(data, data + size, [i = 0.0F](auto& v) mutable {
+    //     v = ++i;
+    // });
+    // torch::Tensor a = torch::from_blob(data, {4, 6}, torch::kFloat32);
+    // lifuren::logTensor("a", a);
+    // lifuren::logTensor("a.t", a.t());
+    // lifuren::logTensor("a.numel", a.numel());
+    // lifuren::logTensor("a.element_size", a.element_size());
+    // lifuren::logTensor("a.flatten", a.flatten());
+    // lifuren::logTensor("a.reshape", a.reshape({6, 4}));
+    // lifuren::logTensor("a.permute", a.permute({1, 0}));
+    // lifuren::logTensor("tensor", torch::tensor({1.0F, 2.0F, 3.0F}, torch::kFloat32));
+    // lifuren::logTensor("zero", torch::zeros({10}));
+    // lifuren::logTensor("zero", a.sizes()[0]);
+    // lifuren::logTensor("zero", a.sizes()[1]);
+    // 计算
+    // torch::Tensor a = torch::rand({2, 4, 6});
+    // torch::Tensor b = torch::ones({6});
+    // b[1] = 0;
+    // torch::Tensor c = torch::ones({4});
+    // c[1] = 0;
+    // torch::Tensor d = torch::ones({4, 6});
+    // d = d.t().mul(c).t();
+    // lifuren::logTensor("b", b);
+    // lifuren::logTensor("c", c);
+    // lifuren::logTensor("d", d);
+    // lifuren::logTensor("a", a);
+    // lifuren::logTensor("a * b", a.mul(b));
+    // lifuren::logTensor("a * d", a.mul(d));
+    // lifuren::logTensor("a sum", a.sum());
+    // lifuren::logTensor("a sum 0", a.sum(0));
+    // lifuren::logTensor("a sum 1", a.sum(1));
+    // lifuren::logTensor("a sum 2", a.sum(2));
+    torch::Tensor a = torch::rand({4, 6});
+    torch::Tensor b = torch::rand({4, 6});
+    torch::Tensor c = torch::rand({6, 4});
     lifuren::logTensor("a", a);
-    lifuren::logTensor("a.t", a.t());
-    lifuren::logTensor("a.numel", a.numel());
-    lifuren::logTensor("a.element_size", a.element_size());
-    lifuren::logTensor("a.flatten", a.flatten());
-    lifuren::logTensor("a.reshape", a.reshape({6, 4}));
-    lifuren::logTensor("a.permute", a.permute({1, 0}));
-    lifuren::logTensor("tensor", torch::tensor({1.0F, 2.0F, 3.0F}, torch::kFloat32));
-    lifuren::logTensor("zero: {}", torch::zeros({10}));
-    lifuren::logTensor("zero: {}", a.sizes()[0]);
-    lifuren::logTensor("zero: {}", a.sizes()[1]);
+    lifuren::logTensor("b", b);
+    lifuren::logTensor("c", c);
+    lifuren::logTensor("a * b", a.mul(b));
+    lifuren::logTensor("a * c", a.matmul(c));
 }
 
 [[maybe_unused]] static void testLayer() {
-    // 批量归一化（Batch    Normalization）
-    //   层归一化（Layer    Normalization）
-    // 实例归一化（Instance Normalization）
-    //   组归一化（Group    Normalization）
+    // （Batch    Normalization）批量归一化
+    // （Layer    Normalization）层归一化
+    // （Instance Normalization）实例归一化
+    // （Group    Normalization）组归一化
     const size_t size = 24;
     float data[size] { 0.0F };
     std::for_each(data, data + size, [i = 0.0F](auto& v) mutable {
@@ -121,10 +147,10 @@
 
 LFR_TEST(
     // testPrint();
-    // testTensor();
+    testTensor();
     // testLayer();
     // testLoss();
     // testGRU();
-    testLSTM();
+    // testLSTM();
     // testJit();
 );

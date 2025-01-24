@@ -57,16 +57,6 @@ extern bool write(
 /**
  * @return 图片张量
  */
-extern torch::Tensor feature(
-    const int width,              // 图片宽度
-    const int height,             // 图片高度
-    const std::string& file,      // 图片路径
-    const torch::DeviceType& type // 设备类型
-);
-
-/**
- * @return 图片张量
- */
 inline torch::Tensor feature(
     char* data,                   // 图片数据
     const int width,              // 图片宽度
