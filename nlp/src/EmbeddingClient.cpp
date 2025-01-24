@@ -34,7 +34,7 @@ std::vector<float> lifuren::EmbeddingClient::getVector(const std::vector<std::st
     std::vector<float> ret;
     ret.reserve(dims);
     for(const auto& prompt : prompts) {
-        const std::vector<float> vec = std::move(this->getVector(prompt));
+        const std::vector<float> vec = this->getVector(prompt);
         if(vec.empty()) {
             SPDLOG_WARN("没有嵌入向量：{}", prompt);
             continue;
