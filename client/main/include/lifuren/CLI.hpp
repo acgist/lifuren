@@ -18,8 +18,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_CLI_HPP
-#define LFR_HEADER_BOOT_CLI_HPP
+#ifndef LFR_HEADER_CLIENT_CLI_HPP
+#define LFR_HEADER_CLIENT_CLI_HPP
 
 namespace lifuren {
 
@@ -35,4 +35,4 @@ extern bool cli(
 
 } // END OF lifuren
 
-#endif // LFR_HEADER_BOOT_CLI_HPP
+#endif // LFR_HEADER_CLIENT_CLI_HPP

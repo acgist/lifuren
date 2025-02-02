@@ -20,8 +20,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_REST_HPP
-#define LFR_HEADER_BOOT_REST_HPP
+#ifndef LFR_HEADER_CLIENT_REST_HPP
+#define LFR_HEADER_CLIENT_REST_HPP
 
 #ifdef  _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -73,4 +73,4 @@ extern void response(
 
 } // END lifuren
 
-#endif // LFR_HEADER_BOOT_REST_HPP
+#endif // LFR_HEADER_CLIENT_REST_HPP

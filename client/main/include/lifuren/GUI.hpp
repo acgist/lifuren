@@ -12,8 +12,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_GUI_HPP
-#define LFR_HEADER_BOOT_GUI_HPP
+#ifndef LFR_HEADER_CLIENT_GUI_HPP
+#define LFR_HEADER_CLIENT_GUI_HPP
 
 #include "lifuren/FLTK.hpp"
 
@@ -21,4 +21,4 @@ namespace lifuren {
     
 } // END OF lifuren
 
-#endif // END OF LFR_HEADER_BOOT_GUI_HPP
+#endif // END OF LFR_HEADER_CLIENT_GUI_HPP

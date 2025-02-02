@@ -27,7 +27,6 @@ add_test(NAME testConfig COMMAND testConfig)
 set_target_properties(testConfig PROPERTIES FOLDER "test-boot")
 target_link_libraries(
     testConfig
-    lifurennlp
     lifurenboot
 )
 

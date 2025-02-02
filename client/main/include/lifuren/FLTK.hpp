@@ -14,8 +14,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_FLTK_HPP
-#define LFR_HEADER_BOOT_FLTK_HPP
+#ifndef LFR_HEADER_CLIENT_FLTK_HPP
+#define LFR_HEADER_CLIENT_FLTK_HPP
 
 #ifdef  _WIN32
 // 去掉min/max冲突
@@ -254,4 +254,4 @@ extern void fillChoice(
 
 } // END OF lifuren
 
-#endif // LFR_HEADER_BOOT_FLTK_HPP
+#endif // LFR_HEADER_CLIENT_FLTK_HPP
