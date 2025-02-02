@@ -1,4 +1,4 @@
-project(lifurenmodel VERSION 1.0.0 LANGUAGES C CXX)
+project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}

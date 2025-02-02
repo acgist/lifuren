@@ -20,8 +20,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_MODEL_LAYER_HPP
-#define LFR_HEADER_MODEL_LAYER_HPP
+#ifndef LFR_HEADER_CORE_LAYER_HPP
+#define LFR_HEADER_CORE_LAYER_HPP
 
 namespace lifuren {
 namespace layer   {
@@ -29,4 +29,4 @@ namespace layer   {
 } // END OF layer
 } // END OF lifuren
 
-#endif // END OF LFR_HEADER_MODEL_LAYER_HPP
+#endif // END OF LFR_HEADER_CORE_LAYER_HPP

@@ -161,9 +161,9 @@ find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(cv)
-add_subdirectory(boot)
 add_subdirectory(deps)
-add_subdirectory(model)
+add_subdirectory(boot)
+add_subdirectory(core)
 add_subdirectory(client)
 
 set(HELP_FILES "LICENSE" "README.md")

@@ -16,8 +16,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_MODEL_MODEL_HPP
-#define LFR_HEADER_MODEL_MODEL_HPP
+#ifndef LFR_HEADER_CORE_MODEL_HPP
+#define LFR_HEADER_CORE_MODEL_HPP
 
 #include <array>
 #include <memory>
@@ -402,4 +402,4 @@ inline void lifuren::Model<D, L, P, M>::printEvaluation(
     }
 }
 
-#endif // END OF LFR_HEADER_MODEL_MODEL_HPP
+#endif // END OF LFR_HEADER_CORE_MODEL_HPP

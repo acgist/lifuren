@@ -17,7 +17,7 @@ if(CMAKE_HOST_WIN32)
         ${PROJECT_NAME}
         ${OpenCV_LIBS}
         ${FFMPEG_LIBRARIES}
-        lifurenmodel
+        lifurencore
     )
     target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 else()
@@ -28,7 +28,7 @@ else()
         avcodec
         avformat
         swresample
-        lifurenmodel
+        lifurencore
     )
 endif()
 

@@ -14,8 +14,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_MODEL_DATASET_HPP
-#define LFR_HEADER_MODEL_DATASET_HPP
+#ifndef LFR_HEADER_CORE_DATASET_HPP
+#define LFR_HEADER_CORE_DATASET_HPP
 
 #include <map>
 #include <string>
@@ -181,4 +181,4 @@ using FileDatasetLoader = decltype(torch::data::make_data_loader<torch::data::sa
 
 } // END OF lifuren::dataset
 
-#endif // END OF LFR_HEADER_MODEL_DATASET_HPP
+#endif // END OF LFR_HEADER_CORE_DATASET_HPP

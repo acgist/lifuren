@@ -12,8 +12,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_MODEL_TORCH_HPP
-#define LFR_HEADER_MODEL_TORCH_HPP
+#ifndef LFR_HEADER_CORE_TORCH_HPP
+#define LFR_HEADER_CORE_TORCH_HPP
 
 #include <string>
 
@@ -29,4 +29,4 @@ extern void logTensor(const std::string& message, const c10::IntArrayRef& tensor
 
 } // END OF lifuren
 
-#endif // END OF LFR_HEADER_MODEL_TORCH_HPP
+#endif // END OF LFR_HEADER_CORE_TORCH_HPP
