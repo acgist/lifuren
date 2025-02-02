@@ -69,9 +69,9 @@ void lifuren::MainWindow::bindEvent() {
 }
 
 // 定义窗口
-LFR_BUTTON_CALLBACK_FUNCTION(audioCallback,  AudioWindow,  audioWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
-LFR_BUTTON_CALLBACK_FUNCTION(videoCallback,  VideoWindow,  videoWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
-LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback,  AboutWindow,  aboutWindowPtr,  LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(audioCallback, AudioWindow, audioWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(videoCallback, VideoWindow, videoWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
+LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback, AboutWindow, aboutWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 
 static void reloadCallback(Fl_Widget*, void*) {
     lifuren::config::loadConfig();
