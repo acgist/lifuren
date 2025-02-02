@@ -19,8 +19,8 @@ lifuren::dataset::FileDatasetLoader lifuren::video::loadFileDatasetLoader(
         [width, height] (const std::string& file, std::vector<torch::Tensor>& labels, std::vector<torch::Tensor>& features, const torch::DeviceType& device) -> void {
             cv::VideoCapture video(file);
             if(!video.isOpened()) {
-                video.release();
                 SPDLOG_WARN("视频文件打开失败：{}", file);
+                video.release();
                 return;
             }
             const int& frame_length = lifuren::config::CONFIG.video.length;

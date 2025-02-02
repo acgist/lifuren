@@ -1,10 +1,3 @@
-/**
- * PepperEmbeddingClient.cpp
- * 
- * @author acgist
- * 
- * @version 1.0.0
- */
 #include "lifuren/EmbeddingClient.hpp"
 
 #include <map>
