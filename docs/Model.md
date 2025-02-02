@@ -15,26 +15,6 @@ test/...
 
 一些数据集预处理非常耗时，提前生成嵌入文件减小训练时的时间消耗。
 
-## 李杜 | 苏辛
-
-#### 训练
-
-###### 数据集
-
-```
-# 原始文件
-train/诗词1.json
-train/诗词2.json
-val/诗词1.json
-val/诗词2.json
-
-# 嵌入文件
-train/embedding.model
-val/embedding.model
-```
-
-#### 推理
-
 ## 师旷（音频风格迁移）
 
 #### 训练

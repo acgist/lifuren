@@ -18,7 +18,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
 sudo update-alternatives --config  gcc
 sudo update-alternatives --display gcc
 
-apt install --reinstall --print-uris libfaiss-dev
+apt install --reinstall --print-uris libyaml-cpp-dev
 ```
 
 ###### 依赖下载
@@ -56,23 +56,24 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # 安装依赖
 vcpkg install fltk:x64-windows
-vcpkg install faiss:x64-windows
+vcpkg install ffmpeg:x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
+vcpkg install libtorch:x64-windows
 vcpkg install yaml-cpp:x64-windows
 vcpkg install cpp-httplib:x64-windows
 
 # 导出依赖
 vcpkg export fltk        --zip
-vcpkg export faiss       --zip
+vcpkg export ffmpeg      --zip
 vcpkg export opencv      --zip
 vcpkg export spdlog      --zip
+vcpkg export libtorch    --zip
 vcpkg export yaml-cpp    --zip
 vcpkg export cpp-httplib --zip
 ```
 
-* `OpenCV`可以直接官网下载
-* `LibTorch`可以直接官网下载
+* `FFmpeg`/`OpenCV`/`LibTorch`推荐使用官网下载
 
 ###### 编译命令
 

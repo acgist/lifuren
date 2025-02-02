@@ -118,7 +118,6 @@ if(CMAKE_HOST_WIN32)
         CMAKE_PREFIX_PATH
         ${CMAKE_PREFIX_PATH}
         deps/fltk
-        deps/faiss
         deps/ffmpeg
         deps/opencv
         deps/spdlog
@@ -131,7 +130,6 @@ if(CMAKE_HOST_WIN32)
 
         file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/debug/bin/*.dll")
-        file(GLOB FAISS_DLLS   "deps/faiss/debug/bin/*.dll")
         file(GLOB FFMPEG_DLLS  "deps/ffmpeg/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/debug/bin/*.dll")
         file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100d.dll")
@@ -141,7 +139,6 @@ if(CMAKE_HOST_WIN32)
 
         file(GLOB FLTK_DLLS    "deps/fltk/bin/*.dll")
         file(GLOB YAML_DLLS    "deps/yaml-cpp/bin/*.dll")
-        file(GLOB FAISS_DLLS   "deps/faiss/bin/*.dll")
         file(GLOB FFMPEG_DLLS  "deps/ffmpeg/bin/*.dll")
         file(GLOB SPDLOG_DLLS  "deps/spdlog/bin/*.dll")
         file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100.dll")
@@ -156,7 +153,6 @@ if(CMAKE_HOST_WIN32)
 endif()
 
 find_package(FLTK     REQUIRED)
-find_package(faiss    REQUIRED)
 find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(OpenMP   REQUIRED)
@@ -165,9 +161,7 @@ find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(cv)
-add_subdirectory(nlp)
 add_subdirectory(boot)
-add_subdirectory(core)
 add_subdirectory(deps)
 add_subdirectory(model)
 add_subdirectory(client)

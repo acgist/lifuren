@@ -21,19 +21,6 @@ jobs:
           cd ./json
           git switch -c v3.11.2
           cd ../
-          ################################ faiss
-          # sudo  apt install libfaiss-dev -y
-          # apt-cache madison libfaiss-dev
-          sudo  apt install libblas-dev liblapack-dev -y
-          apt-cache madison libblas-dev liblapack-dev
-          git clone https://github.com/facebookresearch/faiss.git
-          cd faiss
-          git switch -c v1.7.4
-          mkdir build ; cd $_
-          cmake .. -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF
-          make -j 2
-          sudo make install
-          cd ../../
           ################################ ffmpeg
           sudo  apt install ffmpeg -y
           apt-cache madison ffmpeg

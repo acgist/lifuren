@@ -1,0 +1,23 @@
+# 公共配置
+config:
+  tmp: /tmp
+# REST监听
+rest-server:
+  host: 0.0.0.0
+  port: 8080
+# 音频配置
+audio:
+  path: /data/lifuren/audio
+  model: 
+  client: audio-shikuang
+  clients:
+    - audio-shikuang
+# 图片配置
+video:
+  path: /data/lifuren/video
+  model: 
+  client: video-wudaozi
+  clients:
+    - video-wudaozi
+  length: 24
+  
