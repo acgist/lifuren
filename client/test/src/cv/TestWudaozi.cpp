@@ -2,7 +2,7 @@
 
 #include "lifuren/video/VideoModel.hpp"
 
-[[maybe_unused]] static void testWudaozi() {
+[[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::video::WudaoziModel model({
         .lr         = 0.01F,
@@ -18,6 +18,10 @@
     model.save(lifuren::config::CONFIG.tmp, "wudaozi.pt");
 }
 
+[[maybe_unused]] static void testPred() {
+}
+
 LFR_TEST(
-    testWudaozi();
+    testTrain();
+    // testPred();
 );

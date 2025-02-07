@@ -1,8 +1,6 @@
 # Conda
 
-`Anaconda`是一个用于科学计算的`Python`发行版，包含了众多流行的科学计算、数据分析的`Python`包。
-
-本项目不需要`Conda`环境，但是鉴于需要学习使用其他项目，所以还是使用`Conda`区分不同环境。
+`Python`环境管理
 
 ## 部署
 
@@ -35,14 +33,8 @@ default_channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
 custom_channels:
-  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch    : https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
   conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  pytorch-lts: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-  deepmodeling: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
 ---
 
 # 环境变量
@@ -91,3 +83,5 @@ conda clean -i
 * https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda
 
 ## 注意事项
+
+* 本项目不需要`Conda`环境，但是鉴于需要学习使用其他项目，所以还是使用`Conda`区分不同环境。

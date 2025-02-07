@@ -2,7 +2,7 @@
 
 #include "lifuren/audio/AudioModel.hpp"
 
-[[maybe_unused]] static void testShikuang() {
+[[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::audio::ShikuangModel model({
         .lr         = 0.01F,
@@ -18,6 +18,10 @@
     model.save(lifuren::config::CONFIG.tmp, "shikuang.pt");
 }
 
+[[maybe_unused]] static void testPred() {
+}
+
 LFR_TEST(
-    testShikuang();
+    testTrain();
+    // testPred();
 );

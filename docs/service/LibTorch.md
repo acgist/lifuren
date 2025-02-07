@@ -1,6 +1,6 @@
 # LibTorch
 
-机器学习训练推理框架
+机器学习框架
 
 ## 部署
 
@@ -11,8 +11,6 @@ sudo apt install libtorch-dev
 # Windows
 vcpkg install libtorch:x64-windows
 ```
-
-## 常用功能
 
 ## 相关链接
 

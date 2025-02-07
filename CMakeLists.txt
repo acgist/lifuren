@@ -23,6 +23,8 @@ if(NOT CMAKE_BUILD_TYPE)
     # set(CMAKE_BUILD_TYPE Release)
 endif()
 
+message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
+
 option(ENABLE_TEST "打开测试"     ON)
 option(ENABLE_FLTK "编译FLTK界面" ON)
 option(ENABLE_REST "编译REST接口" ON)
@@ -33,7 +35,6 @@ set(HEADER_DIR include/)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# TODO: 使用C23/C++23
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
 if(CMAKE_HOST_WIN32)
@@ -60,7 +61,7 @@ elseif(CMAKE_HOST_UNIX)
     set(CMAKE_CXX_STANDARD 23)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CMAKE_COMMAND} -E time")
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -std=c2x -Wall -Wextra")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -std=c23 -Wall -Wextra")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra")
     set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O0 -g")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O0 -g")
@@ -73,8 +74,6 @@ elseif(CMAKE_HOST_UNIX)
 else()
     message(FATAL_ERROR "不支持的系统：${CMAKE_HOST_SYSTEM_NAME}")
 endif()
-
-message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
 add_definitions(-DSPDLOG_COMPILED_LIB)
 
@@ -161,15 +160,15 @@ find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(cv)
-add_subdirectory(deps)
 add_subdirectory(boot)
 add_subdirectory(core)
+add_subdirectory(deps)
 add_subdirectory(client)
 
-set(HELP_FILES "LICENSE" "README.md")
+set(INSTALL_FILES "LICENSE" "README.md" "docs/CLI.md" "docs/Deploy.md")
 
-install(FILES ${HELP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/)
-install(DIRECTORY docs/resources/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
+install(FILES     ${INSTALL_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+install(DIRECTORY docs/resources/  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
 
-file(COPY ${HELP_FILES}   DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/)
-file(COPY docs/resources/ DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
+file(COPY ${INSTALL_FILES} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/)
+file(COPY docs/resources/  DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")

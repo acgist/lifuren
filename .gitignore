@@ -1,9 +1,11 @@
 *.a
 *.so
+*.out
+
+*.lib
 *.dll
 *.exe
-*.lib
-*.out
+
 *.log
 
 .vscode

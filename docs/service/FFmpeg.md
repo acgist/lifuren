@@ -1,6 +1,6 @@
 # FFmpeg
 
-媒体处理工具
+音视频框架
 
 ## 部署
 
@@ -130,4 +130,9 @@ ffmpeg -i .\$name.mp4 -vn -ac 1 -ar 48000 -c:a mp3 -b:a 128k .\$name.mp3
 
 ## 相关链接
 
+* https://ffmpeg.org/
+* https://ffmpeg.org/ffmpeg-formats.html
+
 ## 注意事项
+
+* 编码器和解码器可以按需安装
