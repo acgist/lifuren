@@ -118,7 +118,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config.video, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, model,  model,  std::string);
         LFR_CONFIG_YAML_GETTER(config.video, yaml, client, client, std::string);
-        LFR_CONFIG_YAML_GETTER(config.video, yaml, length, length, int);
         const YAML::Node& clients = yaml["clients"];
         if(clients) {
             std::for_each(clients.begin(), clients.end(), [&config](const auto& client) {
@@ -161,7 +160,6 @@ static YAML::Node toYaml() {
         LFR_CONFIG_YAML_SETTER(video, config.video, path,   path);
         LFR_CONFIG_YAML_SETTER(video, config.video, model,  model);
         LFR_CONFIG_YAML_SETTER(video, config.video, client, client);
-        LFR_CONFIG_YAML_SETTER(video, config.video, length, length);
         YAML::Node clients;
         std::for_each(config.video.clients.begin(), config.video.clients.end(), [&clients](auto& v) {
             clients.push_back(v);

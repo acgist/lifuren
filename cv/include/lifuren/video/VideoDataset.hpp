@@ -20,9 +20,9 @@
 namespace lifuren::video {
 
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
-    const int& width,
-    const int& height,
-    const size_t& batch_size,
+    const int width,
+    const int height,
+    const size_t batch_size,
     const std::string& path
 );
 

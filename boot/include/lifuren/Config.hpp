@@ -120,8 +120,6 @@ struct AudioConfig : public ModelConfig {
  */
 struct VideoConfig : public ModelConfig {
 
-    int length; // 帧数长度
-
 };
 
 /**
