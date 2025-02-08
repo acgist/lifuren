@@ -71,17 +71,18 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
 
 if(CMAKE_HOST_WIN32)
+    # C = C | CP = C++
     # /MD  MSVCRT.LIB   多线程DLL的Release版本
     # /MDd MSVCRTD.LIB  多线程DLL的Debug版本
-    # /MT  LIBCMT.LIB   多线程静态链接的Release版本
-    # /MTd LIBCMTD.LIB  多线程静态链接的Debug版本
     # /MD  MSVCPRT.LIB  多线程DLL的Release版本
     # /MDd MSVCPRTD.LIB 多线程DLL的Debug版本
+    # /MT  LIBCMT.LIB   多线程静态链接的Release版本
+    # /MTd LIBCMTD.LIB  多线程静态链接的Debug版本
     # /MT  LIBCPMT.LIB  多线程静态链接的Release版本
     # /MTd LIBCPMTD.LIB 多线程静态链接的Debug版本
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")

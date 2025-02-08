@@ -37,7 +37,7 @@ jobs:
           cd ../../
           git clone https://github.com/gabime/spdlog.git
           cd spdlog
-          git switch -c v1.12.0
+          git switch -c v1.13.0
           mkdir build ; cd $_
           cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF -DBUILD_SHARED_LIBS=ON
           make -j 2

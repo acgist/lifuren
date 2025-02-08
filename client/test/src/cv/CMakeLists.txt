@@ -22,6 +22,14 @@ target_link_libraries(
     lifurencv
 )
 
+add_executable(testGender TestGender.cpp)
+add_test(NAME testGender COMMAND testGender)
+set_target_properties(testGender PROPERTIES FOLDER "test-cv")
+target_link_libraries(
+    testGender
+    lifurencv
+)
+
 add_executable(testWudaozi TestWudaozi.cpp)
 add_test(NAME testWudaozi COMMAND testWudaozi)
 set_target_properties(testWudaozi PROPERTIES FOLDER "test-cv")

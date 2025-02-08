@@ -10,8 +10,6 @@ add_library(
     src/video/VideoDataset.cpp
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
-
 if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
@@ -19,7 +17,6 @@ if(CMAKE_HOST_WIN32)
         ${FFMPEG_LIBRARIES}
         lifurencore
     )
-    target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 else()
     target_link_libraries(
         ${PROJECT_NAME}
@@ -32,6 +29,8 @@ else()
     )
 endif()
 
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 
 install(
@@ -39,6 +38,6 @@ install(
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
     RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
