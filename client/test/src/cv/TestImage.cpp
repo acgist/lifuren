@@ -3,7 +3,8 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/image/Image.hpp"
+#include "lifuren/Torch.hpp"
+#include "lifuren/image/ImageDataset.hpp"
 
 [[maybe_unused]] static void testFeature() {
     auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "xxc.png" }).string()) };
@@ -16,6 +17,22 @@
     cv::waitKey();
 }
 
+[[maybe_unused]] static void testLoadFileDatasetLoader() {
+    auto loader = lifuren::image::loadFileDatasetLoader(
+        200,
+        200,
+        5,
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "gender", "train"}).string(),
+        {
+            { "man",   1.0F },
+            { "woman", 0.0F }
+        }
+    );
+    lifuren::logTensor("图片特征", loader->begin()->data.sizes());
+    lifuren::logTensor("图片标签", loader->begin()->target.sizes());
+}
+
 LFR_TEST(
     testFeature();
+    // testLoadFileDatasetLoader();
 );

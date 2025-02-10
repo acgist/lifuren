@@ -28,12 +28,21 @@ namespace cv {
 namespace lifuren::image {
 
 /**
+ * 修改大小
+ */
+extern void resize(
+    cv::Mat& image,  // 图片数据
+    const int width, // 目标宽度
+    const int height // 目标高度
+);
+
+/**
  * @return 图片张量
  */
 extern torch::Tensor feature(
-    const cv::Mat& image,         // 图片数据
-    const int width,              // 图片宽度
-    const int height,             // 图片高度
+    const cv::Mat& image, // 图片数据
+    const int width,      // 图片宽度
+    const int height,     // 图片高度
     const torch::DeviceType& type // 设备类型
 );
 
@@ -41,7 +50,7 @@ extern torch::Tensor feature(
  * 张量转为图片
  */
 extern void tensor_to_mat(
-    cv::Mat& mat,               // 图片数据
+    cv::Mat& mat, // 图片数据：需要提前申请空间
     const torch::Tensor& tensor // 图片张量
 );
 

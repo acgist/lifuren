@@ -18,11 +18,23 @@ lifuren::dataset::FileDatasetLoader lifuren::image::loadFileDatasetLoader(
         { ".jpg", ".png", ".jpeg" },
         classify,
         [width, height] (const std::string& file, const torch::DeviceType& device) -> torch::Tensor {
-            cv::Mat image = cv::imread(file);
-            return lifuren::image::feature(image, width, height, device);
+            return lifuren::image::feature(cv::imread(file), width, height, device);
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+}
+
+void lifuren::image::resize(cv::Mat& image, const int width, const int height) {
+    const int cols = image.cols;
+    const int rows = image.rows;
+    const double ws = 1.0 * cols / width;
+    const double hs = 1.0 * rows / height;
+    const double scale = std::max(ws, hs);
+    const int w = std::max(static_cast<int>(width  * scale), cols);
+    const int h = std::max(static_cast<int>(height * scale), rows);
+    cv::Mat result = cv::Mat::zeros(h, w, CV_8UC3);
+    image.copyTo(result(cv::Rect(0, 0, cols, rows)));
+    cv::resize(result, image, cv::Size(width, height));
 }
 
 torch::Tensor lifuren::image::feature(
@@ -34,17 +46,9 @@ torch::Tensor lifuren::image::feature(
     if(image.empty()) {
         return {};
     }
-    const int cols = image.cols;
-    const int rows = image.rows;
-    const double ws = 1.0 * cols / width;
-    const double hs = 1.0 * rows / height;
-    const double scale = std::max(ws, hs);
-    const int w = width  * scale;
-    const int h = height * scale;
-    cv::Mat result = cv::Mat::zeros(h, w, CV_8UC3);
-    image.copyTo(result(cv::Rect(0, 0, cols, rows)));
-    cv::resize(result, result, cv::Size(width, height));
-    return torch::from_blob(result.data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).to(type);
+    cv::Mat target = image.clone();
+    lifuren::image::resize(target, width, height);
+    return torch::from_blob(target.data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).to(type);
 }
 
 void lifuren::image::tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor) {
