@@ -28,28 +28,26 @@ lifuren::dataset::FileDatasetLoader lifuren::video::loadFileDatasetLoader(
                 video.release();
                 return;
             }
-            SPDLOG_INFO("加载视频文件：{}", file);
-            int index = 0;
+                  int frame_index = 0;
+            const int frame_count = static_cast<int>(video.get(cv::CAP_PROP_FRAME_COUNT));
+            SPDLOG_INFO("加载视频文件：{} - {}", file, frame_count);
             cv::Mat frame;
-            const int frame_count = static_cast<int>(video.get(cv::CAP_PROP_FRAME_COUNT)) - 1;
-            while(video.read(frame)) {
-                SPDLOG_INFO("{}", index);
-                std::vector<char> feature;
-                feature.resize(width * height * 3);
+            std::vector<char> feature;
+            feature.resize(width * height * 3);
+            while(video.read(frame) && ++frame_index <= frame_count) {
                 lifuren::image::read(frame, feature.data(), width, height);
                 auto frame_feature = lifuren::image::feature(feature.data(), width, height, device);
-                if(index == 0) {
+                if(frame_index == 1) {
                     features.push_back(frame_feature);
-                } else if(index == frame_count) {
+                } else if(frame_index == frame_count) {
                     labels.push_back(frame_feature);
                 } else {
                     features.push_back(frame_feature);
                     labels.push_back(frame_feature);
                 }
-                ++index;
             }
             video.release();
-            SPDLOG_INFO("视频加载完成：{} - {}", file, index);
+            SPDLOG_INFO("视频加载完成：{} - {} / {}", file, frame_index, frame_count);
         }
     ).map(torch::data::transforms::Stack<>());
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);

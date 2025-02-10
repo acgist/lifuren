@@ -17,6 +17,7 @@ if(CMAKE_HOST_WIN32)
         ${FFMPEG_LIBRARIES}
         lifurencore
     )
+    target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 else()
     target_link_libraries(
         ${PROJECT_NAME}
