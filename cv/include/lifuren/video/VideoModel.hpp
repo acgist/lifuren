@@ -22,11 +22,12 @@
 #include "lifuren/Model.hpp"
 #include "lifuren/video/VideoDataset.hpp"
 
-#ifndef VIDEO_GAN_WIDTH
-#define VIDEO_GAN_WIDTH 640
-#endif
-#ifndef VIDEO_GAN_HEIGHT
-#define VIDEO_GAN_HEIGHT 640
+#ifndef LFR_VIDEO_CONFIG
+#define LFR_VIDEO_CONFIG
+#define LFR_VIDEO_FPS      24
+#define LFR_VIDEO_WIDTH    640
+#define LFR_VIDEO_HEIGHT   480
+#define LFR_VIDEO_PRED_FPS 24
 #endif
 
 namespace lifuren::video {
@@ -91,13 +92,13 @@ lifuren::video::WudaoziModel::~WudaoziModel() {
 
 bool lifuren::video::WudaoziModel::defineDataset() {
     if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::video::loadFileDatasetLoader(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.train_path);
+        this->trainDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.train_path);
     }
     if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::video::loadFileDatasetLoader(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.val_path);
+        this->valDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.val_path);
     }
     if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::video::loadFileDatasetLoader(VIDEO_GAN_WIDTH, VIDEO_GAN_HEIGHT, this->params.batch_size, this->params.test_path);
+        this->testDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.test_path);
     }
     return true;
 }

@@ -258,8 +258,10 @@ bool lifuren::ModelImplClient<C, I, O, M>::save(const std::string& path, const s
 
 template<typename C, typename I, typename O, typename M>
 bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path, const std::string& filename) {
-    if(!this->model) {
+    if(this->model) {
         return false;
+    } else {
+        this->model = std::make_unique<M>();
     }
     return this->model->load(path, filename);
 }

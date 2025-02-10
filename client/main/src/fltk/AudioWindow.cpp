@@ -154,8 +154,8 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_MODEL_PRED,
         "生成音频",
         [model, audio, output]() {
+            audioClient->load(model, "");
             lifuren::audio::AudioParams params {
-                .model  = model,
                 .audio  = audio,
                 .output = output
             };

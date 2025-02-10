@@ -68,6 +68,8 @@ protected:
     L loss        { nullptr }; // 损失函数
     M model       { nullptr }; // 模型结构
     std::unique_ptr<P> optimizer{ nullptr }; // 优化函数
+
+public:
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
 
 public:

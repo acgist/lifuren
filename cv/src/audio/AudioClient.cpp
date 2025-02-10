@@ -9,7 +9,9 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<M>::pred(const AudioPa
     return {};
 };
 
-std::unique_ptr<lifuren::audio::AudioModelClient> lifuren::audio::getAudioClient(const std::string& model) {
+std::unique_ptr<lifuren::audio::AudioModelClient> lifuren::audio::getAudioClient(
+    const std::string& model
+) {
     if(model == lifuren::config::CONFIG_AUDIO_SHIKUANG) {
         return std::make_unique<lifuren::audio::AudioClient<ShikuangModel>>();
     } else {

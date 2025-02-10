@@ -83,8 +83,8 @@ static void generateAudio(const std::vector<std::string>& args) {
         const std::string& model = args[2];
         const std::string& audio = args[3];
         const std::string output = audio + ".output.pcm";
+        client->load(model, "");
         lifuren::audio::AudioParams params {
-            .model  = model,
             .audio  = audio,
             .output = output
         };
@@ -99,7 +99,7 @@ static void generateAudio(const std::vector<std::string>& args) {
     }
 }
 
-// ./lifuren[.exe] video [video-wudaozi] [pred|train] [model image_file|dataset model_name]
+// ./lifuren[.exe] video [video-wudaozi] [pred|train] [model video_file|dataset model_name]
 static void generateVideo(const std::vector<std::string>& args) {
     if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
@@ -129,8 +129,8 @@ static void generateVideo(const std::vector<std::string>& args) {
         const std::string& model = args[2];
         const std::string& video = args[3];
         const std::string output = video + ".output.mp4";
+        client->load(model, "");
         lifuren::video::VideoParams params {
-            .model  = model,
             .video  = video,
             .output = output
         };
@@ -183,7 +183,7 @@ static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
 ./lifuren[.exe] audio [audio-shikuang] [pred|train] [model audio_file|dataset model_name]
-./lifuren[.exe] video [video-wudaozi ] [pred|train] [model image_file|dataset model_name]
+./lifuren[.exe] video [video-wudaozi ] [pred|train] [model video_file|dataset model_name]
 ./lifuren[.exe] embedding dataset [audio|video]
 ./lifuren[.exe] [?|help]
 )" << std::endl;

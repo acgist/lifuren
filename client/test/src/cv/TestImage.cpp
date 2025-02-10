@@ -5,28 +5,17 @@
 #include "lifuren/File.hpp"
 #include "lifuren/image/Image.hpp"
 
-[[maybe_unused]] static void testRead() {
-    size_t width { 128 };
-    size_t height{ 128 };
-    cv::Mat image(width, height, CV_8UC3);
-    const bool success = lifuren::image::read(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), reinterpret_cast<char*>(image.data), width, height);
-    if(success) {
-        cv::imshow("image", image);
-        cv::waitKey(0);
-    }
-}
-
-[[maybe_unused]] static void testWrite() {
-    size_t width { 128 };
-    size_t height{ 128 };
-    cv::Mat image(width, height, CV_8UC3);
-    const bool success = lifuren::image::read(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string(), reinterpret_cast<char*>(image.data), width, height);
-    if(success) {
-        lifuren::image::write(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_copy.png"}).string(), reinterpret_cast<char*>(image.data), width, height);
-    }
+[[maybe_unused]] static void testFeature() {
+    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "xxc.png" }).string()) };
+    cv::imshow("image", image);
+    cv::waitKey();
+    auto tensor = lifuren::image::feature(image, 640, 480, torch::DeviceType::CPU);
+    cv::Mat target(480, 640, CV_8UC3);
+    lifuren::image::tensor_to_mat(target, tensor);
+    cv::imshow("target", target);
+    cv::waitKey();
 }
 
 LFR_TEST(
-    testRead();
-    // testWrite();
+    testFeature();
 );

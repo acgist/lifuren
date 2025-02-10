@@ -79,6 +79,9 @@ inline std::filesystem::path join(
     }
     std::filesystem::path path{};
     for(auto iterator = list.begin(); iterator != list.end(); ++iterator) {
+        if(iterator->empty()) {
+            continue;
+        }
         path /= std::filesystem::path(*iterator);
     }
     return path;

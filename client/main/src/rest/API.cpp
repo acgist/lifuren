@@ -57,8 +57,8 @@ static void restPostAudioGenerate() {
         }
         const std::string audio_file = lifuren::file::join({ lifuren::config::CONFIG.tmp, audio.filename }).string();
         const std::string output = audio_file + ".output.pcm";
+        client->load(model, "");
         lifuren::audio::AudioParams params {
-            .model  = model,
             .audio  = audio_file,
             .output = output
         };
@@ -105,8 +105,8 @@ static void restPostVideoGenerate() {
         }
         const std::string video_file = lifuren::file::join({ lifuren::config::CONFIG.tmp, video.filename }).string();
         const std::string output = video_file + ".output.mp4";
+        client->load(model, "");
         lifuren::video::VideoParams params {
-            .model  = model,
             .video  = video_file,
             .output = output
         };

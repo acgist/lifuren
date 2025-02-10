@@ -32,11 +32,8 @@ lifuren::dataset::FileDatasetLoader lifuren::video::loadFileDatasetLoader(
             const int frame_count = static_cast<int>(video.get(cv::CAP_PROP_FRAME_COUNT));
             SPDLOG_INFO("加载视频文件：{} - {}", file, frame_count);
             cv::Mat frame;
-            std::vector<char> feature;
-            feature.resize(width * height * 3);
             while(video.read(frame) && ++frame_index <= frame_count) {
-                lifuren::image::read(frame, feature.data(), width, height);
-                auto frame_feature = lifuren::image::feature(feature.data(), width, height, device);
+                auto frame_feature = lifuren::image::feature(frame, width, height, device);
                 if(frame_index == 1) {
                     features.push_back(frame_feature);
                 } else if(frame_index == frame_count) {

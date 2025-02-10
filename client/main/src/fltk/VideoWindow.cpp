@@ -130,8 +130,8 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::VIDEO_MODEL_PRED,
         "生成视频",
         [model, video, output]() {
+            videoClient->load(model, "");
             lifuren::video::VideoParams params {
-                .model  = model,
                 .video  = video,
                 .output = output
             };
