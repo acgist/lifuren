@@ -13,7 +13,7 @@
 }
 
 [[maybe_unused]] static void testToFile() {
-    lifuren::audio::toFile(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "d.pcm"}).string());
+    lifuren::audio::toFile(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.pcm"}).string());
 }
 
 [[maybe_unused]] static void testStftIstft() {
@@ -29,7 +29,6 @@
         // lifuren::logTensor("pha size", std::get<1>(tuple).sizes());
         auto pcm = lifuren::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple));
         output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
-        output.flush();
     }
     input.close();
     output.close();
@@ -53,6 +52,7 @@
     }).string());
     lifuren::logTensor("音频特征", loader->begin()->data.sizes());
     lifuren::logTensor("音频标签", loader->begin()->target.sizes());
+    SPDLOG_INFO("数据大小：{}", std::distance(loader->begin(), loader->end()));
     // 注意：不要使用RandomSampler而要使用SequentialSampler
     // std::ofstream output;
     // output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "audio.dataset.pcm" }).string(), std::ios_base::binary);
