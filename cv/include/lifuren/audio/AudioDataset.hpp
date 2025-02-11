@@ -21,9 +21,8 @@
 #include "lifuren/Thread.hpp"
 #include "lifuren/Dataset.hpp"
 
-// 10 ms = 48000 * 16 * 1 / 8 / 1000 * 10 = 960 byte = 480 short
 #ifndef DATASET_PCM_LENGTH
-#define DATASET_PCM_LENGTH 480
+#define DATASET_PCM_LENGTH 480 // PCM分段大小：10 ms 16 bit = 48000 * 16 * 1 / 8 / 1000 * 10 = 960 byte = 480 short
 #endif
 
 namespace lifuren::audio {
@@ -59,10 +58,10 @@ extern std::tuple<bool, std::string> toFile(
  */
 extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> pcm_mag_pha_stft(
     std::vector<short>& pcm, // PCM数据
-    int n_fft    = 400,      // 傅里叶变换的大小
-    int hop_size = 100,      // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
-    int win_size = 400,      // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0 // 压缩因子
+    int n_fft    = 400, // 傅里叶变换的大小
+    int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
+    int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
+    float compress_factor = 1.0F // 压缩因子
 );
 
 /**
@@ -71,12 +70,12 @@ extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> pcm_mag_pha_stft(
  * @return PCM
  */
 extern std::vector<short> pcm_mag_pha_istft(
-    torch::Tensor mag, // mag
-    torch::Tensor pha, // pha
+    torch::Tensor mag,  // mag
+    torch::Tensor pha,  // pha
     int n_fft    = 400, // 傅里叶变换的大小
     int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
     int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0 // 压缩因子
+    float compress_factor = 1.0F // 压缩因子
 );
 
 /**
@@ -91,6 +90,9 @@ extern bool embedding(
     lifuren::thread::ThreadPool& pool // 线程池
 );
 
+/**
+ * @return 音频数据集
+ */
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const size_t batch_size, // 批量大小
     const std::string& path  // 数据集路径

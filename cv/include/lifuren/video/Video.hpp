@@ -24,7 +24,7 @@ namespace lifuren::video {
  */
 struct VideoParams {
 
-    std::string video; // 视频文件
+    std::string video; // 图片文件（.jpg/.png/.jpeg） | 视频文件（.mp4）
     
 };
 
@@ -44,9 +44,9 @@ public:
 
 };
 
-template<typename M>
-using PaintClient = VideoClient<M>;
-
+/**
+ * @return 视频终端
+ */
 extern std::unique_ptr<lifuren::video::VideoModelClient> getVideoClient(
     const std::string& model // 模型名称
 );

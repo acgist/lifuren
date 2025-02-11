@@ -22,18 +22,19 @@
 #include "lifuren/Model.hpp"
 #include "lifuren/video/VideoDataset.hpp"
 
+// 视频配置
 #ifndef LFR_VIDEO_CONFIG
 #define LFR_VIDEO_CONFIG
-#define LFR_VIDEO_FPS      24
-#define LFR_VIDEO_WIDTH    640
-#define LFR_VIDEO_HEIGHT   480
-#define LFR_VIDEO_PRED_FPS 24
+#define LFR_VIDEO_FPS      24  // 视频帧率
+#define LFR_VIDEO_WIDTH    640 // 视频宽度
+#define LFR_VIDEO_HEIGHT   480 // 视频高度
+#define LFR_VIDEO_PRED_FPS 24  // 推理帧数
 #endif
 
 namespace lifuren::video {
 
 /**
- * 吴道子模型
+ * 吴道子模型实现
  */
 class WudaoziModuleImpl : public torch::nn::Module {
 

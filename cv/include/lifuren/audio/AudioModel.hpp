@@ -28,7 +28,7 @@
 namespace lifuren::audio {
 
 /**
- * 师旷模型
+ * 师旷模型实现
  */
 class ShikuangModuleImpl : public torch::nn::Module {
 

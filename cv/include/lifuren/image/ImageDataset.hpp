@@ -15,8 +15,6 @@
 #ifndef LFR_HEADER_CV_IMAGE_DATASET_HPP
 #define LFR_HEADER_CV_IMAGE_DATASET_HPP
 
-#include <string>
-
 #include "lifuren/Dataset.hpp"
 
 namespace cv {
@@ -28,7 +26,7 @@ namespace cv {
 namespace lifuren::image {
 
 /**
- * 修改大小
+ * 修改图片大小
  */
 extern void resize(
     cv::Mat& image,  // 图片数据
@@ -37,6 +35,8 @@ extern void resize(
 );
 
 /**
+ * 图片转为张量
+ * 
  * @return 图片张量
  */
 extern torch::Tensor feature(
@@ -58,8 +58,8 @@ extern void tensor_to_mat(
  * @return 图片数据集
  */
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
-    const int width,         // 图片宽度
-    const int height,        // 图片高度
+    const int width,  // 图片宽度
+    const int height, // 图片高度
     const size_t batch_size, // 批量大小
     const std::string& path, // 数据集路径
     const std::map<std::string, float>& classify // 图片分类

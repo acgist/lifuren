@@ -44,9 +44,6 @@ public:
 
 };
 
-template<typename M>
-using ComposeClient = AudioClient<M>;
-
 /**
  * @return 作曲终端
  */
