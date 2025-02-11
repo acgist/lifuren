@@ -24,8 +24,7 @@ namespace lifuren::audio {
  */
 struct AudioParams {
 
-    std::string audio;  // 音频文件
-    std::string output; // 输出文件
+    std::string audio; // 音频文件
     
 };
 

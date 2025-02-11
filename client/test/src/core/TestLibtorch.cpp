@@ -50,14 +50,25 @@
     // lifuren::logTensor("a sum 0", a.sum(0));
     // lifuren::logTensor("a sum 1", a.sum(1));
     // lifuren::logTensor("a sum 2", a.sum(2));
-    torch::Tensor a = torch::rand({4, 6});
-    torch::Tensor b = torch::rand({4, 6});
-    torch::Tensor c = torch::rand({6, 4});
-    lifuren::logTensor("a", a);
-    lifuren::logTensor("b", b);
-    lifuren::logTensor("c", c);
-    lifuren::logTensor("a * b", a.mul(b));
-    lifuren::logTensor("a * c", a.matmul(c));
+    // torch::Tensor a = torch::rand({4, 6});
+    // torch::Tensor b = torch::rand({4, 6});
+    // torch::Tensor c = torch::rand({6, 4});
+    // lifuren::logTensor("a", a);
+    // lifuren::logTensor("b", b);
+    // lifuren::logTensor("c", c);
+    // lifuren::logTensor("a * b", a.mul(b));
+    // lifuren::logTensor("a * c", a.matmul(c));
+    auto a = torch::rand({ 2, 3 });
+    auto b = torch::rand({ 2, 3 });
+    auto s = torch::stack({ a, b });
+    lifuren::logTensor("stack", a);
+    lifuren::logTensor("stack", b);
+    lifuren::logTensor("stack", s);
+    auto t = s.split(1, 0);
+    auto x = t.at(0).squeeze();
+    auto y = t.at(1).squeeze();
+    lifuren::logTensor("stack", x);
+    lifuren::logTensor("stack", y);
 }
 
 [[maybe_unused]] static void testLayer() {
@@ -74,7 +85,7 @@
     torch::Tensor a = torch::from_blob(data, {2, 2, 2, 3}, torch::kFloat32);
     lifuren::logTensor("a", a);
     // C
-    torch::nn::LayerNorm   ln(torch::nn::LayerNormOptions({ 2, 3 }));
+    torch::nn::LayerNorm ln(torch::nn::LayerNormOptions({ 2, 3 }));
     lifuren::logTensor("ln", ln->forward(a));
     // N
     torch::nn::BatchNorm2d bn(torch::nn::BatchNorm2dOptions(2));

@@ -125,15 +125,13 @@ static void generateCallback(Fl_Widget*, void*) {
         fl_message("请选择视频输入文件");
         return;
     }
-    const std::string output = video + ".output.mp4";
     lifuren::ThreadWindow::startThread(
         lifuren::message::Type::VIDEO_MODEL_PRED,
         "生成视频",
-        [model, video, output]() {
+        [model, video]() {
             videoClient->load(model, "");
             lifuren::video::VideoParams params {
-                .video  = video,
-                .output = output
+                .video = video,
             };
             const auto [success, output_file] = videoClient->pred(params);
             if(success) {

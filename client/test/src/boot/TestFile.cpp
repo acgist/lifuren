@@ -34,9 +34,17 @@
     SPDLOG_DEBUG("文件内容写出：{}", success);
 }
 
+[[maybe_unused]] static void testModifySuffix() {
+    auto filename = lifuren::file::modify_filename("/root/test.txt", ".exe");
+    SPDLOG_DEBUG("新的文件名称：{}", filename);
+    filename = lifuren::file::modify_filename("/root/test.txt", ".exe", "gen");
+    SPDLOG_DEBUG("新的文件名称：{}", filename);
+}
+
 LFR_TEST(
-    testJoin();
+    // testJoin();
     // testListFile();
     // testLoadFile();
     // testSaveFile();
+    testModifySuffix();
 );

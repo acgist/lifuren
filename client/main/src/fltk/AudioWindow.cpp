@@ -149,15 +149,13 @@ static void generateCallback(Fl_Widget*, void*) {
         fl_message("请选择音频输入文件");
         return;
     }
-    const std::string output = audio + ".output.pcm";
     lifuren::ThreadWindow::startThread(
         lifuren::message::Type::AUDIO_MODEL_PRED,
         "生成音频",
-        [model, audio, output]() {
+        [model, audio]() {
             audioClient->load(model, "");
             lifuren::audio::AudioParams params {
-                .audio  = audio,
-                .output = output
+                .audio = audio,
             };
             const auto [success, output_file] = audioClient->pred(params);
             if(success) {

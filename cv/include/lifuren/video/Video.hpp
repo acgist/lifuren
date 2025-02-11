@@ -24,9 +24,7 @@ namespace lifuren::video {
  */
 struct VideoParams {
 
-    std::string image;  // 图片文件
-    std::string video;  // 视频文件
-    std::string output; // 输出文件
+    std::string video; // 视频文件
     
 };
 

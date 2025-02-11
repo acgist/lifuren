@@ -87,6 +87,21 @@ inline std::filesystem::path join(
     return path;
 }
 
+inline std::string modify_filename(const std::string& file, const std::string& suffix, const std::string& diff = "") {
+    if(file.empty()) {
+        return {};
+    }
+    const auto pos = file.find_last_of('.');
+    if(pos == std::string::npos) {
+        return {};
+    }
+    if(diff.empty()) {
+        return file.substr(0, pos) + suffix;
+    } else {
+        return file.substr(0, pos) + "_" + diff + suffix;
+    }
+}
+
 /**
  * 遍历文件列表
  */

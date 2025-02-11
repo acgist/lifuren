@@ -82,11 +82,9 @@ static void generateAudio(const std::vector<std::string>& args) {
     } else if(type == "pred") {
         const std::string& model = args[2];
         const std::string& audio = args[3];
-        const std::string output = audio + ".output.pcm";
         client->load(model, "");
         lifuren::audio::AudioParams params {
-            .audio  = audio,
-            .output = output
+            .audio = audio
         };
         const auto [success, output_file] = client->pred(params);
         if(success) {
@@ -128,11 +126,9 @@ static void generateVideo(const std::vector<std::string>& args) {
     } else if(type == "pred") {
         const std::string& model = args[2];
         const std::string& video = args[3];
-        const std::string output = video + ".output.mp4";
         client->load(model, "");
         lifuren::video::VideoParams params {
-            .video  = video,
-            .output = output
+            .video = video
         };
         const auto [success, output_file] = client->pred(params);
         if(success) {
