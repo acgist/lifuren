@@ -15,7 +15,7 @@
     });
     model.define();
     model.trainValAndTest();
-    model.save(lifuren::config::CONFIG.tmp, "wudaozi.pt");
+    model.save(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.pt"}).string());
 }
 
 [[maybe_unused]] static void testPred() {
