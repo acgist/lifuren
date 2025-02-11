@@ -21,11 +21,26 @@
 
 namespace lifuren {
 
-extern void setDevice(torch::DeviceType& type);
+/**
+ * @return 设备类型
+ */
+extern torch::DeviceType getDevice();
 
-extern void logTensor(const std::string& message, const at::Tensor& tensor);
+/**
+ * 记录日志
+ */
+extern void logTensor(
+    const std::string& message, // 日志
+    const at::Tensor & tensor   // 张量
+);
 
-extern void logTensor(const std::string& message, const c10::IntArrayRef& tensor);
+/**
+ * 记录日志
+ */
+extern void logTensor(
+    const std::string     & message, // 日志
+    const c10::IntArrayRef& tensor   // 张量
+);
 
 } // END OF lifuren
 

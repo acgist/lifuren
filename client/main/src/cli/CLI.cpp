@@ -77,12 +77,12 @@ static void generateAudio(const std::vector<std::string>& args) {
             .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
         };
         client->trainValAndTest(params);
-        client->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+        client->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE, model_name + ".pt"}).string());
         SPDLOG_INFO("音频模型训练完成");
     } else if(type == "pred") {
         const std::string& model = args[2];
         const std::string& audio = args[3];
-        client->load(model, "");
+        client->load(model);
         lifuren::audio::AudioParams params {
             .audio = audio
         };
@@ -121,12 +121,12 @@ static void generateVideo(const std::vector<std::string>& args) {
             .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
         };
         client->trainValAndTest(params);
-        client->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+        client->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE, model_name + ".pt"}).string());
         SPDLOG_INFO("视频模型训练完成");
     } else if(type == "pred") {
         const std::string& model = args[2];
         const std::string& video = args[3];
-        client->load(model, "");
+        client->load(model);
         lifuren::video::VideoParams params {
             .video = video
         };

@@ -129,7 +129,7 @@ static void trainCallback(Fl_Widget*, void*) {
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
             };
             audioClient->trainValAndTest(params);
-            audioClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+            audioClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE, model_name + ".pt"}).string());
             SPDLOG_INFO("音频模型训练完成");
         }
     );
@@ -153,7 +153,7 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::AUDIO_MODEL_PRED,
         "生成音频",
         [model, audio]() {
-            audioClient->load(model, "");
+            audioClient->load(model);
             lifuren::audio::AudioParams params {
                 .audio = audio,
             };

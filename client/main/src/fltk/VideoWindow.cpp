@@ -105,7 +105,7 @@ static void trainCallback(Fl_Widget*, void*) {
                 .test_path  = lifuren::file::join({path, lifuren::config::DATASET_TEST }).string(),
             };
             videoClient->trainValAndTest(params);
-            videoClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(), model_name + ".pt");
+            videoClient->save(lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE, model_name + ".pt"}).string());
             SPDLOG_INFO("视频模型训练完成");
         }
     );
@@ -129,7 +129,7 @@ static void generateCallback(Fl_Widget*, void*) {
         lifuren::message::Type::VIDEO_MODEL_PRED,
         "生成视频",
         [model, video]() {
-            videoClient->load(model, "");
+            videoClient->load(model);
             lifuren::video::VideoParams params {
                 .video = video,
             };

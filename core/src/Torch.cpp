@@ -11,11 +11,11 @@
 LFR_FORMAT_LOG_STREAM(at::Tensor)
 LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 
-void lifuren::setDevice(torch::DeviceType& type) {
+torch::DeviceType lifuren::getDevice() {
     if(torch::cuda::is_available()) {
-        type = torch::DeviceType::CUDA;
+        return torch::DeviceType::CUDA;
     } else {
-        type = torch::DeviceType::CPU;
+        return torch::DeviceType::CPU;
     }
 }
 

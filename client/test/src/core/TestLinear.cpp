@@ -40,7 +40,8 @@ public:
     LinearModel(lifuren::config::ModelParams params = {
         .lr          = 0.001F,
         .batch_size  = 10,
-        .epoch_count = 256
+        .epoch_count = 64
+        // .epoch_count = 256
     }) : Model(params) {
     }
     virtual ~LinearModel() {
@@ -83,10 +84,10 @@ public:
 
 [[maybe_unused]] static void testLoad() {
     LinearModel model;
-    model.define();
+    // model.define();
     model.load();
     // model.load(lifuren::config::CONFIG.tmp);
-    model.print();
+    model.print(true);
     // w * 15.4 + 4 + r
     auto output = model.pred(torch::tensor({ 3.0F }, torch::kFloat32));
     float pred = output.template item<float>();
