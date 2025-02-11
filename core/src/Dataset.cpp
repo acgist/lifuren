@@ -29,7 +29,7 @@ bool lifuren::dataset::allDatasetPreprocessing(
     std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing,
     bool model_base
 ) {
-    std::vector<std::string> datasets = std::move(lifuren::dataset::allDataset(path));
+    std::vector<std::string> datasets = lifuren::dataset::allDataset(path);
     if(datasets.empty()) {
         SPDLOG_WARN("没有数据集：{}", path);
         return false;

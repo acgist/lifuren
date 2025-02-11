@@ -124,7 +124,7 @@
 }
 
 [[maybe_unused]] static void testToChars() {
-    auto vector = std::move(lifuren::string::toChars("你好啊！abc测试1234 1234李夫人?!好吧"));
+    auto vector = lifuren::string::toChars("你好啊！abc测试1234 1234李夫人?!好吧");
     std::vector<std::string> diff{ "你", "好", "啊", "！", "a", "b", "c", "测", "试", "1", "2", "3", "4", "1", "2", "3", "4", "李", "夫", "人", "?", "!", "好", "吧" };
     assert(diff == vector);
 }

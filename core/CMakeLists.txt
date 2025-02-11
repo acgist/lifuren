@@ -2,7 +2,6 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
-    src/Layer.cpp
     src/Torch.cpp
     src/Dataset.cpp
     src/dataset/RawDataset.cpp

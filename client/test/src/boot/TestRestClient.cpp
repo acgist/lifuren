@@ -5,14 +5,14 @@
 static lifuren::RestClient client{ "http://192.168.8.228:11434" };
 
 [[maybe_unused]] static void testHead() {
-    auto response = std::move(client.head("/"));
+    auto response = client.head("/");
     if(response) {
         SPDLOG_DEBUG("HEAD : {}", response.success);
     }
 }
 
 [[maybe_unused]] static void testGet() {
-    auto response = std::move(client.get("/"));
+    auto response = client.get("/");
     if(response) {
         SPDLOG_DEBUG("GET : {}", response.body);
     }
@@ -32,10 +32,10 @@ static lifuren::RestClient client{ "http://192.168.8.228:11434" };
 }
 
 [[maybe_unused]] static void testToQuery() {
-    auto query = std::move(lifuren::http::toQuery({
+    auto query = lifuren::http::toQuery({
         { "name",    "碧螺萧萧"    },
         { "profile", "acgist.png" }
-    }));
+    });
     SPDLOG_DEBUG("query : {}", query);
 }
 
