@@ -15,6 +15,7 @@
     lifuren::image::tensor_to_mat(target, tensor);
     cv::imshow("target", target);
     cv::waitKey();
+    cv::destroyAllWindows();
 }
 
 [[maybe_unused]] static void testLoadFileDatasetLoader() {
@@ -30,7 +31,7 @@
     );
     lifuren::logTensor("图片特征", loader->begin()->data.sizes());
     lifuren::logTensor("图片标签", loader->begin()->target.sizes());
-    SPDLOG_INFO("数据大小：{}", std::distance(loader->begin(), loader->end()));
+    SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
 }
 
 LFR_TEST(

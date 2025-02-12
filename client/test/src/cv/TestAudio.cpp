@@ -52,18 +52,8 @@
     }).string());
     lifuren::logTensor("音频特征", loader->begin()->data.sizes());
     lifuren::logTensor("音频标签", loader->begin()->target.sizes());
-    SPDLOG_INFO("数据大小：{}", std::distance(loader->begin(), loader->end()));
-    // 注意：不要使用RandomSampler而要使用SequentialSampler
-    // std::ofstream output;
-    // output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "audio.dataset.pcm" }).string(), std::ios_base::binary);
-    // for(auto iter = loader->begin(); iter != loader->end(); ++iter) {
-    //     auto data = iter->data;
-    //     for(int i = 0; i < data.sizes()[0]; ++i) {
-    //         auto pcm = lifuren::audio::pcm_mag_pha_istft(data[i].slice(0, 0, 1), data[i].slice(0, 1, 2));
-    //         output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
-    //     }
-    // }
-    // output.close();
+    SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
+    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
 }
 
 LFR_TEST(

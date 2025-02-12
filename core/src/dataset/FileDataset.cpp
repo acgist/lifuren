@@ -26,10 +26,11 @@ lifuren::dataset::FileDataset::FileDataset(
     for(const auto& entry : iterator) {
         const auto entry_path = entry.path();
         if(entry.is_directory() && entry_path.string() != lifuren::config::LIFUREN_HIDDEN_FILE) {
+            SPDLOG_DEBUG("加载文件：{}", entry_path.string());
             std::vector<std::string> files;
             lifuren::file::listFile(files, entry_path.string(), suffix);
             for(const auto& file : files) {
-                SPDLOG_DEBUG("加载文件：{}", file);
+                // SPDLOG_DEBUG("加载文件：{}", file);
                 this->features.push_back(std::move(transform(file, this->device)));
             }
             this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(entry_path.filename().string()), torch::kFloat32).to(this->device));

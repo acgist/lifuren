@@ -24,41 +24,34 @@ public:
         // 卷积
         torch::nn::Sequential feature;
         feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 4, 3)));
+        feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         feature->push_back(torch::nn::BatchNorm2d(4));
-        feature->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(4, 8, 3)));
+        feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         feature->push_back(torch::nn::BatchNorm2d(8));
-        feature->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
+        feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 16, 3)));
         feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         this->feature = register_module("feature", feature);
         // 池化
         torch::nn::Sequential pool;
-        pool->push_back(torch::nn::AdaptiveAvgPool2d(torch::nn::AdaptiveAvgPool2dOptions(8)));
-        // pool->push_back(torch::nn::AdaptiveMaxPool2d(torch::nn::AdaptiveMaxPool2dOptions(8)));
+        pool->push_back(torch::nn::AdaptiveMaxPool2d(torch::nn::AdaptiveMaxPool2dOptions(16)));
         this->pool = register_module("pool", pool);
         // 分类
         torch::nn::Sequential classify;
-        classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(8 * 8 * 8, 2048)));
-        classify->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // classify->push_back(torch::nn::Dropout());
-        classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(2048, 512)));
-        classify->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // classify->push_back(torch::nn::Dropout());
-        classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(512, 128)));
-        classify->push_back(torch::nn::ReLU(torch::nn::ReLUOptions(true)));
-        // classify->push_back(torch::nn::Dropout());
-        classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(128, 2)));
+        classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(16 * 16 * 16, 2)));
         this->classify = register_module("classify", classify);
     }
+
     torch::Tensor forward(torch::Tensor x) {
         x = this->feature->forward(x);
         x = this->pool->forward(x);
         x = x.flatten(1);
         x = this->classify->forward(x);
-        return torch::log_softmax(x, 1);
+        return torch::log_sigmoid(x);
+        // return torch::log_softmax(x, 1);
     }
-    virtual ~GenderModuleImpl() {
+    
+    ~GenderModuleImpl() {
         unregister_module("feature");
         unregister_module("pool");
         unregister_module("classify");
@@ -79,14 +72,15 @@ public:
     GenderModel(lifuren::config::ModelParams params = {
         .lr          = 0.001F,
         .batch_size  = 10,
-        .epoch_count = 8,
+        .epoch_count = 16,
         .classify    = true,
-        .check_point = true,
+        .check_point = false,
         .model_name  = "gender",
         .check_path  = lifuren::config::CONFIG.tmp,
     }) : Model(params) {
     }
-    virtual ~GenderModel() {
+
+    ~GenderModel() {
     }
 
 public:
@@ -104,7 +98,8 @@ public:
         this->testDataset  = std::move(lifuren::image::loadFileDatasetLoader(200, 200, this->params.batch_size, path_test,  mapping));
         return true;
     }
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+
+    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
         label = std::move(label.squeeze().to(torch::kInt64));
         Model::logic(feature, label, pred, loss);
     }
@@ -115,36 +110,33 @@ public:
     GenderModel model;
     model.define();
     model.trainValAndTest(true, true);
-    cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
-    cv::resize(image, image, cv::Size(200, 200));
-    torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32).div(255.0);
-    auto prediction = model.pred(image_tensor);
-    prediction = torch::softmax(prediction, 1);
-    lifuren::logTensor("预测结果", prediction);
-    auto class_id = prediction.argmax(1);
-    int class_val = class_id.item<int>();
-    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
-    // model.print();
-    // model.save();
+    model.print();
+    model.save();
 }
 
 [[maybe_unused]] static void testPred() {
     GenderModel model;
-    model.load(lifuren::file::join({lifuren::config::CONFIG.tmp, "gender.checkpoint.7.pt"}).string());
-    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "xxc.png"}).string());
-    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "ycx.jpg"}).string());
-    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"}).string());
-    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_ai.png"}).string());
-    cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_lyf.png"}).string());
-    // cv::Mat image = cv::imread(lifuren::file::join({lifuren::config::CONFIG.tmp, "woman_92.jpg"}).string());
-    cv::resize(image, image, cv::Size(200, 200));
-    torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32).div(255.0);
-    auto prediction = model.pred(image_tensor);
-    prediction = torch::softmax(prediction, 1);
-    lifuren::logTensor("预测结果", prediction);
-    auto class_id = prediction.argmax(1);
-    int class_val = class_id.item<int>();
-    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), prediction[0][class_val].item().toFloat());
+    model.load();
+    // model.load(lifuren::file::join({lifuren::config::CONFIG.tmp, "gender.checkpoint.16.pt"}).string());
+    std::vector<std::string> paths {
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "xxc.png"     }).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "ycx.jpg"     }).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"    }).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_ai.png" }).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_lyf.png"}).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "woman_92.jpg"}).string()
+    };
+    for(const auto& path : paths) {
+        auto image = cv::imread(path);
+        cv::resize(image, image, cv::Size(200, 200));
+        torch::Tensor image_tensor = torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).unsqueeze(0).to(torch::kFloat32).div(255.0);
+        auto prediction = model.pred(image_tensor);
+        prediction = torch::softmax(prediction, 1);
+        lifuren::logTensor("预测结果", prediction);
+        auto class_id = prediction.argmax(1);
+        int class_val = class_id.item<int>();
+        SPDLOG_DEBUG("预测结果：{} - {} - {}", path, class_id.item().toInt(), prediction[0][class_val].item().toFloat());
+    }
 }
 
 LFR_TEST(
