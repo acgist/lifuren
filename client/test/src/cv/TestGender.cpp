@@ -70,7 +70,7 @@ class GenderModel : public lifuren::Model<
 
 public:
     GenderModel(lifuren::config::ModelParams params = {
-        .lr          = 0.001F,
+        .lr          = 0.0001F,
         .batch_size  = 10,
         .epoch_count = 16,
         .classify    = true,
@@ -122,6 +122,7 @@ public:
         lifuren::file::join({lifuren::config::CONFIG.tmp, "xxc.png"     }).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "ycx.jpg"     }).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "girl.png"    }).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "ycx_cut.jpg" }).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_ai.png" }).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "girl_lyf.png"}).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "woman_92.jpg"}).string()

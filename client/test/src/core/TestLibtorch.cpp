@@ -8,11 +8,6 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Torch.hpp"
 
-[[maybe_unused]] static void testPrint() {
-    torch::Tensor tensor = torch::randn({ 2, 4 });
-    lifuren::logTensor("tensor", tensor);
-}
-
 [[maybe_unused]] static void testTensor() {
     // 函数
     // const size_t size = 24;
@@ -157,7 +152,6 @@
 }
 
 LFR_TEST(
-    // testPrint();
     testTensor();
     // testLayer();
     // testLoss();

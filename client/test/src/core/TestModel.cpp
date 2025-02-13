@@ -1,5 +1,6 @@
 #include "lifuren/Test.hpp"
 
+#include <memory>
 #include <random>
 
 #include "torch/nn.h"
@@ -8,73 +9,96 @@
 #include "lifuren/Model.hpp"
 #include "lifuren/Dataset.hpp"
 
-class SimpleModuleImpl : public torch::nn::Module {
+class LinearModuleImpl : public torch::nn::Module {
 
 private:
     torch::nn::Linear linear{ nullptr };
 
 public:
-    SimpleModuleImpl() {
-        linear = register_module("linear", torch::nn::Linear(torch::nn::LinearOptions(10, 2)));
+    LinearModuleImpl() {
+        linear = register_module("linear", torch::nn::Linear(torch::nn::LinearOptions(1, 1)));
     }
+
     torch::Tensor forward(torch::Tensor x) {
         return this->linear->forward(x);
     }
-    virtual ~SimpleModuleImpl() {
+    
+    ~LinearModuleImpl() {
         unregister_module("linear");
     }
 
 };
 
-TORCH_MODULE(SimpleModule);
+TORCH_MODULE(LinearModule);
 
-class SimpleModel : public lifuren::Model<
+class LinearModel : public lifuren::Model<
     lifuren::dataset::RawDatasetLoader,
     torch::nn::MSELoss,
+    // torch::optim::SGD,
     torch::optim::Adam,
-    SimpleModule
+    LinearModule
 > {
 
 public:
-    SimpleModel(lifuren::config::ModelParams params = {}) : Model(params) {
+    LinearModel(lifuren::config::ModelParams params = {
+        .lr          = 0.1F,
+        // .lr       = 0.001F,
+        .batch_size  = 10,
+        .epoch_count = 128
+    }) : Model(params) {
     }
-    virtual ~SimpleModel() {
+
+    ~LinearModel() {
     }
 
 public:
     bool defineDataset() override {
         std::random_device device;
         std::mt19937 rand(device());
-        std::normal_distribution<float> nd(10.0F, 2.0F);
+        std::normal_distribution<float> w(100, 10);
+        std::normal_distribution<float> b(0.4, 0.2);
         std::vector<torch::Tensor> labels;
         std::vector<torch::Tensor> features;
-        labels.reserve(100);
-        features.reserve(100);
-        for(int index = 0; index < 100; ++index) {
-            labels.push_back(torch::tensor({ nd(rand) }));
-            std::vector<float> feature(10);
-            std::for_each(feature.begin(), feature.end(), [&](auto& v) {
-                v = nd(rand);
-            });
-            features.push_back(torch::from_blob(feature.data(), { 10 }, torch::kFloat32).clone());
+        labels.reserve(200);
+        features.reserve(200);
+        // w * 15.4 + 4 + r
+        for(int index = 0; index < 200; ++index) {
+            float f = w(rand);
+            float l = 15.4 * f + 4 + b(rand);
+            labels.push_back(torch::tensor({ l }));
+            features.push_back(torch::tensor( { f } ));
         }
-        this->trainDataset = std::move(lifuren::dataset::loadRawDataset(5LL, labels, features));
+        this->trainDataset = lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features);
         return true;
     }
 
 };
 
-[[maybe_unused]] static void testSaveLoad() {
-    SimpleModel save;
-    save.define();
-    save.save();
-    save.print();
-    SimpleModel load;
-    load.define();
-    load.load();
-    load.print();
+[[maybe_unused]] static void testTrain() {
+    LinearModel linear;
+    linear.define();
+    linear.trainValAndTest(false, false);
+    // w * 15.4 + 4 + r
+    auto output = linear.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    float pred = output.template item<float>();
+    SPDLOG_DEBUG("当前预测：{}", pred);
+    linear.print(true);
+    linear.save();
+}
+
+[[maybe_unused]] static void testPred() {
+    LinearModel model;
+    // model.define();
+    model.load();
+    // model.load(lifuren::config::CONFIG.tmp);
+    model.print(true);
+    // w * 15.4 + 4 + r
+    auto output = model.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    float pred = output.template item<float>();
+    SPDLOG_DEBUG("当前预测：{}", pred);
 }
 
 LFR_TEST(
-    testSaveLoad();
+    testTrain();
+    // testPred();
 );
