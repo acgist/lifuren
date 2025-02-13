@@ -5,12 +5,12 @@ add_library(
     src/Date.cpp
     src/File.cpp
     src/Yaml.cpp
+    src/Client.cpp
     src/Config.cpp
     src/Logger.cpp
     src/String.cpp
     src/Thread.cpp
     src/Message.cpp
-    src/RestClient.cpp
 )
 
 if(CMAKE_HOST_WIN32)

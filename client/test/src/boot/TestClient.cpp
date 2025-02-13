@@ -21,7 +21,7 @@ static lifuren::RestClient client{ "http://192.168.8.228:11434" };
 [[maybe_unused]] static void testPostStream() {
     auto success = client.postStream("/api/generate", R"(
         {
-            "model" : "glm4",
+            "model" : "deepseek-r1",
             "prompt": "你好"
         }
     )", [](const char* data, size_t data_length) {
@@ -43,5 +43,5 @@ LFR_TEST(
     testHead();
     testGet();
     testPostStream();
-    // testToQuery();
+    testToQuery();
 );

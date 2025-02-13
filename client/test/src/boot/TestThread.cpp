@@ -28,6 +28,6 @@
 }
 
 LFR_TEST(
-    // testThreadPool();
-    testThreadTimer();
+    testThreadPool();
+    // testThreadTimer();
 );

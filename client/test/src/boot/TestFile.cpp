@@ -11,8 +11,6 @@
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "/", "/", "1" }).string());
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "/", "2", "1" }).string());
     SPDLOG_DEBUG("有效文件：{}", lifuren::file::join({ "3", "2", "1" }).string());
-    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename"));
-    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename.m.zip"));
 }
 
 [[maybe_unused]] static void testListFile() {
@@ -34,7 +32,9 @@
     SPDLOG_DEBUG("文件内容写出：{}", success);
 }
 
-[[maybe_unused]] static void testModifySuffix() {
+[[maybe_unused]] static void testSuffix() {
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename"));
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename.m.zip"));
     auto filename = lifuren::file::modify_filename("/root/test.txt", ".exe");
     SPDLOG_DEBUG("新的文件名称：{}", filename);
     filename = lifuren::file::modify_filename("/root/test.txt", ".exe", "gen");
@@ -46,5 +46,5 @@ LFR_TEST(
     // testListFile();
     // testLoadFile();
     // testSaveFile();
-    testModifySuffix();
+    testSuffix();
 );
