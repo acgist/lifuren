@@ -50,29 +50,29 @@ void lifuren::ThreadWindow::bindEvent() {
             buffer->append("\n");
         }
     });
+    cancel->callback([](Fl_Widget*, void* voidPtr) {
+        lifuren::ThreadWindow* windowPtr = static_cast<lifuren::ThreadWindow*>(voidPtr);
+        lifuren::ThreadWindow::stopThread(windowPtr->type);
+    }, this);
 }
 
-void lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
+bool lifuren::ThreadWindow::showThread(lifuren::message::Type type) {
     const auto iter = thread_worker.find(type);
     if(iter == thread_worker.end()) {
-        return;
+        return false;
     }
     if(iter->second->source) {
         static_cast<ThreadWindow*>(iter->second->source)->show();
     }
-}
-
-bool lifuren::ThreadWindow::checkThread(lifuren::message::Type type) {
-    return thread_worker.contains(type);
+    return true;
 }
 
 bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback) {
-    // 相同类型任务
-    if(checkThread(type)) {
-        showThread(type);
+    // 相同类型任务不能同时执行
+    if(showThread(type)) {
         return false;
     }
-    // 同类型的任务不能同时执行
+    // 相同媒体任务不能同时执行
     for(const auto& [k, v] : thread_worker) {
         if(static_cast<int>(k) / 1000 == static_cast<int>(type) / 1000) {
             showThread(k);
@@ -100,7 +100,9 @@ bool lifuren::ThreadWindow::startThread(lifuren::message::Type type, const char*
         SPDLOG_DEBUG("开始任务：{}", title);
         lifuren::thread::ThreadWorker::this_thread_worker = worker.get();
         try {
-            task();
+            if(task) {
+                task();
+            }
         } catch(const std::exception& e) {
             SPDLOG_ERROR("任务执行异常：{} - {}", title, e.what());
         }
@@ -125,7 +127,6 @@ bool lifuren::ThreadWindow::stopThread(lifuren::message::Type type) {
         return true;
     }
     iter->second->stop = true;
-    // iter->second->thread->join();
     return true;
 }
 

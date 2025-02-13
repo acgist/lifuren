@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:8080
 
 # @name 视频生成
-POST {{baseUrl}}/video/generate?model=video-wudaozi HTTP/1.1
+POST {{baseUrl}}/video/generate?model=video-wudaozi&path=D:/tmp/video.pt HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary080080080080
 
 ------WebKitFormBoundary080080080080

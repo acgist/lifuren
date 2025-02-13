@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:8080
 
 # @name 音频生成
-POST {{baseUrl}}/audio/generate?model=audio-shikuang HTTP/1.1
+POST {{baseUrl}}/audio/generate?model=audio-shikuang&path=D:/tmp/audio.pt HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary080080080080
 
 ------WebKitFormBoundary080080080080

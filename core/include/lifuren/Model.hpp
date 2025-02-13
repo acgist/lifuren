@@ -149,11 +149,7 @@ lifuren::Model<D, L, P, M>::Model(
     device(lifuren::getDevice())
 {
     if(this->model) {
-        if(this->params.lr <= 0.0F) {
-            this->optimizer = std::make_unique<P>(this->model->parameters());
-        } else {
-            this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
-        }
+        this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
     } else {
         SPDLOG_WARN("没有定义模型");
     }

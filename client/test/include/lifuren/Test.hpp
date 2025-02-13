@@ -50,7 +50,7 @@ namespace lifuren::test {
  * @returns 消耗时间（毫秒）
  */
 inline size_t loop(
-    size_t count, // 循环次数
+    size_t count,                   // 循环次数
     std::function<void()> function, // 循环函数
     const int loop_wait = 0,        // 循环等待时间
     const int last_wait = 0,        // 最后等待时间

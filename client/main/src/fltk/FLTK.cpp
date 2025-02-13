@@ -19,7 +19,8 @@
 #include "FL/Fl_PNG_Image.H"
 #include "Fl/Fl_Native_File_Chooser.H"
 
-static bool        fltkClose      = false;
+static bool fltkClose = false;
+
 static std::string last_directory = "";
 
 void lifuren::initFltkService() {

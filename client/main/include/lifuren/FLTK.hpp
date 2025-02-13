@@ -26,7 +26,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#endif
+#endif // END OF _WIN32
 
 #ifndef LFR_WINDOW_DEFAULT
 #define LFR_WINDOW_DEFAULT
@@ -58,8 +58,8 @@ protected:
 
 public:
     Window(
-        int width,        // 窗口宽度
-        int height,       // 窗口高度
+        int width,  // 窗口宽度
+        int height, // 窗口高度
         const char* title // 窗口名称
     );
     virtual ~Window();
@@ -192,8 +192,7 @@ protected:
     virtual void bindEvent  () override;
 
 public:
-    static void showThread (lifuren::message::Type type); // 显示任务
-    static bool checkThread(lifuren::message::Type type); // 判断是否含有相同类型任务
+    static bool showThread (lifuren::message::Type type); // 显示任务
     static bool startThread(lifuren::message::Type type, const char* title, std::function<void()> task, std::function<void()> callback = nullptr); // 开始任务
     static bool stopThread (lifuren::message::Type type); // 结束任务
     static bool checkAudioThread (); // 判断是否含有音频任务

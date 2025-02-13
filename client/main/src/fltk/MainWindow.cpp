@@ -11,9 +11,9 @@ static Fl_Button* videoButtonPtr { nullptr };
 static Fl_Button* aboutButtonPtr { nullptr };
 static Fl_Button* reloadButtonPtr{ nullptr };
 
-static lifuren::AudioWindow * audioWindowPtr { nullptr };
-static lifuren::VideoWindow * videoWindowPtr { nullptr };
-static lifuren::AboutWindow * aboutWindowPtr { nullptr };
+static lifuren::AudioWindow * audioWindowPtr{ nullptr };
+static lifuren::VideoWindow * videoWindowPtr{ nullptr };
+static lifuren::AboutWindow * aboutWindowPtr{ nullptr };
 
 static void audioCallback (Fl_Widget*, void*);
 static void videoCallback (Fl_Widget*, void*);
@@ -40,7 +40,6 @@ static void reloadCallback(Fl_Widget*, void*);
 #endif
 
 lifuren::MainWindow::MainWindow(int width, int height, const char* title) : Window(width, height, title) {
-    // 注册图片
     fl_register_images();
 }
 
@@ -68,7 +67,6 @@ void lifuren::MainWindow::bindEvent() {
     reloadButtonPtr->callback(reloadCallback, this);
 }
 
-// 定义窗口
 LFR_BUTTON_CALLBACK_FUNCTION(audioCallback, AudioWindow, audioWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 LFR_BUTTON_CALLBACK_FUNCTION(videoCallback, VideoWindow, videoWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);
 LFR_BUTTON_CALLBACK_FUNCTION(aboutCallback, AboutWindow, aboutWindowPtr, LFR_WINDOW_WIDTH / 2, LFR_WINDOW_HEIGHT / 2);

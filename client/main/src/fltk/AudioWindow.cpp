@@ -55,11 +55,11 @@ lifuren::AudioWindow::~AudioWindow() {
 }
 
 void lifuren::AudioWindow::drawElement() {
-    clientPtr       = new Fl_Choice( 80, 10,  200, 30, "模型名称");
-    pathPathPtr     = new Fl_Input ( 80, 50,  400, 30, "数据集路径");
-    pathChoosePtr   = new Fl_Button(480, 50,  100, 30, "选择数据集");
-    modelPathPtr    = new Fl_Input ( 80, 90,  400, 30, "模型路径");
-    modelChoosePtr  = new Fl_Button(480, 90,  100, 30, "选择模型");
+    clientPtr       = new Fl_Choice( 80,  10, 200, 30, "模型名称");
+    pathPathPtr     = new Fl_Input ( 80,  50, 400, 30, "数据集路径");
+    pathChoosePtr   = new Fl_Button(480,  50, 100, 30, "选择数据集");
+    modelPathPtr    = new Fl_Input ( 80,  90, 400, 30, "模型路径");
+    modelChoosePtr  = new Fl_Button(480,  90, 100, 30, "选择模型");
     audioPathPtr    = new Fl_Input ( 80, 130, 400, 30, "音频路径");
     audioChoosePtr  = new Fl_Button(480, 130, 100, 30, "选择音频");
     embeddingPtr    = new Fl_Button( 80, 170, 100, 30, "音频嵌入");
@@ -186,13 +186,18 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::AudioWindow* windowPtr = static_cast<lifuren::AudioWindow*>(voidPtr);
     auto& audioConfig  = lifuren::config::CONFIG.audio;
     audioConfig.client = clientPtr->text();
-    loadModelClient();
+    if(!loadModelClient()) {
+        SPDLOG_WARN("加载模型失败");
+    }
 }
 
 static bool loadModelClient() {
+    if(audioClient) {
+        return true;
+    }
     audioClient = lifuren::audio::getAudioClient(clientPtr->text());
     if(!audioClient) {
-        fl_message("不支持的模型终端");
+        fl_message("不支持的模型终端：{}", clientPtr->text());
         return false;
     }
     return true;
@@ -212,6 +217,7 @@ static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
     if(voidPtr == modelPathPtr) {
         audioConfig.model = modelPathPtr->value();
     } else {
+        SPDLOG_DEBUG("没有匹配的元素");
     }
 }
 
@@ -221,5 +227,6 @@ static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
     if(voidPtr == pathPathPtr) {
         audioConfig.path = pathPathPtr->value();
     } else {
+        SPDLOG_DEBUG("没有匹配的元素");
     }
 }

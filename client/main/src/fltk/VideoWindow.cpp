@@ -162,13 +162,18 @@ static void clientCallback(Fl_Widget*, void* voidPtr) {
     lifuren::VideoWindow* windowPtr = static_cast<lifuren::VideoWindow*>(voidPtr);
     auto& videoConfig  = lifuren::config::CONFIG.video;
     videoConfig.client = clientPtr->text();
-    loadModelClient();
+    if(!loadModelClient()) {
+        SPDLOG_WARN("加载模型失败");
+    }
 }
 
 static bool loadModelClient() {
+    if(videoClient) {
+        return true;
+    }
     videoClient = lifuren::video::getVideoClient(clientPtr->text());
     if(!videoClient) {
-        fl_message("不支持的模型终端");
+        fl_message("不支持的模型终端：{}", clientPtr->text());
         return false;
     }
     return true;
@@ -188,6 +193,7 @@ static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
     if(voidPtr == modelPathPtr) {
         videoConfig.model = modelPathPtr->value();
     } else {
+        SPDLOG_DEBUG("没有匹配的元素");
     }
 }
 
@@ -197,5 +203,6 @@ static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
     if(voidPtr == pathPathPtr) {
         videoConfig.path = pathPathPtr->value();
     } else {
+        SPDLOG_DEBUG("没有匹配的元素");
     }
 }
