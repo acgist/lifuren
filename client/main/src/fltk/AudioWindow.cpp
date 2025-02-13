@@ -197,7 +197,7 @@ static bool loadModelClient() {
     }
     audioClient = lifuren::audio::getAudioClient(clientPtr->text());
     if(!audioClient) {
-        fl_message("不支持的模型终端：{}", clientPtr->text());
+        fl_message("不支持的模型终端：%s", clientPtr->text());
         return false;
     }
     return true;

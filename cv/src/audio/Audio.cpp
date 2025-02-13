@@ -32,14 +32,14 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<M>::pred(const AudioPa
     data.resize(DATASET_PCM_LENGTH);
     while(input_stream.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
         auto tuple  = lifuren::audio::pcm_mag_pha_stft(data);
-        auto result = this->model->pred(torch::stack({
+        auto result = this->model->pred(torch::cat({
             std::get<0>(tuple),
             std::get<1>(tuple)
-        }));
-        auto list = result.split(1, 0);
+        }).unsqueeze(0));
+        auto list = result.squeeze().split(1, 0);
         auto pcm  = lifuren::audio::pcm_mag_pha_istft(
-            list.at(0).squeeze(),
-            list.at(1).squeeze()
+            list.at(0),
+            list.at(1)
         );
         output_stream.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
     }

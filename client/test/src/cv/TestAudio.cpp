@@ -36,16 +36,17 @@
 
 [[maybe_unused]] static void testEmbedding() {
     lifuren::dataset::allDatasetPreprocessing(
-        lifuren::file::join({lifuren::config::CONFIG.tmp, "audio"}).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
         lifuren::config::EMBEDDING_MODEL_FILE,
         &lifuren::audio::embedding
     );
 }
 
 [[maybe_unused]] static void testLoadAudioFileDataset() {
+    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
     auto loader = lifuren::audio::loadFileDatasetLoader(200, lifuren::file::join({
         lifuren::config::CONFIG.tmp,
-        "audio",
+        "baicai",
         "train",
         lifuren::config::LIFUREN_HIDDEN_FILE,
         lifuren::config::EMBEDDING_MODEL_FILE
@@ -53,7 +54,6 @@
     lifuren::logTensor("音频特征", loader->begin()->data.sizes());
     lifuren::logTensor("音频标签", loader->begin()->target.sizes());
     SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
-    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
 }
 
 LFR_TEST(

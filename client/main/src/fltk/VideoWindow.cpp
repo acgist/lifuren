@@ -173,7 +173,7 @@ static bool loadModelClient() {
     }
     videoClient = lifuren::video::getVideoClient(clientPtr->text());
     if(!videoClient) {
-        fl_message("不支持的模型终端：{}", clientPtr->text());
+        fl_message("不支持的模型终端：%s", clientPtr->text());
         return false;
     }
     return true;

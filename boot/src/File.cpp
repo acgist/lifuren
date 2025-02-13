@@ -43,7 +43,7 @@ void lifuren::file::listFile(std::vector<std::string>& vector, const std::string
             if(predicate(filename)) {
                 vector.push_back(filepath);
             } else {
-                SPDLOG_DEBUG("忽略无效文件类型：{}", filepath);
+                SPDLOG_DEBUG("忽略无效文件：{}", filepath);
             }
         } else {
             SPDLOG_DEBUG("忽略无效文件：{}", filepath);

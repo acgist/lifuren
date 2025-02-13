@@ -36,15 +36,17 @@ class LinearModel : public lifuren::Model<
     torch::nn::MSELoss,
     // torch::optim::SGD,
     torch::optim::Adam,
+    // torch::optim::AdamW,
     LinearModule
 > {
 
 public:
     LinearModel(lifuren::config::ModelParams params = {
         .lr          = 0.1F,
+        // .lr       = 0.01F,
         // .lr       = 0.001F,
         .batch_size  = 10,
-        .epoch_count = 128
+        .epoch_count = 256
     }) : Model(params) {
     }
 

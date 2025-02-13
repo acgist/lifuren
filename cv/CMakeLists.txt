@@ -5,6 +5,8 @@ add_library(
     src/OpenCV.cpp
     src/audio/Audio.cpp
     src/video/Video.cpp
+    src/audio/AudioModel.cpp
+    src/video/VideoModel.cpp
     src/audio/AudioDataset.cpp
     src/image/ImageDataset.cpp
     src/video/VideoDataset.cpp

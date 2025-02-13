@@ -516,7 +516,7 @@ bool lifuren::audio::embedding(const std::string& path, const std::string& datas
     const std::string source = "source";
     const std::string target = "target";
     std::vector<std::string> files;
-    lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".flac" });
+    lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".pcm", ".flac" });
     if(files.empty()) {
         SPDLOG_DEBUG("音频嵌入文件为空：{}", dataset);
         return true;
@@ -542,19 +542,25 @@ bool lifuren::audio::embedding(const std::string& path, const std::string& datas
             continue;
         }
         pool.submit([&stream, source_file, target_file]() {
-            const auto [source_success, source_pcm] = lifuren::audio::toPcm(source_file);
-            const auto [target_success, target_pcm] = lifuren::audio::toPcm(target_file);
-            if(source_success && target_success) {
-                SPDLOG_DEBUG("转换PCM成功：{} - {}", source_file, target_file);
-                ::embedding(stream, source_pcm, target_pcm);
+            const auto source_suffix = lifuren::file::fileSuffix(source_file);
+            const auto target_suffix = lifuren::file::fileSuffix(target_file);
+            if(source_suffix == ".pcm" && target_suffix == ".pcm") {
+                ::embedding(stream, source_file, target_file);
             } else {
-                SPDLOG_DEBUG("转换PCM失败：{} - {}", source_file, target_file);
-            }
-            if(source_success) {
-                std::filesystem::remove(source_pcm);
-            }
-            if(target_success) {
-                std::filesystem::remove(target_pcm);
+                const auto [source_success, source_pcm] = lifuren::audio::toPcm(source_file);
+                const auto [target_success, target_pcm] = lifuren::audio::toPcm(target_file);
+                if(source_success && target_success) {
+                    SPDLOG_DEBUG("转换PCM成功：{} - {}", source_file, target_file);
+                    ::embedding(stream, source_pcm, target_pcm);
+                } else {
+                    SPDLOG_DEBUG("转换PCM失败：{} - {}", source_file, target_file);
+                }
+                if(source_success) {
+                    std::filesystem::remove(source_pcm);
+                }
+                if(target_success) {
+                    std::filesystem::remove(target_pcm);
+                }
             }
         });
     }

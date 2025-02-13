@@ -18,7 +18,6 @@
 #include "torch/nn.h"
 #include "torch/optim.h"
 
-#include "lifuren/File.hpp"
 #include "lifuren/Model.hpp"
 #include "lifuren/video/VideoDataset.hpp"
 
@@ -39,7 +38,7 @@ namespace lifuren::video {
 class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
-    // TODO: 模型定义
+    torch::nn::Linear linear { nullptr };
 
 public:
     WudaoziModuleImpl();
@@ -68,44 +67,9 @@ public:
 
 public:
     bool defineDataset() override;
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };
 
 } // END OF lifuren::video
-
-lifuren::video::WudaoziModuleImpl::WudaoziModuleImpl() {
-}
-
-lifuren::video::WudaoziModuleImpl::~WudaoziModuleImpl() {
-}
-
-torch::Tensor lifuren::video::WudaoziModuleImpl::forward(torch::Tensor input) {
-    // TODO: 实现
-    return input;
-}
-
-lifuren::video::WudaoziModel::WudaoziModel(lifuren::config::ModelParams params) : Model(params) {
-}
-
-lifuren::video::WudaoziModel::~WudaoziModel() {
-}
-
-bool lifuren::video::WudaoziModel::defineDataset() {
-    if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.train_path);
-    }
-    if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.val_path);
-    }
-    if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::video::loadFileDatasetLoader(LFR_VIDEO_WIDTH, LFR_VIDEO_HEIGHT, this->params.batch_size, this->params.test_path);
-    }
-    return true;
-}
-
-void lifuren::video::WudaoziModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
-    // TODO: 实现
-}
 
 #endif // END OF LFR_HEADER_CV_VIDEO_MODEL_HPP
