@@ -583,7 +583,9 @@ lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(
             stream.close();
         }
     ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+    torch::data::DataLoaderOptions options(batch_size);
+    options.drop_last() = true;
+    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), std::move(options));
 }
 
 bool lifuren::audio::datasetPreprocessing(const std::string& path) {
