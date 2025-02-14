@@ -293,7 +293,7 @@ void lifuren::Model<D, L, P, M>::train(const size_t epoch) {
         loss_val += loss.template item<float>();
         ++batch_count;
         if(batch_count % 10 == 0) {
-            SPDLOG_INFO("当前训练第 {} 轮第 {} 批 损失 {:.6f}", epoch + 1, batch_count, loss.template item<float>());
+            SPDLOG_INFO("当前训练第 {} 轮第 {} 批，损失：{:.6f}。", epoch + 1, batch_count, loss.template item<float>());
         }
     }
     const auto z = std::chrono::system_clock::now();

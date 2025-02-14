@@ -436,7 +436,7 @@ torch::Tensor lifuren::audio::pcm_stft(
 }
 
 std::vector<short> lifuren::audio::pcm_istft(
-    torch::Tensor tensor,
+    const torch::Tensor& tensor,
     int n_fft,
     int hop_size,
     int win_size

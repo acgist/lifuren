@@ -71,7 +71,7 @@ extern torch::Tensor pcm_stft(
  * @return PCM
  */
 extern std::vector<short> pcm_istft(
-    torch::Tensor tensor, // tensor
+    const torch::Tensor& tensor, // tensor
     int n_fft    = 400,   // 傅里叶变换的大小
     int hop_size = 80,    // 相邻滑动窗口帧之间的距离
     int win_size = 400    // 窗口帧和STFT滤波器的大小

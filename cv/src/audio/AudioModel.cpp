@@ -24,12 +24,7 @@ lifuren::audio::ShikuangModuleImpl::~ShikuangModuleImpl() {
 torch::Tensor lifuren::audio::ShikuangModuleImpl::forward(torch::Tensor input) {
     // std::cout << input.sizes() << '\n';
     input = input.reshape({100, 201, 14}).permute({1, 0, 2});
-    input = torch::tanh(input);
-    auto output1 = this->linear1->forward(input);
-    auto output2 = this->linear2->forward(input);
-    auto output  = output1 + output2;
-    output = torch::tanh(output);
-    output = this->linear3->forward(output);
+    auto output = torch::tanh(input);
     auto [o1, s1] = this->gru1->forward(output);
     auto [o2, s2] = this->gru2->forward(o1);
     auto [o3, s3] = this->gru1->forward(o2);
