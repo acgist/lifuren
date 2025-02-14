@@ -114,12 +114,12 @@
     // auto [o1, h1] = gru->forward(i0, h0);
     // lifuren::logTensor("o sizes", o1.sizes());
     // lifuren::logTensor("h sizes", h1.sizes());
-    auto i0 = torch::randn({ 5, 1, 10 });
-    auto h0 = torch::randn({ 1, 1, 20 });
+    auto i0 = torch::randn({ 5, 4, 10 });
+    auto h0 = torch::randn({ 1, 4, 20 });
     auto [o1, h1] = gru->forward(i0, h0);
     lifuren::logTensor("o1 sizes", o1.sizes());
     lifuren::logTensor("h1 sizes", h1.sizes());
-    auto i1 = torch::randn({ 5, 1, 10 });
+    auto i1 = torch::randn({ 5, 4, 10 });
     auto [o2, h2] = gru->forward(i1, h1);
     lifuren::logTensor("o2 sizes", o2.sizes());
     lifuren::logTensor("h2 sizes", h2.sizes());
@@ -152,10 +152,10 @@
 }
 
 LFR_TEST(
-    testTensor();
+    // testTensor();
     // testLayer();
     // testLoss();
-    // testGRU();
+    testGRU();
     // testLSTM();
     // testJit();
 );

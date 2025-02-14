@@ -28,10 +28,10 @@
         .audio = lifuren::file::join({lifuren::config::CONFIG.tmp, "kls_short.mp3"}).string()
     };
     auto [success, output] = client->pred(params);
-    SPDLOG_INFO("生成视频：{} - {}", success, output);
+    SPDLOG_INFO("生成音频：{} - {}", success, output);
 }
 
 LFR_TEST(
-    // testTrain();
-    testPred();
+    testTrain();
+    // testPred();
 );

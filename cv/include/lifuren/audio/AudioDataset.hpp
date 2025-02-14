@@ -54,14 +54,15 @@ extern std::tuple<bool, std::string> toFile(
 /**
  * 短时傅里叶变换
  * 
- * @return [mag, pha, com]
+ * [1, 201[n_fft / 2 + 1], 7[hop_size], 2[实部, 虚部]]
+ * 
+ * @return 张量
  */
-extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> pcm_mag_pha_stft(
+extern torch::Tensor pcm_stft(
     std::vector<short>& pcm, // PCM数据
     int n_fft    = 400, // 傅里叶变换的大小
-    int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
-    int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0F // 压缩因子
+    int hop_size = 80,  // 相邻滑动窗口帧之间的距离
+    int win_size = 400  // 窗口帧和STFT滤波器的大小
 );
 
 /**
@@ -69,13 +70,11 @@ extern std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> pcm_mag_pha_stft(
  * 
  * @return PCM
  */
-extern std::vector<short> pcm_mag_pha_istft(
-    torch::Tensor mag,  // mag
-    torch::Tensor pha,  // pha
-    int n_fft    = 400, // 傅里叶变换的大小
-    int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
-    int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0F // 压缩因子
+extern std::vector<short> pcm_istft(
+    torch::Tensor tensor, // tensor
+    int n_fft    = 400,   // 傅里叶变换的大小
+    int hop_size = 80,    // 相邻滑动窗口帧之间的距离
+    int win_size = 400    // 窗口帧和STFT滤波器的大小
 );
 
 /**
@@ -95,7 +94,10 @@ extern bool embedding(
  */
 extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
     const size_t batch_size, // 批量大小
-    const std::string& path  // 数据集路径
+    const std::string& path, // 数据集路径
+    const int dim_1 = 201, // 维度1
+    const int dim_2 = 7,   // 维度2
+    const int dim_3 = 2    // 维度3
 );
 
 } // END OF lifuren::audio

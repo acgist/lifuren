@@ -44,36 +44,7 @@ static void close_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** e
 
 // 嵌入
 static void embedding(std::ofstream& stream, const std::string& source, const std::string& target);
-static void embedding(std::ofstream& stream, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple);
-
-/**
- * 短时傅里叶变换
- * 
- * 480 mag sizes = pha sizes = [1, 201, 5]
- * 
- * @return [mag, pha, com]
- */
-static std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
-    torch::Tensor pcm_norm, // 一维时间序列或二维时间序列批次
-    int n_fft    = 400,     // 傅里叶变换的大小
-    int hop_size = 100,     // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
-    int win_size = 400,     // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0 // 压缩因子
-);
-
-/**
- * 短时傅里叶逆变换
- * 
- * @return PCM
- */
-static torch::Tensor mag_pha_istft(
-    torch::Tensor mag,  // mag
-    torch::Tensor pha,  // pha
-    int n_fft    = 400, // 傅里叶变换的大小
-    int hop_size = 100, // 相邻滑动窗口帧之间的距离：floor(n_fft / 4)
-    int win_size = 400, // 窗口帧和STFT滤波器的大小：n_fft
-    float compress_factor = 1.0 // 压缩因子
-);
+static void embedding(std::ofstream& stream, torch::Tensor& tensor);
 
 const static float NORMALIZATION = 32768.0F;
 
@@ -452,58 +423,26 @@ static bool encode(int64_t& pts, const int64_t nb_samples, AVFrame* frame, AVPac
     return true;
 }
 
-inline static std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> mag_pha_stft(
-    torch::Tensor pcm_norm,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto wind = torch::hann_window(win_size);
-    auto spec = torch::stft(pcm_norm, n_fft, hop_size, win_size, wind, true, "reflect", false, std::nullopt, true);
-         spec = torch::view_as_real(spec);
-    auto mag  = torch::sqrt(spec.pow(2).sum(-1) + (1e-9));
-    auto pha  = torch::atan2(spec.index({ "...", 1 }), spec.index({ "...", 0 }) + (1e-5));
-         mag  = torch::pow(mag, compress_factor);
-    auto com  = torch::stack((mag * torch::cos(pha), mag * torch::sin(pha)), -1);
-    return std::make_tuple<>(mag, pha, com);
-}
-
-std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> lifuren::audio::pcm_mag_pha_stft(
+torch::Tensor lifuren::audio::pcm_stft(
     std::vector<short>& pcm,
     int n_fft,
     int hop_size,
-    int win_size,
-    float compress_factor
+    int win_size
 ) {
-    auto pcm_tensor = torch::from_blob(pcm.data(), { 1, static_cast<int>(pcm.size()) }, torch::kShort).to(torch::kFloat32);
-         pcm_tensor = pcm_tensor / NORMALIZATION;
-    return mag_pha_stft(pcm_tensor, n_fft, hop_size, win_size, compress_factor);
+    auto tensor = torch::from_blob(pcm.data(), { 1, static_cast<int>(pcm.size()) }, torch::kShort).to(torch::kFloat32);
+         tensor = tensor / NORMALIZATION;
+    auto wind   = torch::hann_window(win_size);
+    return torch::view_as_real(torch::stft(tensor, n_fft, hop_size, win_size, wind, true, "reflect", false, std::nullopt, true));
 }
 
-inline static torch::Tensor mag_pha_istft(
-    torch::Tensor mag,
-    torch::Tensor pha,
+std::vector<short> lifuren::audio::pcm_istft(
+    torch::Tensor tensor,
     int n_fft,
     int hop_size,
-    int win_size,
-    float compress_factor
+    int win_size
 ) {
-    auto wind = torch::hann_window(win_size);
-         mag  = torch::pow(mag, (1.0 / compress_factor));
-    auto com  = torch::complex(mag * torch::cos(pha), mag * torch::sin(pha));
-    return torch::istft(com, n_fft, hop_size, win_size, wind, true);
-}
-
-std::vector<short> lifuren::audio::pcm_mag_pha_istft(
-    torch::Tensor mag,
-    torch::Tensor pha,
-    int n_fft,
-    int hop_size,
-    int win_size,
-    float compress_factor
-) {
-    auto result = mag_pha_istft(mag, pha, n_fft, hop_size, win_size, compress_factor);
+    auto wind   = torch::hann_window(win_size);
+    auto result = torch::istft(torch::view_as_complex(tensor), n_fft, hop_size, win_size, wind, true);
          result = result * NORMALIZATION;
     float* data = reinterpret_cast<float*>(result.data_ptr());
     std::vector<short> pcm;
@@ -589,8 +528,8 @@ static void embedding(std::ofstream& stream, const std::string& source, const st
         source_stream.gcount() == target_stream.gcount()
     ) {
         // 短时傅里叶变换
-        auto source_tuple = lifuren::audio::pcm_mag_pha_stft(source_pcm);
-        auto target_tuple = lifuren::audio::pcm_mag_pha_stft(target_pcm);
+        auto source_tuple = lifuren::audio::pcm_stft(source_pcm);
+        auto target_tuple = lifuren::audio::pcm_stft(target_pcm);
         {
             // 保证每次都是成对写入
             static std::mutex embedding_mutex;
@@ -605,18 +544,20 @@ static void embedding(std::ofstream& stream, const std::string& source, const st
     SPDLOG_DEBUG("音频文件嵌入完成：{} - {}", source, target);
 }
 
-inline static void embedding(std::ofstream& stream, std::tuple<torch::Tensor, torch::Tensor, torch::Tensor>& tuple) {
-    auto tensor = torch::stack({
-        std::get<0>(tuple),
-        std::get<1>(tuple)
-    }).squeeze();
+inline static void embedding(std::ofstream& stream, torch::Tensor& tensor) {
     stream.write(reinterpret_cast<char*>(tensor.data_ptr()), tensor.numel() * tensor.element_size());
 }
 
-lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const size_t batch_size, const std::string& path) {
+lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(
+    const size_t batch_size,
+    const std::string& path,
+    const int dim_1,
+    const int dim_2,
+    const int dim_3
+) {
     auto dataset = lifuren::dataset::FileDataset(
         path,
-        [](
+        [dim_1, dim_2, dim_3](
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
             std::vector<torch::Tensor>& features,
@@ -629,16 +570,15 @@ lifuren::dataset::FileDatasetLoader lifuren::audio::loadFileDatasetLoader(const 
                 stream.close();
                 return;
             }
-            // [mag, pha] = [1, 201, 5] + [1, 201, 5] = [2, 201, 5]
-            torch::Tensor source_tensor = torch::zeros({ 2, 201, 5 }, torch::kFloat32).to(device);
-            torch::Tensor target_tensor = torch::zeros({ 2, 201, 5 }, torch::kFloat32).to(device);
+            torch::Tensor source_tensor = torch::zeros({ dim_1, dim_2, dim_3 }, torch::kFloat32).to(device);
+            torch::Tensor target_tensor = torch::zeros({ dim_1, dim_2, dim_3 }, torch::kFloat32).to(device);
             const auto size = source_tensor.numel() * source_tensor.element_size();
             while(
                 stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), size) &&
                 stream.read(reinterpret_cast<char*>(target_tensor.data_ptr()), size)
             ) {
                 features.push_back(source_tensor.clone());
-                labels  .push_back(target_tensor.clone());
+                labels.push_back(target_tensor.clone());
             }
             stream.close();
         }

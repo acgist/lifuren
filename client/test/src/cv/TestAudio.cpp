@@ -24,10 +24,20 @@
     std::vector<short> data;
     data.resize(DATASET_PCM_LENGTH);
     while(input.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
-        auto tuple = lifuren::audio::pcm_mag_pha_stft(data);
-        // lifuren::logTensor("mag size", std::get<0>(tuple).sizes());
-        // lifuren::logTensor("pha size", std::get<1>(tuple).sizes());
-        auto pcm = lifuren::audio::pcm_mag_pha_istft(std::get<0>(tuple), std::get<1>(tuple));
+        // auto tensor = lifuren::audio::pcm_stft(data, 400, 40, 400);
+        auto tensor = lifuren::audio::pcm_stft(data, 400, 80, 400);
+        // auto tensor = lifuren::audio::pcm_stft(data, 400, 100, 400);
+        // auto real   = torch::view_as_real(tensor);
+        // auto compx  = torch::view_as_complex(real);
+        // lifuren::logTensor("tensor size", real.sizes());
+        // lifuren::logTensor("tensor size", compx.sizes());
+        lifuren::logTensor("tensor size", tensor.sizes());
+        // lifuren::logTensor("tensor size", real);
+        // lifuren::logTensor("tensor size", compx);
+        // lifuren::logTensor("tensor size", tensor);
+        // auto pcm = lifuren::audio::pcm_istft(tensor, 400, 40, 400);
+        auto pcm = lifuren::audio::pcm_istft(tensor, 400, 80, 400);
+        // auto pcm = lifuren::audio::pcm_istft(tensor, 400, 100, 400);
         output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
     }
     input.close();

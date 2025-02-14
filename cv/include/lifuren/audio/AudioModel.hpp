@@ -28,21 +28,21 @@ namespace lifuren::audio {
 
 /**
  * 师旷模型实现
+ * 
+ * 1. 分类信号
+ * 2. 处理信号（人声）
+ * 3. 合并信号
  */
 class ShikuangModuleImpl : public torch::nn::Module {
 
 private:
     // 卷积->卷积->GRU GRU 还原->还原
-    torch::nn::Conv2d downsample{ nullptr };
-    torch::nn::BatchNorm2d norm1{ nullptr };
-    torch::nn::BatchNorm2d norm2{ nullptr };
-    torch::nn::BatchNorm2d norm3{ nullptr };
-    torch::nn::Linear upsample1 { nullptr };
-    torch::nn::Linear upsample2 { nullptr };
-    torch::nn::Linear upsample3 { nullptr };
-    torch::nn::Linear upsample4 { nullptr };
-    torch::nn::Linear upsample5 { nullptr };
-    torch::nn::Linear upsample6 { nullptr };
+    torch::nn::Linear linear1 { nullptr };
+    torch::nn::Linear linear2 { nullptr };
+    torch::nn::Linear linear3 { nullptr };
+    torch::nn::GRU gru1 { nullptr };
+    torch::nn::GRU gru2 { nullptr };
+    torch::nn::GRU gru3 { nullptr };
 
 public:
     ShikuangModuleImpl();
