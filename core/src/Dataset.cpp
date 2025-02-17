@@ -49,7 +49,7 @@ bool lifuren::dataset::allDatasetPreprocessing(
             model_path = lifuren::file::join({ dataset, lifuren::config::LIFUREN_HIDDEN_FILE, model_name });
         }
         lifuren::file::createParent(model_path);
-        stream.open(model_path, std::ios_base::app | std::ios_base::out | std::ios_base::binary);
+        stream.open(model_path, std::ios_base::binary);
         if(!stream.is_open()) {
             stream.close();
             SPDLOG_WARN("数据集文件打开失败：{}", model_path.string());

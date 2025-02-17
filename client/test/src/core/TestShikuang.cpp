@@ -9,7 +9,7 @@
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::audio::ShikuangModel model({
         .lr          = 0.001F,
-        .batch_size  = 100,
+        .batch_size  = LFR_DATASET_PCM_BATCH_SIZE,
         .epoch_count = 4,
         .model_name  = "baicai",
         .train_path  = lifuren::file::join({path, "baicai", lifuren::config::DATASET_TRAIN}).string(),
@@ -32,6 +32,6 @@
 }
 
 LFR_TEST(
-    // testTrain();
-    testPred();
+    testTrain();
+    // testPred();
 );

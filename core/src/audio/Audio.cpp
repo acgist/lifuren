@@ -29,13 +29,13 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<M>::pred(const AudioPa
         return { false, output };
     }
     std::vector<short> data;
-    data.resize(DATASET_PCM_LENGTH);
+    data.resize(LFR_DATASET_PCM_LENGTH);
     std::vector<torch::Tensor> tensors;
-    tensors.reserve(100);
-    while(input_stream.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
+    tensors.reserve(LFR_DATASET_PCM_BATCH_SIZE);
+    while(input_stream.read(reinterpret_cast<char*>(data.data()), LFR_DATASET_PCM_LENGTH * sizeof(short))) {
         auto tensor = lifuren::audio::pcm_stft(data);
         tensors.push_back(tensor);
-        if(tensors.size() == 100) {
+        if(tensors.size() == LFR_DATASET_PCM_BATCH_SIZE) {
             auto result = this->model->pred(torch::cat(tensors));
                  result = result.contiguous();
             auto list   = result.split(1, 0);
@@ -44,7 +44,7 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<M>::pred(const AudioPa
                 output_stream.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
             }
             tensors.clear();
-            tensors.reserve(100);
+            tensors.reserve(LFR_DATASET_PCM_BATCH_SIZE);
         }
     }
     input_stream.close();

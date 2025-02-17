@@ -3,13 +3,13 @@
 #include "lifuren/File.hpp"
 
 lifuren::audio::ShikuangModuleImpl::ShikuangModuleImpl() {
-    // [100, 201, 7, 2] -> [100, 201, 7, 2]
-    this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions(14, 14)));
-    this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(14, 14)));
-    this->linear3 = this->register_module("linear3", torch::nn::Linear(torch::nn::LinearOptions(14, 14)));
-    this->gru1 = this->register_module("gru1", torch::nn::GRU(torch::nn::GRUOptions(14, 14)));
-    this->gru2 = this->register_module("gru2", torch::nn::GRU(torch::nn::GRUOptions(14, 14)));
-    this->gru3 = this->register_module("gru3", torch::nn::GRU(torch::nn::GRUOptions(14, 14)));
+    const int dims = LFR_DATASET_PCM_DIM_2 * 2;
+    this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions(dims, dims)));
+    this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(dims, dims)));
+    this->linear3 = this->register_module("linear3", torch::nn::Linear(torch::nn::LinearOptions(dims, dims)));
+    this->gru1 = this->register_module("gru1", torch::nn::GRU(torch::nn::GRUOptions(dims, dims)));
+    this->gru2 = this->register_module("gru2", torch::nn::GRU(torch::nn::GRUOptions(dims, dims)));
+    this->gru3 = this->register_module("gru3", torch::nn::GRU(torch::nn::GRUOptions(dims, dims)));
 }
 
 lifuren::audio::ShikuangModuleImpl::~ShikuangModuleImpl() {
@@ -23,12 +23,12 @@ lifuren::audio::ShikuangModuleImpl::~ShikuangModuleImpl() {
 
 torch::Tensor lifuren::audio::ShikuangModuleImpl::forward(torch::Tensor input) {
     // std::cout << input.sizes() << '\n';
-    input = input.reshape({100, 201, 14}).permute({1, 0, 2});
+    input = input.reshape({LFR_DATASET_PCM_BATCH_SIZE, LFR_DATASET_PCM_DIM_1, LFR_DATASET_PCM_DIM_2 * 2}).permute({1, 0, 2});
     auto output = torch::tanh(input);
     auto [o1, s1] = this->gru1->forward(output);
     auto [o2, s2] = this->gru2->forward(o1);
     auto [o3, s3] = this->gru1->forward(o2);
-    return o3.permute({1, 0, 2}).reshape({100, 201, 7, 2});
+    return o3.permute({1, 0, 2}).reshape({LFR_DATASET_PCM_BATCH_SIZE, LFR_DATASET_PCM_DIM_1, LFR_DATASET_PCM_DIM_2, 2});
 }
 
 lifuren::audio::ShikuangModel::ShikuangModel(lifuren::config::ModelParams params) : Model(params) {

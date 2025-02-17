@@ -19,11 +19,13 @@
 [[maybe_unused]] static void testStftIstft() {
     std::ifstream input;
     std::ofstream output;
-    input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"      }).string(), std::ios_base::binary);
-    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise_copy.pcm" }).string(), std::ios_base::binary);
+    input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "hhg.pcm"        }).string(), std::ios_base::binary);
+    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "hhg_target.pcm" }).string(), std::ios_base::binary);
+    // input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"        }).string(), std::ios_base::binary);
+    // output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise_target.pcm" }).string(), std::ios_base::binary);
     std::vector<short> data;
-    data.resize(DATASET_PCM_LENGTH);
-    while(input.read(reinterpret_cast<char*>(data.data()), DATASET_PCM_LENGTH * sizeof(short))) {
+    data.resize(LFR_DATASET_PCM_LENGTH);
+    while(input.read(reinterpret_cast<char*>(data.data()), LFR_DATASET_PCM_LENGTH * sizeof(short))) {
         // auto tensor = lifuren::audio::pcm_stft(data, 400, 40, 400);
         auto tensor = lifuren::audio::pcm_stft(data, 400, 80, 400);
         // auto tensor = lifuren::audio::pcm_stft(data, 400, 100, 400);
@@ -70,6 +72,6 @@ LFR_TEST(
     // testToPcm();
     // testToFile();
     // testStftIstft();
-    // testEmbedding();
-    testLoadAudioFileDataset();
+    testEmbedding();
+    // testLoadAudioFileDataset();
 );

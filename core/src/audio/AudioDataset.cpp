@@ -520,11 +520,11 @@ static void embedding(std::ofstream& stream, const std::string& source, const st
     SPDLOG_DEBUG("开始嵌入音频文件：{} - {}", source, target);
     std::vector<short> source_pcm;
     std::vector<short> target_pcm;
-    source_pcm.resize(DATASET_PCM_LENGTH);
-    target_pcm.resize(DATASET_PCM_LENGTH);
+    source_pcm.resize(LFR_DATASET_PCM_LENGTH);
+    target_pcm.resize(LFR_DATASET_PCM_LENGTH);
     while(
-        source_stream.read(reinterpret_cast<char*>(source_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
-        target_stream.read(reinterpret_cast<char*>(target_pcm.data()), DATASET_PCM_LENGTH * sizeof(short)) &&
+        source_stream.read(reinterpret_cast<char*>(source_pcm.data()), LFR_DATASET_PCM_LENGTH * sizeof(short)) &&
+        target_stream.read(reinterpret_cast<char*>(target_pcm.data()), LFR_DATASET_PCM_LENGTH * sizeof(short)) &&
         source_stream.gcount() == target_stream.gcount()
     ) {
         // 短时傅里叶变换
