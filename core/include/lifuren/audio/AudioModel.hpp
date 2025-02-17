@@ -36,10 +36,7 @@ namespace lifuren::audio {
 class ShikuangModuleImpl : public torch::nn::Module {
 
 private:
-    // 卷积->卷积->GRU GRU 还原->还原
-    torch::nn::Linear linear1 { nullptr };
-    torch::nn::Linear linear2 { nullptr };
-    torch::nn::Linear linear3 { nullptr };
+    torch::nn::BatchNorm2d norm { nullptr };
     torch::nn::GRU gru1 { nullptr };
     torch::nn::GRU gru2 { nullptr };
     torch::nn::GRU gru3 { nullptr };

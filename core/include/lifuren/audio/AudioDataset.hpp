@@ -25,7 +25,7 @@
 #define LFR_DATASET_PCM_LENGTH 48000 // PCM分段大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
 #define LFR_DATASET_PCM_DIM_1 201
 #define LFR_DATASET_PCM_DIM_2 601
-#define LFR_DATASET_PCM_BATCH_SIZE 100
+#define LFR_DATASET_PCM_BATCH_SIZE 10
 #endif
 
 namespace lifuren::audio {
