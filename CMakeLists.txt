@@ -105,11 +105,32 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 
-set(
-    CMAKE_PREFIX_PATH
-    ${CMAKE_PREFIX_PATH}
-    deps/libtorch
-)
+find_package(CUDA)
+
+if(EXISTS "${CMAKE_HOME_DIRECTORY}/deps/libtorch")
+    message(STATUS "LibTorch: deps/libtorch")
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        deps/libtorch
+    )
+elseif(CUDA_FOUND)
+    message(STATUS "使用GPU推理")
+    message(STATUS "LibTorch: deps/libtorch-gpu")
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        deps/libtorch-gpu
+    )
+else()
+    message(STATUS "使用CPU推理")
+    message(STATUS "LibTorch: deps/libtorch-cpu")
+    set(
+        CMAKE_PREFIX_PATH
+        ${CMAKE_PREFIX_PATH}
+        deps/libtorch-cpu
+    )
+endif()
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -140,7 +161,13 @@ if(CMAKE_HOST_WIN32)
         file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_world4100.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
     endif()
 
-    file(GLOB TORCH_DLLS       "deps/libtorch/lib/*.dll")
+    if(EXISTS "${CMAKE_HOME_DIRECTORY}/deps/libtorch")
+        file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
+    elseif(CUDA_FOUND)
+        file(GLOB TORCH_DLLS "deps/libtorch-gpu/lib/*.dll")
+    else()
+        file(GLOB TORCH_DLLS "deps/libtorch-cpu/lib/*.dll")
+    endif()
 
     find_package(FFMPEG        REQUIRED)
     find_package(libpng        REQUIRED)

@@ -47,8 +47,8 @@ jobs:
           sudo  apt install libopencv-dev -y
           apt-cache madison libopencv-dev
           ################################ libtorch
-          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.4.1%2Bcpu.zip > /dev/null 2>&1
-          unzip libtorch-cxx11-abi-shared-with-deps-2.4.1+cpu.zip > /dev/null 2>&1
+          wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.6.0%2Bcpu.zip > /dev/null 2>&1
+          unzip libtorch-cxx11-abi-shared-with-deps-2.6.0+cpu.zip > /dev/null 2>&1
           ################################ yaml-cpp
           sudo  apt install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev

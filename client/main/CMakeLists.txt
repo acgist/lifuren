@@ -43,7 +43,7 @@ if(CMAKE_HOST_WIN32)
         ${PROJECT_NAME}
         $<IF:$<TARGET_EXISTS:png>,png,png_shared>
         libjpeg-turbo::jpeg
-        lifurencv
+        lifurencore
         ${FLTK_LIBRARIES}
     )
 else()
@@ -51,7 +51,7 @@ else()
         ${PROJECT_NAME}
         png
         jpeg
-        lifurencv
+        lifurencore
         ${FLTK_LIBRARIES}
     )
 endif()

@@ -3,7 +3,7 @@ add_test(NAME testAudio COMMAND testAudio)
 set_target_properties(testAudio PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testAudio
-    lifurencv
+    lifurencore
 )
 
 add_executable(testImage TestImage.cpp)
@@ -11,7 +11,7 @@ add_test(NAME testImage COMMAND testImage)
 set_target_properties(testImage PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testImage
-    lifurencv
+    lifurencore
 )
 
 add_executable(testVideo TestVideo.cpp)
@@ -19,7 +19,7 @@ add_test(NAME testVideo COMMAND testVideo)
 set_target_properties(testVideo PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testVideo
-    lifurencv
+    lifurencore
 )
 
 add_executable(testModel TestModel.cpp)
@@ -35,7 +35,7 @@ add_test(NAME testGender COMMAND testGender)
 set_target_properties(testGender PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testGender
-    lifurencv
+    lifurencore
 )
 
 add_executable(testWudaozi TestWudaozi.cpp)
@@ -43,7 +43,7 @@ add_test(NAME testWudaozi COMMAND testWudaozi)
 set_target_properties(testWudaozi PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testWudaozi
-    lifurencv
+    lifurencore
 )
 
 add_executable(testShikuang TestShikuang.cpp)
@@ -51,7 +51,7 @@ add_test(NAME testShikuang COMMAND testShikuang)
 set_target_properties(testShikuang PROPERTIES FOLDER "test-core")
 target_link_libraries(
     testShikuang
-    lifurencv
+    lifurencore
 )
 
 add_executable(testLibtorch TestLibtorch.cpp)

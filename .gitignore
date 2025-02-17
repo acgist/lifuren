@@ -16,5 +16,7 @@ deps/fltk
 deps/ffmpeg
 deps/opencv
 deps/spdlog
-deps/libtorch
 deps/yaml-cpp
+deps/libtorch
+deps/libtorch-cpu
+deps/libtorch-gpu
