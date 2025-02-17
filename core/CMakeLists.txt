@@ -3,16 +3,40 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/Torch.cpp
+    src/OpenCV.cpp
     src/Dataset.cpp
+    src/audio/Audio.cpp
+    src/video/Video.cpp
+    src/audio/AudioModel.cpp
+    src/video/VideoModel.cpp
+    src/audio/AudioDataset.cpp
+    src/image/ImageDataset.cpp
+    src/video/VideoDataset.cpp
     src/dataset/RawDataset.cpp
     src/dataset/FileDataset.cpp
 )
 
-target_link_libraries(
-    ${PROJECT_NAME}
-    lifurenboot
-    ${TORCH_LIBRARIES}
-)
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurenboot
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+        ${FFMPEG_LIBRARIES}
+    )
+    target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
+else()
+    target_link_libraries(
+        ${PROJECT_NAME}
+        lifurenboot
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+        avutil
+        avcodec
+        avformat
+        swresample
+    )
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 

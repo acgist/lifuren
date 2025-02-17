@@ -154,7 +154,6 @@ find_package(OpenMP   REQUIRED)
 find_package(spdlog   REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
-add_subdirectory(cv)
 add_subdirectory(boot)
 add_subdirectory(core)
 add_subdirectory(deps)
