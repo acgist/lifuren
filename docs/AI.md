@@ -63,6 +63,7 @@
 * ASR：语音识别
 * LID：语言识别
 * SER：情感识别
+* RVC：实时变声
 * TTS：文本转语音
 * DeNoise：降噪
 

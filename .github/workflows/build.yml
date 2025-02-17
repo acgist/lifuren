@@ -52,17 +52,6 @@ jobs:
           ################################ yaml-cpp
           sudo  apt install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev
-          ################################ cpp-httplib
-          # sudo  apt install libcpp-httplib-dev -y
-          # apt-cache madison libcpp-httplib-dev
-          git clone https://github.com/yhirose/cpp-httplib.git
-          cd cpp-httplib
-          git switch -c v0.16.2
-          mkdir build ; cd $_
-          cmake .. -DBUILD_SHARED_LIBS=ON
-          make -j 2
-          sudo make install
-          cd ../../
       - name: Deploy lifuren
         run: |
           gcc -v

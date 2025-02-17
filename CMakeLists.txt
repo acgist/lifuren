@@ -27,7 +27,6 @@ message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
 option(ENABLE_TEST "打开测试"     ON)
 option(ENABLE_FLTK "编译FLTK界面" ON)
-option(ENABLE_REST "编译REST接口" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 
@@ -121,27 +120,24 @@ if(CMAKE_HOST_WIN32)
         deps/opencv
         deps/spdlog
         deps/yaml-cpp
-        deps/cpp-httplib
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
 
-        file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")
-        file(GLOB YAML_DLLS    "deps/yaml-cpp/debug/bin/*.dll")
-        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/debug/bin/*.dll")
-        file(GLOB SPDLOG_DLLS  "deps/spdlog/debug/bin/*.dll")
-        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100d.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
-        file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/debug/bin/*.dll")
+        file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
+        file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
+        file(GLOB FFMPEG_DLLS "deps/ffmpeg/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
+        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_world4100d.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
-        file(GLOB FLTK_DLLS    "deps/fltk/bin/*.dll")
-        file(GLOB YAML_DLLS    "deps/yaml-cpp/bin/*.dll")
-        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/bin/*.dll")
-        file(GLOB SPDLOG_DLLS  "deps/spdlog/bin/*.dll")
-        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
-        file(GLOB HTTPLIB_DLLS "deps/cpp-httplib/bin/*.dll")
+        file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
+        file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
+        file(GLOB FFMPEG_DLLS "deps/ffmpeg/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
+        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_world4100.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
     endif()
 
     file(GLOB TORCH_DLLS       "deps/libtorch/lib/*.dll")
@@ -156,7 +152,6 @@ find_package(Torch    REQUIRED)
 find_package(OpenCV   REQUIRED)
 find_package(OpenMP   REQUIRED)
 find_package(spdlog   REQUIRED)
-find_package(httplib  REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(cv)

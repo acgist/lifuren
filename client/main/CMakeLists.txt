@@ -8,19 +8,12 @@ if(ENABLE_FLTK)
     aux_source_directory(src/fltk/ FLTK_FILES)
 endif()
     
-if(ENABLE_REST)
-    message(STATUS "编译REST接口")
-    add_definitions(-DLFR_ENABLE_REST=true)
-    aux_source_directory(src/rest/ REST_FILES)
-endif()
-
 if(CMAKE_HOST_WIN32)
     add_executable(
         ${PROJECT_NAME}
         src/Main.cpp
         ${CLI_FILES}
         ${FLTK_FILES}
-        ${REST_FILES}
         resources/win.rc
     )
     # /SUBSYSTEM:CONSOLE
@@ -42,7 +35,6 @@ else()
         src/Main.cpp
         ${CLI_FILES}
         ${FLTK_FILES}
-        ${REST_FILES}
     )
 endif()
 
@@ -91,22 +83,20 @@ if(CMAKE_HOST_WIN32)
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD")
     endif()
 
-    install(FILES ${FLTK_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${YAML_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${TORCH_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${FFMPEG_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${OPENCV_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${SPDLOG_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${HTTPLIB_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${FLTK_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${YAML_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TORCH_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${FFMPEG_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${OPENCV_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${SPDLOG_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFMPEG_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HTTPLIB_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFMPEG_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()

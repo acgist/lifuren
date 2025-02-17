@@ -22,10 +22,6 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-// https://github.com/yhirose/cpp-httplib
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
 #endif // END OF _WIN32
 
 #ifndef LFR_WINDOW_DEFAULT

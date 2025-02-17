@@ -22,7 +22,6 @@ static void messageCallback(bool, const char*); // 消息回调
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
-        // 没有参数表示使用GUI或者REST方式启动程序
         return false;
     }
     lifuren::message::registerMessageCallback(lifuren::message::Type::CLI_CONSOLE, messageCallback);

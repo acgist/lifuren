@@ -2,9 +2,6 @@
 #if LFR_ENABLE_FLTK
 #include "lifuren/FLTK.hpp"
 #endif
-#if LFR_ENABLE_REST
-#include "lifuren/REST.hpp"
-#endif
 
 #include <thread>
 
@@ -27,7 +24,7 @@ int main(const int argc, const char* const argv[]) {
     lifuren::config::init(argc, argv);
     SPDLOG_DEBUG("启动系统");
     if(lifuren::cli(argc, argv)) {
-        // 执行命令行时不会启动FLTK和REST服务
+        // 命令行
     } else {
         launch();
     }
@@ -42,16 +39,8 @@ inline static void launch() {
         lifuren::initFltkService();
     });
     #endif
-    #if LFR_ENABLE_REST
-    std::thread restThread([]() {
-        lifuren::initRestService();
-    });
-    #endif
     SPDLOG_DEBUG("启动完成");
     #if LFR_ENABLE_FLTK
     fltkThread.join();
-    #endif
-    #if LFR_ENABLE_REST
-    restThread.join();
     #endif
 }

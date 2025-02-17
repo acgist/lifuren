@@ -17,7 +17,6 @@ if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
         spdlog::spdlog
-        httplib::httplib
         yaml-cpp::yaml-cpp
         nlohmann_json::nlohmann_json
     )
@@ -26,7 +25,6 @@ else()
         ${PROJECT_NAME}
         fmt
         spdlog
-        $<IF:$<TARGET_EXISTS:cpp-httplib>,cpp-httplib,httplib::httplib>
         yaml-cpp
         nlohmann_json::nlohmann_json
     )

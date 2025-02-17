@@ -37,7 +37,6 @@ enum class Type {
 
     CLI,
     FLTK,
-    REST,
     NONE
 
 };
@@ -61,7 +60,6 @@ public:
     static bool is_running();     // 是否运行
     static bool is_cli_thread();  // 是否CLI线程
     static bool is_fltk_thread(); // 是否FLTK线程
-    static bool is_rest_thread(); // 是否REST线程
 
 };
 

@@ -1,9 +1,5 @@
 #include "lifuren/FLTK.hpp"
 
-#if LFR_ENABLE_REST
-#include "lifuren/REST.hpp"
-#endif
-
 #include <cmath>
 #include <algorithm>
 
@@ -32,9 +28,6 @@ void lifuren::initFltkService() {
     LFR_DELETE_PTR(mainPtr);
     fltkClose = true;
     SPDLOG_INFO("结束FLTK服务：{}", code);
-    #if LFR_ENABLE_REST
-    lifuren::shutdownRestService();
-    #endif
 }
 
 void lifuren::shutdownFltkService() {

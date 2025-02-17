@@ -54,9 +54,7 @@ const char* const CONFIG_PATH = "../config/config-win.yml";
 const char* const CONFIG_PATH = "../config/config.yml";
 #endif
 
-extern std::string base_dir;       // 启动路径：项目启动绝对路径
-extern std::string restServerHost; // 监听地址
-extern int         restServerPort; // 监听端口
+extern std::string base_dir; // 启动路径：项目启动绝对路径
 
 const std::string LIFUREN_HIDDEN_FILE  = ".lifuren";        // 隐藏文件
 const std::string EMBEDDING_MODEL_FILE = "embedding.model"; // 嵌入文件：训练嵌入数据集
@@ -67,7 +65,6 @@ const std::string DATASET_TEST  = "test";  // 测试数据集
 
 // 全局配置名称
 extern const std::string CONFIG_CONFIG;
-extern const std::string CONFIG_REST_SERVER;
 extern const std::string CONFIG_AUDIO;
 extern const std::string CONFIG_VIDEO;
 extern const std::string CONFIG_AUDIO_SHIKUANG;
@@ -82,19 +79,6 @@ extern lifuren::config::Config CONFIG;
  * @return ID(yyMMddHHmmss'xxxxx)
  */
 extern size_t uuid() noexcept(true);
-
-/**
- * REST配置
- */
-struct RestConfig {
-
-    std::string api;      // 接口地址
-    std::string username; // 账号
-    std::string password; // 密码
-    std::string authType; // 授权方式
-    std::string authPath; // 授权地址
-
-};
 
 /**
  * 模型配置

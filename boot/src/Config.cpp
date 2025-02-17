@@ -57,11 +57,8 @@ target[#key] = source.name;
 #endif
 
 std::string lifuren::config::base_dir       = "";
-std::string lifuren::config::restServerHost = "0.0.0.0";
-int         lifuren::config::restServerPort = 8080;
 
 const std::string lifuren::config::CONFIG_CONFIG         = "config";
-const std::string lifuren::config::CONFIG_REST_SERVER    = "rest-server";
 const std::string lifuren::config::CONFIG_AUDIO          = "audio";
 const std::string lifuren::config::CONFIG_VIDEO          = "video";
 const std::string lifuren::config::CONFIG_AUDIO_SHIKUANG = "audio-shikuang";
@@ -95,15 +92,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         if(tmp) {
             config.tmp = tmp.as<std::string>();
         }
-    } else if(lifuren::config::CONFIG_REST_SERVER == name) {
-        const auto& host = yaml["host"];
-        const auto& port = yaml["port"];
-        if(host) {
-            lifuren::config::restServerHost = host.as<std::string>();
-        }
-        if(port) {
-            lifuren::config::restServerPort = port.as<int>();
-        }
     } else if(lifuren::config::CONFIG_AUDIO == name) {
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, path,   path,   std::string);
         LFR_CONFIG_YAML_GETTER(config.audio, yaml, model,  model,  std::string);
@@ -136,12 +124,6 @@ static YAML::Node toYaml() {
         YAML::Node config;
         config["tmp"] = lifuren::config::CONFIG.tmp;
         yaml[lifuren::config::CONFIG_CONFIG] = config;
-    }
-    {
-        YAML::Node restServer;
-        restServer["host"] = lifuren::config::restServerHost;
-        restServer["port"] = lifuren::config::restServerPort;
-        yaml[lifuren::config::CONFIG_REST_SERVER] = restServer;
     }
     {
         YAML::Node audio;

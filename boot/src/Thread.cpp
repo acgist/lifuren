@@ -14,10 +14,6 @@ bool lifuren::thread::ThreadWorker::is_fltk_thread() {
     return lifuren::thread::ThreadWorker::this_thread_worker->type == lifuren::thread::Type::FLTK;
 }
 
-bool lifuren::thread::ThreadWorker::is_rest_thread() {
-    return lifuren::thread::ThreadWorker::this_thread_worker->type == lifuren::thread::Type::REST;
-}
-
 lifuren::thread::ThreadTimer::~ThreadTimer() {
     this->shutdown();
 }

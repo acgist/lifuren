@@ -22,14 +22,6 @@ target_link_libraries(
     lifurenboot
 )
 
-add_executable(testClient TestClient.cpp)
-add_test(NAME testClient COMMAND testClient)
-set_target_properties(testClient PROPERTIES FOLDER "test-boot")
-target_link_libraries(
-    testClient
-    lifurenboot
-)
-
 add_executable(testConfig TestConfig.cpp)
 add_test(NAME testConfig COMMAND testConfig)
 set_target_properties(testConfig PROPERTIES FOLDER "test-boot")
