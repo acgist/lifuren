@@ -22,6 +22,7 @@ lifuren::dataset::FileDataset::FileDataset(
         SPDLOG_WARN("目录无效：{}", path);
         return;
     }
+    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
     for(const auto& entry : iterator) {
         const auto entry_path = entry.path();
@@ -53,6 +54,7 @@ lifuren::dataset::FileDataset::FileDataset(
         SPDLOG_WARN("文件无效：{}", path);
         return;
     }
+    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     SPDLOG_DEBUG("加载文件：{}", path);
     transform(path, this->labels, this->features, this->device);
 }
@@ -71,6 +73,7 @@ lifuren::dataset::FileDataset::FileDataset(
         SPDLOG_WARN("目录无效：{}", path);
         return;
     }
+    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     std::vector<std::string> files;
     lifuren::file::listFile(files, path, suffix);
     for(const auto& file : files) {
