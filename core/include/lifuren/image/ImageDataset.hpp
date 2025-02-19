@@ -43,7 +43,7 @@ extern torch::Tensor feature(
     const cv::Mat& image, // 图片数据
     const int width,      // 图片宽度
     const int height,     // 图片高度
-    const torch::DeviceType& type // 设备类型
+    const torch::DeviceType& device // 设备类型
 );
 
 /**

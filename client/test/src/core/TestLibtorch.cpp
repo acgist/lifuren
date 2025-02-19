@@ -74,17 +74,22 @@
     const size_t size = 24;
     float data[size] { 0.0F };
     std::for_each(data, data + size, [i = 0.0F](auto& v) mutable {
-        v = ++i;
+        // v = ++i;
+        i += 0.001F;
+        v = i;
     });
     // N C H W
-    torch::Tensor a = torch::from_blob(data, {2, 2, 2, 3}, torch::kFloat32);
+    torch::Tensor a = torch::from_blob(data, {2, 2, 2, 3}, torch::kFloat32).clone();
     lifuren::logTensor("a", a);
-    // C
-    torch::nn::LayerNorm ln(torch::nn::LayerNormOptions({ 2, 3 }));
+    // N C L
+    torch::Tensor b = torch::from_blob(data, {4, 2, 3}, torch::kFloat32).clone();
+    lifuren::logTensor("b", b);
+    torch::nn::LayerNorm ln(torch::nn::LayerNormOptions({ 2, 2, 3 }));
     lifuren::logTensor("ln", ln->forward(a));
-    // N
-    torch::nn::BatchNorm2d bn(torch::nn::BatchNorm2dOptions(2));
-    lifuren::logTensor("bn", bn->forward(a));
+    torch::nn::BatchNorm2d bn2d(torch::nn::BatchNorm2dOptions(2));
+    lifuren::logTensor("bn2d", bn2d->forward(a));
+    torch::nn::BatchNorm1d bn1d(torch::nn::BatchNorm1dOptions(2));
+    lifuren::logTensor("bn1d", bn1d->forward(b));
 }
 
 [[maybe_unused]] static void testLoss() {
@@ -153,9 +158,9 @@
 
 LFR_TEST(
     // testTensor();
-    // testLayer();
+    testLayer();
     // testLoss();
-    testGRU();
+    // testGRU();
     // testLSTM();
     // testJit();
 );

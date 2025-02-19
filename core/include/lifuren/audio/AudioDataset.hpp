@@ -22,10 +22,10 @@
 #include "lifuren/Dataset.hpp"
 
 #ifndef LFR_DATASET_PCM_CONFIG
-#define LFR_DATASET_PCM_LENGTH 48000 // PCM分段大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
+#define LFR_DATASET_PCM_LENGTH 480 // PCM分段大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
 #define LFR_DATASET_PCM_DIM_1 201
-#define LFR_DATASET_PCM_DIM_2 601
-#define LFR_DATASET_PCM_BATCH_SIZE 10
+#define LFR_DATASET_PCM_DIM_2 7 // 480 = 7 | 4800 = 61 | 48000 = 601
+#define LFR_DATASET_PCM_BATCH_SIZE 100
 #endif
 
 namespace lifuren::audio {
@@ -57,7 +57,7 @@ extern std::tuple<bool, std::string> toFile(
 /**
  * 短时傅里叶变换
  * 
- * [1, 201, 601, 2[实部, 虚部]]
+ * [1, 201, 61, 2[实部, 虚部]]
  * 
  * @return 张量
  */

@@ -82,9 +82,9 @@ public:
 
 public:
     // 保存模型
-    virtual bool save(const std::string& path = "./lifuren.pt");
+    virtual bool save(const std::string& path = "./lifuren.pt", torch::DeviceType device = torch::DeviceType::CPU);
     // 加载模型
-    virtual bool load(const std::string& path = "./lifuren.pt");
+    virtual bool load(const std::string& path = "./lifuren.pt", torch::DeviceType device = torch::DeviceType::CPU);
     // 定义模型
     virtual bool define();
     // 打印模型
@@ -166,7 +166,7 @@ lifuren::Model<D, L, P, M>::~Model() {
 }
 
 template<typename D, typename L, typename P, typename M>
-bool lifuren::Model<D, L, P, M>::save(const std::string& path) {
+bool lifuren::Model<D, L, P, M>::save(const std::string& path, torch::DeviceType device) {
     if(!this->model) {
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
@@ -174,19 +174,20 @@ bool lifuren::Model<D, L, P, M>::save(const std::string& path) {
     SPDLOG_DEBUG("保存模型：{}", path);
     lifuren::file::createParent(path);
     this->model->eval();
+    this->model->to(device);
     torch::save(this->model, path);
     return true;
 }
 
 template<typename D, typename L, typename P, typename M>
-bool lifuren::Model<D, L, P, M>::load(const std::string& path) {
+bool lifuren::Model<D, L, P, M>::load(const std::string& path, torch::DeviceType device) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
     }
     SPDLOG_DEBUG("加载模型：{}", path);
     try {
-        torch::load(this->model, path);
+        torch::load(this->model, path, device);
     } catch(const std::exception& e) {
         SPDLOG_ERROR("加载模型异常：{} - {}", path, e.what());
         return false;
@@ -292,9 +293,6 @@ void lifuren::Model<D, L, P, M>::train(const size_t epoch) {
         }
         loss_val += loss.template item<float>();
         ++batch_count;
-        if(batch_count % 10 == 0) {
-            SPDLOG_INFO("当前训练第 {} 轮第 {} 批，损失：{:.6f}。", epoch + 1, batch_count, loss.template item<float>());
-        }
     }
     const auto z = std::chrono::system_clock::now();
     this->printEvaluation("训练", epoch + 1, loss_val / batch_count, accu_val, data_val, std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count(), confusion_matrix);

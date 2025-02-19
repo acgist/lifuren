@@ -36,10 +36,10 @@ namespace lifuren::audio {
 class ShikuangModuleImpl : public torch::nn::Module {
 
 private:
-    torch::nn::BatchNorm2d norm { nullptr };
     torch::nn::GRU gru1 { nullptr };
     torch::nn::GRU gru2 { nullptr };
     torch::nn::GRU gru3 { nullptr };
+    torch::nn::GRU gru4 { nullptr };
 
 public:
     ShikuangModuleImpl();
@@ -57,9 +57,10 @@ TORCH_MODULE(ShikuangModule);
  */
 class ShikuangModel : public lifuren::Model<
     lifuren::dataset::FileDatasetLoader,
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    // torch::optim::Adam,
+    torch::nn::L1Loss,
+    // torch::nn::MSELoss,
+    // torch::optim::SGD,
+    torch::optim::AdamW,
     ShikuangModule
 > {
 

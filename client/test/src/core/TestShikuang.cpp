@@ -25,7 +25,8 @@
     auto client = lifuren::audio::getAudioClient("audio-shikuang");
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "shikuang.pt"}).string());
     lifuren::audio::AudioParams params {
-        .audio = lifuren::file::join({lifuren::config::CONFIG.tmp, "kls_short.mp3"}).string()
+        // .audio = lifuren::file::join({lifuren::config::CONFIG.tmp, "tts.mp3"}).string()
+        .audio = lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai.mp3"}).string()
     };
     auto [success, output] = client->pred(params);
     SPDLOG_INFO("生成音频：{} - {}", success, output);

@@ -41,14 +41,14 @@ torch::Tensor lifuren::image::feature(
     const cv::Mat& image,
     const int width,
     const int height,
-    const torch::DeviceType& type
+    const torch::DeviceType& device
 ) {
     if(image.empty()) {
         return {};
     }
     cv::Mat target = image.clone();
     lifuren::image::resize(target, width, height);
-    return torch::from_blob(target.data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).to(type);
+    return torch::from_blob(target.data, { height, width, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).to(device);
 }
 
 void lifuren::image::tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor) {
