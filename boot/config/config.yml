@@ -1,0 +1,11 @@
+# 公共配置
+config:
+  tmp: /tmp
+  output: /data/lifuren/output
+model:
+  bach: /data/lifuren/bach.pt
+  chopin: /data/lifuren/chopin.pt
+  mozart: /data/lifuren/mozart.pt
+  wudaozi: /data/lifuren/wudaozi.pt
+  shikuang: /data/lifuren/shikuang.pt
+  beethoven: /data/lifuren/beethoven.pt
