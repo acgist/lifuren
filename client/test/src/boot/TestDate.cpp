@@ -28,7 +28,6 @@
     std::tm tm = lifuren::date::parse_tm(millis);
     SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::to_millis(now));
     SPDLOG_DEBUG("日期时间转时间戳：{}", lifuren::date::to_millis(tm));
-    SPDLOG_DEBUG("时间戳转日期时间：{}", lifuren::date::parse_tm(millis));
     SPDLOG_DEBUG("时间戳转日期时间：{}-{:#02d}-{:#02d} {:#02d}:{:#02d}:{:#02d}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
@@ -49,8 +48,8 @@
 }
 
 LFR_TEST(
-    // testFormat();
-    // testParse();
-    // testMillis();
+    testFormat();
+    testParse();
+    testMillis();
     testPerformance();
 );

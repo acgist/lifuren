@@ -473,7 +473,12 @@ std::vector<short> lifuren::dataset::audio::pcm_istft(
     return pcm;
 }
 
-bool lifuren::dataset::audio::embedding(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+bool lifuren::dataset::audio::embedding_bach(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
+    // TODO
+    return true;
+}
+
+bool lifuren::dataset::audio::embedding_shikuang(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool) {
     std::vector<std::string> files;
     lifuren::file::listFile(files, dataset, { ".aac", ".mp3", ".pcm", ".flac" });
     if(files.empty()) {
@@ -512,8 +517,8 @@ static void embedding(std::ofstream& stream, const std::string& source) {
     }
     SPDLOG_DEBUG("开始嵌入音频文件：{}", source);
     std::vector<short> source_pcm;
-    source_pcm.resize(LFR_DATASET_PCM_LENGTH);
-    while(source_stream.read(reinterpret_cast<char*>(source_pcm.data()), LFR_DATASET_PCM_LENGTH * sizeof(short))) {
+    source_pcm.resize(LFR_AUDIO_PCM_LENGTH);
+    while(source_stream.read(reinterpret_cast<char*>(source_pcm.data()), LFR_AUDIO_PCM_LENGTH * sizeof(short))) {
         // 短时傅里叶变换
         auto source_tuple = lifuren::dataset::audio::pcm_stft(source_pcm);
         {
@@ -527,15 +532,27 @@ static void embedding(std::ofstream& stream, const std::string& source) {
     SPDLOG_DEBUG("音频文件嵌入完成：{}", source);
 }
 
-lifuren::dataset::FileDatasetLoader lifuren::dataset::audio::loadFileDatasetLoader(
+lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBachDatasetLoader(
     const size_t batch_size,
     const std::string& path,
     const int dim_1,
     const int dim_2,
     const int dim_3
 ) {
-    auto dataset = lifuren::dataset::FileDataset(
+    // TODO
+    return {};
+}
+
+lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoader(
+    const size_t batch_size,
+    const std::string& path,
+    const int dim_1,
+    const int dim_2,
+    const int dim_3
+) {
+    auto dataset = lifuren::dataset::Dataset(
         path,
+        { ".embedding" },
         [dim_1, dim_2, dim_3](
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
@@ -564,6 +581,21 @@ lifuren::dataset::FileDatasetLoader lifuren::dataset::audio::loadFileDatasetLoad
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), std::move(options));
 }
 
-bool lifuren::audio::datasetPreprocessing(const std::string& path) {
-    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::EMBEDDING_MODEL_FILE, &lifuren::dataset::audio::embedding);
+lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBeethovenDatasetLoader(
+    const size_t batch_size,
+    const std::string& path,
+    const int dim_1,
+    const int dim_2,
+    const int dim_3
+) {
+    // TODO
+    return {};
+}
+
+bool lifuren::audio::datasetPreprocessingBach(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_bach);
+}
+
+bool lifuren::audio::datasetPreprocessingShikuang(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_shikuang);
 }

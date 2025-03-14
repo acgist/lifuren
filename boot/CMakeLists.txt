@@ -4,11 +4,9 @@ add_library(
     ${PROJECT_NAME}
     src/Date.cpp
     src/File.cpp
-    src/Yaml.cpp
     src/Config.cpp
     src/Logger.cpp
     src/String.cpp
-    src/Thread.cpp
     src/Message.cpp
 )
 

@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * 文件工具
+ * 文件
  * 
  * @author acgist
  * 
@@ -24,56 +24,135 @@
 namespace lifuren::file {
 
 /**
+ * @param path 文件路径
+ * 
  * @return 文件是否存在
  */
-inline bool exists(
-    const std::string& path // 文件路径
-) {
+inline bool exists(const std::string& path) {
     return std::filesystem::exists(std::filesystem::path(path));
 }
 
 /**
+ * @param path 文件路径
+ * 
  * @return 是否是文件
  */
-inline bool is_file(
-    const std::string& path // 文件路径
-) {
+inline bool is_file(const std::string& path) {
     return std::filesystem::is_regular_file(std::filesystem::path(path));
 }
 
 /**
+ * @param path 文件路径
+ * 
  * @return 是否是目录
  */
-inline bool is_folder(
-    const std::string& path // 文件路径
-) {
+inline bool is_folder(const std::string& path) {
     return std::filesystem::is_directory(std::filesystem::path(path));
 }
 
 /**
+ * @param path 文件路径
+ * 
  * @return 是否是目录
  */
-inline bool is_directory(
-    const std::string& path // 文件路径
-) {
-    return is_folder(path);
+inline bool is_directory(const std::string& path) {
+    return lifuren::file::is_folder(path);
 }
 
 /**
+ * @param path 文件路径
+ * 
  * @return 上级文件路径
  */
-inline std::string parent(
-    const std::string& path // 文件路径
-) {
+inline std::string parent(const std::string& path) {
     return std::filesystem::path(path).parent_path().string();
 }
 
 /**
- * @return 文件路径
+ * @param path 目录路径
+ * 
+ * @return 是否成功
  */
-inline std::filesystem::path join(
-    std::initializer_list<std::string> list // 文件路径列表
-) {
+inline bool createFolder(const std::filesystem::path& path) {
+    if(std::filesystem::exists(path)) {
+        return true;
+    }
+    return std::filesystem::create_directories(path);
+}
+
+/**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+inline bool createFolder(const std::string& path) {
+    return lifuren::file::createFolder(std::filesystem::path(path));
+}
+
+/**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+inline bool createDirectory(const std::filesystem::path& path) {
+    return lifuren::file::createFolder(path);
+}
+
+/**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+inline bool createDirectory(const std::string& path) {
+    return lifuren::file::createFolder(path);
+}
+
+/**
+ * @param path 目录路径
+ * 
+ * @return 是否成功
+ */
+inline bool createParent(const std::filesystem::path& path) {
+    auto parent = path.parent_path();
+    if(std::filesystem::exists(parent)) {
+        return true;
+    }
+    return std::filesystem::create_directories(parent);
+}
+
+/**
+ * @param path 文件路径
+ * 
+ * @return 是否成功
+ */
+inline bool createParent(const std::string& path) {
+    return lifuren::file::createParent(std::filesystem::path(path));
+}
+
+/**
+ * @param path 文件路径
+ * 
+ * @return 文件大小
+ */
+inline size_t file_size(const std::filesystem::path& path) {
+    return std::filesystem::file_size(path);
+}
+
+/**
+ * @param path 文件路径
+ * 
+ * @return 文件大小
+ */
+inline size_t file_size(const std::string& path) {
+    return lifuren::file::file_size(std::filesystem::path(path));
+}
+
+/**
+ * @param list 文件路径列表
+ * 
+ * @return 文件绝对路径
+ */
+inline std::filesystem::path join(std::initializer_list<std::string> list) {
     if(list.size() <= 0) {
         return {};
     }
@@ -84,10 +163,17 @@ inline std::filesystem::path join(
         }
         path /= std::filesystem::path(*iterator);
     }
-    return path;
+    return std::filesystem::absolute(path);
 }
 
-inline std::string modify_filename(const std::string& file, const std::string& suffix, const std::string& diff = "") {
+/**
+ * @param file   文件路径
+ * @param suffix 新的后缀
+ * @param prefix 新的前缀
+ * 
+ * @return 文件路径
+ */
+inline std::string modify_filename(const std::string& file, const std::string& suffix, const std::string& prefix = "") {
     if(file.empty()) {
         return {};
     }
@@ -95,128 +181,45 @@ inline std::string modify_filename(const std::string& file, const std::string& s
     if(pos == std::string::npos) {
         return {};
     }
-    if(diff.empty()) {
+    if(prefix.empty()) {
         return file.substr(0, pos) + suffix;
     } else {
-        return file.substr(0, pos) + "_" + diff + suffix;
+        return file.substr(0, pos) + "_" + prefix + suffix;
     }
 }
 
 /**
  * 遍历文件列表
+ * 
+ * @param vector 文件列表
+ * @param path   文件路径
  */
-extern void listFile(
-    std::vector<std::string>& vector, // 文件列表
-    const std::string       & path    // 路径
-);
+extern void listFile(std::vector<std::string>& vector, const std::string& path);
 
 /**
  * 遍历文件列表
+ * 
+ * @param vector 文件列表
+ * @param path   文件路径
+ * @param suffix 文件后缀
  */
-extern void listFile(
-    std::vector<std::string>      & vector, // 文件列表
-    const std::string             & path,   // 路径
-    const std::vector<std::string>& suffix  // 文件后缀
-);
+extern void listFile(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix);
 
 /**
  * 遍历文件列表
+ * 
+ * @param vector    文件列表
+ * @param path      文件路径
+ * @param predicate 文件匹配：是否匹配成功(文件路径)
  */
-extern void listFile(
-    std::vector<std::string>& vector, // 文件列表
-    const std::string       & path,   // 路径
-    const std::function<bool(const std::string& path)>& predicate // 路径匹配
-);
+extern void listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate);
 
 /**
- * @return 文本内容
- */
-extern std::string loadFile(
-    const std::string& path // 文件路径
-);
-
-/**
- * @return 文件内容
- */
-extern std::vector<char> loadBlobFile(
-    const std::string& path // 文件路径
-);
-
-/**
- * @return 是否成功
- */
-extern bool saveFile(
-    const std::string& path, // 文件路径
-    const std::string& value // 文件内容
-);
-
-/**
- * @return 是否成功
- */
-inline bool createFolder(
-    const std::filesystem::path& path // 目录路径
-) {
-    if(std::filesystem::exists(path)) {
-        return true;
-    }
-    return std::filesystem::create_directories(path);
-}
-
-/**
- * @return 是否成功
- */
-inline bool createFolder(
-    const std::string& path // 目录路径
-) {
-    return createFolder(std::filesystem::path(path));
-}
-
-/**
- * @return 是否成功
- */
-inline bool createDirectory(
-    const std::filesystem::path& path // 目录路径
-) {
-    return createFolder(path);
-}
-
-/**
- * @return 是否成功
- */
-inline bool createDirectory(
-    const std::string& path // 目录路径
-) {
-    return createFolder(path);
-}
-
-/**
- * @return 是否成功
- */
-inline bool createParent(
-    const std::filesystem::path& path // 目录路径
-) {
-    auto parent = path.parent_path();
-    if(std::filesystem::exists(parent)) {
-        return true;
-    }
-    return std::filesystem::create_directories(parent);
-}
-
-/**
- * @return 是否成功
- */
-inline bool createParent(
-    const std::string& path // 文件路径
-) {
-    return createParent(std::filesystem::path(path));
-}
-
-/**
+ * @param path 文件路径
+ * 
  * @return 文件后缀：.cpp/.hpp/.zip
  */
-extern std::string fileSuffix(
-    const std::string& path // 文件路径
-);
+extern std::string fileSuffix(const std::string& path);
 
 } // END OF lifuren::file
 

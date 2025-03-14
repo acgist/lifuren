@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * 日期工具
+ * 日期
  * 
  * st：单线程版本（效率更高）
  * mt：多线程版本（线程安全）
@@ -39,8 +39,8 @@ struct fmt::formatter<type> : ostream_formatter { \
 
 namespace lifuren::logger {
 
-extern void init();     // 加载日志
-extern void shutdown(); // 关闭日志
+extern void init(); // 加载日志
+extern void stop(); // 关闭日志
 
 namespace opencv {
 

@@ -7,7 +7,6 @@
 #include "torch/optim.h"
 
 #include "lifuren/Model.hpp"
-#include "lifuren/Dataset.hpp"
 
 class LinearModuleImpl : public torch::nn::Module {
 
@@ -32,7 +31,6 @@ public:
 TORCH_MODULE(LinearModule);
 
 class LinearModel : public lifuren::Model<
-    lifuren::dataset::RawDatasetLoader,
     torch::nn::MSELoss,
     // torch::optim::SGD,
     torch::optim::Adam,
@@ -42,11 +40,11 @@ class LinearModel : public lifuren::Model<
 
 public:
     LinearModel(lifuren::config::ModelParams params = {
-        .lr          = 0.1F,
-        // .lr       = 0.01F,
-        // .lr       = 0.001F,
-        .batch_size  = 10,
-        .epoch_count = 256
+        .lr         = 0.1F,
+        // .lr      = 0.01F,
+        // .lr      = 0.001F,
+        .batch_size = 10,
+        .epoch_size = 64
     }) : Model(params) {
     }
 
@@ -70,7 +68,8 @@ public:
             labels.push_back(torch::tensor({ l }));
             features.push_back(torch::tensor( { f } ));
         }
-        this->trainDataset = lifuren::dataset::loadRawDataset(this->params.batch_size, labels, features);
+        auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
+        this->trainDataset = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), this->params.batch_size);
         return true;
     }
 

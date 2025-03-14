@@ -5,10 +5,12 @@
 #include "lifuren/File.hpp"
 #include "lifuren/audio/AudioModel.hpp"
 
+template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BachModel>::pred(const std::string& input) {
     return {};
 }
 
+template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::ShikuangModel>::pred(const std::string& input) {
     const auto output = lifuren::file::modify_filename(input, ".pcm", "gen");
     const auto [success, pcm_file] = lifuren::dataset::audio::toPcm(input);
@@ -33,12 +35,12 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
     }
     bool gen = false;
     std::vector<short> data;
-    data.resize(LFR_DATASET_PCM_LENGTH);
+    data.resize(LFR_AUDIO_PCM_LENGTH);
     std::vector<torch::Tensor> tensors;
-    tensors.reserve(LFR_DATASET_PCM_BATCH_SIZE);
-    while(input_stream.read(reinterpret_cast<char*>(data.data()), LFR_DATASET_PCM_LENGTH * sizeof(short))) {
+    tensors.reserve(100);
+    while(input_stream.read(reinterpret_cast<char*>(data.data()), LFR_AUDIO_PCM_LENGTH * sizeof(short))) {
         tensors.push_back(lifuren::dataset::audio::pcm_stft(data));
-        if(tensors.size() == LFR_DATASET_PCM_BATCH_SIZE) {
+        if(tensors.size() == 100) {
             gen = true;
             auto result = this->model->pred(torch::cat(tensors));
                  result = result.contiguous();
@@ -48,7 +50,7 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
                 output_stream.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
             }
             tensors.clear();
-            tensors.reserve(LFR_DATASET_PCM_BATCH_SIZE);
+            tensors.reserve(100);
         }
     }
     input_stream.close();
@@ -59,6 +61,7 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
     return lifuren::dataset::audio::toFile(output);
 };
 
+template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BeethovenModel>::pred(const std::string& input) {
     return {};
 }

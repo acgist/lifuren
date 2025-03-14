@@ -27,14 +27,16 @@
 
 #include "lifuren/Thread.hpp"
 
-#ifndef LFR_DATASET_PCM_CONFIG
+#ifndef LFR_AUDIO_PCM_CONFIG
+#define LFR_AUDIO_PCM_CONFIG
 // PCM分段大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
-#define LFR_DATASET_PCM_LENGTH 480
-#define LFR_DATASET_PCM_DIM_1 201
+#define LFR_AUDIO_PCM_LENGTH 480
+// win_size / 2 + 1
+#define LFR_AUDIO_PCM_DIM_1 201
 // 480 = 7 | 4800 = 61 | 48000 = 601
-#define LFR_DATASET_PCM_DIM_2 7
-#define LFR_DATASET_PCM_DIM_3 2
-#define LFR_DATASET_PCM_BATCH_SIZE 100
+#define LFR_AUDIO_PCM_DIM_2 7
+// 实部 虚部
+#define LFR_AUDIO_PCM_DIM_3 2
 #endif
 
 // 图片配置
@@ -53,74 +55,35 @@ namespace cv {
 namespace lifuren::dataset {
 
 /**
- * path => [ path/train, path/val, path/test ]
+ * /dataset => [ /dataset/train, /dataset/val, /dataset/test ]
+ * 
+ * @param path 数据集上级目录
  * 
  * @return 训练集、验证集、测试集
  */
-extern std::vector<std::string> allDataset(
-    const std::string& path // 目录
-);
+extern std::vector<std::string> allDataset(const std::string& path);
 
 /**
  * 数据集预处理
  * 
- * 数据集上级目录：/data/dataset
- * 数据集目录：/data/dataset/train /data/dataset/val /data/dataset/test
+ * @param path          数据集上级目录：/dataset
+ * @param model_name    输出文件名称：/dataset/train|/dataset/val|/dataset/test
+ * @param preprocessing 预处理函数：是否成功(数据集上级目录, 数据集目录, 输出文件流, 线程池)
+ * @param model_base    是否在数据集上级目录生成文件
+ *  
+ * @return 是否成功
  */
 extern bool allDatasetPreprocessing(
     const std::string& path,
-    std::function<bool(
-        const std::string&, // 数据集上级目录
-        const std::string&, // 数据集目录
-        lifuren::thread::ThreadPool& // 线程池
-    )> preprocessing // 预处理
+    const std::string& model_name,
+    std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing,
+    bool model_base = false
 );
-
-/**
- * 数据集预处理
- * 
- * 数据集上级目录：/data/dataset
- * 数据集目录：/data/dataset/train /data/dataset/val /data/dataset/test
- */
-extern bool allDatasetPreprocessing(
-    const std::string& path,       // 数据集目录
-    const std::string& model_name, // 输出文件名称
-    std::function<bool(
-        const std::string&, // 数据集上级目录
-        const std::string&, // 数据集目录
-        std::ofstream    &, // 输出文件流
-        lifuren::thread::ThreadPool& // 线程池
-    )> preprocessing, // 预处理
-    bool model_base = false // true-在数据集上级目录生成文件；false-在数据集目录生成文件；
-);
-
-/**
- * 裸数据集
- */
-class RawDataset : public torch::data::Dataset<RawDataset> {
-
-private:
-    torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
-    std::vector<torch::Tensor> labels;   // 标签
-    std::vector<torch::Tensor> features; // 特征
-
-public:
-    RawDataset(
-        std::vector<torch::Tensor>& labels,  // 标签
-        std::vector<torch::Tensor>& features // 特征
-    );
-    virtual ~RawDataset();
-
-public:
-    torch::optional<size_t> size() const override;
-    torch::data::Example<> get(size_t index) override;
-
-};
 
 /**
  * 文件数据集
  */
-class FileDataset : public torch::data::Dataset<FileDataset> {
+class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
@@ -128,53 +91,70 @@ private:
     std::vector<torch::Tensor> features; // 特征
 
 public:
-    FileDataset() = default;
-    FileDataset(const FileDataset& ) = default;
-    FileDataset(      FileDataset&&) = default;
-    FileDataset& operator=(const FileDataset& ) = delete;
-    FileDataset& operator=(      FileDataset&&) = delete;
+    Dataset() = default;
+    Dataset(const Dataset& ) = default;
+    Dataset(      Dataset&&) = default;
+    Dataset& operator=(const Dataset& ) = delete;
+    Dataset& operator=(      Dataset&&) = delete;
     /**
-     * path/classify1/file1.ext
-     * path/classify1/file2.ext
-     * path/classify2/file1.ext
-     * path/classify2/file2.ext
+     * @param labels   标签
+     * @param features 特征
      */
-    FileDataset(
-        const std::string                 & path,     // 数据路径
-        const std::vector<std::string>    & suffix,   // 文件后缀
-        const std::map<std::string, float>& classify, // 标签映射
-        const std::function<torch::Tensor(
-            const std::string      &, // 文件路径
-            const torch::DeviceType&  // 计算设备
-        )> transform // 文件转换
+    Dataset(
+        std::vector<torch::Tensor>& labels,
+        std::vector<torch::Tensor>& features
     );
     /**
-     * path/file.ext
+     * path/file1.suffix
+     * path/file2.suffix
+     * ...
+     * 
+     * @param path      数据集目录
+     * @param suffix    文件后缀
+     * @param transform 文件转换函数：void(文件路径, 标签, 特征, 计算设备)
      */
-    FileDataset(
-        const std::string& path, // 文件路径
-        const std::function<void(
-            const std::string         &, // 文件路径
-            std::vector<torch::Tensor>&, // 标签
-            std::vector<torch::Tensor>&, // 特征
-            const torch::DeviceType   &  // 计算设备
-        )> transform // 文件转换
+    Dataset(
+        const std::string             & path,
+        const std::vector<std::string>& suffix,
+        const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
     /**
-     * path/file1.ext
-     * path/file2.ext
+     * path/file1.l_suffix
+     * path/file1.f_suffix
+     * path/file2.l_suffix
+     * path/file2.f_suffix
+     * ...
+     * 
+     * @param path      数据集目录
+     * @param l_suffix  标签文件后缀
+     * @param f_suffix  特征文件后缀
+     * @param transform 文件转换函数：void(标签文件路径, 特征文件路径, 标签, 特征, 计算设备)
      */
-    FileDataset(
-        const std::string             & path,   // 数据目录
-        const std::vector<std::string>& suffix, // 文件后缀
-        const std::function<void(
-            const std::string         &, // 文件路径
-            std::vector<torch::Tensor>&, // 标签
-            std::vector<torch::Tensor>&, // 特征
-            const torch::DeviceType   &  // 计算设备
-        )> transform // 文件转换
+    Dataset(
+        const std::string             & path,
+        const std::string             & l_suffix,
+        const std::vector<std::string>& f_suffix,
+        const std::function<void(const std::string&, const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
-    virtual ~FileDataset();
+    /**
+     * path/classify1/file1.suffix
+     * path/classify1/file2.suffix
+     * path/classify2/file1.suffix
+     * path/classify2/file2.suffix
+     * ...
+     * 
+     * @param path      数据集目录
+     * @param suffix    文件后缀
+     * @param classify  目录标签映射
+     * @param transform 文件转换函数：张量(文件路径, 计算设备)
+     */
+    Dataset(
+        const std::string                 & path,
+        const std::vector<std::string>    & suffix,
+        const std::map<std::string, float>& classify,
+        const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
+    );
+    virtual ~Dataset();
 
 public:
     torch::optional<size_t> size() const override;
@@ -182,24 +162,14 @@ public:
 
 };
 
-inline auto loadRawDataset(
-    const size_t& batch_size, // 批量大小
-    std::vector<torch::Tensor>& labels,  // 标签
-    std::vector<torch::Tensor>& features // 特征
-) -> decltype(auto) {
-    auto dataset = lifuren::dataset::RawDataset(labels, features).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
+// 模板咋用
+// using DatasetLoader = std::invoke_result<
+//     decltype(&方法),
+//     参数类型列表
+// >::type;
 
-using RawDatasetLoader = std::invoke_result<
-    decltype(&lifuren::dataset::loadRawDataset),
-    const size_t&,
-    std::vector<torch::Tensor>&,
-    std::vector<torch::Tensor>&
->::type;
-
-using FileDatasetLoader = decltype(torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
-    lifuren::dataset::FileDataset{}.map(torch::data::transforms::Stack<>()),
+using DatasetLoader = decltype(torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
+    lifuren::dataset::Dataset{}.map(torch::data::transforms::Stack<>()),
     torch::data::DataLoaderOptions{}
 ));
 
@@ -260,7 +230,19 @@ extern std::vector<short> pcm_istft(
  * 
  * @return 是否成功
  */
-extern bool embedding(
+extern bool embedding_bach(
+    const std::string& path,    // 数据集上级目录
+    const std::string& dataset, // 数据集目录
+    std::ofstream    & stream,  // 嵌入文件流
+    lifuren::thread::ThreadPool& pool // 线程池
+);
+
+/**
+ * 音频嵌入
+ * 
+ * @return 是否成功
+ */
+extern bool embedding_shikuang(
     const std::string& path,    // 数据集上级目录
     const std::string& dataset, // 数据集目录
     std::ofstream    & stream,  // 嵌入文件流
@@ -270,12 +252,34 @@ extern bool embedding(
 /**
  * @return 音频数据集
  */
-extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
+extern lifuren::dataset::DatasetLoader loadBachDatasetLoader(
     const size_t batch_size, // 批量大小
     const std::string& path, // 数据集路径
-    const int dim_1 = LFR_DATASET_PCM_DIM_1, // 维度1
-    const int dim_2 = LFR_DATASET_PCM_DIM_2, // 维度2
-    const int dim_3 = LFR_DATASET_PCM_DIM_3  // 维度3
+    const int dim_1 = LFR_AUDIO_PCM_DIM_1, // 维度1
+    const int dim_2 = LFR_AUDIO_PCM_DIM_2, // 维度2
+    const int dim_3 = LFR_AUDIO_PCM_DIM_3  // 维度3
+);
+
+/**
+ * @return 音频数据集
+ */
+extern lifuren::dataset::DatasetLoader loadShikuangDatasetLoader(
+    const size_t batch_size, // 批量大小
+    const std::string& path, // 数据集路径
+    const int dim_1 = LFR_AUDIO_PCM_DIM_1, // 维度1
+    const int dim_2 = LFR_AUDIO_PCM_DIM_2, // 维度2
+    const int dim_3 = LFR_AUDIO_PCM_DIM_3  // 维度3
+);
+
+/**
+ * @return 音频数据集
+ */
+extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(
+    const size_t batch_size, // 批量大小
+    const std::string& path, // 数据集路径
+    const int dim_1 = LFR_AUDIO_PCM_DIM_1, // 维度1
+    const int dim_2 = LFR_AUDIO_PCM_DIM_2, // 维度2
+    const int dim_3 = LFR_AUDIO_PCM_DIM_3  // 维度3
 );
 
 } // END OF audio
@@ -313,7 +317,7 @@ extern void tensor_to_mat(
 /**
  * @return 图片数据集
  */
-extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
+extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(
     const int width,  // 图片宽度
     const int height, // 图片高度
     const size_t batch_size, // 批量大小
@@ -323,7 +327,27 @@ extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
 /**
  * @return 图片数据集
  */
-extern lifuren::dataset::FileDatasetLoader loadFileDatasetLoader(
+extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(
+    const int width,  // 图片宽度
+    const int height, // 图片高度
+    const size_t batch_size, // 批量大小
+    const std::string& path // 数据集路径
+);
+
+/**
+ * @return 图片数据集
+ */
+extern lifuren::dataset::DatasetLoader loadWudaoziDatasetLoader(
+    const int width,  // 图片宽度
+    const int height, // 图片高度
+    const size_t batch_size, // 批量大小
+    const std::string& path // 数据集路径
+);
+
+/**
+ * @return 图片数据集
+ */
+extern lifuren::dataset::DatasetLoader loadClassifyDatasetLoader(
     const int width,  // 图片宽度
     const int height, // 图片高度
     const size_t batch_size, // 批量大小

@@ -15,21 +15,20 @@
 #ifndef LFR_HEADER_CORE_IMAGE_MODEL_HPP
 #define LFR_HEADER_CORE_IMAGE_MODEL_HPP
 
-#include "torch/nn.h"
 #include "torch/optim.h"
 
 #include "lifuren/Model.hpp"
-#include "lifuren/Dataset.hpp"
 
 namespace lifuren::image {
 
 class ChopinModuleImpl : public torch::nn::Module {
 
 private:
+    // TODO: 定义结构
 
 public:
     ChopinModuleImpl();
-    virtual ~ChopinModuleImpl();
+    ~ChopinModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -39,15 +38,14 @@ public:
 TORCH_MODULE(ChopinModule);
 
 class ChopinModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::SGD,
-    ChopinModule
+    lifuren::image::ChopinModule
 > {
 
 public:
     ChopinModel(lifuren::config::ModelParams params = {});
-    virtual ~ChopinModel();
+    ~ChopinModel();
     
 public:
     bool defineDataset() override;
@@ -58,10 +56,11 @@ public:
 class MozartModuleImpl : public torch::nn::Module {
 
 private:
+    // TODO: 定义结构
 
 public:
     MozartModuleImpl();
-    virtual ~MozartModuleImpl();
+    ~MozartModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -71,15 +70,14 @@ public:
 TORCH_MODULE(MozartModule);
 
 class MozartModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::SGD,
-    MozartModule
+    lifuren::image::MozartModule
 > {
 
 public:
     MozartModel(lifuren::config::ModelParams params = {});
-    virtual ~MozartModel();
+    ~MozartModel();
     
 public:
     bool defineDataset() override;
@@ -100,7 +98,7 @@ private:
 
 public:
     WudaoziModuleImpl();
-    virtual ~WudaoziModuleImpl();
+    ~WudaoziModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -110,15 +108,14 @@ public:
 TORCH_MODULE(WudaoziModule);
 
 class WudaoziModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::Adam,
-    WudaoziModule
+    lifuren::image::WudaoziModule
 > {
 
 public:
     WudaoziModel(lifuren::config::ModelParams params = {});
-    virtual ~WudaoziModel();
+    ~WudaoziModel();
 
 public:
     bool defineDataset() override;

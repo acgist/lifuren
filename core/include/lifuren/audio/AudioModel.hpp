@@ -18,21 +18,20 @@
 #ifndef LFR_HEADER_CORE_AUDIO_MODEL_HPP
 #define LFR_HEADER_CORE_AUDIO_MODEL_HPP
 
-#include "torch/nn.h"
 #include "torch/optim.h"
 
 #include "lifuren/Model.hpp"
-#include "lifuren/Dataset.hpp"
 
 namespace lifuren::audio {
 
 class BachModuleImpl : public torch::nn::Module {
 
 private:
+    // TODO: 定义结构
 
 public:
     BachModuleImpl();
-    virtual ~BachModuleImpl();
+    ~BachModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -42,15 +41,14 @@ public:
 TORCH_MODULE(BachModule);
 
 class BachModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::SGD,
-    BachModule
+    lifuren::audio::BachModule
 > {
 
 public:
     BachModel(lifuren::config::ModelParams params = {});
-    virtual ~BachModel();
+    ~BachModel();
     
 public:
     bool defineDataset() override;
@@ -70,7 +68,7 @@ private:
 
 public:
     ShikuangModuleImpl();
-    virtual ~ShikuangModuleImpl();
+    ~ShikuangModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -80,17 +78,15 @@ public:
 TORCH_MODULE(ShikuangModule);
 
 class ShikuangModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::SGD,
     // torch::optim::AdamW,
-    ShikuangModule
+    lifuren::audio::ShikuangModule
 > {
 
 public:
     ShikuangModel(lifuren::config::ModelParams params = {});
-    virtual ~ShikuangModel();
-
+    ~ShikuangModel();
     // TODO: stft loss
 
 public:
@@ -102,10 +98,11 @@ public:
 class BeethovenModuleImpl : public torch::nn::Module {
 
 private:
+    // TODO: 定义结构
 
 public:
     BeethovenModuleImpl();
-    virtual ~BeethovenModuleImpl();
+    ~BeethovenModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
@@ -115,15 +112,14 @@ public:
 TORCH_MODULE(BeethovenModule);
 
 class BeethovenModel : public lifuren::Model<
-    lifuren::dataset::FileDatasetLoader,
     torch::nn::MSELoss,
     torch::optim::SGD,
-    BeethovenModule
+    lifuren::audio::BeethovenModule
 > {
 
 public:
     BeethovenModel(lifuren::config::ModelParams params = {});
-    virtual ~BeethovenModel();
+    ~BeethovenModel();
     
 public:
     bool defineDataset() override;

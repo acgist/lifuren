@@ -19,37 +19,36 @@
 
 namespace lifuren::audio {
 
-using AudioModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
+template<typename M>
+using AudioModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
 
 template<typename M>
-using AudioModelImplClient = ModelImplClient<lifuren::config::ModelParams, std::string, std::string, M>;
-
-/**
- * 作曲终端
- */
-template<typename M>
-class AudioClient : public AudioModelImplClient<M> {
+class AudioClient : public AudioModelClientImpl<M> {
 
 public:
     std::tuple<bool, std::string> pred(const std::string& input) override;
 
 };
 
+using AudioModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
+
 /**
- * @return 作曲终端
+ * @param model 模型名称
+ * 
+ * @return 模型终端
  */
-extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(
-    const std::string& model // 模型名称
-);
+extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(const std::string& model);
 
 /**
  * 数据集预处理
  * 
+ * @param path 数据集目录
+ * 
  * @return 是否成功
  */
-extern bool datasetPreprocessing(
-    const std::string& path // 数据集目录
-);
+extern bool datasetPreprocessingBach(const std::string& path);
+extern bool datasetPreprocessingShikuang(const std::string& path);
+extern bool datasetPreprocessingBeethoven(const std::string& path);
 
 } // END OF lifuren::audio
 

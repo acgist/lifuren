@@ -1,8 +1,8 @@
 #include "lifuren/Config.hpp"
 
-#include <list>
 #include <mutex>
 #include <chrono>
+#include <fstream>
 #include <algorithm>
 #include <filesystem>
 
@@ -11,9 +11,8 @@
 #include "yaml-cpp/yaml.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Yaml.hpp"
 
-// 配置读取
+// 读取配置
 #ifndef LFR_CONFIG_YAML_GETTER
 #define LFR_CONFIG_YAML_GETTER(config, yaml, key, name, type) \
 const auto& name = yaml[#key];                                \
@@ -22,39 +21,37 @@ if(name && !name.IsNull() && name.IsScalar()) {               \
 }
 #endif
 
-// 配置写出
-#ifndef LFR_CONFIG_YAML_SETTER
-#define LFR_CONFIG_YAML_SETTER(target, source, name, key) \
-target[#key] = source.name;
-#endif
-
 std::string lifuren::config::base_dir = "";
 
 lifuren::config::Config lifuren::config::CONFIG{};
 
 /**
- * 加载配置
+ * @param config 配置
+ * @param name   配置名称
+ * @param yaml   配置内容
  */
-static void loadYaml(
-    lifuren::config::Config& config, // 配置
-    const std::string& name, // 配置名称
-    const YAML::Node & yaml  // 配置内容
-);
+static void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node & yaml);
 /**
  * @return YAML
  */
 static YAML::Node toYaml();
-
-std::string lifuren::config::Config::toYaml() {
-    YAML::Node node = ::toYaml();
-    std::stringstream stream;
-    stream << node;
-    return stream.str();
-}
+/**
+ * @param path 文件路径
+ * 
+ * @return YAML
+ */
+static YAML::Node loadFile(const std::string& path);
+/**
+ * @param yaml YAML
+ * @param path 文件路径
+ * 
+ * @return 是否成功
+ */
+static bool saveFile(const YAML::Node & yaml, const std::string& path);
 
 void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node& yaml) {
     if("config" == name) {
-        LFR_CONFIG_YAML_GETTER(config, yaml, tmp,    tmp, std::string);
+        LFR_CONFIG_YAML_GETTER(config, yaml, tmp,    tmp,    std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, output, output, std::string);
     } else if("model" == name) {
         LFR_CONFIG_YAML_GETTER(config, yaml, bach,      model_bach,      std::string);
@@ -64,7 +61,7 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config, yaml, shikuang,  model_shikuang,  std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, beethoven, model_beethoven, std::string);
     } else {
-        SPDLOG_DEBUG("配置没有适配加载：{}", name);
+        SPDLOG_DEBUG("没有适配加载配置类型：{}", name);
     }
 }
 
@@ -72,29 +69,56 @@ static YAML::Node toYaml() {
     const auto& config = lifuren::config::CONFIG;
     YAML::Node yaml;
     {
-        YAML::Node config;
-        config["tmp"]    = lifuren::config::CONFIG.tmp;
-        config["output"] = lifuren::config::CONFIG.output;
-        yaml["config"] = config;
+        YAML::Node node;
+        node["tmp"]    = lifuren::config::CONFIG.tmp;
+        node["output"] = lifuren::config::CONFIG.output;
+        yaml["config"] = node;
     }
     {
-        YAML::Node model;
-        model["bach"]      = lifuren::config::CONFIG.model_bach;
-        model["chopin"]    = lifuren::config::CONFIG.model_chopin;
-        model["mozart"]    = lifuren::config::CONFIG.model_mozart;
-        model["wudaozi"]   = lifuren::config::CONFIG.model_wudaozi;
-        model["shikuang"]  = lifuren::config::CONFIG.model_shikuang;
-        model["beethoven"] = lifuren::config::CONFIG.model_beethoven;
-        yaml["model"] = model;
+        YAML::Node node;
+        node["bach"]      = lifuren::config::CONFIG.model_bach;
+        node["chopin"]    = lifuren::config::CONFIG.model_chopin;
+        node["mozart"]    = lifuren::config::CONFIG.model_mozart;
+        node["wudaozi"]   = lifuren::config::CONFIG.model_wudaozi;
+        node["shikuang"]  = lifuren::config::CONFIG.model_shikuang;
+        node["beethoven"] = lifuren::config::CONFIG.model_beethoven;
+        yaml["model"]     = node;
     }
     return yaml;
 }
 
+static YAML::Node loadFile(const std::string& path) {
+    if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
+        return {};
+    }
+    return YAML::LoadFile(path);
+}
+
+static bool saveFile(const YAML::Node& yaml, const std::string& path) {
+    lifuren::file::createParent(path);
+    std::ofstream output;
+    output.open(path, std::ios_base::out | std::ios_base::trunc);
+    if(!output.is_open()) {
+        SPDLOG_WARN("文件打开失败：{}", path);
+        return false;
+    }
+    output << yaml;
+    output.close();
+    return true;
+}
+
+std::string lifuren::config::Config::toYaml() {
+    YAML::Node node = ::toYaml();
+    std::stringstream stream;
+    stream << node;
+    return stream.str();
+}
+
 lifuren::config::Config lifuren::config::Config::loadFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_DEBUG("加载配置文件：{}", path);
+    SPDLOG_DEBUG("加载配置：{}", path);
     lifuren::config::Config config{};
-    YAML::Node yaml = lifuren::yaml::loadFile(path);
+    YAML::Node yaml = ::loadFile(path);
     if(!yaml || yaml.IsNull() || yaml.size() == 0) {
         return config;
     }
@@ -102,10 +126,8 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
         const auto& key   = iterator->first.as<std::string>();
         const auto& value = iterator->second;
         try {
-            loadYaml(config, key, value);
+            ::loadYaml(config, key, value);
         } catch(...) {
-            // auto exptr = std::current_exception();
-            // std::rethrow_exception(exptr);
             SPDLOG_ERROR("加载配置异常：{}", key);
         }
     }
@@ -114,36 +136,32 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
 
 bool lifuren::config::Config::saveFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_INFO("保存配置文件：{}", path);
-    return lifuren::yaml::saveFile(::toYaml(), path);
+    SPDLOG_INFO("保存配置：{}", path);
+    return ::saveFile(::toYaml(), path);
 }
 
 void lifuren::config::init(const int argc, const char* const argv[]) {
     if(argc > 0) {
         lifuren::config::base_dir = std::filesystem::absolute(std::filesystem::path(argv[0]).parent_path()).string();
     }
-    SPDLOG_DEBUG("执行目录：{}", lifuren::config::base_dir);
-    lifuren::config::loadConfig();
+    SPDLOG_DEBUG("项目启动绝对路径：{}", lifuren::config::base_dir);
+    lifuren::config::CONFIG = lifuren::config::Config::loadFile();
 }
 
 std::string lifuren::config::baseFile(const std::string& path) {
     return lifuren::file::join({lifuren::config::base_dir, path}).string();
 }
 
-void lifuren::config::loadConfig() noexcept(true) {
-    lifuren::config::CONFIG = lifuren::config::Config::loadFile();
-}
-
 size_t lifuren::config::uuid() noexcept(true) {
-    static std::mutex mutex;
-          static int index     = 0;
-    const static int MIN_INDEX = 0;
-    const static int MAX_INDEX = 100000;
     auto timePoint = std::chrono::system_clock::now();
     auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
     auto localtime = std::localtime(&timestamp);
     int i = 0;
     {
+              static int index     = 0;
+        const static int MIN_INDEX = 0;
+        const static int MAX_INDEX = 100000;
+        static std::mutex mutex;
         std::lock_guard<std::mutex> lock(mutex);
         i = index;
         if(++index >= MAX_INDEX) {

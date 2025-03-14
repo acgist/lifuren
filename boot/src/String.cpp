@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
+static const char* const EMPTY_CHARS = " \t\r\n"; // 空白字符
+
 std::vector<std::string> lifuren::string::split(const std::string& content, const std::string& delim, bool retain, bool filter) {
     size_t pos   = 0;
     size_t index = 0;
@@ -83,15 +85,6 @@ std::vector<std::string> lifuren::string::split(const std::string& content, cons
     return vector;
 }
 
-std::string lifuren::string::trim(const std::string& value) {
-    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
-    if(index == std::string::npos) {
-        return {};
-    }
-    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
-    return value.substr(index, jndex + 1 - index);
-}
-
 char* lifuren::string::trim(char* value) {
     const int   size   = std::strlen(value);
           char* index  = value;
@@ -112,6 +105,15 @@ char* lifuren::string::trim(char* value) {
     return value;
 }
 
+std::string lifuren::string::trim(const std::string& value) {
+    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
+    if(index == std::string::npos) {
+        return {};
+    }
+    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
+    return value.substr(index, jndex + 1 - index);
+}
+
 size_t lifuren::string::length(const char* value) {
     size_t index = 0;
     size_t jndex = 0;
@@ -122,6 +124,24 @@ size_t lifuren::string::length(const char* value) {
         ++index;
     }
     return jndex;
+}
+
+uint32_t lifuren::string::indexPos(const char* value, uint32_t& pos, const uint32_t& size) {
+    uint32_t index = 0;
+    if(index < size) {
+        while(value[pos]) {
+            if((value[pos] & 0xC0) != 0x80) {
+                ++index;
+            }
+            ++pos;
+            if((value[pos] & 0xC0) != 0x80) {
+                if(index >= size) {
+                    break;
+                }
+            }
+        }
+    }
+    return pos;
 }
 
 std::string lifuren::string::substr(const char* value, const uint32_t& offset, const uint32_t& length) {

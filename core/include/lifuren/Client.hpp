@@ -15,11 +15,9 @@
 #ifndef LFR_HEADER_BOOT_CLIENT_HPP
 #define LFR_HEADER_BOOT_CLIENT_HPP
 
-#include <map>
 #include <tuple>
 #include <memory>
 #include <string>
-#include <functional>
 
 #include "lifuren/Config.hpp"
 
@@ -36,10 +34,10 @@ template<typename C, typename I, typename O>
 class ModelClient {
 
 public:
-    virtual bool save(const std::string& path = "./lifuren.pt") = 0; // 保存模型
-    virtual bool load(const std::string& path = "./lifuren.pt") = 0; // 加载模型
-    virtual bool trainValAndTest(C params, const bool val = true, const bool test = true) = 0; // 训练模型
-    virtual std::tuple<bool, O> pred(const I& input) = 0; // 预测结果
+    virtual bool save(const std::string& path = "./lifuren.pt") = 0;
+    virtual bool load(const std::string& path = "./lifuren.pt") = 0;
+    virtual void trainValAndTest(C params, const bool val = true, const bool test = true) = 0;
+    virtual std::tuple<bool, O> pred(const I& input) = 0;
 
 };
 
@@ -52,7 +50,7 @@ public:
  * @param M 模型实现
  */
 template<typename C, typename I, typename O, typename M>
-class ModelImplClient : public ModelClient<C, I, O> {
+class ModelClientImpl : public ModelClient<C, I, O> {
 
 protected:
     std::unique_ptr<M> model{ nullptr }; // 模型实现
@@ -60,7 +58,7 @@ protected:
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") override;
     virtual bool load(const std::string& path = "./lifuren.pt") override;
-    virtual bool trainValAndTest(C params, const bool val = true, const bool test = true) override;
+    virtual void trainValAndTest(C params, const bool val = true, const bool test = true) override;
     virtual std::tuple<bool, O> pred(const I& input) = 0;
 
 };
@@ -68,7 +66,7 @@ public:
 } // END OF lifuren
 
 template<typename C, typename I, typename O, typename M>
-bool lifuren::ModelImplClient<C, I, O, M>::save(const std::string& path) {
+bool lifuren::ModelClientImpl<C, I, O, M>::save(const std::string& path) {
     if(!this->model) {
         return false;
     }
@@ -76,9 +74,9 @@ bool lifuren::ModelImplClient<C, I, O, M>::save(const std::string& path) {
 }
 
 template<typename C, typename I, typename O, typename M>
-bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path) {
+bool lifuren::ModelClientImpl<C, I, O, M>::load(const std::string& path) {
     if(this->model) {
-        return false;
+        return true;
     } else {
         this->model = std::make_unique<M>();
     }
@@ -86,16 +84,11 @@ bool lifuren::ModelImplClient<C, I, O, M>::load(const std::string& path) {
 }
 
 template<typename C, typename I, typename O, typename M>
-bool lifuren::ModelImplClient<C, I, O, M>::trainValAndTest(C params, const bool val, const bool test) {
+void lifuren::ModelClientImpl<C, I, O, M>::trainValAndTest(C params, const bool val, const bool test) {
     if(!this->model) {
         this->model = std::make_unique<M>(params);
     }
-    if(this->model) {
-        this->model->trainValAndTest(val, test);
-        return true;
-    } else {
-        return false;
-    }
+    this->model->trainValAndTest(val, test);
 }
 
 #endif // END OF LFR_HEADER_BOOT_CLIENT_HPP

@@ -63,7 +63,7 @@ uint64_t lifuren::date::to_millis(const std::chrono::system_clock::time_point& d
     return std::chrono::duration_cast<std::chrono::milliseconds>(datetime.time_since_epoch()).count();
 }
 
-std::tm lifuren::date::parse_tm(const uint64_t& millis) {
+std::tm lifuren::date::parse_tm(uint64_t millis) {
     const auto duration  = std::chrono::milliseconds(millis);
     const auto timePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(duration);
     const auto timestamp = std::chrono::system_clock::to_time_t(timePoint);
@@ -79,7 +79,7 @@ std::tm lifuren::date::parse_tm(const uint64_t& millis) {
     return tm;
 }
 
-std::chrono::system_clock::time_point lifuren::date::parse_time_point(const uint64_t& millis) {
+std::chrono::system_clock::time_point lifuren::date::parse_time_point(uint64_t millis) {
     const auto duration  = std::chrono::milliseconds(millis);
     const auto timePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>(duration);
     const auto timestamp = std::chrono::system_clock::to_time_t(timePoint);

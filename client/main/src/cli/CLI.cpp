@@ -12,11 +12,11 @@
 #include "lifuren/audio/Audio.hpp"
 #include "lifuren/image/Image.hpp"
 
-static void generateAudio(const std::vector<std::string>&); // 生成音频
-static void generateImage(const std::vector<std::string>&); // 生成视频
-static void embedding    (const std::vector<std::string>&); // 数据嵌入
+static void audio    (const std::vector<std::string>&); // 音频任务
+static void image    (const std::vector<std::string>&); // 图片任务
+static void embedding(const std::vector<std::string>&); // 数据嵌入
 static void help(); // 帮助
-static void messageCallback(bool, const char*); // 消息回调
+static void messageCallback(const char*); // 消息回调
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
@@ -37,9 +37,9 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     ) {
         ::help();
     } else if(std::strcmp(command, "audio") == 0) {
-        ::generateAudio(args);
+        ::audio(args);
     } else if(std::strcmp(command, "image") == 0) {
-        ::generateImage(args);
+        ::image(args);
     } else if(std::strcmp(command, "embedding") == 0) {
         ::embedding(args);
     } else {
@@ -50,8 +50,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     return true;
 }
 
-// ./lifuren[.exe] audio [bach|shikuang|beethoven] [pred|train] model_file [audio_file|dataset]
-static void generateAudio(const std::vector<std::string>& args) {
+static void audio(const std::vector<std::string>& args) {
     if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -64,23 +63,23 @@ static void generateAudio(const std::vector<std::string>& args) {
     }
     const std::string& type = args[1];
     if(type == "train") {
-        const std::string& model   = args[2];
-        const std::string& dataset = args[3];
+        const std::string& model_path = args[2];
+        const std::string& dataset    = args[3];
         lifuren::config::ModelParams params {
             .model_name = client_name,
-            .check_path = lifuren::file::join({dataset, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
+            .model_path = model_path,
             .train_path = lifuren::file::join({dataset, lifuren::config::DATASET_TRAIN}).string(),
             .val_path   = lifuren::file::join({dataset, lifuren::config::DATASET_VAL  }).string(),
             .test_path  = lifuren::file::join({dataset, lifuren::config::DATASET_TEST }).string(),
         };
         client->trainValAndTest(params);
-        client->save(model);
+        client->save(lifuren::file::join({model_path, client_name + ".pt" }).string());
         SPDLOG_INFO("模型训练完成");
     } else if(type == "pred") {
-        const std::string& model = args[2];
-        const std::string& audio = args[3];
-        client->load(model);
-        const auto [success, output_file] = client->pred(audio);
+        const std::string& model_file = args[2];
+        const std::string& audio_file = args[3];
+        client->load(model_file);
+        const auto [success, output_file] = client->pred(audio_file);
         if(success) {
             SPDLOG_INFO("生成完成：{}", output_file);
         } else {
@@ -91,8 +90,7 @@ static void generateAudio(const std::vector<std::string>& args) {
     }
 }
 
-// ./lifuren[.exe] image [chopin|mozart|wudaozi] [pred|train] model_file [image_file|dataset]
-static void generateImage(const std::vector<std::string>& args) {
+static void image(const std::vector<std::string>& args) {
     if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
         return;
@@ -105,23 +103,23 @@ static void generateImage(const std::vector<std::string>& args) {
     }
     const std::string& type = args[1];
     if(type == "train") {
-        const std::string& model   = args[2];
-        const std::string& dataset = args[3];
+        const std::string& model_path = args[2];
+        const std::string& dataset    = args[3];
         lifuren::config::ModelParams params {
             .model_name = client_name,
-            .check_path = lifuren::file::join({dataset, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
+            .model_path = model_path,
             .train_path = lifuren::file::join({dataset, lifuren::config::DATASET_TRAIN}).string(),
             .val_path   = lifuren::file::join({dataset, lifuren::config::DATASET_VAL  }).string(),
             .test_path  = lifuren::file::join({dataset, lifuren::config::DATASET_TEST }).string(),
         };
         client->trainValAndTest(params);
-        client->save(model);
+        client->save(lifuren::file::join({model_path, client_name + ".pt"}).string());
         SPDLOG_INFO("模型训练完成");
     } else if(type == "pred") {
-        const std::string& model = args[2];
-        const std::string& image = args[3];
-        client->load(model);
-        const auto [success, output_file] = client->pred(image);
+        const std::string& model_file = args[2];
+        const std::string& image_file = args[3];
+        client->load(model_file);
+        const auto [success, output_file] = client->pred(image_file);
         if(success) {
             SPDLOG_INFO("生成完成：{}", output_file);
         } else {
@@ -132,49 +130,33 @@ static void generateImage(const std::vector<std::string>& args) {
     }
 }
 
-// ./lifuren[.exe] embedding dataset
 static void embedding(const std::vector<std::string>& args) {
-    if(args.size() < 1) {
+    if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
         return;
     }
-    const auto& type = args[0];
-    if(args.empty()) {
-        SPDLOG_WARN("缺少参数");
-        return;
-    }
-    if(lifuren::audio::datasetPreprocessing(args[0])) {
+    const auto& type    = args[0];
+    const auto& dataset = args[1];
+    if(type == "bach" && lifuren::audio::datasetPreprocessingBach(args[1])) {
+        SPDLOG_INFO("音频嵌入成功");
+    } else if(type == "shikuang" && lifuren::audio::datasetPreprocessingShikuang(args[1])) {
         SPDLOG_INFO("音频嵌入成功");
     } else {
         SPDLOG_INFO("音频嵌入失败");
     }
 }
 
-// ./lifuren[.exe] embedding [audio|video] dataset
-static void embeddingAudio(const std::vector<std::string>& args) {
-    if(args.empty()) {
-        SPDLOG_WARN("缺少参数");
-        return;
-    }
-    if(lifuren::audio::datasetPreprocessing(args[1])) {
-        SPDLOG_INFO("音频嵌入成功");
-    } else {
-        SPDLOG_INFO("音频嵌入失败");
-    }
-}
-
-// ./lifuren[.exe] [?|help]
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] audio [audio-shikuang] [pred|train] [model audio_file|dataset model_name]
-./lifuren[.exe] video [video-wudaozi ] [pred|train] [model video_file|dataset model_name]
-./lifuren[.exe] embedding [audio|video] dataset
+./lifuren[.exe] audio [bach|shikuang|beethoven] [pred|train] [model_file|model_path] [audio_file|xml_file|dataset]
+./lifuren[.exe] image [chopin|mozart|wudaozi]   [pred|train] [model_file|model_path] [image_file|dataset]
+./lifuren[.exe] embedding [bach|shikuang] dataset
 ./lifuren[.exe] [?|help]
 )" << std::endl;
 }
 
-static void messageCallback(bool finish, const char* message) {
+static void messageCallback(const char* message) {
     #if defined(_DEBUG) || !defined(NDEBUG)
     // 测试时控制台日志已经打开
     #else

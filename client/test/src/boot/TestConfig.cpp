@@ -1,12 +1,8 @@
 #include "lifuren/Test.hpp"
 
-#include <numeric>
 #include <sstream>
 
-#include "yaml-cpp/yaml.h"
-
 #include "lifuren/Config.hpp"
-#include "lifuren/String.hpp"
 
 [[maybe_unused]] static void testUuid() {
     SPDLOG_DEBUG("uuid : {}", lifuren::config::uuid());

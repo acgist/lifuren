@@ -6,13 +6,33 @@
 
 #include "opencv2/opencv.hpp"
 
-lifuren::dataset::FileDatasetLoader lifuren::dataset::image::loadFileDatasetLoader(
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadChopinDatasetLoader(
     const int width,
     const int height,
     const size_t batch_size,
     const std::string& path
 ) {
-    auto dataset = lifuren::dataset::FileDataset(
+    // TODO
+    return {};
+}
+
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadMozartDatasetLoader(
+    const int width,
+    const int height,
+    const size_t batch_size,
+    const std::string& path
+) {
+    // TODO
+    return {};
+}
+
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(
+    const int width,
+    const int height,
+    const size_t batch_size,
+    const std::string& path
+) {
+    auto dataset = lifuren::dataset::Dataset(
         path,
         { ".jpg", ".png", ".jpeg" },
         [width, height] (
@@ -30,14 +50,14 @@ lifuren::dataset::FileDatasetLoader lifuren::dataset::image::loadFileDatasetLoad
     return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
 }
 
-lifuren::dataset::FileDatasetLoader lifuren::dataset::image::loadFileDatasetLoader(
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadClassifyDatasetLoader(
     const int width,
     const int height,
     const size_t batch_size,
     const std::string& path,
     const std::map<std::string, float>& classify
 ) {
-    auto dataset = lifuren::dataset::FileDataset(
+    auto dataset = lifuren::dataset::Dataset(
         path,
         { ".jpg", ".png", ".jpeg" },
         classify,

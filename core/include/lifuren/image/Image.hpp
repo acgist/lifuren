@@ -19,28 +19,25 @@
 
 namespace lifuren::image {
 
-using ImageModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
+template<typename M>
+using ImageModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
 
 template<typename M>
-using ImageModelImplClient = ModelImplClient<lifuren::config::ModelParams, std::string, std::string, M>;
-
-/**
- * 图片终端
- */
-template<typename M>
-class ImageClient : public ImageModelImplClient<M> {
+class ImageClient : public ImageModelClientImpl<M> {
 
 public:
     std::tuple<bool, std::string> pred(const std::string& input) override;
 
 };
 
+using ImageModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
+
 /**
- * @return 视频终端
+ * @param model 模型名称
+ * 
+ * @return 模型终端
  */
-extern std::unique_ptr<lifuren::image::ImageModelClient> getImageClient(
-    const std::string& model // 模型名称
-);
+extern std::unique_ptr<lifuren::image::ImageModelClient> getImageClient(const std::string& model);
 
 }
 

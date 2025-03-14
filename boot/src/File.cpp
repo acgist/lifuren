@@ -1,21 +1,18 @@
 #include "lifuren/File.hpp"
 
-#include <fstream>
-#include <algorithm>
-
 #include "spdlog/spdlog.h"
 
 #include "lifuren/String.hpp"
 
 void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path) {
-    listFile(vector, path, [](const std::string&) {
+    lifuren::file::listFile(vector, path, [](const std::string&) {
         return true;
     });
 }
 
 void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix) {
-    listFile(vector, path, [&](const std::string& filename) -> bool {
-        if(suffix.empty()) {
+    lifuren::file::listFile(vector, path, [&vector, &suffix](const std::string& filename) -> bool {
+        if(suffix.size() == 0) {
             return true;
         } else {
             const size_t pos = filename.find_last_of('.');
@@ -31,8 +28,8 @@ void lifuren::file::listFile(std::vector<std::string>& vector, const std::string
 }
 
 void lifuren::file::listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string&)>& predicate) {
-    if(!exists(path) || !is_directory(path)) {
-        SPDLOG_DEBUG("目录无效：{}", path);
+    if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
+        SPDLOG_DEBUG("无效目录：{}", path);
         return;
     }
     const auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
@@ -43,62 +40,12 @@ void lifuren::file::listFile(std::vector<std::string>& vector, const std::string
             if(predicate(filename)) {
                 vector.push_back(filepath);
             } else {
-                SPDLOG_DEBUG("忽略无效文件：{}", filepath);
+                SPDLOG_DEBUG("失败文件：{}", filepath);
             }
         } else {
-            SPDLOG_DEBUG("忽略无效文件：{}", filepath);
+            SPDLOG_DEBUG("无效文件：{}", filepath);
         }
     }
-}
-
-std::string lifuren::file::loadFile(const std::string& path) {
-    std::ifstream input;
-    input.open(path, std::ios_base::in);
-    if(!input.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
-        input.close();
-        return {};
-    }
-    std::string line;
-    std::string lines;
-    while(std::getline(input, line)) {
-        lines += line + '\n';
-    }
-    input.close();
-    return lines;
-}
-
-std::vector<char> lifuren::file::loadBlobFile(const std::string& path) {
-    const size_t length = std::filesystem::file_size(std::filesystem::path(path));
-    if(length == 0) {
-        return {};
-    }
-    std::ifstream input;
-    input.open(path, std::ios_base::in | std::ios_base::binary);
-    if(!input.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
-        input.close();
-        return {};
-    }
-    std::vector<char> blob;
-    blob.resize(length);
-    input.read(blob.data(), length);
-    input.close();
-    return blob;
-}
-
-bool lifuren::file::saveFile(const std::string& path, const std::string& value) {
-    lifuren::file::createParent(path);
-    std::ofstream output;
-    output.open(path, std::ios_base::out | std::ios_base::trunc);
-    if(!output.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
-        output.close();
-        return false;
-    }
-    output << value;
-    output.close();
-    return true;
 }
 
 std::string lifuren::file::fileSuffix(const std::string& path) {

@@ -4,13 +4,11 @@ add_library(
     ${PROJECT_NAME}
     src/Torch.cpp
     src/OpenCV.cpp
-    src/Dataset.cpp
     src/audio/Audio.cpp
     src/audio/AudioModel.cpp
     src/image/Image.cpp
     src/image/ImageModel.cpp
-    src/dataset/RawDataset.cpp
-    src/dataset/FileDataset.cpp
+    src/dataset/Dataset.cpp
     src/dataset/AudioDataset.cpp
     src/dataset/ImageDataset.cpp
 )

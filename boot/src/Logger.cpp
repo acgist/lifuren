@@ -17,11 +17,11 @@ class MessageLogger : public spdlog::sinks::base_sink<M> {
 
 protected:
     void sink_it_(const spdlog::details::log_msg& msg) override {
-        spdlog::memory_buf_t log;
-        spdlog::sinks::base_sink<M>::formatter_->format(msg, log);
+        spdlog::memory_buf_t buf;
+        spdlog::sinks::base_sink<M>::formatter_->format(msg, buf);
         std::string message;
-        message.resize(log.size());
-        std::copy_n(log.data(), log.size(), message.data());
+        message.resize(buf.size());
+        std::copy_n(buf.data(), buf.size(), message.data());
         lifuren::message::sendMessage(message.data());
     }
 
@@ -36,7 +36,6 @@ using message_sink_st = MessageLogger<spdlog::details::null_mutex>;
 void lifuren::logger::init() {
     ::duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::vector<spdlog::sink_ptr> sinks{};
-    // 开发日志
     #if defined(_DEBUG) || !defined(NDEBUG)
     sinks.reserve(3);
     auto stdoutColorSinkSPtr = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -51,7 +50,7 @@ void lifuren::logger::init() {
     auto messageSinkSPtr = std::make_shared<message_sink_mt>();
     sinks.push_back(messageSinkSPtr);
     // 默认日志
-    auto logger = std::make_shared<spdlog::logger>("lfr-logger", sinks.begin(), sinks.end());
+    auto logger = std::make_shared<spdlog::logger>("lifuren-logger", sinks.begin(), sinks.end());
     #if defined(_DEBUG) || !defined(NDEBUG)
     logger->set_level(spdlog::level::debug);
     #else
@@ -68,7 +67,7 @@ void lifuren::logger::init() {
     )");
 }
 
-void lifuren::logger::shutdown() {
+void lifuren::logger::stop() {
     const size_t duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     SPDLOG_INFO("持续时间：{}", (duration - ::duration));
     SPDLOG_DEBUG(R"(

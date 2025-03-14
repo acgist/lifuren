@@ -29,7 +29,7 @@ int main(const int argc, const char* const argv[]) {
         launch();
     }
     SPDLOG_DEBUG("系统退出");
-    lifuren::logger::shutdown();
+    lifuren::logger::stop();
     return 0;
 }
 

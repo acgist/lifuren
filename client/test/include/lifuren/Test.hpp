@@ -37,7 +37,7 @@ int main(const int argc, const char* const argv[]) { \
     } catch(const std::exception& e) {               \
         SPDLOG_ERROR("{}", e.what());                \
     }                                                \
-    lifuren::logger::shutdown();                     \
+    lifuren::logger::stop();                         \
     return 0;                                        \
 }
 #endif

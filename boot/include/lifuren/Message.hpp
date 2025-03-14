@@ -20,24 +20,23 @@
 namespace lifuren::message {
 
 /**
- * 注册消息通知
+ * 注册消息通知回调
+ * 
+ * @param callback 消息通知回调
  */
-extern void registerMessageCallback(
-    std::function<void(bool, const char*)> callback // 通知回调
-);
+extern void registerMessageCallback(std::function<void(const char*)> callback);
 
 /**
- * 取消消息通知
+ * 取消消息通知回调
  */
 extern void unregisterMessageCallback();
 
 /**
  * 发送消息通知
+ * 
+ * @param message 消息通知内容
  */
-extern void sendMessage(
-    const char* message, // 消息内容
-    bool finish = false  // 是否完成
-);
+extern void sendMessage(const char* message);
 
 } // END OF lifuren::message
 

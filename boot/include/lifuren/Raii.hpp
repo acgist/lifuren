@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * RAII工具
+ * RAII
  * 
  * @author acgist
  * 
@@ -65,16 +65,18 @@ namespace lifuren {
 class Finally {
 
 private:
-    // 资源释放
-    std::function<void(void)> finally{ nullptr };
+    std::function<void(void)> finally{ nullptr }; // 资源释放
 
 public:
     Finally(const Finally& ) = delete;
     Finally(      Finally&&) = delete;
     Finally& operator=(const Finally& ) = delete;
     Finally& operator=(      Finally&&) = delete;
+    /**
+     * @param finally 资源释放
+     */
     Finally(
-        std::function<void(void)> finally // 资源释放
+        std::function<void(void)> finally
     ) : finally(finally) {
     }
     ~Finally() {

@@ -5,17 +5,19 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Dataset.hpp"
 #include "lifuren/image/ImageModel.hpp"
 
+template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::ChopinModel>::pred(const std::string& input) {
     return {};
 }
 
+template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::MozartModel>::pred(const std::string& input) {
     return {};
 }
 
+template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::WudaoziModel>::pred(const std::string& input) {
     const std::string output = lifuren::file::modify_filename(input, ".mp4", "gen");;
     torch::Tensor pred_tensor;
