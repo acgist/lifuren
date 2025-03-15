@@ -169,11 +169,11 @@ bool lifuren::Model<L, P, M>::save(const std::string& path, torch::DeviceType de
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
     }
-    SPDLOG_DEBUG("保存模型：{}", path);
     lifuren::file::createParent(path);
     this->model->eval();
     this->model->to(device);
     torch::save(this->model, path);
+    SPDLOG_INFO("保存模型：{}", path);
     return true;
 }
 
@@ -183,7 +183,7 @@ bool lifuren::Model<L, P, M>::load(const std::string& path, torch::DeviceType de
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
     }
-    SPDLOG_DEBUG("加载模型：{}", path);
+    SPDLOG_INFO("加载模型：{}", path);
     try {
         torch::load(this->model, path, device);
     } catch(const std::exception& e) {
@@ -229,6 +229,7 @@ void lifuren::Model<L, P, M>::trainValAndTest(const bool val, const bool test) {
         SPDLOG_WARN("无效的训练数据集");
         return;
     }
+    SPDLOG_INFO("开始训练：{}", this->params.model_name);
     const auto a = std::chrono::system_clock::now();
     try {
         for (size_t epoch = 0; epoch < this->params.epoch_size; ++epoch) {
@@ -250,7 +251,7 @@ void lifuren::Model<L, P, M>::trainValAndTest(const bool val, const bool test) {
         SPDLOG_ERROR("训练异常：{}", e.what());
     }
     const auto z = std::chrono::system_clock::now();
-    SPDLOG_DEBUG("累计耗时：{}", std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count());
+    SPDLOG_INFO("训练完成：{}", std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count());
 }
 
 template<typename L, typename P, typename M>

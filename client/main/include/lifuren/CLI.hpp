@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * CLI API
+ * CLI
  * 
  * @author acgist
  * 
@@ -18,14 +18,12 @@
 namespace lifuren {
 
 /**
- * 执行命令
+ * @param argc 参数长度
+ * @param argv 参数内容
  * 
  * @return 是否执行命令成功
  */
-extern bool cli(
-    const int         argc,  // 参数数量
-    const char* const argv[] // 命令参数
-);
+extern bool cli(const int argc, const char* const argv[]);
 
 } // END OF lifuren
 

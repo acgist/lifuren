@@ -2,12 +2,10 @@
 
 #include "spdlog/spdlog.h"
 
-#include "FL/fl_ask.H"
 #include "FL/Fl_Input.H"
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Choice.H"
 
-#include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 
@@ -55,22 +53,22 @@ lifuren::ConfigWindow::~ConfigWindow() {
 }
 
 void lifuren::ConfigWindow::drawElement() {
-    tmpPtr             = new Fl_Input (120,   20, 400, 30, "临时目录");
-    tmpBPtr            = new Fl_Button(520,   20, 140, 30, "选择临时目录");
-    outputPtr          = new Fl_Input (120,   60, 400, 30, "输出目录");
-    outputBPtr         = new Fl_Button(520,   60, 140, 30, "选择输出目录");
-    modelBachPtr       = new Fl_Input (120,  100, 400, 30, "巴赫模型文件");
-    modelBachBPtr      = new Fl_Button(520,  100, 140, 30, "选择巴赫模型文件");
-    modelChopinPtr     = new Fl_Input (120,  140, 400, 30, "肖邦模型文件");
-    modelChopinBPtr    = new Fl_Button(520,  140, 140, 30, "选择肖邦模型文件");
-    modelMozartPtr     = new Fl_Input (120,  180, 400, 30, "莫扎特模型文件");
-    modelMozartBPtr    = new Fl_Button(520,  180, 140, 30, "选择莫扎特模型文件");
-    modelWudaoziPtr    = new Fl_Input (120,  220, 400, 30, "吴道子模型文件");
-    modelWudaoziBPtr   = new Fl_Button(520,  220, 140, 30, "选择吴道子模型文件");
-    modelShikuangPtr   = new Fl_Input (120,  260, 400, 30, "师旷模型文件");
-    modelShikuangBPtr  = new Fl_Button(520,  260, 140, 30, "选择师旷模型文件");
-    modelBeethovenPtr  = new Fl_Input (120,  300, 400, 30, "贝多芬模型文件");
-    modelBeethovenBPtr = new Fl_Button(520,  300, 140, 30, "选择贝多芬模型文件");
+    tmpPtr             = new Fl_Input (160,   20, 400, 30, "临时目录");
+    tmpBPtr            = new Fl_Button(560,   20, 180, 30, "选择临时目录");
+    outputPtr          = new Fl_Input (160,   60, 400, 30, "输出目录");
+    outputBPtr         = new Fl_Button(560,   60, 180, 30, "选择输出目录");
+    modelBeethovenPtr  = new Fl_Input (160,  100, 400, 30, "钢琴指法模型文件");
+    modelBeethovenBPtr = new Fl_Button(560,  100, 180, 30, "选择钢琴指法模型文件");
+    modelBachPtr       = new Fl_Input (160,  140, 400, 30, "音频识谱模型文件");
+    modelBachBPtr      = new Fl_Button(560,  140, 180, 30, "选择音频识谱模型文件");
+    modelChopinPtr     = new Fl_Input (160,  180, 400, 30, "简谱识谱模型文件");
+    modelChopinBPtr    = new Fl_Button(560,  180, 180, 30, "选择简谱识谱模型文件");
+    modelMozartPtr     = new Fl_Input (160,  220, 400, 30, "五线谱识谱模型文件");
+    modelMozartBPtr    = new Fl_Button(560,  220, 180, 30, "选择五线谱识谱模型文件");
+    modelShikuangPtr   = new Fl_Input (160,  260, 400, 30, "音频风格迁移模型文件");
+    modelShikuangBPtr  = new Fl_Button(560,  260, 180, 30, "选择音频风格迁移模型文件");
+    modelWudaoziPtr    = new Fl_Input (160,  300, 400, 30, "图片风格迁移模型文件");
+    modelWudaoziBPtr   = new Fl_Button(560,  300, 180, 30, "选择图片风格迁移模型文件");
 }
 
 void lifuren::ConfigWindow::bindEvent() {
@@ -112,7 +110,7 @@ static void chooseFileCallback(Fl_Widget* widget, void* voidPtr) {
     } else if(voidPtr == modelBeethovenPtr) {
         config.model_beethoven = modelBeethovenPtr->value();
     } else {
-        SPDLOG_DEBUG("没有匹配的元素");
+        SPDLOG_DEBUG("没有匹配元素");
     }
 }
 
@@ -124,6 +122,6 @@ static void chooseDirectoryCallback(Fl_Widget* widget, void* voidPtr) {
     } else if(voidPtr == outputPtr) {
         config.output = outputPtr->value();
     } else {
-        SPDLOG_DEBUG("没有匹配的元素");
+        SPDLOG_DEBUG("没有匹配元素");
     }
 }

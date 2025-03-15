@@ -37,3 +37,11 @@ target_link_libraries(
     testThread
     lifurenboot
 )
+
+add_executable(testMusicScore TestMusicScore.cpp)
+add_test(NAME testMusicScore COMMAND testMusicScore)
+set_target_properties(testMusicScore PROPERTIES FOLDER "test-boot")
+target_link_libraries(
+    testMusicScore
+    lifurenboot
+)

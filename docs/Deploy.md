@@ -89,6 +89,7 @@ vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
 vcpkg install libtorch:x64-windows
 vcpkg install yaml-cpp:x64-windows
+vcpkg install tinyxml2:x64-windows
 
 # 导出依赖
 vcpkg export fltk     --zip
@@ -97,6 +98,7 @@ vcpkg export opencv   --zip
 vcpkg export spdlog   --zip
 vcpkg export libtorch --zip
 vcpkg export yaml-cpp --zip
+vcpkg export tinyxml2 --zip
 ```
 
 #### 编译命令

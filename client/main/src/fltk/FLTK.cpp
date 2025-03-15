@@ -110,22 +110,12 @@ void lifuren::directoryChooser(Fl_Widget* widget, void* voidPtr, const char* tit
     inputPtr->value(filename.c_str());
 }
 
-void lifuren::fillChoice(Fl_Choice* choice, const std::set<std::string>& set, const std::string& value) {
-    std::for_each(set.begin(), set.end(), [&value, choice](const auto& v) {
-        const int index = choice->add(v.c_str());
-        if(v == value) {
-            choice->value(index);
-        } else {
-        }
-    });
-}
-
-lifuren::Window::Window(int width, int height, const char* title) : Fl_Window(width, height, title) {
-    SPDLOG_DEBUG("打开窗口");
+lifuren::Window::Window(int width, int height, const char* title) : name(title), Fl_Window(width, height, title) {
+    SPDLOG_DEBUG("打开窗口：{}", this->name);
 }
 
 lifuren::Window::~Window() {
-    SPDLOG_DEBUG("关闭窗口");
+    SPDLOG_DEBUG("关闭窗口：{}", this->name);
     LFR_DELETE_THIS_PTR(windowIcon);
 }
 
@@ -154,8 +144,8 @@ void lifuren::Window::icon() {
 void lifuren::Window::center() {
     const int fullWidth  = Fl::w();
     const int fullHeight = Fl::h();
-    const int width  = this->w();
-    const int height = this->h();
+    const int width      = this->w();
+    const int height     = this->h();
     this->position(std::abs(fullWidth - width) / 2, std::abs(fullHeight - height) / 2);
 }
 

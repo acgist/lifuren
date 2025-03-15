@@ -23,27 +23,21 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         return false;
     }
     lifuren::message::registerMessageCallback(messageCallback);
+    std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{} {}", i, argv[i]);
+        if(i >= 2) {
+            args.push_back(argv[i]);
+        }
     }
     const char* const command = argv[1];
-    std::vector<std::string> args;
-    for(int i = 2; i < argc; ++i) {
-        args.push_back(argv[i]);
-    }
-    if(
-        std::strcmp(command, "?")    == 0 ||
-        std::strcmp(command, "help") == 0
-    ) {
-        ::help();
-    } else if(std::strcmp(command, "audio") == 0) {
+    if(std::strcmp(command, "audio") == 0) {
         ::audio(args);
     } else if(std::strcmp(command, "image") == 0) {
         ::image(args);
     } else if(std::strcmp(command, "embedding") == 0) {
         ::embedding(args);
     } else {
-        SPDLOG_WARN("不支持的命令：{}", command);
         ::help();
     }
     lifuren::message::unregisterMessageCallback();
@@ -58,11 +52,21 @@ static void audio(const std::vector<std::string>& args) {
     const auto& client_name = args[0];
     auto client = lifuren::audio::getAudioClient(client_name);
     if(!client) {
-        SPDLOG_WARN("没有终端类型：{}", client_name);
+        SPDLOG_WARN("无效模型：{}", client_name);
         return;
     }
     const std::string& type = args[1];
-    if(type == "train") {
+    if(type == "pred") {
+        const std::string& model_file = args[2];
+        const std::string& audio_file = args[3];
+        client->load(model_file);
+        const auto [success, output_file] = client->pred(audio_file);
+        if(success) {
+            SPDLOG_INFO("生成完成：{}", output_file);
+        } else {
+            SPDLOG_WARN("生成失败：{}", output_file);
+        }
+    } else if(type == "train") {
         const std::string& model_path = args[2];
         const std::string& dataset    = args[3];
         lifuren::config::ModelParams params {
@@ -74,17 +78,6 @@ static void audio(const std::vector<std::string>& args) {
         };
         client->trainValAndTest(params);
         client->save(lifuren::file::join({model_path, client_name + ".pt" }).string());
-        SPDLOG_INFO("模型训练完成");
-    } else if(type == "pred") {
-        const std::string& model_file = args[2];
-        const std::string& audio_file = args[3];
-        client->load(model_file);
-        const auto [success, output_file] = client->pred(audio_file);
-        if(success) {
-            SPDLOG_INFO("生成完成：{}", output_file);
-        } else {
-            SPDLOG_WARN("生成失败：{}", output_file);
-        }
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -98,11 +91,21 @@ static void image(const std::vector<std::string>& args) {
     const auto& client_name = args[0];
     auto client = lifuren::image::getImageClient(client_name);
     if(!client) {
-        SPDLOG_WARN("没有终端类型：{}", client_name);
+        SPDLOG_WARN("无效模型：{}", client_name);
         return;
     }
     const std::string& type = args[1];
-    if(type == "train") {
+    if(type == "pred") {
+        const std::string& model_file = args[2];
+        const std::string& image_file = args[3];
+        client->load(model_file);
+        const auto [success, output_file] = client->pred(image_file);
+        if(success) {
+            SPDLOG_INFO("生成完成：{}", output_file);
+        } else {
+            SPDLOG_WARN("生成失败：{}", output_file);
+        }
+    } else if(type == "train") {
         const std::string& model_path = args[2];
         const std::string& dataset    = args[3];
         lifuren::config::ModelParams params {
@@ -114,17 +117,6 @@ static void image(const std::vector<std::string>& args) {
         };
         client->trainValAndTest(params);
         client->save(lifuren::file::join({model_path, client_name + ".pt"}).string());
-        SPDLOG_INFO("模型训练完成");
-    } else if(type == "pred") {
-        const std::string& model_file = args[2];
-        const std::string& image_file = args[3];
-        client->load(model_file);
-        const auto [success, output_file] = client->pred(image_file);
-        if(success) {
-            SPDLOG_INFO("生成完成：{}", output_file);
-        } else {
-            SPDLOG_WARN("生成失败：{}", output_file);
-        }
     } else {
         SPDLOG_WARN("无效类型：{}", type);
     }
@@ -137,12 +129,12 @@ static void embedding(const std::vector<std::string>& args) {
     }
     const auto& type    = args[0];
     const auto& dataset = args[1];
-    if(type == "bach" && lifuren::audio::datasetPreprocessingBach(args[1])) {
-        SPDLOG_INFO("音频嵌入成功");
-    } else if(type == "shikuang" && lifuren::audio::datasetPreprocessingShikuang(args[1])) {
-        SPDLOG_INFO("音频嵌入成功");
+    if(type == "bach" && lifuren::audio::datasetPreprocessingBach(dataset)) {
+        SPDLOG_INFO("巴赫嵌入成功");
+    } else if(type == "shikuang" && lifuren::audio::datasetPreprocessingShikuang(dataset)) {
+        SPDLOG_INFO("师旷嵌入成功");
     } else {
-        SPDLOG_INFO("音频嵌入失败");
+        SPDLOG_WARN("嵌入失败");
     }
 }
 

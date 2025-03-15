@@ -15,14 +15,14 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_CORE_MUSIC_SCORE_HPP
-#define LFR_HEADER_CORE_MUSIC_SCORE_HPP
+#ifndef LFR_HEADER_BOOT_MUSIC_SCORE_HPP
+#define LFR_HEADER_BOOT_MUSIC_SCORE_HPP
 
 #include <map>
 #include <string>
 #include <vector>
 
-namespace lifuren::audio::music {
+namespace lifuren::music {
 
 /**
  * 音符
@@ -57,10 +57,10 @@ public:
 
 };
 
-extern Score load_music_xml(const std::string& file);
+extern Score load_xml(const std::string& file);
 
-extern bool save_music_xml(const std::string& file, const Score& score);
+extern bool save_xml(const std::string& file, const Score& score);
 
-} // END OF lifuren::audio
+} // END OF lifuren::music
 
-#endif // END OF LFR_HEADER_CORE_MUSIC_SCORE_HPP
+#endif // END OF LFR_HEADER_BOOT_MUSIC_SCORE_HPP

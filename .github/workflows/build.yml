@@ -20,6 +20,9 @@ jobs:
           ################################ ffmpeg
           sudo  apt install ffmpeg -y
           apt-cache madison ffmpeg
+          ################################ opencv
+          sudo  apt install libopencv-dev -y
+          apt-cache madison libopencv-dev
           ################################ spdlog
           # sudo  apt install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
@@ -39,15 +42,15 @@ jobs:
           make -j 2
           sudo make install
           cd ../../
-          ################################ opencv
-          sudo  apt install libopencv-dev -y
-          apt-cache madison libopencv-dev
           ################################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.6.0%2Bcpu.zip > /dev/null 2>&1
           unzip libtorch-cxx11-abi-shared-with-deps-2.6.0+cpu.zip > /dev/null 2>&1
           ################################ yaml-cpp
           sudo  apt install libyaml-cpp-dev -y
           apt-cache madison libyaml-cpp-dev
+          ################################ tinyxml2
+          sudo  apt install libtinyxml2-dev -y
+          apt-cache madison libtinyxml2-dev
       - name: Deploy lifuren
         run: |
           gcc -v

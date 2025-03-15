@@ -120,24 +120,27 @@ if(CMAKE_HOST_WIN32)
         deps/opencv
         deps/spdlog
         deps/yaml-cpp
+        deps/tinyxml2
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk/debug)
 
-        file(GLOB FLTK_DLLS   "deps/fltk/debug/bin/*.dll")
-        file(GLOB YAML_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
-        file(GLOB FFMPEG_DLLS "deps/ffmpeg/debug/bin/*.dll")
-        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
-        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_world4100d.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
+        file(GLOB FLTK_DLLS    "deps/fltk/debug/bin/*.dll")
+        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS  "deps/spdlog/debug/bin/*.dll")
+        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100d.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
+        file(GLOB YAMLCPP_DLLS "deps/yaml-cpp/debug/bin/*.dll")
+        file(GLOB TINYXML_DLLS "deps/tinyxml2/debug/bin/*.dll")
     else()
         set(FLTK_FLUID_EXECUTABLE deps/fltk/tools/fltk)
 
-        file(GLOB FLTK_DLLS   "deps/fltk/bin/*.dll")
-        file(GLOB YAML_DLLS   "deps/yaml-cpp/bin/*.dll")
-        file(GLOB FFMPEG_DLLS "deps/ffmpeg/bin/*.dll")
-        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
-        file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/opencv_world4100.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
+        file(GLOB FLTK_DLLS    "deps/fltk/bin/*.dll")
+        file(GLOB FFMPEG_DLLS  "deps/ffmpeg/bin/*.dll")
+        file(GLOB SPDLOG_DLLS  "deps/spdlog/bin/*.dll")
+        file(GLOB OPENCV_DLLS  "deps/opencv/x64/vc16/bin/opencv_world4100.dll" "deps/opencv/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll")
+        file(GLOB YAMLCPP_DLLS "deps/yaml-cpp/bin/*.dll")
+        file(GLOB TINYXML_DLLS "deps/tinyxml2/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
@@ -153,6 +156,7 @@ find_package(OpenCV   REQUIRED)
 find_package(OpenMP   REQUIRED)
 find_package(spdlog   REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(tinyxml2 REQUIRED)
 
 add_subdirectory(boot)
 add_subdirectory(core)

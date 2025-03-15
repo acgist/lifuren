@@ -19,3 +19,4 @@ deps/opencv
 deps/spdlog
 deps/libtorch
 deps/yaml-cpp
+deps/tinyxml2

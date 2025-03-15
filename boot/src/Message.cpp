@@ -1,23 +1,26 @@
 #include "lifuren/Message.hpp"
 
+#include <map>
+#include <thread>
+
 #include "spdlog/spdlog.h"
 
-static std::function<void(const char*)> message_callback;
+static std::map<std::thread::id, std::function<void(const char*)>> message_callback;
 
 void lifuren::message::registerMessageCallback(std::function<void(const char*)> callback) {
-    SPDLOG_DEBUG("注册消息通知回调");
-    message_callback = callback;
+    message_callback[std::this_thread::get_id()] = callback;
+    SPDLOG_DEBUG("注册消息通知回调：{}", message_callback.size());
 }
 
 void lifuren::message::unregisterMessageCallback() {
-    SPDLOG_DEBUG("取消消息通知回调");
-    message_callback = nullptr;
+    message_callback.erase(std::this_thread::get_id());
+    SPDLOG_DEBUG("取消消息通知回调：{}", message_callback.size());
 }
 
 void lifuren::message::sendMessage(const char* message) {
-    if(message_callback) {
-        message_callback(message);
-    } else {
-        // -
+    auto iterator = message_callback.find(std::this_thread::get_id());
+    if(iterator == message_callback.end()) {
+        return;
     }
+    iterator->second(message);
 }
