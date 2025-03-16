@@ -1,4 +1,4 @@
-#include "lifuren/audio/AudioModel.hpp"
+#include "lifuren/AudioModel.hpp"
 
 #include "lifuren/File.hpp"
 
@@ -26,7 +26,7 @@ void lifuren::audio::BachModel::logic(torch::Tensor& feature, torch::Tensor& lab
 }
 
 lifuren::audio::ShikuangModuleImpl::ShikuangModuleImpl() {
-    this->norm = this->register_module("norm", torch::nn::BatchNorm2d(LFR_AUDIO_PCM_DIM_1));
+    this->norm = this->register_module("norm", torch::nn::BatchNorm2d(201));
     this->conv1 = this->register_module("conv1", torch::nn::Conv1d(torch::nn::Conv1dOptions(14, 32, 3)));
     this->conv2 = this->register_module("conv2", torch::nn::Conv1d(torch::nn::Conv1dOptions(32, 64, 3)));
     this->linear1 = this->register_module("linear1", torch::nn::Linear(64, 14));
@@ -43,12 +43,12 @@ torch::Tensor lifuren::audio::ShikuangModuleImpl::forward(torch::Tensor input) {
     // std::cout << input.sizes() << '\n';
     std::cout << "=0" << input.sizes() << '\n';
     input = this->norm->forward(input);
-    input = input.reshape({100, LFR_AUDIO_PCM_DIM_1, 14});
+    input = input.reshape({100, 201, 14});
     input = input.permute({0, 2, 1});
     input = this->conv1->forward(input);
     input = this->conv2->forward(input);
     input = input.permute({0, 2, 1});
-    return input.reshape({100, LFR_AUDIO_PCM_DIM_1, 7, 2});
+    return input.reshape({100, 201, 7, 2});
 }
 
 lifuren::audio::ShikuangModel::ShikuangModel(lifuren::config::ModelParams params) : Model(params) {

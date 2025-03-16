@@ -8,6 +8,8 @@
  * 
  * 音频模型
  * 
+ * TODO: stft loss
+ * 
  * https://pytorch.org/docs/stable/generated/torch.stft.html
  * https://pytorch.org/docs/stable/generated/torch.istft.html
  * 
@@ -24,6 +26,9 @@
 
 namespace lifuren::audio {
 
+/**
+ * 巴赫模型（音频识谱）
+ */
 class BachModuleImpl : public torch::nn::Module {
 
 private:
@@ -40,11 +45,10 @@ public:
 
 TORCH_MODULE(BachModule);
 
-class BachModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    lifuren::audio::BachModule
-> {
+/**
+ * 巴赫模型（音频识谱）
+ */
+class BachModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::BachModule> {
 
 public:
     BachModel(lifuren::config::ModelParams params = {});
@@ -56,6 +60,9 @@ public:
 
 };
 
+/**
+ * 师旷模型（音频风格迁移）
+ */
 class ShikuangModuleImpl : public torch::nn::Module {
 
 private:
@@ -77,17 +84,14 @@ public:
 
 TORCH_MODULE(ShikuangModule);
 
-class ShikuangModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    // torch::optim::AdamW,
-    lifuren::audio::ShikuangModule
-> {
+/**
+ * 师旷模型（音频风格迁移）
+ */
+class ShikuangModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::ShikuangModule> {
 
 public:
     ShikuangModel(lifuren::config::ModelParams params = {});
     ~ShikuangModel();
-    // TODO: stft loss
 
 public:
     bool defineDataset() override;
@@ -95,6 +99,9 @@ public:
 
 };
 
+/**
+ * 贝多芬模型（乐谱钢琴指法）
+ */
 class BeethovenModuleImpl : public torch::nn::Module {
 
 private:
@@ -111,11 +118,10 @@ public:
 
 TORCH_MODULE(BeethovenModule);
 
-class BeethovenModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    lifuren::audio::BeethovenModule
-> {
+/**
+ * 贝多芬模型（乐谱钢琴指法）
+ */
+class BeethovenModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::BeethovenModule> {
 
 public:
     BeethovenModel(lifuren::config::ModelParams params = {});

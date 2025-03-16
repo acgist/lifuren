@@ -7,10 +7,10 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Audio.hpp"
+#include "lifuren/Image.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Message.hpp"
-#include "lifuren/audio/Audio.hpp"
-#include "lifuren/image/Image.hpp"
 
 static void audio    (const std::vector<std::string>&); // 音频任务
 static void image    (const std::vector<std::string>&); // 图片任务
@@ -129,9 +129,9 @@ static void embedding(const std::vector<std::string>& args) {
     }
     const auto& type    = args[0];
     const auto& dataset = args[1];
-    if(type == "bach" && lifuren::audio::datasetPreprocessingBach(dataset)) {
+    if(type == "bach" && lifuren::audio::allDatasetPreprocessBach(dataset)) {
         SPDLOG_INFO("巴赫嵌入成功");
-    } else if(type == "shikuang" && lifuren::audio::datasetPreprocessingShikuang(dataset)) {
+    } else if(type == "shikuang" && lifuren::audio::allDatasetPreprocessShikuang(dataset)) {
         SPDLOG_INFO("师旷嵌入成功");
     } else {
         SPDLOG_WARN("嵌入失败");

@@ -26,7 +26,6 @@
     output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "baicai_target.pcm" }).string(), std::ios_base::binary);
     std::vector<short> data;
     data.resize(LFR_AUDIO_PCM_LENGTH);
-    // auto norm = torch::nn::BatchNorm2d(LFR_AUDIO_PCM_DIM_1);
     while(input.read(reinterpret_cast<char*>(data.data()), LFR_AUDIO_PCM_LENGTH * sizeof(short))) {
         // auto tensor = lifuren::dataset::audio::pcm_stft(data, 400, 40, 400);
         auto tensor = lifuren::dataset::audio::pcm_stft(data, 400, 80, 400);
@@ -54,7 +53,7 @@
 }
 
 [[maybe_unused]] static void testEmbeddingBach() {
-    lifuren::dataset::allDatasetPreprocessing(
+    lifuren::dataset::allDatasetPreprocess(
         lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
         lifuren::config::LIFUREN_EMBEDDING_FILE,
         &lifuren::dataset::audio::embedding_bach
@@ -62,7 +61,7 @@
 }
 
 [[maybe_unused]] static void testEmbeddingShikuang() {
-    lifuren::dataset::allDatasetPreprocessing(
+    lifuren::dataset::allDatasetPreprocess(
         lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
         lifuren::config::LIFUREN_EMBEDDING_FILE,
         &lifuren::dataset::audio::embedding_shikuang

@@ -6,10 +6,10 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Raii.hpp"
+#include "lifuren/Audio.hpp"
+#include "lifuren/Image.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Message.hpp"
-#include "lifuren/audio/Audio.hpp"
-#include "lifuren/image/Image.hpp"
 
 #include "FL/fl_ask.H"
 #include "FL/filename.H"

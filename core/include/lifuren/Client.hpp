@@ -12,8 +12,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_CLIENT_HPP
-#define LFR_HEADER_BOOT_CLIENT_HPP
+#ifndef LFR_HEADER_CORE_CLIENT_HPP
+#define LFR_HEADER_CORE_CLIENT_HPP
 
 #include <tuple>
 #include <memory>
@@ -91,4 +91,4 @@ void lifuren::ModelClientImpl<C, I, O, M>::trainValAndTest(C params, const bool 
     this->model->trainValAndTest(val, test);
 }
 
-#endif // END OF LFR_HEADER_BOOT_CLIENT_HPP
+#endif // END OF LFR_HEADER_CORE_CLIENT_HPP

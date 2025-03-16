@@ -2,8 +2,8 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/audio/Audio.hpp"
-#include "lifuren/audio/AudioModel.hpp"
+#include "lifuren/Audio.hpp"
+#include "lifuren/AudioModel.hpp"
 
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;

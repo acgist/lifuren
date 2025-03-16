@@ -29,10 +29,10 @@ std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     return ret;
 }
 
-bool lifuren::dataset::allDatasetPreprocessing(
+bool lifuren::dataset::allDatasetPreprocess(
     const std::string& path,
     const std::string& model_name,
-    std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocessing,
+    std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocess,
     bool model_base
 ) {
     const std::vector<std::string> datasets = lifuren::dataset::allDataset(path);
@@ -41,7 +41,7 @@ bool lifuren::dataset::allDatasetPreprocessing(
         return false;
     }
     lifuren::thread::ThreadPool pool;
-    return std::all_of(datasets.begin(), datasets.end(), [&path, &pool, &model_name, model_base, &preprocessing](const auto& dataset) {
+    return std::all_of(datasets.begin(), datasets.end(), [&path, &pool, &model_name, model_base, &preprocess](const auto& dataset) {
         std::ofstream stream;
         std::filesystem::path model_path;
         if(model_base) {
@@ -56,7 +56,7 @@ bool lifuren::dataset::allDatasetPreprocessing(
             SPDLOG_WARN("数据集文件打开失败：{}", model_path.string());
             return false;
         }
-        const bool ret = preprocessing(path, dataset, stream, pool);
+        const bool ret = preprocess(path, dataset, stream, pool);
         pool.awaitTermination();
         stream.close();
         return ret;

@@ -1,9 +1,24 @@
-#include "lifuren/audio/Audio.hpp"
+#include "lifuren/Audio.hpp"
 
 #include <fstream>
 
 #include "lifuren/File.hpp"
-#include "lifuren/audio/AudioModel.hpp"
+#include "lifuren/AudioModel.hpp"
+
+namespace lifuren::audio {
+
+template<typename M>
+using AudioModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
+
+template<typename M>
+class AudioClient : public AudioModelClientImpl<M> {
+
+public:
+    std::tuple<bool, std::string> pred(const std::string& input) override;
+
+};
+
+};
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BachModel>::pred(const std::string& input) {

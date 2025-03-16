@@ -1,4 +1,4 @@
-#include "lifuren/image/ImageModel.hpp"
+#include "lifuren/ImageModel.hpp"
 
 #include "lifuren/File.hpp"
 

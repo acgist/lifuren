@@ -19,17 +19,6 @@
 
 namespace lifuren::image {
 
-template<typename M>
-using ImageModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
-
-template<typename M>
-class ImageClient : public ImageModelClientImpl<M> {
-
-public:
-    std::tuple<bool, std::string> pred(const std::string& input) override;
-
-};
-
 using ImageModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
 
 /**

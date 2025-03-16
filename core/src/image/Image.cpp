@@ -1,11 +1,26 @@
-#include "lifuren/image/Image.hpp"
+#include "lifuren/Image.hpp"
 
 #include "spdlog/spdlog.h"
 
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/image/ImageModel.hpp"
+#include "lifuren/ImageModel.hpp"
+
+namespace lifuren::image {
+
+template<typename M>
+using ImageModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
+
+template<typename M>
+class ImageClient : public ImageModelClientImpl<M> {
+
+public:
+    std::tuple<bool, std::string> pred(const std::string& input) override;
+
+};
+
+};
 
 template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::ChopinModel>::pred(const std::string& input) {

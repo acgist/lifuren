@@ -68,6 +68,7 @@ private:
     std::function<void(void)> finally{ nullptr }; // 资源释放
 
 public:
+    Finally() = delete;
     Finally(const Finally& ) = delete;
     Finally(      Finally&&) = delete;
     Finally& operator=(const Finally& ) = delete;

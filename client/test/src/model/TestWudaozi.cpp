@@ -2,8 +2,8 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/image/Image.hpp"
-#include "lifuren/image/ImageModel.hpp"
+#include "lifuren/Image.hpp"
+#include "lifuren/ImageModel.hpp"
 
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;

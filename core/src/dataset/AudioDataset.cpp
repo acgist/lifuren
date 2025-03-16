@@ -6,8 +6,8 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Audio.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/audio/Audio.hpp"
 
 extern "C" {
 
@@ -534,10 +534,7 @@ static void embedding(std::ofstream& stream, const std::string& source) {
 
 lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBachDatasetLoader(
     const size_t batch_size,
-    const std::string& path,
-    const int dim_1,
-    const int dim_2,
-    const int dim_3
+    const std::string& path
 ) {
     // TODO
     return {};
@@ -545,15 +542,12 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBachDatasetLoader(
 
 lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoader(
     const size_t batch_size,
-    const std::string& path,
-    const int dim_1,
-    const int dim_2,
-    const int dim_3
+    const std::string& path
 ) {
     auto dataset = lifuren::dataset::Dataset(
         path,
         { ".embedding" },
-        [dim_1, dim_2, dim_3](
+        [](
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
             std::vector<torch::Tensor>& features,
@@ -566,7 +560,8 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoad
                 stream.close();
                 return;
             }
-            torch::Tensor source_tensor = torch::zeros({ dim_1, dim_2, dim_3 }, torch::kFloat32);
+            // TODO
+            torch::Tensor source_tensor = torch::zeros({ 201, 60, 2 }, torch::kFloat32);
             const auto size = source_tensor.numel() * source_tensor.element_size();
             while(stream.read(reinterpret_cast<char*>(source_tensor.data_ptr()), size)) {
                 // TODO: 是否可以合并
@@ -583,19 +578,16 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoad
 
 lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBeethovenDatasetLoader(
     const size_t batch_size,
-    const std::string& path,
-    const int dim_1,
-    const int dim_2,
-    const int dim_3
+    const std::string& path
 ) {
     // TODO
     return {};
 }
 
-bool lifuren::audio::datasetPreprocessingBach(const std::string& path) {
-    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_bach);
+bool lifuren::audio::allDatasetPreprocessBach(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocess(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_bach);
 }
 
-bool lifuren::audio::datasetPreprocessingShikuang(const std::string& path) {
-    return lifuren::dataset::allDatasetPreprocessing(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_shikuang);
+bool lifuren::audio::allDatasetPreprocessShikuang(const std::string& path) {
+    return lifuren::dataset::allDatasetPreprocess(path, lifuren::config::LIFUREN_EMBEDDING_FILE, &lifuren::dataset::audio::embedding_shikuang);
 }

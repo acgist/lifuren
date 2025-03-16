@@ -21,6 +21,9 @@
 
 namespace lifuren::image {
 
+/**
+ * 肖邦模型（简谱识谱）
+ */
 class ChopinModuleImpl : public torch::nn::Module {
 
 private:
@@ -37,11 +40,10 @@ public:
 
 TORCH_MODULE(ChopinModule);
 
-class ChopinModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    lifuren::image::ChopinModule
-> {
+/**
+ * 肖邦模型（简谱识谱）
+ */
+class ChopinModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::ChopinModule> {
 
 public:
     ChopinModel(lifuren::config::ModelParams params = {});
@@ -53,6 +55,9 @@ public:
 
 };
 
+/**
+ * 莫扎特模型（五线谱识谱）
+ */
 class MozartModuleImpl : public torch::nn::Module {
 
 private:
@@ -69,11 +74,10 @@ public:
 
 TORCH_MODULE(MozartModule);
 
-class MozartModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::SGD,
-    lifuren::image::MozartModule
-> {
+/**
+ * 莫扎特模型（五线谱识谱）
+ */
+class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::MozartModule> {
 
 public:
     MozartModel(lifuren::config::ModelParams params = {});
@@ -85,6 +89,9 @@ public:
 
 };
 
+/**
+ * 吴道子模型（图片风格迁移）
+ */
 class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
@@ -107,11 +114,10 @@ public:
 
 TORCH_MODULE(WudaoziModule);
 
-class WudaoziModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    torch::optim::Adam,
-    lifuren::image::WudaoziModule
-> {
+/**
+ * 吴道子模型（图片风格迁移）
+ */
+class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, lifuren::image::WudaoziModule> {
 
 public:
     WudaoziModel(lifuren::config::ModelParams params = {});
