@@ -9,6 +9,7 @@ lifuren::audio::BachModuleImpl::~BachModuleImpl() {
 }
 
 torch::Tensor lifuren::audio::BachModuleImpl::forward(torch::Tensor input) {
+    // TODO
     return {};
 }
 
@@ -18,11 +19,21 @@ lifuren::audio::BachModel::BachModel(lifuren::config::ModelParams params) : Mode
 lifuren::audio::BachModel::~BachModel() {
 }
 
-bool lifuren::audio::BachModel::defineDataset() {
-    return true;
+void lifuren::audio::BachModel::defineDataset() {
+    if(lifuren::file::exists(this->params.train_path)) {
+        this->trainDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.train_path);
+    }
+    if(lifuren::file::exists(this->params.val_path)) {
+        this->valDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.val_path);
+    }
+    if(lifuren::file::exists(this->params.test_path)) {
+        this->testDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.test_path);
+    }
 }
 
 void lifuren::audio::BachModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    pred = this->model->forward(feature);
+    loss = this->loss->forward(pred, label);
 }
 
 lifuren::audio::ShikuangModuleImpl::ShikuangModuleImpl() {
@@ -57,26 +68,16 @@ lifuren::audio::ShikuangModel::ShikuangModel(lifuren::config::ModelParams params
 lifuren::audio::ShikuangModel::~ShikuangModel() {
 }
 
-bool lifuren::audio::ShikuangModel::defineDataset() {
+void lifuren::audio::ShikuangModel::defineDataset() {
     if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(
-            this->params.batch_size,
-            lifuren::file::join({this->params.train_path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::LIFUREN_EMBEDDING_FILE}).string()
-        );
+        this->trainDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(this->params.batch_size, this->params.train_path);
     }
     if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(
-            this->params.batch_size,
-            lifuren::file::join({this->params.val_path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::LIFUREN_EMBEDDING_FILE}).string()
-        );
+        this->valDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(this->params.batch_size, this->params.val_path);
     }
     if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(
-            this->params.batch_size,
-            lifuren::file::join({this->params.test_path, lifuren::config::LIFUREN_HIDDEN_FILE, lifuren::config::LIFUREN_EMBEDDING_FILE}).string()
-        );
+        this->testDataset = lifuren::dataset::audio::loadShikuangDatasetLoader(this->params.batch_size, this->params.test_path);
     }
-    return true;
 }
 
 void lifuren::audio::ShikuangModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
@@ -91,6 +92,7 @@ lifuren::audio::BeethovenModuleImpl::~BeethovenModuleImpl() {
 }
 
 torch::Tensor lifuren::audio::BeethovenModuleImpl::forward(torch::Tensor input) {
+    // TODO
     return {};
 }
 
@@ -100,9 +102,19 @@ lifuren::audio::BeethovenModel::BeethovenModel(lifuren::config::ModelParams para
 lifuren::audio::BeethovenModel::~BeethovenModel() {
 }
 
-bool lifuren::audio::BeethovenModel::defineDataset() {
-    return true;
+void lifuren::audio::BeethovenModel::defineDataset() {
+    if(lifuren::file::exists(this->params.train_path)) {
+        this->trainDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.train_path);
+    }
+    if(lifuren::file::exists(this->params.val_path)) {
+        this->valDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.val_path);
+    }
+    if(lifuren::file::exists(this->params.test_path)) {
+        this->testDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.test_path);
+    }
 }
 
 void lifuren::audio::BeethovenModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
+    pred = this->model->forward(feature);
+    loss = this->loss->forward(pred, label);
 }

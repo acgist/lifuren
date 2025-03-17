@@ -17,7 +17,7 @@
     lifuren::dataset::audio::toFile(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.pcm"}).string());
 }
 
-[[maybe_unused]] static void testStftIstft() {
+[[maybe_unused]] static void testStft() {
     std::ifstream input;
     std::ofstream output;
     // input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"        }).string(), std::ios_base::binary);
@@ -52,6 +52,22 @@
     output.close();
 }
 
+[[maybe_unused]] static void testImage() {
+    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "xxc.png" }).string()) };
+    cv::imshow("image", image);
+    cv::waitKey();
+    lifuren::dataset::image::resize(image, 640, 480);
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image);
+    cv::Mat target(480, 640, CV_8UC3);
+    lifuren::dataset::image::tensor_to_mat(target, tensor);
+    cv::imshow("target", target);
+    cv::waitKey();
+    cv::destroyAllWindows();
+}
+
+[[maybe_unused]] static void testScore() {
+}
+
 [[maybe_unused]] static void testEmbeddingBach() {
     lifuren::dataset::allDatasetPreprocess(
         lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
@@ -68,17 +84,29 @@
     );
 }
 
-[[maybe_unused]] static void testFeature() {
-    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "xxc.png" }).string()) };
-    cv::imshow("image", image);
-    cv::waitKey();
-    lifuren::dataset::image::resize(image, 640, 480);
-    auto tensor = lifuren::dataset::image::feature(image, 640, 480);
-    cv::Mat target(480, 640, CV_8UC3);
-    lifuren::dataset::image::tensor_to_mat(target, tensor);
-    cv::imshow("target", target);
-    cv::waitKey();
-    cv::destroyAllWindows();
+[[maybe_unused]] static void testLoadBachDatasetLoader() {
+}
+
+[[maybe_unused]] static void testLoadShikuangDatasetLoader() {
+    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
+    auto loader = lifuren::dataset::audio::loadShikuangDatasetLoader(200, lifuren::file::join({
+        lifuren::config::CONFIG.tmp,
+        "baicai",
+        "train",
+        lifuren::config::LIFUREN_HIDDEN_FILE
+    }).string());
+    lifuren::logTensor("音频特征", loader->begin()->data.sizes());
+    lifuren::logTensor("音频标签", loader->begin()->target.sizes());
+    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
+}
+
+[[maybe_unused]] static void testLoadBeethovenDatasetLoader() {
+}
+
+[[maybe_unused]] static void testLoadChopinDatasetLoader() {
+}
+
+[[maybe_unused]] static void testLoadMozartDatasetLoader() {
 }
 
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
@@ -100,19 +128,6 @@
     }
 }
 
-[[maybe_unused]] static void testLoadShikuangDatasetLoader() {
-    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
-    auto loader = lifuren::dataset::audio::loadShikuangDatasetLoader(200, lifuren::file::join({
-        lifuren::config::CONFIG.tmp,
-        "baicai",
-        "train",
-        lifuren::config::LIFUREN_HIDDEN_FILE
-    }).string());
-    lifuren::logTensor("音频特征", loader->begin()->data.sizes());
-    lifuren::logTensor("音频标签", loader->begin()->target.sizes());
-    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
-}
-
 [[maybe_unused]] static void testLoadClassifyDatasetLoader() {
     auto loader = lifuren::dataset::image::loadClassifyDatasetLoader(
         200,
@@ -130,10 +145,18 @@
 }
 
 LFR_TEST(
-    testFeature();
+    // testToPcm();
+    // testToFile();
+    // testStft();
+    // testImage();
+    // testScore();
     // testEmbeddingBach();
     // testEmbeddingShikuang();
-    testLoadWudaoziDatasetLoader();
-    testLoadShikuangDatasetLoader();
-    testLoadClassifyDatasetLoader();
+    // testLoadBachDatasetLoader();
+    // testLoadShikuangDatasetLoader();
+    // testLoadBeethovenDatasetLoader();
+    // testLoadChopinDatasetLoader();
+    // testLoadMozartDatasetLoader();
+    // testLoadWudaoziDatasetLoader();
+    // testLoadClassifyDatasetLoader();
 );

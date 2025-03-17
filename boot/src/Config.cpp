@@ -99,7 +99,7 @@ static bool saveFile(const YAML::Node& yaml, const std::string& path) {
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
-        SPDLOG_WARN("文件打开失败：{}", path);
+        SPDLOG_WARN("打开文件失败：{}", path);
         return false;
     }
     output << yaml;

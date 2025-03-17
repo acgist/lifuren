@@ -55,7 +55,7 @@ public:
     ~BachModel();
     
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };
@@ -94,7 +94,7 @@ public:
     ~ShikuangModel();
 
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };
@@ -128,7 +128,7 @@ public:
     ~BeethovenModel();
     
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };

@@ -7,24 +7,25 @@
 #include "lifuren/Config.hpp"
 
 std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
-    std::vector<std::string> ret(3);
+    std::vector<std::string> ret;
+    ret.reserve(3);
     const auto train_path = lifuren::file::join({ path, lifuren::config::DATASET_TRAIN });
     const auto val_path   = lifuren::file::join({ path, lifuren::config::DATASET_VAL   });
     const auto test_path  = lifuren::file::join({ path, lifuren::config::DATASET_TEST  });
     if(std::filesystem::exists(train_path)) {
         ret.push_back(train_path.string());
     } else {
-        SPDLOG_DEBUG("没有训练数据集：{}", train_path.string());
+        SPDLOG_DEBUG("无效的训练数据集：{}", train_path.string());
     }
     if(std::filesystem::exists(val_path)) {
         ret.push_back(val_path.string());
     } else {
-        SPDLOG_DEBUG("没有验证训练集：{}", val_path.string());
+        SPDLOG_DEBUG("无效的验证训练集：{}", val_path.string());
     }
     if(std::filesystem::exists(test_path)) {
         ret.push_back(test_path.string());
     } else {
-        SPDLOG_DEBUG("没有测试训练集：{}", test_path.string());
+        SPDLOG_DEBUG("无效的测试训练集：{}", test_path.string());
     }
     return ret;
 }
@@ -52,8 +53,7 @@ bool lifuren::dataset::allDatasetPreprocess(
         lifuren::file::createParent(model_path);
         stream.open(model_path, std::ios_base::binary);
         if(!stream.is_open()) {
-            stream.close();
-            SPDLOG_WARN("数据集文件打开失败：{}", model_path.string());
+            SPDLOG_WARN("打开数据集文件失败：{}", model_path.string());
             return false;
         }
         const bool ret = preprocess(path, dataset, stream, pool);
@@ -75,12 +75,11 @@ lifuren::dataset::Dataset::Dataset(
     const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
 ) : device(lifuren::getDevice()) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
-        SPDLOG_WARN("目录无效：{}", path);
+        SPDLOG_WARN("数据集无效：{}", path);
         return;
     }
-    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, suffix);
+    lifuren::file::list_file(files, path, suffix);
     for(const auto& file : files) {
         SPDLOG_DEBUG("加载文件：{}", file);
         transform(file, this->labels, this->features, this->device);
@@ -94,20 +93,19 @@ lifuren::dataset::Dataset::Dataset(
     const std::function<void(const std::string&, const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
 ) : device(lifuren::getDevice()) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
-        SPDLOG_WARN("目录无效：{}", path);
+        SPDLOG_WARN("数据集无效：{}", path);
         return;
     }
-    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     std::vector<std::string> files;
-    lifuren::file::listFile(files, path, f_suffix);
-    for(const auto& file : files) {
-        auto label_file = lifuren::file::modify_filename(file, l_suffix);
-        if(!lifuren::file::exists(label_file)) {
-            SPDLOG_WARN("文件没有标签：{} - {}", label_file, file);
+    lifuren::file::list_file(files, path, f_suffix);
+    for(const auto& f_file : files) {
+        auto l_file = lifuren::file::modify_filename(f_file, l_suffix);
+        if(!lifuren::file::exists(l_file)) {
+            SPDLOG_WARN("特征没有标签：{} - {}", l_file, f_file);
             continue;
         }
-        SPDLOG_DEBUG("加载文件：{} - {}", label_file, file);
-        transform(label_file, file, this->labels, this->features, this->device);
+        SPDLOG_DEBUG("加载文件：{} - {}", l_file, f_file);
+        transform(l_file, f_file, this->labels, this->features, this->device);
     }
 }
 
@@ -118,24 +116,29 @@ lifuren::dataset::Dataset::Dataset(
     const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform
 ) : device(lifuren::getDevice()) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
-        SPDLOG_WARN("目录无效：{}", path);
+        SPDLOG_WARN("数据集无效：{}", path);
         return;
     }
-    SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
     auto iterator = std::filesystem::directory_iterator(std::filesystem::path(path));
     for(const auto& entry : iterator) {
         const auto entry_path = entry.path();
-        if(entry.is_directory() && entry_path.string() != lifuren::config::LIFUREN_HIDDEN_FILE) {
-            SPDLOG_DEBUG("加载文件：{}", entry_path.string());
+        const auto entry_name = entry_path.filename().string();
+        const auto entry_iter = classify.find(entry_name);
+        if(entry.is_directory() && entry_iter != classify.end()) {
+            SPDLOG_DEBUG("加载分类：{}", entry_path.string());
             std::vector<std::string> files;
-            lifuren::file::listFile(files, entry_path.string(), suffix);
+            lifuren::file::list_file(files, entry_path.string(), suffix);
             for(const auto& file : files) {
                 SPDLOG_DEBUG("加载文件：{}", file);
-                this->features.push_back(std::move(transform(file, this->device)));
+                auto tensor = transform(file, this->device);
+                if(tensor.numel() == 0) {
+                    continue;
+                }
+                this->features.push_back(std::move(tensor));
             }
-            this->labels.resize(this->features.size(), torch::full({ 1 }, classify.at(entry_path.filename().string()), torch::kFloat32).to(this->device));
+            this->labels.resize(this->features.size(), torch::full({ 1 }, entry_iter->second, torch::kFloat32).to(this->device));
         } else {
-            SPDLOG_DEBUG("忽略文件：{}", entry_path.string());
+            SPDLOG_DEBUG("忽略目录：{}", entry_path.string());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace lifuren::music {
  */
 class Note {
 
-// TODO: 音高、符号...
+// TODO: 音高、符号、指法fingering...
 
 };
 

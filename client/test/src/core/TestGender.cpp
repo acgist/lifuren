@@ -58,21 +58,16 @@ public:
 
 };
 
-#include "torch/data.h"
-
 TORCH_MODULE(GenderModule);
 
-class GenderModel : public lifuren::Model<
-    torch::nn::CrossEntropyLoss,
-    torch::optim::Adam,
-    GenderModule
-> {
+class GenderModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::optim::Adam, GenderModule> {
 
 public:
     GenderModel(lifuren::config::ModelParams params = {
-        .lr          = 0.0001F,
+        .lr          = 0.001F,
         .batch_size  = 10,
         .epoch_size  = 16,
+        .class_size  = 2,
         .classify    = true,
         .check_point = false,
         .model_name  = "gender",
@@ -84,7 +79,7 @@ public:
     }
 
 public:
-    bool defineDataset() override {
+    void defineDataset() override {
         std::filesystem::path data_path = lifuren::file::join({lifuren::config::CONFIG.tmp, "gender"});
         std::string path_train = (data_path / "train").string();
         std::string path_val   = (data_path / "val"  ).string();
@@ -96,9 +91,7 @@ public:
         this->trainDataset = std::move(lifuren::dataset::image::loadClassifyDatasetLoader(200, 200, this->params.batch_size, path_train, mapping));
         this->valDataset   = std::move(lifuren::dataset::image::loadClassifyDatasetLoader(200, 200, this->params.batch_size, path_val,   mapping));
         this->testDataset  = std::move(lifuren::dataset::image::loadClassifyDatasetLoader(200, 200, this->params.batch_size, path_test,  mapping));
-        return true;
     }
-
 
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
         label = std::move(label.squeeze().to(torch::kInt64));
@@ -118,7 +111,6 @@ public:
 [[maybe_unused]] static void testPred() {
     GenderModel model;
     model.load();
-    // model.load(lifuren::file::join({lifuren::config::CONFIG.tmp, "gender.checkpoint.16.pt"}).string());
     std::vector<std::string> paths {
         lifuren::file::join({lifuren::config::CONFIG.tmp, "xxc.png"     }).string(),
         lifuren::file::join({lifuren::config::CONFIG.tmp, "ycx.jpg"     }).string(),

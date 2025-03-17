@@ -22,6 +22,7 @@ public:
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BachModel>::pred(const std::string& input) {
+    // TODO
     return {};
 }
 
@@ -78,12 +79,11 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BeethovenModel>::pred(const std::string& input) {
+    // TODO
     return {};
 }
 
-std::unique_ptr<lifuren::audio::AudioModelClient> lifuren::audio::getAudioClient(
-    const std::string& model
-) {
+std::unique_ptr<lifuren::audio::AudioModelClient> lifuren::audio::getAudioClient(const std::string& model) {
     if(model == "bach") {
         return std::make_unique<lifuren::audio::AudioClient<BachModel>>();
     } else if(model == "shikuang") {

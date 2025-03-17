@@ -23,6 +23,6 @@ void lifuren::logTensor(const std::string& message, const at::Tensor& tensor) {
     SPDLOG_DEBUG("{}\n{}", message, tensor);
 }
 
-void lifuren::logTensor(const std::string& message, const c10::IntArrayRef& array) {
-    SPDLOG_DEBUG("{}\n{}", message, array);
+void lifuren::logTensor(const std::string& message, const c10::IntArrayRef& tensor) {
+    SPDLOG_DEBUG("{}\n{}", message, tensor);
 }

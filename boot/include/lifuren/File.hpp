@@ -194,7 +194,7 @@ inline std::string modify_filename(const std::string& file, const std::string& s
  * @param vector 文件列表
  * @param path   文件路径
  */
-extern void listFile(std::vector<std::string>& vector, const std::string& path);
+extern void list_file(std::vector<std::string>& vector, const std::string& path);
 
 /**
  * 遍历文件列表
@@ -203,7 +203,7 @@ extern void listFile(std::vector<std::string>& vector, const std::string& path);
  * @param path   文件路径
  * @param suffix 文件后缀
  */
-extern void listFile(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix);
+extern void list_file(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix);
 
 /**
  * 遍历文件列表
@@ -212,14 +212,14 @@ extern void listFile(std::vector<std::string>& vector, const std::string& path, 
  * @param path      文件路径
  * @param predicate 文件匹配：是否匹配成功(文件路径)
  */
-extern void listFile(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate);
+extern void list_file(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate);
 
 /**
  * @param path 文件路径
  * 
  * @return 文件后缀：.cpp/.hpp/.zip
  */
-extern std::string fileSuffix(const std::string& path);
+extern std::string file_suffix(const std::string& path);
 
 } // END OF lifuren::file
 

@@ -15,16 +15,16 @@
 
 [[maybe_unused]] static void testListFile() {
     std::vector<std::string> vector;
-    // lifuren::file::listFile(vector, lifuren::config::CONFIG.tmp);
-    lifuren::file::listFile(vector, lifuren::file::join({lifuren::config::CONFIG.tmp, "face"}).string(), { ".png", ".jpg" });
+    // lifuren::file::list_file(vector, lifuren::config::CONFIG.tmp);
+    lifuren::file::list_file(vector, lifuren::file::join({lifuren::config::CONFIG.tmp, "face"}).string(), { ".png", ".jpg" });
     std::for_each(vector.begin(), vector.end(), [](const std::string& path) {
         SPDLOG_DEBUG("有效文件：{}", path);
     });
 }
 
 [[maybe_unused]] static void testSuffix() {
-    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename"));
-    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::fileSuffix("/path/filename.m.zip"));
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::file_suffix("/path/filename"));
+    SPDLOG_DEBUG("文件后缀：{}", lifuren::file::file_suffix("/path/filename.m.zip"));
     auto filename = lifuren::file::modify_filename("/root/test.txt", ".exe");
     SPDLOG_DEBUG("新的文件名称：{}", filename);
     filename = lifuren::file::modify_filename("/root/test.txt", ".exe", "gen");

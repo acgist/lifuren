@@ -50,7 +50,7 @@ public:
     ~ChopinModel();
     
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };
@@ -84,7 +84,7 @@ public:
     ~MozartModel();
     
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };
@@ -124,7 +124,7 @@ public:
     ~WudaoziModel();
 
 public:
-    bool defineDataset() override;
+    void defineDataset() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };

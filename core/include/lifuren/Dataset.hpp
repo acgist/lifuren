@@ -24,6 +24,7 @@
 #include "torch/data.h"
 
 #include "lifuren/Thread.hpp"
+#include "lifuren/MusicScore.hpp"
 
 // 音频配置
 // PCM数据大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
@@ -248,101 +249,106 @@ extern bool embedding_bach(const std::string& path, const std::string& dataset, 
 extern bool embedding_shikuang(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
 
 /**
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadBachDatasetLoader(
-    const size_t batch_size, // 批量大小
-    const std::string& path  // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadBachDatasetLoader(const size_t batch_size, const std::string& path);
 
 /**
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadShikuangDatasetLoader(
-    const size_t batch_size, // 批量大小
-    const std::string& path  // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadShikuangDatasetLoader(const size_t batch_size, const std::string& path);
 
 /**
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(
-    const size_t batch_size, // 批量大小
-    const std::string& path  // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path);
 
 } // END OF audio
 
 namespace image {
 
 /**
- * 修改图片大小
+ * @param image  图片
+ * @param width  目标图片宽度
+ * @param height 目标图片高度
  */
-extern void resize(
-    cv::Mat& image,  // 图片数据
-    const int width, // 目标宽度
-    const int height // 目标高度
-);
+extern void resize(cv::Mat& image, const int width, const int height);
 
 /**
- * 图片转为张量
+ * @param image 图片
  * 
  * @return 图片张量
  */
-extern torch::Tensor feature(
-    const cv::Mat& image, // 图片数据
-    const int width,      // 图片宽度
-    const int height      // 图片高度
-);
+extern torch::Tensor mat_to_tensor(const cv::Mat& image);
 
 /**
- * 张量转为图片
+ * @param image  图片：需要提前申请空间
+ * @param tensor 图片张量
  */
-extern void tensor_to_mat(
-    cv::Mat& mat, // 图片数据：需要提前申请空间
-    const torch::Tensor& tensor // 图片张量
-);
+extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
 
 /**
+ * @param score 乐谱
+ * 
+ * @return 乐谱张量
+ */
+extern torch::Tensor score_to_tensor(const lifuren::music::Score& score);
+
+/**
+ * @param score  乐谱
+ * @param tensor 乐谱张量
+ */
+extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& tensor);
+
+/**
+ * @param width      目标图片宽度
+ * @param height     目标图片高度
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(
-    const int width,  // 图片宽度
-    const int height, // 图片高度
-    const size_t batch_size, // 批量大小
-    const std::string& path // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 /**
+ * @param width      目标图片宽度
+ * @param height     目标图片高度
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(
-    const int width,  // 图片宽度
-    const int height, // 图片高度
-    const size_t batch_size, // 批量大小
-    const std::string& path // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 /**
+ * @param width      目标图片宽度
+ * @param height     目标图片高度
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadWudaoziDatasetLoader(
-    const int width,  // 图片宽度
-    const int height, // 图片高度
-    const size_t batch_size, // 批量大小
-    const std::string& path // 数据集路径
-);
+extern lifuren::dataset::DatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 /**
+ * @param width      目标图片宽度
+ * @param height     目标图片高度
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * @param classify   图片分类
+ * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadClassifyDatasetLoader(
-    const int width,  // 图片宽度
-    const int height, // 图片高度
-    const size_t batch_size, // 批量大小
-    const std::string& path, // 数据集路径
-    const std::map<std::string, float>& classify // 图片分类
-);
+extern lifuren::dataset::DatasetLoader loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify);
 
 } // END OF image
 

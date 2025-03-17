@@ -15,13 +15,13 @@ private:
 
 public:
     LinearModuleImpl() {
-        linear = register_module("linear", torch::nn::Linear(torch::nn::LinearOptions(1, 1)));
+        this->linear = register_module("linear", torch::nn::Linear(torch::nn::LinearOptions(1, 1)));
     }
 
     torch::Tensor forward(torch::Tensor x) {
         return this->linear->forward(x);
     }
-    
+
     ~LinearModuleImpl() {
         unregister_module("linear");
     }
@@ -30,13 +30,8 @@ public:
 
 TORCH_MODULE(LinearModule);
 
-class LinearModel : public lifuren::Model<
-    torch::nn::MSELoss,
-    // torch::optim::SGD,
-    torch::optim::Adam,
-    // torch::optim::AdamW,
-    LinearModule
-> {
+// class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, LinearModule> {
+class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::AdamW, LinearModule> {
 
 public:
     LinearModel(lifuren::config::ModelParams params = {
@@ -44,7 +39,7 @@ public:
         // .lr      = 0.01F,
         // .lr      = 0.001F,
         .batch_size = 10,
-        .epoch_size = 64
+        .epoch_size = 256
     }) : Model(params) {
     }
 
@@ -52,7 +47,13 @@ public:
     }
 
 public:
-    bool defineDataset() override {
+    void defineWeight() override {
+        for(auto& parameter : this->model->named_parameters()) {
+            torch::nn::init::ones_(parameter.value());
+        }
+    }
+
+    void defineDataset() override {
         std::random_device device;
         std::mt19937 rand(device());
         std::normal_distribution<float> w(100, 10);
@@ -70,7 +71,6 @@ public:
         }
         auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), this->params.batch_size);
-        return true;
     }
 
 };
@@ -88,13 +88,11 @@ public:
 }
 
 [[maybe_unused]] static void testPred() {
-    LinearModel model;
-    // model.define();
-    model.load();
-    // model.load(lifuren::config::CONFIG.tmp);
-    model.print(true);
+    LinearModel linear;
+    linear.load();
+    linear.print(true);
     // w * 15.4 + 4 + r
-    auto output = model.pred(torch::tensor({ 3.0F }, torch::kFloat32));
+    auto output = linear.pred(torch::tensor({ 3.0F }, torch::kFloat32));
     float pred = output.template item<float>();
     SPDLOG_DEBUG("当前预测：{}", pred);
 }
