@@ -9,3 +9,4 @@
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |tinyxml2|9.0.0|https://github.com/leethomason/tinyxml2|
 |wxWidgets|3.2.4|https://github.com/wxWidgets/wxWidgets|
+|opensheetmusicdisplay|1.8.9|https://github.com/opensheetmusicdisplay/opensheetmusicdisplay|

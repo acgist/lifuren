@@ -13,10 +13,10 @@
 
 build
 
-client/web/dist
-client/web/node_modules
+client/webview/dist
+client/webview/node_modules
 
-client/web/package-lock.json
+client/webview/package-lock.json
 
 deps/ffmpeg
 deps/opencv

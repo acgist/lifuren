@@ -4,6 +4,8 @@
 #include "wx/filesys.h"
 #include "wx/mstream.h"
 #include "wx/webview.h"
+#include "wx/filename.h"
+#include "wx/stdpaths.h"
 
 #include "spdlog/spdlog.h"
 
@@ -28,6 +30,7 @@ static auto plus_score_text = wxT("升调");
 static auto fall_score_text = wxT("降调");
 static auto pdf_score_text  = wxT("保存文档");
 static auto img_score_text  = wxT("保存图片");
+// 放大 缩小
 
 static const auto open_score_id = 4000;
 static const auto play_score_id = 4001;
@@ -43,35 +46,56 @@ lifuren::MusicScoreWindow::MusicScoreWindow(int width, int height, const wxStrin
 lifuren::MusicScoreWindow::~MusicScoreWindow() {
 }
 
-class WxHtmlFSHandler : public wxWebViewHandler
+
+wxFileName GetStaticContent(wxString file)
 {
-    public:
-    WxHtmlFSHandler( const wxString& scheme ) : wxWebViewHandler( scheme ) {
-        std::cout << "++\n";
-    }
-    ~WxHtmlFSHandler() {
-        std::cout << "----\n";
-    }
+	// Construct Filename
+	wxFileName fname(wxStandardPaths::Get().GetExecutablePath().BeforeLast('\\') + 
+					 wxFileName::GetPathSeparator()+ 
+					 wxString("static") + 
+					 wxFileName::GetPathSeparator() + 
+					 "html" + 
+					 wxFileName::GetPathSeparator() + 
+					 file + wxString(".html"));
 
-    wxFSFile* GetFile( const wxString& uri ) override
-    {
-        std::cout << "=====\n";
-        std::string html = "<!DOCTYPE html><html><head><meta http-equiv='content-type' content='text/html;"
-        "charset=UTF-8'>\n<meta name='viewport' content='width=device-width,initial-scale=1.0'>"
-        "</head><body>"
-        "<h1>This is a test</h1>"
-        "<a href=\"logo?2\"><img width=\"50%\" src=\"../pic1.png\"></a>"
-        "<a href=\"logo?4\"><img width=\"50%\" src=\"pic2.png\"></a></body></html>";
-        auto x = new wxMemoryInputStream(html.data(), html.size() );
-        return new wxFSFile(x, uri, wxT( "text/html" ), ""
-        #if wxUSE_DATETIME
-        , wxDateTime::Now()
-      #endif
-    );
-    };
+	wxString s = fname.GetFullPath();
+
+	// Return full path, which is corrected by wxWidgets
+	return fname;
+}
+
+class MyWebHandler : public wxWebViewHandler
+{
+public:
+	MyWebHandler(const wxString& protocol)
+		: wxWebViewHandler(protocol)
+	{
+		m_fs = new wxFileSystem();
+	}
+
+	~MyWebHandler()
+	{
+		wxDELETE(m_fs);
+	}
+	
+	virtual wxFSFile* GetFile (const wxString &uri)
+	{
+		wxString content = uri.substr(9, uri.length()).BeforeLast('/');
+		wxFileName path = GetStaticContent(content);
+
+		// It does not make any difference if this is used or not. It fails in both cases.
+		wxString url = wxFileSystem::FileNameToURL(path);
+
+		if ( wxFileSystem::HasHandlerForPath(url) )
+		{
+			return m_fs->OpenFile(url);
+		}
+		return NULL;
+	}	
+
+private:
+	wxFileSystem* m_fs;
 };
-
-static WxHtmlFSHandler* hx;
 
 void lifuren::MusicScoreWindow::drawElement() {
     const int w = wxSystemSettings::GetMetric(wxSYS_SCREEN_X, nullptr);
@@ -91,42 +115,9 @@ void lifuren::MusicScoreWindow::drawElement() {
         #else
         web_view->EnableAccessToDevTools(false);
         #endif
-        hx = new WxHtmlFSHandler( "myscheme" );
-        static auto xx = wxSharedPtr< wxWebViewHandler >( hx ) ;
-        web_view->RegisterHandler(xx);
-        web_view->SetPage(LR"(<!DOCTYPE HTML>
-<html>
-
-<head>
-  <title>李夫人</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <meta name="keywords" content="李夫人" />
-  <meta name="description" content="李夫人" />
-
-  <!-- <script type="text/javascript" src="./jspdf.es.min.js"></script> -->
-  <script type="text/javascript" src="myscheme:opensheetmusicdisplay.min.js"></script>
-</head>
-
-<body>
-  <div id="container">1</div>
-  <img width="50%" src="myscheme:pic1.png">
-  <script>
-    const display = new opensheetmusicdisplay.OpenSheetMusicDisplay("container");
-    display.setOptions({
-      backend: "canvas",
-      drawTitle: true,
-    });
-    display
-      .load("myscheme:/music.xml")
-      .then(() => {
-        display.render();
-      }
-      );
-  </script>
-</body>
-
-</html>)", {});
+        auto x = GetStaticContent("index").GetFullPath();
+		web_view->RegisterHandler(wxSharedPtr<wxWebViewHandler>(new MyWebHandler("static")));
+		web_view->LoadURL(GetStaticContent("index").GetFullPath());
         // web_view->LoadURL("myscheme:index.html");
         // web_view->Bind(wxEVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, [](const wxWebViewEvent& event) {
         //     wxLogMessage("Script message received; value = %s, handler = %s", event.GetString(), event.GetMessageHandler());
