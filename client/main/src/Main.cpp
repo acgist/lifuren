@@ -1,6 +1,6 @@
 #include "lifuren/CLI.hpp"
-#if LFR_ENABLE_FLTK
-#include "lifuren/FLTK.hpp"
+#if LFR_ENABLE_GUI
+#include "lifuren/GUI.hpp"
 #endif
 
 #include <thread>
@@ -34,13 +34,13 @@ int main(const int argc, const char* const argv[]) {
 }
 
 inline static void launch() {
-    #if LFR_ENABLE_FLTK
-    std::thread fltkThread([]() {
-        lifuren::initFltkService();
+    #if LFR_ENABLE_GUI
+    std::thread guiThread([]() {
+        lifuren::initGUI();
     });
     #endif
     SPDLOG_DEBUG("启动完成");
-    #if LFR_ENABLE_FLTK
-    fltkThread.join();
+    #if LFR_ENABLE_GUI
+    guiThread.join();
     #endif
 }

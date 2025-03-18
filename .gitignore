@@ -13,10 +13,15 @@
 
 build
 
-deps/fltk
+client/web/dist
+client/web/node_modules
+
+client/web/package-lock.json
+
 deps/ffmpeg
 deps/opencv
 deps/spdlog
 deps/libtorch
 deps/yaml-cpp
 deps/tinyxml2
+deps/wxWidgets

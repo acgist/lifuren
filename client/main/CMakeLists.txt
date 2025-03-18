@@ -2,10 +2,17 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
 aux_source_directory(src/cli/ CLI_FILES)
 
-if(ENABLE_FLTK)
-    message(STATUS "编译FLTK界面")
-    add_definitions(-DLFR_ENABLE_FLTK=true)
-    aux_source_directory(src/fltk/ FLTK_FILES)
+if(ENABLE_GUI)
+    message(STATUS "编译界面")
+    add_definitions(-DLFR_ENABLE_GUI=true)
+    set(
+        GUI_FILES
+        src/gui/GUI.cpp
+        src/gui/MainWindow.cpp
+        src/gui/AboutWindow.cpp
+        src/gui/ConfigWindow.cpp
+        src/gui/MusicScoreWindow.cpp
+    )
 endif()
     
 if(CMAKE_HOST_WIN32)
@@ -13,7 +20,7 @@ if(CMAKE_HOST_WIN32)
         ${PROJECT_NAME}
         src/Main.cpp
         ${CLI_FILES}
-        ${FLTK_FILES}
+        ${GUI_FILES}
         resources/win.rc
     )
     # /SUBSYSTEM:CONSOLE
@@ -34,7 +41,7 @@ else()
         ${PROJECT_NAME}
         src/Main.cpp
         ${CLI_FILES}
-        ${FLTK_FILES}
+        ${GUI_FILES}
     )
 endif()
 
@@ -44,7 +51,7 @@ if(CMAKE_HOST_WIN32)
         $<IF:$<TARGET_EXISTS:png>,png,png_shared>
         libjpeg-turbo::jpeg
         lifurencore
-        ${FLTK_LIBRARIES}
+        ${wxWidgets_LIBRARIES}
     )
 else()
     target_link_libraries(
@@ -52,7 +59,7 @@ else()
         png
         jpeg
         lifurencore
-        ${FLTK_LIBRARIES}
+        ${wxWidgets_LIBRARIES}
     )
 endif()
 
@@ -80,25 +87,25 @@ if(CMAKE_HOST_WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
     else()
-        set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD")
+        set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD /entry:mainCRTStartup")
     endif()
 
-    install(FILES ${FLTK_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${TORCH_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${FFMPEG_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${OPENCV_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${SPDLOG_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${YAMLCPP_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${TINYXML_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TORCH_DLLS}     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${FFMPEG_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${OPENCV_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${SPDLOG_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${YAMLCPP_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TINYXML_DLLS}   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${WXWIDGETS_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FLTK_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFMPEG_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAMLCPP_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TINYXML_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}     $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFMPEG_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAMLCPP_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TINYXML_DLLS}   $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${WXWIDGETS_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()

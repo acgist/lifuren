@@ -14,9 +14,6 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd ./deps
-          ################################ fltk
-          sudo  apt install libfltk1.3-dev -y
-          apt-cache madison libfltk1.3-dev
           ################################ ffmpeg
           sudo  apt install ffmpeg -y
           apt-cache madison ffmpeg
@@ -26,17 +23,15 @@ jobs:
           ################################ spdlog
           # sudo  apt install libspdlog-dev -y
           # apt-cache madison libspdlog-dev
-          git clone https://github.com/fmtlib/fmt.git
+          git clone -b 10.2.0 --depth=1 https://github.com/fmtlib/fmt.git
           cd fmt
-          git switch -c 10.2.0
           mkdir build ; cd $_
           cmake .. -DFMT_TEST=OFF -DBUILD_SHARED_LIBS=ON
           make -j 2
           sudo make install
           cd ../../
-          git clone https://github.com/gabime/spdlog.git
+          git clone -b v1.13.0 --depth=1 https://github.com/gabime/spdlog.git
           cd spdlog
-          git switch -c v1.13.0
           mkdir build ; cd $_
           cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF -DBUILD_SHARED_LIBS=ON
           make -j 2
@@ -51,6 +46,18 @@ jobs:
           ################################ tinyxml2
           sudo  apt install libtinyxml2-dev -y
           apt-cache madison libtinyxml2-dev
+          ################################ wxWidgets
+          # sudo  apt install libwxgtk3.0-gtk3-dev -y
+          # apt-cache madison libwxgtk3.0-gtk3-dev
+          sudo  apt install libgtk2.0-dev -y
+          apt-cache madison libgtk2.0-dev
+          git clone -b v3.2.4 --depth=1 https://github.com/wxWidgets/wxWidgets.git
+          cd wxWidgets
+          git submodule update --init src/tiff
+          git submodule update --init 3rdparty/pcre
+          # ./configure --disable-shared --enable-unicode --enable-webview --enable-webviewedge
+          ./configure --disable-shared --enable-unicode --enable-webview --enable-webviewwebkit
+          cd ..
       - name: Deploy lifuren
         run: |
           gcc -v

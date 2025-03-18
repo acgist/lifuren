@@ -83,23 +83,25 @@ cmake --install .
 VCPKG_DEFAULT_TRIPLET=x64-windows
 
 # 安装依赖
-vcpkg install fltk:x64-windows
 vcpkg install ffmpeg:x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
 vcpkg install libtorch:x64-windows
 vcpkg install yaml-cpp:x64-windows
 vcpkg install tinyxml2:x64-windows
+vcpkg install wxwidgets:x64-windows
 
 # 导出依赖
-vcpkg export fltk     --zip
-vcpkg export ffmpeg   --zip
-vcpkg export opencv   --zip
-vcpkg export spdlog   --zip
-vcpkg export libtorch --zip
-vcpkg export yaml-cpp --zip
-vcpkg export tinyxml2 --zip
+vcpkg export ffmpeg    --zip
+vcpkg export opencv    --zip
+vcpkg export spdlog    --zip
+vcpkg export libtorch  --zip
+vcpkg export yaml-cpp  --zip
+vcpkg export tinyxml2  --zip
+vcpkg export wxwidgets --zip
 ```
+
+> wxwidgets[webview]
 
 #### 编译命令
 

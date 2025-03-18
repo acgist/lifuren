@@ -10,6 +10,7 @@
  * 
  * https://www.w3.org/2021/06/musicxml40/musicxml-reference/elements/
  * https://www.w3.org/2021/06/musicxml40/musicxml-reference/examples/
+ * https://www.w3.org/2021/06/musicxml40/musicxml-reference/element-tree/
  * 
  * @author acgist
  * 
@@ -55,10 +56,27 @@ public:
     std::string tonality; // 调性
     std::map<std::string, std::vector<Measure>> measureMap; // 多声部小节列表
 
+public:
+    /**
+     * @return 是否为空
+     */
+    bool empty();
+
 };
 
+/**
+ * @param file 文件路径
+ * 
+ * @return 乐谱
+ */
 extern Score load_xml(const std::string& file);
 
+/**
+ * @param file  文件路径
+ * @param score 乐谱
+ * 
+ * @return 是否成功
+ */
 extern bool save_xml(const std::string& file, const Score& score);
 
 } // END OF lifuren::music

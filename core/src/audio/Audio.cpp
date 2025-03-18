@@ -22,12 +22,18 @@ public:
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BachModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     // TODO
     return {};
 }
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::ShikuangModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     const auto output = lifuren::file::modify_filename(input, ".pcm", "gen");
     const auto [success, pcm_file] = lifuren::dataset::audio::toPcm(input);
     if(!success) {
@@ -79,6 +85,9 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
 
 template<>
 std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BeethovenModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     // TODO
     return {};
 }

@@ -24,18 +24,27 @@ public:
 
 template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::ChopinModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     // TODO
     return {};
 }
 
 template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::MozartModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     // TODO
     return {};
 }
 
 template<>
 std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::WudaoziModel>::pred(const std::string& input) {
+    if(!this->model) {
+        return { false, {} };
+    }
     const std::string output = lifuren::file::modify_filename(input, ".mp4", "gen");;
     torch::Tensor pred_tensor;
     const auto suffix = lifuren::file::file_suffix(input);

@@ -641,7 +641,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBeethovenDatasetLoa
             const torch::DeviceType   & device
         ) {
             auto score = lifuren::music::load_xml(file);
-            if(score.measureMap.empty()) {
+            if(score.empty()) {
                 SPDLOG_WARN("加载数据失败：{}", file);
                 return;
             }

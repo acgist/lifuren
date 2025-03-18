@@ -20,7 +20,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::image::loadChopinDatasetLoader
         ) {
             auto score = lifuren::music::load_xml(l_file);
             auto image = cv::imread(f_file);
-            if(score.measureMap.empty() || image.empty()) {
+            if(score.empty() || image.empty()) {
                 SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
                 return;
             }
@@ -49,7 +49,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::image::loadMozartDatasetLoader
         ) {
             auto score = lifuren::music::load_xml(l_file);
             auto image = cv::imread(f_file);
-            if(score.measureMap.empty() || image.empty()) {
+            if(score.empty() || image.empty()) {
                 SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
                 return;
             }

@@ -6,16 +6,16 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * FLTK
+ * GUI
  * 
- * https://www.fltk.org/doc-1.3/index.html
+ * https://www.wxwidgets.org/
  * 
  * @author acgist
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_CLIENT_FLTK_HPP
-#define LFR_HEADER_CLIENT_FLTK_HPP
+#ifndef LFR_HEADER_CLIENT_GUI_HPP
+#define LFR_HEADER_CLIENT_GUI_HPP
 
 // 去掉冲突
 #ifdef  _WIN32
@@ -30,29 +30,33 @@
 #define LFR_WINDOW_WIDTH  1280
 #define LFR_WINDOW_HEIGHT 720
 #define LFR_DIALOG_WIDTH  780
-#define LFR_DIALOG_HEIGHT 512
+#define LFR_DIALOG_HEIGHT 520
 #endif
 
 #include <set>
 #include <string>
 
-#include "FL/Fl_Window.H"
-
-class Fl_Choice;
+#include "wx/app.h"
+#include "wx/frame.h"
 
 namespace lifuren {
 
-extern void initFltkService(); // 加载FLTK服务
-extern void stopFltkService(); // 关闭FLTK服务
+extern void initGUI(); // 加载GUI
+
+/**
+ * 应用
+ */
+class Application : public wxApp {
+
+public:
+    bool OnInit();
+
+};
 
 /**
  * 抽象窗口
  */
-class Window : public Fl_Window {
-
-protected:
-    const char* name; // 窗口名称
-    Fl_RGB_Image* windowIcon{ nullptr }; // 窗口图标
+class Window : public wxFrame {
 
 public:
     /**
@@ -60,15 +64,14 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    Window(int width, int height, const char* title);
+    Window(int width, int height, const wxString& title);
     virtual ~Window();
 
 public:
     virtual void init(); // 初始化窗口
 
 protected:
-    void icon  (); // 设置图标
-    void center(); // 窗口居中
+    virtual void loadIcon   (); // 设置图标
     virtual void drawElement(); // 绘制组件
     virtual void bindEvent  (); // 绑定事件
     virtual void fillData   (); // 数据填充
@@ -86,12 +89,12 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    MainWindow(int width, int height, const char* title = "李夫人");
-    virtual ~MainWindow();
+    MainWindow(int width, int height, const wxString& title = wxT("李夫人"));
+    ~MainWindow();
 
 protected:
-    virtual void drawElement() override;
-    virtual void bindEvent  () override;
+    void drawElement() override;
+    void bindEvent  () override;
 
 };
 
@@ -106,7 +109,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    ConfigWindow(int width, int height, const char* title = "配置");
+    ConfigWindow(int width, int height, const wxString& title = L"配置");
     virtual ~ConfigWindow();
 
 protected:
@@ -127,7 +130,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    AboutWindow(int width, int height, const char* title = "关于");
+    AboutWindow(int width, int height, const wxString& title = L"关于");
     virtual ~AboutWindow();
 
 protected:
@@ -148,7 +151,7 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    MusicScoreWindow(int width, int height, const char* title = "乐谱");
+    MusicScoreWindow(int width, int height, const wxString& title = L"乐谱");
     virtual ~MusicScoreWindow();
 
 protected:
@@ -167,18 +170,7 @@ protected:
  * 
  * @return 选择文件路径
  */
-extern std::string fileChooser(const char* title, const char* filter = "*.*", const char* directory = "");
-
-/**
- * 选择文件同时设置到输入框
- * 
- * @param widget    来源组件
- * @param voidPtr   输入框指针
- * @param title     窗口标题
- * @param filter    文件过滤：*.{cxx,cpp}
- * @param directory 当前目录
- */
-extern void fileChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* filter = "*.*", const char* directory = "");
+extern std::string file_chooser(const wxString& title, const wxString& filter = wxT(""), const wxString& directory = wxT(""));
 
 /**
  * 选择目录
@@ -188,18 +180,8 @@ extern void fileChooser(Fl_Widget* widget, void* voidPtr, const char* title, con
  * 
  * @return 选择目录路径
  */
-extern std::string directoryChooser(const char* title, const char* directory = "");
-
-/**
- * 选择目录同时设置到输入框
- * 
- * @param widget    来源组件
- * @param voidPtr   输入框指针
- * @param title     窗口标题
- * @param directory 当前目录
- */
-extern void directoryChooser(Fl_Widget* widget, void* voidPtr, const char* title, const char* directory = "");
+extern std::string directory_chooser(const wxString& title, const wxString& directory = "");
 
 } // END OF lifuren
 
-#endif // LFR_HEADER_CLIENT_FLTK_HPP
+#endif // LFR_HEADER_CLIENT_GUI_HPP

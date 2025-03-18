@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>李夫人</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="keywords" content="李夫人" />
+  <meta name="description" content="李夫人" />
+
+  <script type="text/javascript" src="./node_modules/jspdf/dist/jspdf.es.min.js"></script>
+  <script type="text/javascript" src="./node_modules/opensheetmusicdisplay/build/opensheetmusicdisplay.min.js"></script>
+</head>
+
+<body>
+  <div id="container">1</div>
+  <script>
+    const display = new opensheetmusicdisplay.OpenSheetMusicDisplay("container");
+    display.setOptions({
+      backend: "canvas",
+      drawTitle: true,
+    });
+    display
+      .load("file:///D:/gitee/lifuren/client/web/music.xml")
+      .then(() => {
+        display.render();
+      }
+      );
+  </script>
+</body>
+
+</html>

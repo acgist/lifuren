@@ -4,6 +4,10 @@
 
 #include "spdlog/spdlog.h"
 
+bool lifuren::music::Score::empty() {
+    return this->measureMap.empty();
+}
+
 lifuren::music::Score lifuren::music::load_xml(const std::string& path) {
     tinyxml2::XMLDocument doc;
     lifuren::music::Score score;
