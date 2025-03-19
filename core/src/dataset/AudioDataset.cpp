@@ -181,12 +181,26 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 }
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
-    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
     const AVSampleFormat format = static_cast<AVSampleFormat>(frame->format);
+    #if FF_API_OLD_CHANNEL_LAYOUT
+    auto mono = AV_CH_LAYOUT_MONO;
     SPDLOG_DEBUG(
         "重采样信息：{} {} {} -> {} {} {}",
-        frame->ch_layout.nb_channels, av_get_sample_fmt_name(format), frame->sample_rate,
-        mono.nb_channels, av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE
+        mono,                  av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE,
+        frame->channel_layout, av_get_sample_fmt_name(format),            frame->sample_rate
+    );
+    swr_alloc_set_opts(
+        *swrCtx,
+        mono,                  AV_SAMPLE_FMT_S16, LFR_SAMPLE_RATE,
+        frame->channel_layout, format,            frame->sample_rate,
+        0, nullptr
+    );
+    #else
+    static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
+    SPDLOG_DEBUG(
+        "重采样信息：{} {} {} -> {} {} {}",
+        mono.nb_channels,             av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE,
+        frame->ch_layout.nb_channels, av_get_sample_fmt_name(format),            frame->sample_rate
     );
     swr_alloc_set_opts2(
         swrCtx,
@@ -194,6 +208,7 @@ static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
         &frame->ch_layout, format,            frame->sample_rate,
         0, nullptr
     );
+    #endif
     if(!*swrCtx) {
         SPDLOG_WARN("重采样上下文申请失败");
         return false;
