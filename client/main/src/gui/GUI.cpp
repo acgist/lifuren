@@ -26,7 +26,13 @@ void lifuren::initGUI() {
     app->SetAppName(wxT("李夫人"));
     app->SetVendorName(wxT("acgist"));
     wxApp::SetInstance(app);
+    #if _WIN32
     wxEntry();
+    #else
+    int    argc = 0;
+    char** argv = nullptr;
+    wxEntry(argc, argv);
+    #endif
     SPDLOG_INFO("结束GUI");
 }
 

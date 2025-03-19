@@ -54,6 +54,12 @@ if(CMAKE_HOST_WIN32)
         ${wxWidgets_LIBRARIES}
     )
 else()
+    # wx-config --cxxflags
+    target_compile_definitions(${PROJECT_NAME} PUBLIC __WXGTK__)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WXUSINGDLL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64)
+    target_include_directories(${PROJECT_NAME} PUBLIC /usr/include/wx-3.2)
+    target_include_directories(${PROJECT_NAME} PUBLIC /usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2)
     target_link_libraries(
         ${PROJECT_NAME}
         png
