@@ -1,15 +1,12 @@
 {
   "name": "lifuren",
-  "version": "1.0.0",
-  "description": "lifuren",
-  "main": "index.js",
-  "keywords": [
-    "lifuren"
-  ],
   "author": "acgist",
+  "version": "1.0.0",
   "license": "Apache-2.0",
+  "description": "lifuren",
   "dependencies": {
     "jspdf": "^3.0.0",
+    "svg2pdf.js": "^2.5.0",
     "opensheetmusicdisplay": "^1.8.9"
   }
 }

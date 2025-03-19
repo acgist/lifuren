@@ -1,6 +1,10 @@
 #include "lifuren/CLI.hpp"
+
 #if LFR_ENABLE_GUI
 #include "lifuren/GUI.hpp"
+#if _WIN32
+#include "WinUser.h"
+#endif
 #endif
 
 #include <thread>
@@ -18,6 +22,9 @@ int main(const int argc, const char* const argv[]) {
     });
     #if _WIN32
     system("chcp 65001");
+    #if LFR_ENABLE_GUI
+    SetProcessDPIAware();
+    #endif
     #endif
     lifuren::logger::init();
     lifuren::logger::opencv::init();

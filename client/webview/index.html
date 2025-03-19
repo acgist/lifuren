@@ -8,24 +8,174 @@
   <meta name="keywords" content="李夫人" />
   <meta name="description" content="李夫人" />
 
-  <script type="text/javascript" src="./node_modules/jspdf/dist/jspdf.es.min.js"></script>
-  <script type="text/javascript" src="./node_modules/opensheetmusicdisplay/build/opensheetmusicdisplay.min.js"></script>
+  <link rel="stylesheet" href="./style.css" />
+  <script type="text/javascript" src="./jspdf.umd.min.js"></script>
+  <script type="text/javascript" src="./svg2pdf.umd.min.js"></script>
+  <script type="text/javascript" src="./opensheetmusicdisplay.min.js"></script>
 </head>
 
 <body>
-  <div id="container">1</div>
-  <script>
+  <div class="operation">
+    <a class="hvr-radial-in" id="operation"  title="操作"><span class="icon-list"            ></span></a>
+    <a class="hvr-radial-in" id="open_score" title="打开"><span class="icon-folder-open"     ></span></a>
+    <a class="hvr-radial-in" id="play_score" title="演奏"><span class="icon-play3"           ></span></a>
+    <a class="hvr-radial-in" id="rule_score" title="指法"><span class="icon-music"           ></span></a>
+    <a class="hvr-radial-in" id="plus_score" title="升调"><span class="icon-arrow-up-right"  ></span></a>
+    <a class="hvr-radial-in" id="fall_score" title="降调"><span class="icon-arrow-down-right"></span></a>
+    <a class="hvr-radial-in" id="save_pdf"   title="文档"><span class="icon-files-empty"     ></span></a>
+    <a class="hvr-radial-in" id="save_img"   title="图片"><span class="icon-images"          ></span></a>
+    <a class="hvr-radial-in" id="zoom_in"    title="放大"><span class="icon-zoom-in"         ></span></a>
+    <a class="hvr-radial-in" id="zoom_out"   title="缩小"><span class="icon-zoom-out"        ></span></a>
+    <a class="hvr-radial-in" id="zoom_reset" title="重置"><span class="icon-spinner11"       ></span></a>
+  </div>
+  <div id="container" style="width:1080px;margin:auto;"></div>
+  <script type="text/javascript">
+    const music_xml = `<?xml version="1.0" encoding="UTF-16"?>
+    <score-partwise version="3.0">
+      <work>
+        <work-number>K. 080</work-number>
+        <work-title>Lifuren Demo (Version. 1.0.0)</work-title>
+      </work>
+      <part-list>
+        <score-part id="P1">
+          <part-name>Piano</part-name>
+        </score-part>
+      </part-list>
+      <part id="P1">
+        <measure implicit="yes" number="0">
+          <attributes>
+            <divisions>4</divisions>
+            <key>
+              <fifths>0</fifths>
+              <mode>major</mode>
+            </key>
+            <time>
+              <beats>4</beats>
+              <beat-type>4</beat-type>
+            </time>
+          </attributes>
+          <note>
+            <rest measure="yes" />
+            <voice>1</voice>
+            <duration>4</duration>
+          </note>
+        </measure>
+        <measure number="1" width="125">
+          <note>
+            <pitch>
+              <step>G</step>
+              <octave>4</octave>
+            </pitch>
+            <type>whole</type>
+            <voice>1</voice>
+            <duration>4</duration>
+          </note>
+        </measure>
+      </part>
+    </score-partwise>`;
+    let zoom = 1.0;
     const display = new opensheetmusicdisplay.OpenSheetMusicDisplay("container");
     display.setOptions({
-      backend: "canvas",
-      drawTitle: true,
+      backend   : "svg", // "canvas"
+      drawTitle : true,
+      autoResize: false,
+      pageFormat: "A4_P",
+      cursorsOptions: [{ type: 3, color: "#CCCC00", alpha: 0.6, follow: true }],
+      pageBackgroundColor: "#FFFFFF",
     });
-    display
-      .load("file:///D:/gitee/lifuren/client/web/music.xml")
-      .then(() => {
-        display.render();
+    display.load(music_xml).then(() => {
+      display.render();
+      // display.cursor.show();
+      // display.cursor.hide();
+      // display.cursor.reset();
+      // display.cursor.previous();
+      // display.cursor.next();
+    });
+    document.getElementById("open_score").onclick = async () => {
+      const [picker] = await window.showOpenFilePicker({
+        types: [{
+          accept: { "text/xml": ['.xml', '.musicxml'] },
+          description: "乐谱"
+        }]
+      });
+      const file = await picker?.getFile();
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          display.load(e.target.result).then(() => {
+            display.render();
+          });
+        };
+        reader.readAsText(file);
+      } else {
+        console.info("用户没有选择文件");
       }
-      );
+    };
+    document.getElementById("save_pdf").onclick = async () => {
+      const backends = display.drawer.Backends;
+      let svgElement = backends[0].getSvgElement();
+      let pageWidth  = 210;
+      let pageHeight = 297;
+      const displayPageFormat = display.rules.PageFormat;
+      if (displayPageFormat && !displayPageFormat.IsUndefined) {
+        pageWidth  = displayPageFormat.width;
+        pageHeight = displayPageFormat.height;
+      } else {
+        pageHeight = pageWidth * svgElement.clientHeight / svgElement.clientWidth;
+      }
+      const orientation = pageHeight > pageWidth ? "p" : "l";
+      const pdf = new jspdf.jsPDF({
+        unit  : "mm",
+        format: [pageWidth, pageHeight],
+        orientation: orientation
+      });
+      for (let index = 0; index < backends.length; ++index) {
+        if (index > 0) {
+          pdf.addPage();
+        }
+        svgElement = backends[index].getSvgElement();
+        await pdf.svg(svgElement, {
+          x: 0,
+          y: 0,
+          width: pageWidth,
+          height: pageHeight,
+        })
+      }
+      pdf.save((display.sheet.FullNameString || "lifuren") + ".pdf");
+    };
+    document.getElementById("save_img").onclick = async () => {
+      display.setOptions({
+        backend   : "canvas",
+        pageFormat: ""
+      });
+      display.render();
+      const canvas = document.getElementsByTagName("canvas")[0];
+      const imgURL = canvas.toDataURL({ format: "image/png" });
+      const dlLink = document.createElement('a');
+      dlLink.href     = imgURL;
+      dlLink.download = (display.sheet.FullNameString || "lifuren") + ".png";
+      dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
+      document.body.appendChild(dlLink);
+      dlLink.click();
+      document.body.removeChild(dlLink);
+      display.setOptions({
+        backend   : "svg",
+        pageFormat: "A4_P"
+      });
+      display.render();
+    };
+    document.getElementById("zoom_in").onclick = async () => {
+      display.Zoom = zoom += 0.1;
+      display.render();
+    };
+    document.getElementById("zoom_out").onclick = async () => {
+      display.Zoom = zoom -= 0.1;
+      display.render();
+    };
+    document.getElementById("zoom_reset").onclick = async () => {
+      display.Zoom = zoom = 1.0;
+      display.render();
+    };
   </script>
 </body>
 

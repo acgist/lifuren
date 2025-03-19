@@ -9,7 +9,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Raii.hpp"
 #include "lifuren/Audio.hpp"
 #include "lifuren/Image.hpp"
 #include "lifuren/Config.hpp"
@@ -79,16 +78,18 @@ lifuren::MainWindow::~MainWindow() {
 }
 
 void lifuren::MainWindow::drawElement() {
+    const int w = this->GetClientSize().GetWidth();
+    const int h = this->GetClientSize().GetHeight();
     panel              = new wxPanel(this);
-    bach_button        = new wxButton  (panel, bach_id,         bach_text,         wxPoint( 10,  10), wxSize( 400,  80));
-    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint(420,  10), wxSize( 400,  80));
-    mozart_button      = new wxButton  (panel, mozart_id,       mozart_text,       wxPoint(830,  10), wxSize( 400,  80));
-    shikuang_button    = new wxButton  (panel, shikuang_id,     shikuang_text,     wxPoint( 10, 100), wxSize( 605,  80));
-    wudaozi_button     = new wxButton  (panel, wudaozi_id,      wudaozi_text,      wxPoint(625, 100), wxSize( 605,  80));
-    music_score_button = new wxButton  (panel, music_score_id,  music_score_text,  wxPoint( 10, 190), wxSize(1220,  80));
-    config_button      = new wxButton  (panel, config_id,       config_text,       wxPoint( 10, 280), wxSize( 605,  80));
-    about_button       = new wxButton  (panel, about_id,        about_text,        wxPoint(625, 280), wxSize( 605,  80));
-    message_text       = new wxTextCtrl(panel, message_text_id, message_text_text, wxPoint( 10, 370), wxSize(1220, 300), wxTE_MULTILINE);
+    bach_button        = new wxButton  (panel, bach_id,         bach_text,         wxPoint(                   10,  10), wxSize((w - 40) / 3,      80));
+    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint((w - 40) / 3     + 20,  10), wxSize((w - 40) / 3,      80));
+    mozart_button      = new wxButton  (panel, mozart_id,       mozart_text,       wxPoint((w - 40) / 3 * 2 + 30,  10), wxSize((w - 40) / 3,      80));
+    shikuang_button    = new wxButton  (panel, shikuang_id,     shikuang_text,     wxPoint(                   10, 100), wxSize((w - 30) / 2,      80));
+    wudaozi_button     = new wxButton  (panel, wudaozi_id,      wudaozi_text,      wxPoint((w / 2)          +  5, 100), wxSize((w - 30) / 2,      80));
+    music_score_button = new wxButton  (panel, music_score_id,  music_score_text,  wxPoint(                   10, 190), wxSize((w - 20),          80));
+    config_button      = new wxButton  (panel, config_id,       config_text,       wxPoint(                   10, 280), wxSize((w - 30) / 2,      80));
+    about_button       = new wxButton  (panel, about_id,        about_text,        wxPoint((w / 2)           + 5, 280), wxSize((w - 30) / 2,      80));
+    message_text       = new wxTextCtrl(panel, message_text_id, message_text_text, wxPoint(                   10, 370), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
     message_text->Disable();
     message_text->SetBackgroundColour(panel->GetBackgroundColour());
 }

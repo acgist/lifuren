@@ -4,7 +4,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 
 static wxPanel   * panel                 { nullptr };
@@ -62,23 +61,25 @@ lifuren::ConfigWindow::~ConfigWindow() {
 }
 
 void lifuren::ConfigWindow::drawElement() {
+    const int w = this->GetClientSize().GetWidth();
+    const int h = this->GetClientSize().GetHeight();
     panel                  = new wxPanel(this);
-    tmp_input              = new wxTextCtrl(panel, wxID_ANY,                  tmp_input_text             , wxPoint(100,  20), wxSize(400, 30));
-    tmp_button             = new wxButton  (panel, tmp_button_id,             tmp_button_text            , wxPoint(500,  20), wxSize(180, 30));
-    output_input           = new wxTextCtrl(panel, wxID_ANY,                  output_input_text          , wxPoint(100,  60), wxSize(400, 30));
-    output_button          = new wxButton  (panel, output_button_id,          output_button_text         , wxPoint(500,  60), wxSize(180, 30));
-    model_bach_input       = new wxTextCtrl(panel, wxID_ANY,                  model_bach_input_text      , wxPoint(100, 100), wxSize(400, 30));
-    model_bach_button      = new wxButton  (panel, model_bach_button_id,      model_bach_button_text     , wxPoint(500, 100), wxSize(180, 30));
-    model_chopin_input     = new wxTextCtrl(panel, wxID_ANY,                  model_chopin_input_text    , wxPoint(100, 140), wxSize(400, 30));
-    model_chopin_button    = new wxButton  (panel, model_chopin_button_id,    model_chopin_button_text   , wxPoint(500, 140), wxSize(180, 30));
-    model_mozart_input     = new wxTextCtrl(panel, wxID_ANY,                  model_mozart_input_text    , wxPoint(100, 180), wxSize(400, 30));
-    model_mozart_button    = new wxButton  (panel, model_mozart_button_id,    model_mozart_button_text   , wxPoint(500, 180), wxSize(180, 30));
-    model_wudaozi_input    = new wxTextCtrl(panel, wxID_ANY,                  model_wudaozi_input_text   , wxPoint(100, 220), wxSize(400, 30));
-    model_wudaozi_button   = new wxButton  (panel, model_wudaozi_button_id,   model_wudaozi_button_text  , wxPoint(500, 220), wxSize(180, 30));
-    model_shikuang_input   = new wxTextCtrl(panel, wxID_ANY,                  model_shikuang_input_text  , wxPoint(100, 260), wxSize(400, 30));
-    model_shikuang_button  = new wxButton  (panel, model_shikuang_button_id,  model_shikuang_button_text , wxPoint(500, 260), wxSize(180, 30));
-    model_beethoven_input  = new wxTextCtrl(panel, wxID_ANY,                  model_beethoven_input_text , wxPoint(100, 300), wxSize(400, 30));
-    model_beethoven_button = new wxButton  (panel, model_beethoven_button_id, model_beethoven_button_text, wxPoint(500, 300), wxSize(180, 30));
+    tmp_input              = new wxTextCtrl(panel, wxID_ANY,                  tmp_input_text             , wxPoint((w - 640) / 2,         10), wxSize(400, 30));
+    tmp_button             = new wxButton  (panel, tmp_button_id,             tmp_button_text            , wxPoint((w - 640) / 2 + 410,   10), wxSize(240, 30));
+    output_input           = new wxTextCtrl(panel, wxID_ANY,                  output_input_text          , wxPoint((w - 640) / 2,         50), wxSize(400, 30));
+    output_button          = new wxButton  (panel, output_button_id,          output_button_text         , wxPoint((w - 640) / 2 + 410,   50), wxSize(240, 30));
+    model_bach_input       = new wxTextCtrl(panel, wxID_ANY,                  model_bach_input_text      , wxPoint((w - 640) / 2,         90), wxSize(400, 30));
+    model_bach_button      = new wxButton  (panel, model_bach_button_id,      model_bach_button_text     , wxPoint((w - 640) / 2 + 410,   90), wxSize(240, 30));
+    model_chopin_input     = new wxTextCtrl(panel, wxID_ANY,                  model_chopin_input_text    , wxPoint((w - 640) / 2,        130), wxSize(400, 30));
+    model_chopin_button    = new wxButton  (panel, model_chopin_button_id,    model_chopin_button_text   , wxPoint((w - 640) / 2 + 410,  130), wxSize(240, 30));
+    model_mozart_input     = new wxTextCtrl(panel, wxID_ANY,                  model_mozart_input_text    , wxPoint((w - 640) / 2,        170), wxSize(400, 30));
+    model_mozart_button    = new wxButton  (panel, model_mozart_button_id,    model_mozart_button_text   , wxPoint((w - 640) / 2 + 410,  170), wxSize(240, 30));
+    model_wudaozi_input    = new wxTextCtrl(panel, wxID_ANY,                  model_wudaozi_input_text   , wxPoint((w - 640) / 2,        210), wxSize(400, 30));
+    model_wudaozi_button   = new wxButton  (panel, model_wudaozi_button_id,   model_wudaozi_button_text  , wxPoint((w - 640) / 2 + 410,  210), wxSize(240, 30));
+    model_shikuang_input   = new wxTextCtrl(panel, wxID_ANY,                  model_shikuang_input_text  , wxPoint((w - 640) / 2,        250), wxSize(400, 30));
+    model_shikuang_button  = new wxButton  (panel, model_shikuang_button_id,  model_shikuang_button_text , wxPoint((w - 640) / 2 + 410,  250), wxSize(240, 30));
+    model_beethoven_input  = new wxTextCtrl(panel, wxID_ANY,                  model_beethoven_input_text , wxPoint((w - 640) / 2,        290), wxSize(400, 30));
+    model_beethoven_button = new wxButton  (panel, model_beethoven_button_id, model_beethoven_button_text, wxPoint((w - 640) / 2 + 410,  290), wxSize(240, 30));
 }
 
 void lifuren::ConfigWindow::bindEvent() {
@@ -118,7 +119,10 @@ void lifuren::ConfigWindow::fillData() {
 }
 
 static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
-    auto file = lifuren::file_chooser("选择模型", "模型文件|*.pt;*.pth");
+    auto file = lifuren::file_chooser(wxT("选择模型"), wxT("模型文件|*.pt;*.pth"));
+    if(file.empty()) {
+        return;
+    }
     input->Clear();
     input->AppendText(wxString::FromUTF8(file));
     auto& config = lifuren::config::CONFIG;
@@ -140,7 +144,10 @@ static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
 }
 
 static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl* input) {
-    auto file = lifuren::directory_chooser("选择目录");
+    auto file = lifuren::directory_chooser(wxT("选择目录"));
+    if(file.empty()) {
+        return;
+    }
     auto& config = lifuren::config::CONFIG;
     input->Clear();
     input->AppendText(wxString::FromUTF8(file));

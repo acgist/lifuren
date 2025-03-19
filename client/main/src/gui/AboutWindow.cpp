@@ -2,8 +2,6 @@
 
 #include "wx/wx.h"
 
-#include "lifuren/Raii.hpp"
-
 static wxPanel   * panel      { nullptr };
 static wxButton  * home_page  { nullptr };
 static wxButton  * gitee_page { nullptr };
@@ -27,11 +25,13 @@ lifuren::AboutWindow::~AboutWindow() {
 }
 
 void lifuren::AboutWindow::drawElement() {
+    const int w = this->GetClientSize().GetWidth();
+    const int h = this->GetClientSize().GetHeight();
     panel       = new wxPanel(this);
-    about       = new wxTextCtrl(panel, about_id,       about_text,       wxPoint( 10,   10), wxSize(740, 400), wxTE_MULTILINE);
-    home_page   = new wxButton(  panel, home_page_id,   home_page_text,   wxPoint(240,  430), wxSize( 80,  30));
-    gitee_page  = new wxButton(  panel, gitee_page_id,  gitee_page_text,  wxPoint(350,  430), wxSize( 80,  30));
-    github_page = new wxButton(  panel, github_page_id, github_page_text, wxPoint(460,  430), wxSize( 80,  30));
+    about       = new wxTextCtrl(panel, about_id,       about_text,       wxPoint(         10,      10), wxSize(w - 20, h - 80), wxTE_MULTILINE);
+    home_page   = new wxButton(  panel, home_page_id,   home_page_text,   wxPoint(w / 2 - 140,  h - 50), wxSize(    80,     30));
+    gitee_page  = new wxButton(  panel, gitee_page_id,  gitee_page_text,  wxPoint(w / 2 -  40,  h - 50), wxSize(    80,     30));
+    github_page = new wxButton(  panel, github_page_id, github_page_text, wxPoint(w / 2 +  60,  h - 50), wxSize(    80,     30));
     about->Disable();
     about->SetBackgroundColour(panel->GetBackgroundColour());
 }
