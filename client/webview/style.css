@@ -99,10 +99,10 @@
 .icon-arrow-left:before{content:"\ea38"}
 *{margin:0;padding:0;border:none;outline:none;box-sizing:content-box}
 .operation{position:fixed;top:2rem;right:2rem;overflow:hidden}
-.operation a{margin:0.2rem;display:none;width:3rem;height:3rem;border-radius:100%;font-size:1.2rem;line-height:3rem;text-align:center;cursor:pointer}
+.operation a{margin:0.2rem;display:none;width:2rem;height:2rem;border-radius:100%;font-size:0.8rem;line-height:2rem;text-align:center;cursor:pointer}
 .operation a:first-child{display:block}
 .operation:hover a{display:block}
 .hvr-radial-in{vertical-align:middle;transform:translateZ(0);box-shadow:0 0 1px rgba(0,0,0,0.5);backface-visibility:hidden;-moz-osx-font-smoothing:grayscale;position:relative;overflow:hidden;background:#C00;transition-property:color,font-size;transition-duration:0.5s}
 .hvr-radial-in:before{content:"";position:absolute;z-index:-1;top:0;left:0;right:0;bottom:0;background:#f0f0f0;border-radius:100%;transform:scale(2);transition-property:transform;transition-duration:0.5s;transition-timing-function:ease-out}
-.hvr-radial-in:hover,.hvr-radial-in:focus,.hvr-radial-in:active{color:white;font-size:1.4rem}
+.hvr-radial-in:hover,.hvr-radial-in:focus,.hvr-radial-in:active{color:white;font-size:1.2rem}
 .hvr-radial-in:hover:before,.hvr-radial-in:focus:before,.hvr-radial-in:active:before{transform:scale(0)}

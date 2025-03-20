@@ -30,22 +30,8 @@ jobs:
           sudo  apt install libopencv-dev -y
           apt-cache madison libopencv-dev
           ################################ spdlog
-          # sudo  apt install libspdlog-dev -y
-          # apt-cache madison libspdlog-dev
-          git clone -b 10.2.0 --depth=1 https://github.com/fmtlib/fmt.git
-          cd fmt
-          mkdir build ; cd $_
-          cmake .. -DFMT_TEST=OFF -DBUILD_SHARED_LIBS=ON
-          make -j 2
-          sudo make install
-          cd ../../
-          git clone -b v1.13.0 --depth=1 https://github.com/gabime/spdlog.git
-          cd spdlog
-          mkdir build ; cd $_
-          cmake .. -DSPDLOG_BUILD_EXAMPLE=OFF -DBUILD_SHARED_LIBS=ON
-          make -j 2
-          sudo make install
-          cd ../../
+          sudo  apt install libspdlog-dev -y
+          apt-cache madison libspdlog-dev
           ################################ libtorch
           wget  https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.6.0%2Bcpu.zip > /dev/null 2>&1
           unzip libtorch-cxx11-abi-shared-with-deps-2.6.0+cpu.zip > /dev/null 2>&1

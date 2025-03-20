@@ -11,8 +11,10 @@
  * st：单线程版本（效率更高）
  * mt：多线程版本（线程安全）
  * 
- * https://fmt.dev/11.0/
- * https://fmt.dev/11.0/syntax/
+ * https://fmt.dev/latest/
+ * https://fmt.dev/latest/api/
+ * https://fmt.dev/latest/syntax/
+ * https://github.com/gabime/spdlog/
  * 
  * @author acgist
  * 
