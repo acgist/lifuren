@@ -8,8 +8,12 @@
 let zoom  = 1.0;  // 缩放
 let staff = true; // 五线谱
 
-let display;
+let display_staff;
+let display_jianpu;
 let music_xml_cache;
+
+const a4_width  = 210;
+const a4_height = 297;
 
 async function load_music_xml(music_xml) {
   if(staff) {
@@ -21,29 +25,29 @@ async function load_music_xml(music_xml) {
 
 async function load_music_xml_staff(music_xml) {
   music_xml_cache = music_xml;
-  display = new opensheetmusicdisplay.OpenSheetMusicDisplay("staff_container");
-  display.setOptions({
-    backend   : "svg", // "canvas"
+  display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay("staff_container");
+  display_staff.setOptions({
+    backend   : "svg",
     drawTitle : true,
     autoResize: false,
     pageFormat: "A4_P",
     cursorsOptions: [{ type: 3, color: "#CCCC00", alpha: 0.6, follow: true }],
     pageBackgroundColor: "#FFFFFF",
   });
-  display.load(music_xml).then(() => {
-    display.render();
-    // display.cursor.show();
-    // display.cursor.hide();
-    // display.cursor.reset();
-    // display.cursor.previous();
-    // display.cursor.next();
+  display_staff.load(music_xml).then(() => {
+    display_staff.render();
+    // display_staff.cursor.show();
+    // display_staff.cursor.hide();
+    // display_staff.cursor.reset();
+    // display_staff.cursor.previous();
+    // display_staff.cursor.next();
   });
 }
 
 async function load_music_xml_jianpu(music_xml) {
   music_xml_cache = music_xml;
-  display = new Jianpu();
-  display.render(music_xml);
+  display_jianpu = new Jianpu();
+  display_jianpu.render(music_xml);
 }
 
 async function load_music_xml_file() {
@@ -79,22 +83,20 @@ async function staff_jianpu() {
 }
 
 async function save_pdf_staff() {
-  const backends = display.drawer.Backends;
+  const backends = display_staff.drawer.Backends;
   let svgElement = backends[0].getSvgElement();
-  let pageWidth  = 210;
-  let pageHeight = 297;
-  const displayPageFormat = display.rules.PageFormat;
-  if (displayPageFormat && !displayPageFormat.IsUndefined) {
-    pageWidth  = displayPageFormat.width;
-    pageHeight = displayPageFormat.height;
+  let pageWidth  = a4_width;
+  let pageHeight = a4_height;
+  if (!display_staff.rules.PageFormat?.IsUndefined) {
+    pageWidth  = display_staff.rules.PageFormat.width;
+    pageHeight = display_staff.rules.PageFormat.height;
   } else {
     pageHeight = pageWidth * svgElement.clientHeight / svgElement.clientWidth;
   }
-  const orientation = pageHeight > pageWidth ? "p" : "l";
   const pdf = new jspdf.jsPDF({
     unit  : "mm",
     format: [pageWidth, pageHeight],
-    orientation: orientation
+    orientation: pageHeight > pageWidth ? "p" : "l"
   });
   for (let index = 0; index < backends.length; ++index) {
     if (index > 0) {
@@ -104,71 +106,76 @@ async function save_pdf_staff() {
     await pdf.svg(svgElement, {
       x: 0,
       y: 0,
-      width: pageWidth,
+      width : pageWidth,
       height: pageHeight,
     })
   }
-  pdf.save((display.sheet.FullNameString || "lifuren") + ".pdf");
+  pdf.save((display_staff.sheet.FullNameString || "lifuren") + ".pdf");
 };
 
 async function save_pdf_jianpu() {
 };
 
+async function download_img(index, svgElement) {
+  const canvas     = document.createElement('canvas');
+  canvas.width     = svgElement.width.baseVal.value;
+  canvas.height    = svgElement.height.baseVal.value;
+  const ctx        = canvas.getContext('2d');
+  const svgContent = new XMLSerializer().serializeToString(svgElement);
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0);
+    const imgURL = canvas.toDataURL({ format: "image/png" });
+    const dlLink = document.createElement('a');
+    dlLink.href     = imgURL;
+    dlLink.download = (display_staff.sheet.FullNameString || "lifuren") + "-" + index + ".png";
+    dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
+    document.body.appendChild(dlLink);
+    dlLink.click();
+    document.body.removeChild(dlLink);
+  };
+  let content = "";
+  const chunk = 8 * 1024;
+  const array = new TextEncoder().encode(svgContent);
+  let i;
+  for (i = 0; i < array.length / chunk; ++i) {
+    content += String.fromCharCode(...array.slice(i * chunk, (i + 1) * chunk));
+  }
+  if(array.length % chunk != 0) {
+    content += String.fromCharCode.apply(...array.slice(i * chunk));
+  }
+  img.src = 'data:image/svg+xml;base64,' + btoa(content);
+}
+
 async function save_img_staff() {
-  display.setOptions({
-    backend   : "canvas",
-    pageFormat: ""
-  });
-  display.render();
-  const canvas = document.querySelector("#staff_container canvas");
-  const imgURL = canvas.toDataURL({ format: "image/png" });
-  const dlLink = document.createElement('a');
-  dlLink.href     = imgURL;
-  dlLink.download = (display.sheet.FullNameString || "lifuren") + ".png";
-  dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
-  document.body.appendChild(dlLink);
-  dlLink.click();
-  document.body.removeChild(dlLink);
-  display.setOptions({
-    backend   : "svg",
-    pageFormat: "A4_P"
-  });
-  display.render();
+  const backends = display_staff.drawer.Backends;
+  for(let i = 0; i < backends.length; ++i) {
+    await download_img(i, backends[i].getSvgElement());
+  }
 };
 
 async function save_img_jianpu() {
-// var svgElement = document.getElementsByTagName('svg')[0];
-// var svgContent = new XMLSerializer().serializeToString(svgElement);
-// var canvas = document.createElement('canvas');
-// canvas.width = svgElement.width.baseVal.value;
-// canvas.height = svgElement.height.baseVal.value;
-// var ctx = canvas.getContext('2d');
-// var img = new Image();
-// img.onload = function() {
-//   ctx.drawImage(img, 0, 0);
-// };
-// img.src = 'data:image/svg+xml;base64,' + btoa(svgContent);
 };
 
 async function zoom_in_staff() {
-  display.Zoom = zoom += 0.1;
-  display.render();
+  display_staff.Zoom = zoom += 0.1;
+  display_staff.render();
 };
 
 async function zoom_in_jianput() {
 };
 
 async function zoom_out_staff() {
-  display.Zoom = zoom -= 0.1;
-  display.render();
+  display_staff.Zoom = zoom -= 0.1;
+  display_staff.render();
 };
 
 async function zoom_out_jianput() {
 };
 
 async function zoom_reset_staff() {
-  display.Zoom = zoom = 1.0;
-  display.render();
+  display_staff.Zoom = zoom = 1.0;
+  display_staff.render();
 };
 
 async function zoom_reset_jianput() {

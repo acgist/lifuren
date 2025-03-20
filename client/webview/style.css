@@ -107,3 +107,156 @@
 .hvr-radial-in:before{content:"";position:absolute;z-index:-1;top:0;left:0;right:0;bottom:0;background:#f0f0f0;border-radius:100%;transform:scale(2);transition-property:transform;transition-duration:0.5s;transition-timing-function:ease-out}
 .hvr-radial-in:hover,.hvr-radial-in:focus,.hvr-radial-in:active{color:white;font-size:1.2rem}
 .hvr-radial-in:hover:before,.hvr-radial-in:focus:before,.hvr-radial-in:active:before{transform:scale(0)}
+.padding{height:18rem;}
+.piano{position:fixed;left:0;width:100%;height:16rem;bottom:1rem;background: #fff; overflow: hidden;font-size: 0.8rem;user-select: none;}
+.piano .wkeys {display:flex;flex-direction:row;flex-wrap:nowrap; width:100%;height: 100%;padding: 0 0.6%;}
+.piano .wkey{
+  width: 1.9%;
+  margin: 0;
+  background: linear-gradient(-30deg,#f5f5f5,#fff);
+  box-shadow: inset 0 1px 0 #eee,inset 0 -1px 0 #666,inset 1px 0 0 #fff,inset -1px 0 0 #ccc,0 1px 1px rgba(0,0,0,.4);
+  position: relative;
+  border-radius: 0 0 6px 6px;
+}
+.piano .wkeys .wkey:first-child{
+  border-left: 1px solid #ddd;
+}
+.piano .wkey a{
+  width:  80%;
+  height: 1.2rem;
+  bottom: 0;
+  margin: 0 10%;
+  color: #373737;
+  text-align: center;
+  line-height: 1.2rem;
+  font-weight: 600;
+  position: absolute;
+  bottom: 5%;
+}
+.piano .wkey a:last-child {
+  bottom: 15%;
+}
+.piano .wkey::nth-child(n+1):nth-child(-n+2) a:last-child {
+  background: #dbe2ef
+}
+.piano .wkey:nth-child(n+3):nth-child(-n+9) a:last-child {
+  background: #dcedc1
+}
+.piano .wkey:nth-child(n+10):nth-child(-n+16) a:last-child {
+  background: #a8e6cf
+}
+.piano .wkey:nth-child(n+17):nth-child(-n+23) a:last-child {
+  background: #61c0bf
+}
+.piano .wkey:nth-child(n+24):nth-child(-n+30) a:last-child {
+  background: #fae3d9
+}
+.piano .wkey:nth-child(n+31):nth-child(-n+37) a:last-child {
+  background: #ffaaa5
+}
+.piano .wkey:nth-child(n+38):nth-child(-n+44) a:last-child {
+  background: #f07b3f
+}
+.piano .wkey:nth-child(n+45):nth-child(-n+51) a:last-child {
+  background: #f85f73
+}
+.piano .wkey:nth-child(n+52) a:last-child {
+  background: #b83b5e
+}
+.piano .wkey:hover {
+  cursor: pointer; box-shadow: orange 0px 0px 5px 0px inset;
+}
+
+.piano .wkey.active {
+  cursor: pointer; box-shadow: orange 0px 0px 5px 0px inset;
+  background: linear-gradient(-20deg,orange,#fff);
+}
+
+.piano .bkeys {width: 100%;}
+
+.piano .keys{
+  position:absolute;
+  width: 12%;
+  padding-bottom: 12%;
+  top: 0
+}
+
+.piano .keys a{display: none;}
+
+.piano .keys:nth-child(1) {
+  left: 2%;
+}
+
+.piano .keys:nth-child(2) {
+  left: 5.8%;
+}
+
+.piano .keys:nth-child(3) {
+  left: 19.1%;
+}
+
+.piano .keys:nth-child(4) {
+  left: 32.4%;
+}
+
+.piano .keys:nth-child(5) {
+  left: 45.7%;
+}
+
+.piano .keys:nth-child(6) {
+  left: 59.0%;
+}
+
+.piano .keys:nth-child(7) {
+  left: 72.3%;
+}
+
+.piano .keys:nth-child(8) {
+  left: 85.6%;
+}
+
+.piano .keys .bkey {
+  width: 10%;
+  height: 100%;
+  background: linear-gradient(-20deg,#333,#000,#333);
+  border-color: #666 #222 #111 #555;
+  border-style: solid;
+  border-width: 1px 2px 7px;
+  border-radius: 0 0 2px 2px;
+  box-shadow: inset 0 -1px 2px hsla(0,0%,100%,.4),0 2px 3px rgba(0,0,0,.4);
+  position: absolute;
+  top: 0;
+  overflow: hidden
+}
+
+.piano .keys .bkey:first-child {
+  left: -3%
+}
+
+.piano .keys .bkey:nth-child(2) {
+  left: 16%
+}
+
+.piano .keys .bkey:nth-child(3) {
+  left: 44%
+}
+
+.piano .keys .bkey:nth-child(4) {
+  left: 62%
+}
+
+.piano .keys .bkey:nth-child(5) {
+  left: 80%
+}
+
+.piano .bkey:hover {
+  cursor: pointer; box-shadow: rgb(135, 206, 250) 0px 0px 7px 0px inset;
+}
+.piano .bkey.active {
+  background: linear-gradient(-20deg,rgb(135, 206, 250),#000);
+  border-color: rgb(135, 206, 250);
+  border-style: solid;
+  border-width: 1px 2px 7px;
+  border-radius: 0 0 2px 2px;
+  box-shadow: inset 0 -1px 2px hsla(0,0%,100%,.4),0 2px 3px rgba(0,0,0,.4);
+}
