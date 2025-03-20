@@ -4,12 +4,11 @@
 #include "torch/data.h"
 
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 #include "lifuren/Logger.hpp"
 
 #if FMT_VERSION > 100000
-#include "spdlog/fmt/ostr.h"
-
 LFR_FORMAT_LOG_STREAM(at::Tensor)
 LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 #endif

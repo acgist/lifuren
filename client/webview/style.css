@@ -98,6 +98,7 @@
 .icon-arrow-down-left:before{content:"\ea37"}
 .icon-arrow-left:before{content:"\ea38"}
 *{margin:0;padding:0;border:none;outline:none;box-sizing:content-box}
+.container{width:1080px;margin:auto;}
 .operation{position:fixed;top:2rem;right:2rem;overflow:hidden}
 .operation a{margin:0.2rem;display:none;width:2rem;height:2rem;border-radius:100%;font-size:0.8rem;line-height:2rem;text-align:center;cursor:pointer}
 .operation a:first-child{display:block}
