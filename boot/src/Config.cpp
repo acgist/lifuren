@@ -57,7 +57,6 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config, yaml, bach,      model_bach,      std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, chopin,    model_chopin,    std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, mozart,    model_mozart,    std::string);
-        LFR_CONFIG_YAML_GETTER(config, yaml, wudaozi,   model_wudaozi,   std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, shikuang,  model_shikuang,  std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, beethoven, model_beethoven, std::string);
     } else {
@@ -79,7 +78,6 @@ static YAML::Node toYaml() {
         node["bach"]      = lifuren::config::CONFIG.model_bach;
         node["chopin"]    = lifuren::config::CONFIG.model_chopin;
         node["mozart"]    = lifuren::config::CONFIG.model_mozart;
-        node["wudaozi"]   = lifuren::config::CONFIG.model_wudaozi;
         node["shikuang"]  = lifuren::config::CONFIG.model_shikuang;
         node["beethoven"] = lifuren::config::CONFIG.model_beethoven;
         yaml["model"]     = node;

@@ -17,8 +17,6 @@ static wxTextCtrl* model_chopin_input    { nullptr };
 static wxButton  * model_chopin_button   { nullptr };
 static wxTextCtrl* model_mozart_input    { nullptr };
 static wxButton  * model_mozart_button   { nullptr };
-static wxTextCtrl* model_wudaozi_input   { nullptr };
-static wxButton  * model_wudaozi_button  { nullptr };
 static wxTextCtrl* model_shikuang_input  { nullptr };
 static wxButton  * model_shikuang_button { nullptr };
 static wxTextCtrl* model_beethoven_input { nullptr };
@@ -29,26 +27,23 @@ static const int output_button_id          = 3001;
 static const int model_bach_button_id      = 3002;
 static const int model_chopin_button_id    = 3003;
 static const int model_mozart_button_id    = 3004;
-static const int model_wudaozi_button_id   = 3005;
-static const int model_shikuang_button_id  = 3006;
-static const int model_beethoven_button_id = 3007;
+static const int model_shikuang_button_id  = 3005;
+static const int model_beethoven_button_id = 3006;
 
 const auto tmp_input_text              = wxT("临时目录");
 const auto tmp_button_text             = wxT("选择临时目录");
 const auto output_input_text           = wxT("输出目录");
 const auto output_button_text          = wxT("选择输出目录");
-const auto model_bach_input_text       = wxT("钢琴指法模型文件");
-const auto model_bach_button_text      = wxT("选择钢琴指法模型文件");
-const auto model_chopin_input_text     = wxT("音频识谱模型文件");
-const auto model_chopin_button_text    = wxT("选择音频识谱模型文件");
-const auto model_mozart_input_text     = wxT("简谱识谱模型文件");
-const auto model_mozart_button_text    = wxT("选择简谱识谱模型文件");
-const auto model_wudaozi_input_text    = wxT("五线谱识谱模型文件");
-const auto model_wudaozi_button_text   = wxT("选择五线谱识谱模型文件");
+const auto model_bach_input_text       = wxT("音频识谱模型文件");
+const auto model_bach_button_text      = wxT("选择音频识谱模型文件");
+const auto model_chopin_input_text     = wxT("简谱识谱模型文件");
+const auto model_chopin_button_text    = wxT("选择简谱识谱模型文件");
+const auto model_mozart_input_text     = wxT("五线谱识谱模型文件");
+const auto model_mozart_button_text    = wxT("选择五线谱识谱模型文件");
 const auto model_shikuang_input_text   = wxT("音频风格迁移模型文件");
 const auto model_shikuang_button_text  = wxT("选择音频风格迁移模型文件");
-const auto model_beethoven_input_text  = wxT("图片风格迁移模型文件");
-const auto model_beethoven_button_text = wxT("选择图片风格迁移模型文件");
+const auto model_beethoven_input_text  = wxT("钢琴指法模型文件");
+const auto model_beethoven_button_text = wxT("选择钢琴指法模型文件");
 
 static void chooseFileCallback     (const wxCommandEvent&, wxTextCtrl*);
 static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl*);
@@ -74,12 +69,10 @@ void lifuren::ConfigWindow::drawElement() {
     model_chopin_button    = new wxButton  (panel, model_chopin_button_id,    model_chopin_button_text   , wxPoint((w - 640) / 2 + 410,  130), wxSize(240, 30));
     model_mozart_input     = new wxTextCtrl(panel, wxID_ANY,                  model_mozart_input_text    , wxPoint((w - 640) / 2,        170), wxSize(400, 30));
     model_mozart_button    = new wxButton  (panel, model_mozart_button_id,    model_mozart_button_text   , wxPoint((w - 640) / 2 + 410,  170), wxSize(240, 30));
-    model_wudaozi_input    = new wxTextCtrl(panel, wxID_ANY,                  model_wudaozi_input_text   , wxPoint((w - 640) / 2,        210), wxSize(400, 30));
-    model_wudaozi_button   = new wxButton  (panel, model_wudaozi_button_id,   model_wudaozi_button_text  , wxPoint((w - 640) / 2 + 410,  210), wxSize(240, 30));
-    model_shikuang_input   = new wxTextCtrl(panel, wxID_ANY,                  model_shikuang_input_text  , wxPoint((w - 640) / 2,        250), wxSize(400, 30));
-    model_shikuang_button  = new wxButton  (panel, model_shikuang_button_id,  model_shikuang_button_text , wxPoint((w - 640) / 2 + 410,  250), wxSize(240, 30));
-    model_beethoven_input  = new wxTextCtrl(panel, wxID_ANY,                  model_beethoven_input_text , wxPoint((w - 640) / 2,        290), wxSize(400, 30));
-    model_beethoven_button = new wxButton  (panel, model_beethoven_button_id, model_beethoven_button_text, wxPoint((w - 640) / 2 + 410,  290), wxSize(240, 30));
+    model_shikuang_input   = new wxTextCtrl(panel, wxID_ANY,                  model_shikuang_input_text  , wxPoint((w - 640) / 2,        210), wxSize(400, 30));
+    model_shikuang_button  = new wxButton  (panel, model_shikuang_button_id,  model_shikuang_button_text , wxPoint((w - 640) / 2 + 410,  210), wxSize(240, 30));
+    model_beethoven_input  = new wxTextCtrl(panel, wxID_ANY,                  model_beethoven_input_text , wxPoint((w - 640) / 2,        250), wxSize(400, 30));
+    model_beethoven_button = new wxButton  (panel, model_beethoven_button_id, model_beethoven_button_text, wxPoint((w - 640) / 2 + 410,  250), wxSize(240, 30));
 }
 
 void lifuren::ConfigWindow::bindEvent() {
@@ -91,7 +84,6 @@ void lifuren::ConfigWindow::bindEvent() {
             case model_bach_button_id     : chooseFileCallback(event, model_bach_input);      break;
             case model_chopin_button_id   : chooseFileCallback(event, model_chopin_input);    break;
             case model_mozart_button_id   : chooseFileCallback(event, model_mozart_input);    break;
-            case model_wudaozi_button_id  : chooseFileCallback(event, model_wudaozi_input);   break;
             case model_shikuang_button_id : chooseFileCallback(event, model_shikuang_input);  break;
             case model_beethoven_button_id: chooseFileCallback(event, model_beethoven_input); break;
         }
@@ -105,7 +97,6 @@ void lifuren::ConfigWindow::fillData() {
     model_bach_input     ->Clear();
     model_chopin_input   ->Clear();
     model_mozart_input   ->Clear();
-    model_wudaozi_input  ->Clear();
     model_shikuang_input ->Clear();
     model_beethoven_input->Clear();
     tmp_input            ->AppendText(wxString::FromUTF8(config.tmp.c_str()            ));
@@ -113,7 +104,6 @@ void lifuren::ConfigWindow::fillData() {
     model_bach_input     ->AppendText(wxString::FromUTF8(config.model_bach.c_str()     ));
     model_chopin_input   ->AppendText(wxString::FromUTF8(config.model_chopin.c_str()   ));
     model_mozart_input   ->AppendText(wxString::FromUTF8(config.model_mozart.c_str()   ));
-    model_wudaozi_input  ->AppendText(wxString::FromUTF8(config.model_wudaozi.c_str()  ));
     model_shikuang_input ->AppendText(wxString::FromUTF8(config.model_shikuang.c_str() ));
     model_beethoven_input->AppendText(wxString::FromUTF8(config.model_beethoven.c_str()));
 }
@@ -132,8 +122,6 @@ static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
         config.model_chopin = file;
     } else if(input == model_mozart_input) {
         config.model_mozart = file;
-    } else if(input == model_wudaozi_input) {
-        config.model_wudaozi = file;
     } else if(input == model_shikuang_input) {
         config.model_shikuang = file;
     } else if(input == model_beethoven_input) {

@@ -20,8 +20,6 @@
 [[maybe_unused]] static void testStft() {
     std::ifstream input;
     std::ofstream output;
-    // input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise.pcm"        }).string(), std::ios_base::binary);
-    // output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "noise_target.pcm" }).string(), std::ios_base::binary);
     input.open (lifuren::file::join({ lifuren::config::CONFIG.tmp, "baicai.pcm"        }).string(), std::ios_base::binary);
     output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "baicai_target.pcm" }).string(), std::ios_base::binary);
     std::vector<short> data;
@@ -44,6 +42,7 @@
         // image = image.t();
         // cv::imshow("image", image);
         // cv::waitKey();
+        // auto pcm = lifuren::dataset::audio::pcm_istft(tensor, 400, 40, 400);
         auto pcm = lifuren::dataset::audio::pcm_istft(tensor, 400, 80, 400);
         // auto pcm = lifuren::dataset::audio::pcm_istft(tensor, 400, 100, 400);
         output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
@@ -53,7 +52,7 @@
 }
 
 [[maybe_unused]] static void testImage() {
-    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "xxc.png" }).string()) };
+    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "image.png" }).string()) };
     cv::imshow("image", image);
     cv::waitKey();
     lifuren::dataset::image::resize(image, 640, 480);
@@ -70,7 +69,7 @@
 
 [[maybe_unused]] static void testEmbeddingBach() {
     lifuren::dataset::allDatasetPreprocess(
-        lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "bach"}).string(),
         lifuren::config::LIFUREN_EMBEDDING_FILE,
         &lifuren::dataset::audio::embedding_bach
     );
@@ -78,7 +77,7 @@
 
 [[maybe_unused]] static void testEmbeddingShikuang() {
     lifuren::dataset::allDatasetPreprocess(
-        lifuren::file::join({lifuren::config::CONFIG.tmp, "baicai"}).string(),
+        lifuren::file::join({lifuren::config::CONFIG.tmp, "shikuang"}).string(),
         lifuren::config::LIFUREN_EMBEDDING_FILE,
         &lifuren::dataset::audio::embedding_shikuang
     );
@@ -88,16 +87,30 @@
 }
 
 [[maybe_unused]] static void testLoadShikuangDatasetLoader() {
-    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
-    auto loader = lifuren::dataset::audio::loadShikuangDatasetLoader(200, lifuren::file::join({
-        lifuren::config::CONFIG.tmp,
-        "baicai",
-        "train",
-        lifuren::config::LIFUREN_HIDDEN_FILE
-    }).string());
-    lifuren::logTensor("音频特征", loader->begin()->data.sizes());
-    lifuren::logTensor("音频标签", loader->begin()->target.sizes());
+    auto loader = lifuren::dataset::audio::loadShikuangDatasetLoader(
+        200,
+        lifuren::file::join({
+            lifuren::config::CONFIG.tmp,
+            "shikuang",
+            "train"
+        }).string()
+    );
+    lifuren::logTensor("音频特征数量", loader->begin()->data.sizes());
+    lifuren::logTensor("音频标签数量", loader->begin()->target.sizes());
     // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
+    cv::Mat mat(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
+    auto iterator = loader->begin();
+    const int length = iterator->data.sizes()[0];
+    std::ofstream output;
+    output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "shikuang_dataset.pcm" }).string(), std::ios_base::binary);
+    for(; iterator != loader->end(); ++iterator) {
+        for(int i = 0; i < length; ++i) {
+            auto tensor = iterator->data[i];
+            auto pcm = lifuren::dataset::audio::pcm_istft(tensor);
+            output.write(reinterpret_cast<char*>(pcm.data()), pcm.size() * sizeof(short));
+        }
+    }
+    output.close();
 }
 
 [[maybe_unused]] static void testLoadBeethovenDatasetLoader() {
@@ -109,39 +122,22 @@
 [[maybe_unused]] static void testLoadMozartDatasetLoader() {
 }
 
-[[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
-    auto loader = lifuren::dataset::image::loadWudaoziDatasetLoader(640, 480, 8, lifuren::file::join({lifuren::config::CONFIG.tmp, "video", "train"}).string());
-    lifuren::logTensor("图片特征数量", loader->begin()->data.sizes());
-    lifuren::logTensor("图片标签数量", loader->begin()->target.sizes());
-    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
-    // 注意：如果需要还原不要使用RandomSampler而要使用SequentialSampler
-    cv::Mat mat(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
-    auto iterator = loader->begin();
-    const int length = iterator->data.sizes()[0];
-    for(; iterator != loader->end(); ++iterator) {
-        for(int i = 0; i < length; ++i) {
-            auto tensor = iterator->data[i];
-            lifuren::dataset::image::tensor_to_mat(mat, tensor);
-            cv::imshow("mat", mat);
-            cv::waitKey(30);
-        }
-    }
-}
-
 [[maybe_unused]] static void testLoadClassifyDatasetLoader() {
     auto loader = lifuren::dataset::image::loadClassifyDatasetLoader(
-        200,
-        200,
-        5,
-        lifuren::file::join({lifuren::config::CONFIG.tmp, "gender", "train"}).string(),
+        200, 200, 5,
+        lifuren::file::join({
+            lifuren::config::CONFIG.tmp,
+            "gender",
+            "train"
+        }).string(),
         {
             { "man",   1.0F },
             { "woman", 0.0F }
         }
     );
-    lifuren::logTensor("图片特征", loader->begin()->data.sizes());
-    lifuren::logTensor("图片标签", loader->begin()->target.sizes());
-    SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
+    lifuren::logTensor("图片特征数量", loader->begin()->data.sizes());
+    lifuren::logTensor("图片标签数量", loader->begin()->target.sizes());
+    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
 }
 
 LFR_TEST(
@@ -157,6 +153,5 @@ LFR_TEST(
     // testLoadBeethovenDatasetLoader();
     // testLoadChopinDatasetLoader();
     // testLoadMozartDatasetLoader();
-    // testLoadWudaoziDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );

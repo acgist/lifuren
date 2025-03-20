@@ -2,12 +2,12 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Audio.hpp"
-#include "lifuren/AudioModel.hpp"
+#include "lifuren/Score.hpp"
+#include "lifuren/ScoreModel.hpp"
 
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
-    lifuren::audio::BeethovenModel model({
+    lifuren::score::BeethovenModel model({
         .lr         = 0.001F,
         .batch_size = 100,
         .epoch_size = 4,
@@ -22,7 +22,7 @@
 }
 
 [[maybe_unused]] static void testPred() {
-    auto client = lifuren::audio::getAudioClient("beethoven");
+    auto client = lifuren::score::getScoreClient("beethoven");
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "beethoven.pt"}).string());
     auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "beethoven.xml"}).string());
     SPDLOG_INFO("输出结果：{} - {}", success, output);

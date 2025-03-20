@@ -78,7 +78,6 @@ public:
     std::string model_bach;      // 巴赫模型文件
     std::string model_chopin;    // 肖邦模型文件
     std::string model_mozart;    // 莫扎特模型文件
-    std::string model_wudaozi;   // 吴道子模型文件
     std::string model_shikuang;  // 师旷模型文件
     std::string model_beethoven; // 贝多芬模型文件
 

@@ -6,124 +6,6 @@
 
 #include "opencv2/opencv.hpp"
 
-lifuren::dataset::DatasetLoader lifuren::dataset::image::loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
-    auto dataset = lifuren::dataset::Dataset(
-        path,
-        ".xml",
-        { ".png", ".jpg", ".jpeg" },
-        [width, height] (
-            const std::string         & l_file,
-            const std::string         & f_file,
-            std::vector<torch::Tensor>& labels,
-            std::vector<torch::Tensor>& features,
-            const torch::DeviceType   & device
-        ) {
-            auto score = lifuren::music::load_xml(l_file);
-            auto image = cv::imread(f_file);
-            if(score.empty() || image.empty()) {
-                SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
-                return;
-            }
-            // TODO: 分片
-            auto l_tensor = lifuren::dataset::image::score_to_tensor(score);
-            lifuren::dataset::image::resize(image, width, height);
-            auto f_tensor = lifuren::dataset::image::mat_to_tensor(image);
-            labels.push_back(l_tensor.clone().to(device));
-            features.push_back(f_tensor.clone().to(device));
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
-
-lifuren::dataset::DatasetLoader lifuren::dataset::image::loadMozartDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
-    auto dataset = lifuren::dataset::Dataset(
-        path,
-        ".xml",
-        { ".png", ".jpg", ".jpeg" },
-        [width, height] (
-            const std::string         & l_file,
-            const std::string         & f_file,
-            std::vector<torch::Tensor>& labels,
-            std::vector<torch::Tensor>& features,
-            const torch::DeviceType   & device
-        ) {
-            auto score = lifuren::music::load_xml(l_file);
-            auto image = cv::imread(f_file);
-            if(score.empty() || image.empty()) {
-                SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
-                return;
-            }
-            // TODO: 分片
-            auto l_tensor = lifuren::dataset::image::score_to_tensor(score);
-            lifuren::dataset::image::resize(image, width, height);
-            auto f_tensor = lifuren::dataset::image::mat_to_tensor(image);
-            labels.push_back(l_tensor.clone().to(device));
-            features.push_back(f_tensor.clone().to(device));
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
-
-lifuren::dataset::DatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
-    auto dataset = lifuren::dataset::Dataset(
-        path,
-        { ".png", ".jpg", ".jpeg", ".mp4" },
-        [width, height] (
-            const std::string         & file,
-            std::vector<torch::Tensor>& labels,
-            std::vector<torch::Tensor>& features,
-            const torch::DeviceType   & device
-        ) {
-            const auto suffix = lifuren::file::file_suffix(file);
-            if(suffix == ".mp4") {
-                cv::VideoCapture video(file);
-                if(!video.isOpened()) {
-                    SPDLOG_WARN("加载数据失败：{}", file);
-                    return;
-                }
-                cv::Mat image;
-                while(video.read(image)) {
-                    lifuren::dataset::image::resize(image, width, height);
-                    auto tensor = lifuren::dataset::image::mat_to_tensor(image);
-                    labels.push_back(tensor.clone().to(device));
-                    features.push_back(tensor.clone().to(device));
-                }
-                video.release();
-            } else {
-                auto image = cv::imread(file);
-                if(image.empty()) {
-                    SPDLOG_WARN("加载数据失败：{}", file);
-                    return;
-                }
-                lifuren::dataset::image::resize(image, width, height);
-                auto tensor = lifuren::dataset::image::mat_to_tensor(image);
-                labels.push_back(tensor.clone().to(device));
-                features.push_back(tensor.clone().to(device));
-            }
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
-
-lifuren::dataset::DatasetLoader lifuren::dataset::image::loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify) {
-    auto dataset = lifuren::dataset::Dataset(
-        path,
-        { ".png", ".jpg", ".jpeg" },
-        classify,
-        [width, height] (const std::string& file, const torch::DeviceType& device) -> torch::Tensor {
-            auto image = cv::imread(file);
-            if(image.empty()) {
-                SPDLOG_WARN("加载数据失败：{}", file);
-                return {};
-            }
-            lifuren::dataset::image::resize(image, width, height);
-            auto tensor = lifuren::dataset::image::mat_to_tensor(image);
-            return tensor.clone().to(device);
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
-}
-
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
     const int cols = image.cols;
     const int rows = image.rows;
@@ -152,11 +34,79 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
     std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
 }
 
-torch::Tensor lifuren::dataset::image::score_to_tensor(const lifuren::music::Score& score) {
-    // TODO
-    return {};
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
+    auto dataset = lifuren::dataset::Dataset(
+        path,
+        ".xml",
+        { ".png", ".jpg", ".jpeg" },
+        [width, height] (
+            const std::string         & l_file,
+            const std::string         & f_file,
+            std::vector<torch::Tensor>& labels,
+            std::vector<torch::Tensor>& features,
+            const torch::DeviceType   & device
+        ) {
+            auto score = lifuren::music::load_xml(l_file);
+            auto image = cv::imread(f_file);
+            if(score.empty() || image.empty()) {
+                SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
+                return;
+            }
+            // TODO: 分片
+            auto l_tensor = lifuren::dataset::score::score_to_tensor(score);
+            lifuren::dataset::image::resize(image, width, height);
+            auto f_tensor = lifuren::dataset::image::mat_to_tensor(image);
+            labels.push_back(l_tensor.clone().to(device));
+            features.push_back(f_tensor.clone().to(device));
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), batch_size);
 }
 
-void lifuren::dataset::image::tensor_to_score(lifuren::music::Score& score, const torch::Tensor& tensor) {
-    // TODO
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadMozartDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
+    auto dataset = lifuren::dataset::Dataset(
+        path,
+        ".xml",
+        { ".png", ".jpg", ".jpeg" },
+        [width, height] (
+            const std::string         & l_file,
+            const std::string         & f_file,
+            std::vector<torch::Tensor>& labels,
+            std::vector<torch::Tensor>& features,
+            const torch::DeviceType   & device
+        ) {
+            auto score = lifuren::music::load_xml(l_file);
+            auto image = cv::imread(f_file);
+            if(score.empty() || image.empty()) {
+                SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
+                return;
+            }
+            // TODO: 分片
+            auto l_tensor = lifuren::dataset::score::score_to_tensor(score);
+            lifuren::dataset::image::resize(image, width, height);
+            auto f_tensor = lifuren::dataset::image::mat_to_tensor(image);
+            labels.push_back(l_tensor.clone().to(device));
+            features.push_back(f_tensor.clone().to(device));
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), batch_size);
+}
+
+lifuren::dataset::DatasetLoader lifuren::dataset::image::loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify) {
+    auto dataset = lifuren::dataset::Dataset(
+        path,
+        { ".png", ".jpg", ".jpeg" },
+        classify,
+        [width, height] (const std::string& file, const torch::DeviceType& device) -> torch::Tensor {
+            auto image = cv::imread(file);
+            if(image.empty()) {
+                SPDLOG_WARN("加载数据失败：{}", file);
+                return {};
+            }
+            lifuren::dataset::image::resize(image, width, height);
+            auto tensor = lifuren::dataset::image::mat_to_tensor(image);
+            return tensor.clone().to(device);
+        }
+    ).map(torch::data::transforms::Stack<>());
+    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), batch_size);
 }

@@ -28,6 +28,10 @@ extern "C" {
 #define LFR_MONO_NB_CHANNELS 1
 #endif
 
+#ifndef LFR_OLD_FFMPEG
+#define LFR_OLD_FFMPEG LIBAVUTIL_VERSION_MAJOR < 58
+#endif
+
 // 解码
 static bool decode(AVFrame* frame, AVPacket* packet, SwrContext** swrCtx, AVCodecContext* decodeCodecCtx, std::vector<char>& buffer, std::ofstream& output);
 static bool open_swr (SwrContext** swrCtx, AVFrame* frame);
@@ -182,12 +186,12 @@ static void close_decoder(AVFrame** frame, AVCodecContext** decodeCodecCtx) {
 
 static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
     const AVSampleFormat format = static_cast<AVSampleFormat>(frame->format);
-    #if FF_API_OLD_CHANNEL_LAYOUT
+    #if LFR_OLD_FFMPEG
     auto mono = AV_CH_LAYOUT_MONO;
     SPDLOG_DEBUG(
         "重采样信息：{} {} {} -> {} {} {}",
-        mono,                  av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE,
-        frame->channel_layout, av_get_sample_fmt_name(format),            frame->sample_rate
+        frame->channel_layout, av_get_sample_fmt_name(format),            frame->sample_rate,
+        mono,                  av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE
     );
     swr_alloc_set_opts(
         *swrCtx,
@@ -199,8 +203,8 @@ static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
     static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
     SPDLOG_DEBUG(
         "重采样信息：{} {} {} -> {} {} {}",
-        mono.nb_channels,             av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE,
-        frame->ch_layout.nb_channels, av_get_sample_fmt_name(format),            frame->sample_rate
+        frame->ch_layout.nb_channels, av_get_sample_fmt_name(format),            frame->sample_rate,
+        mono.nb_channels,             av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE
     );
     swr_alloc_set_opts2(
         swrCtx,
@@ -304,7 +308,7 @@ std::tuple<bool, std::string> lifuren::dataset::audio::toFile(const std::string&
         nb_samples = size / sample_size;
         frame->pts            = AV_NOPTS_VALUE;
         frame->format         = AV_SAMPLE_FMT_S16;
-        #if FF_API_OLD_CHANNEL_LAYOUT
+        #if LFR_OLD_FFMPEG
         frame->channel_layout = AV_CH_LAYOUT_MONO;
         #else
         frame->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
@@ -366,7 +370,7 @@ static bool open_encoder(AVFrame** frame, AVPacket** packet, AVCodecContext** en
     #else
     (*encodeCodecCtx)->sample_fmt     = AV_SAMPLE_FMT_S16;
     #endif
-    #if FF_API_OLD_CHANNEL_LAYOUT
+    #if LFR_OLD_FFMPEG
     (*encodeCodecCtx)->channel_layout = AV_CH_LAYOUT_MONO;
     #else
     (*encodeCodecCtx)->ch_layout      = AV_CHANNEL_LAYOUT_MONO;
@@ -609,7 +613,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBachDatasetLoader(c
     ).map(torch::data::transforms::Stack<>());
     torch::data::DataLoaderOptions options(batch_size);
     options.drop_last() = true;
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), std::move(options));
+    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), std::move(options));
 }
 
 lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoader(const size_t batch_size, const std::string& path) {
@@ -642,31 +646,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoad
     ).map(torch::data::transforms::Stack<>());
     torch::data::DataLoaderOptions options(batch_size);
     options.drop_last() = true;
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), std::move(options));
-}
-
-lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path) {
-    auto dataset = lifuren::dataset::Dataset(
-        path,
-        { ".xml" },
-        [] (
-            const std::string         & file,
-            std::vector<torch::Tensor>& labels,
-            std::vector<torch::Tensor>& features,
-            const torch::DeviceType   & device
-        ) {
-            auto score = lifuren::music::load_xml(file);
-            if(score.empty()) {
-                SPDLOG_WARN("加载数据失败：{}", file);
-                return;
-            }
-            // TODO: 指法
-            auto tensor = lifuren::dataset::image::score_to_tensor(score);
-            labels.push_back(tensor.clone().to(device));
-            features.push_back(tensor.clone().to(device));
-        }
-    ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), batch_size);
+    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), std::move(options));
 }
 
 bool lifuren::audio::allDatasetPreprocessBach(const std::string& path) {

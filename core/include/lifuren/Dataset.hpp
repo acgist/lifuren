@@ -15,6 +15,12 @@
 #ifndef LFR_HEADER_CORE_DATASET_HPP
 #define LFR_HEADER_CORE_DATASET_HPP
 
+// 如果需要验证数据集预处理使用SequentialSampler替换RandomSampler
+#ifndef LFT_SAMPLER
+// #define LFT_SAMPLER torch::data::samplers::RandomSampler
+#define LFT_SAMPLER torch::data::samplers::SequentialSampler
+#endif
+
 #include <map>
 #include <string>
 #include <vector>
@@ -156,7 +162,7 @@ public:
 
 };
 
-using DatasetLoader = decltype(torch::data::make_data_loader<torch::data::samplers::RandomSampler>(
+using DatasetLoader = decltype(torch::data::make_data_loader<LFT_SAMPLER>(
     lifuren::dataset::Dataset{}.map(torch::data::transforms::Stack<>()),
     torch::data::DataLoaderOptions{}
 ));
@@ -264,14 +270,6 @@ extern lifuren::dataset::DatasetLoader loadBachDatasetLoader(const size_t batch_
  */
 extern lifuren::dataset::DatasetLoader loadShikuangDatasetLoader(const size_t batch_size, const std::string& path);
 
-/**
- * @param batch_size 批量大小
- * @param path       数据集路径
- * 
- * @return 音频数据集
- */
-extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path);
-
 } // END OF audio
 
 namespace image {
@@ -295,19 +293,6 @@ extern torch::Tensor mat_to_tensor(const cv::Mat& image);
  * @param tensor 图片张量
  */
 extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
-
-/**
- * @param score 乐谱
- * 
- * @return 乐谱张量
- */
-extern torch::Tensor score_to_tensor(const lifuren::music::Score& score);
-
-/**
- * @param score  乐谱
- * @param tensor 乐谱张量
- */
-extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& tensor);
 
 /**
  * @param width      目标图片宽度
@@ -334,16 +319,6 @@ extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(const int width, 
  * @param height     目标图片高度
  * @param batch_size 批量大小
  * @param path       数据集路径
- * 
- * @return 图片数据集
- */
-extern lifuren::dataset::DatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
-
-/**
- * @param width      目标图片宽度
- * @param height     目标图片高度
- * @param batch_size 批量大小
- * @param path       数据集路径
  * @param classify   图片分类
  * 
  * @return 图片数据集
@@ -351,6 +326,31 @@ extern lifuren::dataset::DatasetLoader loadWudaoziDatasetLoader(const int width,
 extern lifuren::dataset::DatasetLoader loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify);
 
 } // END OF image
+
+namespace score {
+
+/**
+ * @param score 乐谱
+ * 
+ * @return 乐谱张量
+ */
+extern torch::Tensor score_to_tensor(const lifuren::music::Score& score);
+
+/**
+ * @param score  乐谱
+ * @param tensor 乐谱张量
+ */
+extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& tensor);
+
+/**
+ * @param batch_size 批量大小
+ * @param path       数据集路径
+ * 
+ * @return 音频数据集
+ */
+extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path);
+
+} // END OF score
 
 } // END OF lifuren::dataset
 

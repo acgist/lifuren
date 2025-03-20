@@ -83,22 +83,11 @@ std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::Shikua
     return lifuren::dataset::audio::toFile(output);
 };
 
-template<>
-std::tuple<bool, std::string> lifuren::audio::AudioClient<lifuren::audio::BeethovenModel>::pred(const std::string& input) {
-    if(!this->model) {
-        return { false, {} };
-    }
-    // TODO
-    return {};
-}
-
 std::unique_ptr<lifuren::audio::AudioModelClient> lifuren::audio::getAudioClient(const std::string& model) {
     if(model == "bach") {
         return std::make_unique<lifuren::audio::AudioClient<BachModel>>();
     } else if(model == "shikuang") {
         return std::make_unique<lifuren::audio::AudioClient<ShikuangModel>>();
-    } else if(model == "beethoven") {
-        return std::make_unique<lifuren::audio::AudioClient<BeethovenModel>>();
     } else {
         return nullptr;
     }

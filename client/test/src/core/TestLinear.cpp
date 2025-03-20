@@ -70,7 +70,7 @@ public:
             features.push_back(torch::tensor( { f } ));
         }
         auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
-        this->trainDataset = torch::data::make_data_loader<torch::data::samplers::RandomSampler>(std::move(dataset), this->params.batch_size);
+        this->trainDataset = torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), this->params.batch_size);
     }
 
 };

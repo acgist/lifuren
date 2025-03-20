@@ -8,9 +8,12 @@ add_library(
     src/audio/AudioModel.cpp
     src/image/Image.cpp
     src/image/ImageModel.cpp
+    src/score/Score.cpp
+    src/score/ScoreModel.cpp
     src/dataset/Dataset.cpp
     src/dataset/AudioDataset.cpp
     src/dataset/ImageDataset.cpp
+    src/dataset/ScoreDataset.cpp
 )
 
 if(CMAKE_HOST_WIN32)

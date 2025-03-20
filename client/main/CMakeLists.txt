@@ -48,8 +48,6 @@ endif()
 if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
-        $<IF:$<TARGET_EXISTS:png>,png,png_shared>
-        libjpeg-turbo::jpeg
         lifurencore
         ${wxWidgets_LIBRARIES}
     )
@@ -62,8 +60,6 @@ else()
     target_include_directories(${PROJECT_NAME} PUBLIC /usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2)
     target_link_libraries(
         ${PROJECT_NAME}
-        png
-        jpeg
         lifurencore
         ${wxWidgets_LIBRARIES}
     )

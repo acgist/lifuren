@@ -89,46 +89,6 @@ public:
 
 };
 
-/**
- * 吴道子模型（图片风格迁移）
- */
-class WudaoziModuleImpl : public torch::nn::Module {
-
-private:
-    torch::nn::Linear linear { nullptr };
-    torch::nn::GRU gru1 { nullptr };
-    torch::nn::GRU gru2 { nullptr };
-    torch::nn::Conv1d conv1 { nullptr };
-    torch::nn::Conv1d conv2 { nullptr };
-    torch::nn::ConvTranspose1d convt1 { nullptr };
-    torch::nn::ConvTranspose1d convt2 { nullptr };
-
-public:
-    WudaoziModuleImpl();
-    ~WudaoziModuleImpl();
-
-public:
-    torch::Tensor forward(torch::Tensor input);
-
-};
-
-TORCH_MODULE(WudaoziModule);
-
-/**
- * 吴道子模型（图片风格迁移）
- */
-class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, lifuren::image::WudaoziModule> {
-
-public:
-    WudaoziModel(lifuren::config::ModelParams params = {});
-    ~WudaoziModel();
-
-public:
-    void defineDataset() override;
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
-
-};
-
 } // END OF lifuren::image
 
 #endif // END OF LFR_HEADER_CORE_IMAGE_MODEL_HPP

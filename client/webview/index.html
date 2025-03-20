@@ -27,6 +27,7 @@
     <a class="hvr-radial-in" id="zoom_in"    title="放大"><span class="icon-zoom-in"         ></span></a>
     <a class="hvr-radial-in" id="zoom_out"   title="缩小"><span class="icon-zoom-out"        ></span></a>
     <a class="hvr-radial-in" id="zoom_reset" title="重置"><span class="icon-spinner11"       ></span></a>
+    <a class="hvr-radial-in" id="transition" title="转换"><span class="icon-equalizer"       ></span></a>
   </div>
   <div id="container" style="width:1080px;margin:auto;"></div>
   <script type="text/javascript">
@@ -179,6 +180,17 @@
       display.Zoom = zoom = 1.0;
       display.render();
     };
+    // var svgElement = document.getElementsByTagName('svg')[0];
+    // var svgContent = new XMLSerializer().serializeToString(svgElement);
+    // var canvas = document.createElement('canvas');
+    // canvas.width = svgElement.width.baseVal.value;
+    // canvas.height = svgElement.height.baseVal.value;
+    // var ctx = canvas.getContext('2d');
+    // var img = new Image();
+    // img.onload = function() {
+    //   ctx.drawImage(img, 0, 0);
+    // };
+    // img.src = 'data:image/svg+xml;base64,' + btoa(svgContent);
   </script>
 </body>
 

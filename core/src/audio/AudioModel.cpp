@@ -84,37 +84,3 @@ void lifuren::audio::ShikuangModel::logic(torch::Tensor& feature, torch::Tensor&
     pred = this->model->forward(feature);
     loss = this->loss->forward(pred, label);
 }
-
-lifuren::audio::BeethovenModuleImpl::BeethovenModuleImpl() {
-}
-
-lifuren::audio::BeethovenModuleImpl::~BeethovenModuleImpl() {
-}
-
-torch::Tensor lifuren::audio::BeethovenModuleImpl::forward(torch::Tensor input) {
-    // TODO
-    return {};
-}
-
-lifuren::audio::BeethovenModel::BeethovenModel(lifuren::config::ModelParams params) : Model(params) {
-}
-
-lifuren::audio::BeethovenModel::~BeethovenModel() {
-}
-
-void lifuren::audio::BeethovenModel::defineDataset() {
-    if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.train_path);
-    }
-    if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.val_path);
-    }
-    if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::dataset::audio::loadBeethovenDatasetLoader(this->params.batch_size, this->params.test_path);
-    }
-}
-
-void lifuren::audio::BeethovenModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
-    pred = this->model->forward(feature);
-    loss = this->loss->forward(pred, label);
-}
