@@ -4,6 +4,8 @@
 #include <algorithm>
 
 #include "wx/wx.h"
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 #include "spdlog/spdlog.h"
 
@@ -78,7 +80,8 @@ void lifuren::Window::init() {
 }
 
 void lifuren::Window::loadIcon() {
-    this->SetIcon(wxIcon(wxT("./logo.ico"), wxBITMAP_TYPE_ICO));
+    auto path = wxFileName(wxStandardPaths::Get().GetExecutablePath().BeforeLast(wxFileName::GetPathSeparator()) + wxFileName::GetPathSeparator() + "logo.ico");
+    this->SetIcon(wxIcon(path.GetFullPath(), wxBITMAP_TYPE_ICO));
 }
 
 void lifuren::Window::drawElement() {

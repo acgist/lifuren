@@ -19,18 +19,18 @@
 
 <body>
   <!-- 操作区 -->
-  <div class="operation">
-    <a class="operation_bt" id="operation"  title="操作"><span class="icon-list"       ></span></a>
-    <a class="operation_bt" id="open_score" title="打开"><span class="icon-folder-open"></span></a>
-    <a class="operation_bt" id="play_score" title="演奏"><span class="icon-play3"      ></span></a>
-    <a class="operation_bt" id="rule_score" title="指法"><span class="icon-music"      ></span></a>
-    <a class="operation_bt" id="show_score" title="转换"><span class="icon-loop"       ></span></a>
-    <a class="operation_bt" id="tone_score" title="变调"><span class="icon-equalizer2" ></span></a>
-    <a class="operation_bt" id="save_pdf"   title="文档"><span class="icon-files-empty"></span></a>
-    <a class="operation_bt" id="save_img"   title="图片"><span class="icon-images"     ></span></a>
-    <a class="operation_bt" id="zoom_in"    title="放大"><span class="icon-zoom-in"    ></span></a>
-    <a class="operation_bt" id="zoom_out"   title="缩小"><span class="icon-zoom-out"   ></span></a>
-    <a class="operation_bt" id="zoom_reset" title="重置"><span class="icon-spinner11"  ></span></a>
+  <div class="action">
+    <a class="action_bt" id="action"     title="操作"><span class="icon-list"       ></span></a>
+    <a class="action_bt" id="open_score" title="打开"><span class="icon-folder-open"></span></a>
+    <a class="action_bt" id="play_score" title="演奏"><span class="icon-play3"      ></span></a>
+    <a class="action_bt" id="rule_score" title="指法"><span class="icon-music"      ></span></a>
+    <a class="action_bt" id="swap_score" title="转换"><span class="icon-loop"       ></span></a>
+    <a class="action_bt" id="tone_score" title="变调"><span class="icon-equalizer2" ></span></a>
+    <a class="action_bt" id="save_pdf"   title="文档"><span class="icon-files-empty"></span></a>
+    <a class="action_bt" id="save_img"   title="图片"><span class="icon-images"     ></span></a>
+    <a class="action_bt" id="zoom_in"    title="放大"><span class="icon-zoom-in"    ></span></a>
+    <a class="action_bt" id="zoom_out"   title="缩小"><span class="icon-zoom-out"   ></span></a>
+    <a class="action_bt" id="zoom_reset" title="重置"><span class="icon-spinner11"  ></span></a>
   </div>
   <div id="staff_container"  class="container"></div><!-- 五线 -->
   <div id="jianpu_container" class="container"></div><!-- 简谱 -->
@@ -180,49 +180,7 @@
 一顾倾人城，再顾倾人国。
 宁不知倾城与倾国，佳人难再得。
     `);
-    const music_xml = `<?xml version="1.0" encoding="UTF-16"?>
-    <score-partwise version="3.0">
-      <work>
-        <work-number>K. 080</work-number>
-        <work-title>Lifuren Demo (Version. 1.0.0)</work-title>
-      </work>
-      <part-list>
-        <score-part id="P1">
-          <part-name>Piano</part-name>
-        </score-part>
-      </part-list>
-      <part id="P1">
-        <measure implicit="yes" number="0">
-          <attributes>
-            <divisions>4</divisions>
-            <key>
-              <fifths>0</fifths>
-              <mode>major</mode>
-            </key>
-            <time>
-              <beats>4</beats>
-              <beat-type>4</beat-type>
-            </time>
-          </attributes>
-          <note>
-            <rest measure="yes" />
-            <voice>1</voice>
-            <duration>4</duration>
-          </note>
-        </measure>
-        <measure number="1" width="125">
-          <note>
-            <pitch>
-              <step>G</step>
-              <octave>4</octave>
-            </pitch>
-            <type>whole</type>
-            <voice>1</voice>
-            <duration>4</duration>
-          </note>
-        </measure>
-      </part>
-    </score-partwise>`;
+    const music_xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><score-partwise version="4.0"><part-list><score-part id="P1"><part-name>Music</part-name></score-part></part-list><part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes><note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><type>whole</type></note></measure></part></score-partwise>`;
     init_lifuren(music_xml);
   </script>
 </body>

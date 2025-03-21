@@ -12,14 +12,6 @@ let music_xml_cache;
 const a4_width  = 210;
 const a4_height = 297;
 
-async function load_music_xml(music_xml) {
-  if(staff) {
-    await load_music_xml_staff(music_xml);
-  } else {
-    await load_music_xml_jianpu(music_xml);
-  }
-}
-
 async function load_music_xml_staff(music_xml) {
   music_xml_cache = music_xml;
   display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay("staff_container");
@@ -47,7 +39,15 @@ async function load_music_xml_jianpu(music_xml) {
   display_jianpu.render(music_xml);
 }
 
-async function load_music_xml_file() {
+async function load_music_xml(music_xml) {
+  if(staff) {
+    await load_music_xml_staff(music_xml);
+  } else {
+    await load_music_xml_jianpu(music_xml);
+  }
+}
+
+async function open_score() {
   const [picker] = await window.showOpenFilePicker({
     types: [{
       accept: { "text/xml": ['.xml', '.musicxml'] },
@@ -66,7 +66,7 @@ async function load_music_xml_file() {
   }
 };
 
-async function show_score() {
+async function swap_score() {
   staff = !staff;
   if(staff) {
     document.querySelector("#staff_container").style  = "display:block;";
@@ -113,6 +113,14 @@ async function save_pdf_staff() {
 async function save_pdf_jianpu() {
 };
 
+async function save_pdf() {
+  if(staff) {
+    await save_pdf_staff();
+  } else {
+    await save_pdf_jianpu();
+  }
+}
+
 async function download_img(index, svgElement) {
   const canvas     = document.createElement('canvas');
   canvas.width     = svgElement.width.baseVal.value;
@@ -154,6 +162,14 @@ async function save_img_staff() {
 async function save_img_jianpu() {
 };
 
+async function save_img() {
+  if(staff) {
+    await save_img_staff();
+  } else {
+    await save_img_jianpu();
+  }
+}
+
 async function zoom_in_staff() {
   display_staff.Zoom = zoom += 0.1;
   display_staff.render();
@@ -161,6 +177,14 @@ async function zoom_in_staff() {
 
 async function zoom_in_jianput() {
 };
+
+async function zoom_in() {
+  if(staff) {
+    await zoom_in_staff();
+  } else {
+    await zoom_in_jianput();
+  }
+}
 
 async function zoom_out_staff() {
   display_staff.Zoom = zoom -= 0.1;
@@ -170,6 +194,14 @@ async function zoom_out_staff() {
 async function zoom_out_jianput() {
 };
 
+async function zoom_out() {
+  if(staff) {
+    await zoom_out_staff();
+  } else {
+    await zoom_out_jianput();
+  }
+}
+
 async function zoom_reset_staff() {
   display_staff.Zoom = zoom = 1.0;
   display_staff.render();
@@ -178,60 +210,86 @@ async function zoom_reset_staff() {
 async function zoom_reset_jianput() {
 };
 
+async function zoom_reset() {
+  if(staff) {
+    await zoom_reset_staff();
+  } else {
+    await zoom_reset_jianput();
+  }
+}
+
+function register_audio(id, audio) {
+  console.info("注册音频", id, audio);
+
+      let audiox = document.createElement("audio");
+      document.querySelector("#piano_player").appendChild(audiox);
+      const mediaSource = new MediaSource();
+      let sourceBuffer;
+      audiox.src = window.URL.createObjectURL(mediaSource)
+      mediaSource.addEventListener('sourceopen', () => {
+      sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
+      let rawData = atob(audio)
+      console.info(typeof (rawData))
+      const data = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        data[i] = rawData.charCodeAt(i);
+      }
+      var queue = [];
+      if(data instanceof Uint8Array) {
+        if (!sourceBuffer.updating) {
+            sourceBuffer.appendBuffer(data);
+        } else {
+            queue.push(data);
+        }
+        sourceBuffer.addEventListener('updateend', function (_) {
+            if (queue.length > 0) {
+              sourceBuffer.appendBuffer(queue.shift());
+            }
+            audiox.play();
+        });
+    }
+
+   });
+}
+
 function init_lifuren(music_xml) {
   document.querySelector("#open_score").onclick = async () => {
-    await load_music_xml_file();
+    await open_score();
   };
   document.querySelector("#play_score").onclick = async () => {
   };
   document.querySelector("#rule_score").onclick = async () => {
   };
-  document.querySelector("#show_score").onclick = async () => {
-    await show_score();
+  document.querySelector("#swap_score").onclick = async () => {
+    await swap_score();
   };
   document.querySelector("#tone_score").onclick = async () => {
   };
   document.querySelector("#save_pdf").onclick = async () => {
-    if(staff) {
-      await save_pdf_staff();
-    } else {
-      await save_pdf_jianpu();
-    }
+    save_pdf();
   };
   document.querySelector("#save_img").onclick = async () => {
-    if(staff) {
-      await save_img_staff();
-    } else {
-      await save_img_jianpu();
-    }
+    save_img();
   };
   document.querySelector("#zoom_in").onclick = async () => {
-    if(staff) {
-      await zoom_in_staff();
-    } else {
-      await zoom_in_jianput();
-    }
+    zoom_in()
   };
   document.querySelector("#zoom_out").onclick = async () => {
-    if(staff) {
-      await zoom_out_staff();
-    } else {
-      await zoom_out_jianput();
-    }
+    zoom_out();
   };
   document.querySelector("#zoom_reset").onclick = async () => {
-    if(staff) {
-      await zoom_reset_staff();
-    } else {
-      await zoom_reset_jianput();
-    }
+    zoom_reset();
   };
   if(music_xml) {
     load_music_xml(music_xml);
   }
   if(player) {
+    // -
   } else {
     player = new Player();
+    if(window.lfr_backend) {
+      window.lfr_backend.postMessage("audio");
+    }
   }
   player.listen(".key");
 }
