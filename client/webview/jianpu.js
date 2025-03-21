@@ -1,18 +1,16 @@
 /**
  * 简谱
- * 
- * 项目参考：https://github.com/nkufree/xml2jianpu
  */
-
 class Jianpu {
 
   zoom_size = 1.0;
   font_size = 1.0;
+  
   music_xml = "";
-  selector  = "#jianpu_container svg";
+  selector  = "#jianpu_container";
 
   render(data) {
-    if(data) {
+    if (data) {
       this.music_xml = data;
     } else {
       data = this.music_xml;
@@ -21,11 +19,13 @@ class Jianpu {
     var musicJson = parser.parse(data);
     console.log("jobj", musicJson["score-partwise"].part.measure);
     var measures = musicJson["score-partwise"].part.measure;
-    var width    = (window.innerWidth  || document.documentElement.clientWidth  || document.body.clientWidth);
-    var height   = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
+    var width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
+    var height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
     var partAttr = measures[0].attributes;
     console.log("partAttr", partAttr);
     var g = d3.select(this.selector)
+      .html("")
+      .append("svg")
       .attr("width", width)
       .attr("height", height)
       .append("g");
@@ -77,7 +77,7 @@ class Jianpu {
     console.log(noteCount);
     noteCount.push(eachNoteCount);
     marginLeft = (width - totalWidth) / 2;
-    d3.select("svg").attr("height", marginTop + noteCount.length * eachHeight);
+    d3.select(this.selector).select("svg").attr("height", marginTop + noteCount.length * eachHeight);
     g.append("text")
       .attr("transform", `translate(${marginLeft + totalWidth / 2 - 20},${titleTop + 30})`)
       .attr("font-weight", "bold")

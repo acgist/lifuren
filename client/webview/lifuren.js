@@ -1,13 +1,10 @@
 /**
- * 乐谱
- * 
- * https://github.com/nkufree/xml2jianpu
- * https://github.com/opensheetmusicdisplay/opensheetmusicdisplay/blob/develop/demo/index.js
+ * 李夫人
  */
-
 let zoom  = 1.0;  // 缩放
 let staff = true; // 五线谱
 
+let player;
 let display_staff;
 let display_jianpu;
 let music_xml_cache;
@@ -69,7 +66,7 @@ async function load_music_xml_file() {
   }
 };
 
-async function staff_jianpu() {
+async function show_score() {
   staff = !staff;
   if(staff) {
     document.querySelector("#staff_container").style  = "display:block;";
@@ -189,12 +186,10 @@ function init_lifuren(music_xml) {
   };
   document.querySelector("#rule_score").onclick = async () => {
   };
-  document.querySelector("#staff_jianpu").onclick = async () => {
-    await staff_jianpu();
+  document.querySelector("#show_score").onclick = async () => {
+    await show_score();
   };
-  document.querySelector("#plus_score").onclick = async () => {
-  };
-  document.querySelector("#fall_score").onclick = async () => {
+  document.querySelector("#tone_score").onclick = async () => {
   };
   document.querySelector("#save_pdf").onclick = async () => {
     if(staff) {
@@ -234,4 +229,9 @@ function init_lifuren(music_xml) {
   if(music_xml) {
     load_music_xml(music_xml);
   }
+  if(player) {
+  } else {
+    player = new Player();
+  }
+  player.listen(".key");
 }
