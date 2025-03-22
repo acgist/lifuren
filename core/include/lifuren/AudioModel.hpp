@@ -99,40 +99,6 @@ public:
 
 };
 
-/**
- * 贝多芬模型（乐谱钢琴指法）
- */
-class BeethovenModuleImpl : public torch::nn::Module {
-
-private:
-    // TODO: 定义结构
-
-public:
-    BeethovenModuleImpl();
-    ~BeethovenModuleImpl();
-
-public:
-    torch::Tensor forward(torch::Tensor input);
-
-};
-
-TORCH_MODULE(BeethovenModule);
-
-/**
- * 贝多芬模型（乐谱钢琴指法）
- */
-class BeethovenModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::BeethovenModule> {
-
-public:
-    BeethovenModel(lifuren::config::ModelParams params = {});
-    ~BeethovenModel();
-    
-public:
-    void defineDataset() override;
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
-
-};
-
 } // END OF lifuren::audio
 
 #endif // END OF LFR_HEADER_CORE_AUDIO_MODEL_HPP

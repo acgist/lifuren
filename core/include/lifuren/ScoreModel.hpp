@@ -24,33 +24,34 @@
 
 namespace lifuren::score {
 
+
 /**
- * 贝多芬模型（乐谱钢琴指法）
+ * 莫扎特模型（乐谱钢琴指法）
  */
-class BeethovenModuleImpl : public torch::nn::Module {
+class MozartModuleImpl : public torch::nn::Module {
 
 private:
     // TODO: 定义结构
 
 public:
-    BeethovenModuleImpl();
-    ~BeethovenModuleImpl();
+    MozartModuleImpl();
+    ~MozartModuleImpl();
 
 public:
     torch::Tensor forward(torch::Tensor input);
 
 };
 
-TORCH_MODULE(BeethovenModule);
+TORCH_MODULE(MozartModule);
 
 /**
- * 贝多芬模型（乐谱钢琴指法）
+ * 莫扎特模型（乐谱钢琴指法）
  */
-class BeethovenModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::BeethovenModule> {
+class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::MozartModule> {
 
 public:
-    BeethovenModel(lifuren::config::ModelParams params = {});
-    ~BeethovenModel();
+    MozartModel(lifuren::config::ModelParams params = {});
+    ~MozartModel();
     
 public:
     void defineDataset() override;

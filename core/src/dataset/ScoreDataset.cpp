@@ -11,7 +11,7 @@ void lifuren::dataset::score::tensor_to_score(lifuren::music::Score& score, cons
     // TODO
 }
 
-lifuren::dataset::DatasetLoader lifuren::dataset::score::loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path) {
+lifuren::dataset::DatasetLoader lifuren::dataset::score::loadMozartDatasetLoader(const size_t batch_size, const std::string& path) {
     auto dataset = lifuren::dataset::Dataset(
         path,
         { ".xml" },

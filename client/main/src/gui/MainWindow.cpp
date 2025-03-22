@@ -26,7 +26,6 @@ static wxTextCtrl* message_text      { nullptr };
 
 static void bach_callback       (const wxCommandEvent&);
 static void chopin_callback     (const wxCommandEvent&);
-static void mozart_callback     (const wxCommandEvent&);
 static void shikuang_callback   (const wxCommandEvent&);
 static void music_score_callback(const wxCommandEvent&);
 static void config_callback     (const wxCommandEvent&);
@@ -34,8 +33,7 @@ static void about_callback      (const wxCommandEvent&);
 static void message_callback    (const char*);
 
 static auto bach_text         = wxT("音频识谱");
-static auto chopin_text       = wxT("简谱识谱");
-static auto mozart_text       = wxT("五线谱识谱");
+static auto chopin_text       = wxT("五线谱识谱");
 static auto shikuang_text     = wxT("音频风格迁移");
 static auto music_score_text  = wxT("乐谱查看");
 static auto config_text       = wxT("配置");
@@ -44,12 +42,11 @@ static auto message_text_text = wxT("日志");
 
 static const auto bach_id         = 1000;
 static const auto chopin_id       = 1001;
-static const auto mozart_id       = 1002;
-static const auto shikuang_id     = 1003;
-static const auto music_score_id  = 1004;
-static const auto config_id       = 1005;
-static const auto about_id        = 1006;
-static const auto message_text_id = 1007;
+static const auto shikuang_id     = 1002;
+static const auto music_score_id  = 1003;
+static const auto config_id       = 1004;
+static const auto about_id        = 1005;
+static const auto message_text_id = 1006;
 
 static int thread_event_thread  = 100;
 static int thread_event_message = 101;
@@ -77,14 +74,13 @@ void lifuren::MainWindow::drawElement() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
     panel              = new wxPanel(this);
-    bach_button        = new wxButton  (panel, bach_id,         bach_text,         wxPoint(                   10,  10), wxSize((w - 40) / 3,      80));
-    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint((w - 40) / 3     + 20,  10), wxSize((w - 40) / 3,      80));
-    mozart_button      = new wxButton  (panel, mozart_id,       mozart_text,       wxPoint((w - 40) / 3 * 2 + 30,  10), wxSize((w - 40) / 3,      80));
-    shikuang_button    = new wxButton  (panel, shikuang_id,     shikuang_text,     wxPoint(                   10, 100), wxSize((w - 20),          80));
-    music_score_button = new wxButton  (panel, music_score_id,  music_score_text,  wxPoint(                   10, 190), wxSize((w - 20),          80));
-    config_button      = new wxButton  (panel, config_id,       config_text,       wxPoint(                   10, 280), wxSize((w - 30) / 2,      80));
-    about_button       = new wxButton  (panel, about_id,        about_text,        wxPoint((w / 2)           + 5, 280), wxSize((w - 30) / 2,      80));
-    message_text       = new wxTextCtrl(panel, message_text_id, message_text_text, wxPoint(                   10, 370), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
+    bach_button        = new wxButton  (panel, bach_id,         bach_text,         wxPoint(          10,  10), wxSize((w - 40) / 2,      80));
+    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint((w / 2) +  5,  10), wxSize((w - 40) / 2,      80));
+    shikuang_button    = new wxButton  (panel, shikuang_id,     shikuang_text,     wxPoint(          10, 100), wxSize((w - 20),          80));
+    music_score_button = new wxButton  (panel, music_score_id,  music_score_text,  wxPoint(          10, 190), wxSize((w - 20),          80));
+    config_button      = new wxButton  (panel, config_id,       config_text,       wxPoint(          10, 280), wxSize((w - 30) / 2,      80));
+    about_button       = new wxButton  (panel, about_id,        about_text,        wxPoint((w / 2)  + 5, 280), wxSize((w - 30) / 2,      80));
+    message_text       = new wxTextCtrl(panel, message_text_id, message_text_text, wxPoint(          10, 370), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
     message_text->Disable();
     message_text->SetBackgroundColour(panel->GetBackgroundColour());
 }
@@ -118,7 +114,6 @@ void lifuren::MainWindow::bindEvent() {
         switch(id) {
             case bach_id       : bach_callback(event);        break;
             case chopin_id     : chopin_callback(event);      break;
-            case mozart_id     : mozart_callback(event);      break;
             case shikuang_id   : shikuang_callback(event);    break;
             case music_score_id: music_score_callback(event); break;
             case config_id     : config_callback(event);      break;
@@ -140,17 +135,6 @@ static void bach_callback(const wxCommandEvent&) {
 }
 
 static void chopin_callback(const wxCommandEvent&) {
-    run("简谱识谱", wxT("选择简谱"), wxT("图片文件|*.png;*.jpg;*.jpeg"), [](std::string file) -> std::tuple<bool, std::string> {
-        auto client = lifuren::image::getImageClient("chopin");
-        if(client->load(lifuren::config::CONFIG.model_chopin)) {
-            return client->pred(file);
-        } else {
-            return { false, {} };
-        }
-    });
-}
-
-static void mozart_callback(const wxCommandEvent&) {
     run("五线谱识谱", wxT("选择五线谱"), wxT("图片文件|*.png;*.jpg;*.jpeg"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::image::getImageClient("mozart");
         if(client->load(lifuren::config::CONFIG.model_mozart)) {

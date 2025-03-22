@@ -23,6 +23,7 @@ lifuren::MusicScoreWindow::MusicScoreWindow(int width, int height, const wxStrin
 }
 
 lifuren::MusicScoreWindow::~MusicScoreWindow() {
+    web_view = nullptr;
 }
 
 void lifuren::MusicScoreWindow::drawElement() {
@@ -74,6 +75,9 @@ void lifuren::MusicScoreWindow::fillData() {
 static void push_audio() {
     wxFileSystem fs;
     for(int i = 1; i <= 88; ++i) {
+        if(!web_view) {
+            return;
+        }
         #if defined(_DEBUG) || !defined(NDEBUG)
         auto path = wxT("D:/gitee/lifuren/client/webview/audio/" + std::to_string(i) + ".mp3");
         #else

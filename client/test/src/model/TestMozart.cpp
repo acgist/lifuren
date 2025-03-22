@@ -2,12 +2,12 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/Image.hpp"
-#include "lifuren/ImageModel.hpp"
+#include "lifuren/Score.hpp"
+#include "lifuren/ScoreModel.hpp"
 
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
-    lifuren::image::MozartModel model({
+    lifuren::score::MozartModel model({
         .lr         = 0.001F,
         .batch_size = 100,
         .epoch_size = 4,
@@ -22,7 +22,7 @@
 }
 
 [[maybe_unused]] static void testPred() {
-    auto client = lifuren::image::getImageClient("mozart");
+    auto client = lifuren::score::getScoreClient("mozart");
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "mozart.pt"}).string());
     auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "mozart.jpg"}).string());
     SPDLOG_INFO("输出结果：{} - {}", success, output);

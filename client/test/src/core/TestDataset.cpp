@@ -113,9 +113,6 @@
     output.close();
 }
 
-[[maybe_unused]] static void testLoadBeethovenDatasetLoader() {
-}
-
 [[maybe_unused]] static void testLoadChopinDatasetLoader() {
 }
 
@@ -150,7 +147,6 @@ LFR_TEST(
     // testEmbeddingShikuang();
     // testLoadBachDatasetLoader();
     // testLoadShikuangDatasetLoader();
-    // testLoadBeethovenDatasetLoader();
     // testLoadChopinDatasetLoader();
     // testLoadMozartDatasetLoader();
     // testLoadClassifyDatasetLoader();

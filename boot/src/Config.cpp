@@ -54,11 +54,10 @@ void loadYaml(lifuren::config::Config& config, const std::string& name, const YA
         LFR_CONFIG_YAML_GETTER(config, yaml, tmp,    tmp,    std::string);
         LFR_CONFIG_YAML_GETTER(config, yaml, output, output, std::string);
     } else if("model" == name) {
-        LFR_CONFIG_YAML_GETTER(config, yaml, bach,      model_bach,      std::string);
-        LFR_CONFIG_YAML_GETTER(config, yaml, chopin,    model_chopin,    std::string);
-        LFR_CONFIG_YAML_GETTER(config, yaml, mozart,    model_mozart,    std::string);
-        LFR_CONFIG_YAML_GETTER(config, yaml, shikuang,  model_shikuang,  std::string);
-        LFR_CONFIG_YAML_GETTER(config, yaml, beethoven, model_beethoven, std::string);
+        LFR_CONFIG_YAML_GETTER(config, yaml, bach,     model_bach,     std::string);
+        LFR_CONFIG_YAML_GETTER(config, yaml, chopin,   model_chopin,   std::string);
+        LFR_CONFIG_YAML_GETTER(config, yaml, mozart,   model_mozart,   std::string);
+        LFR_CONFIG_YAML_GETTER(config, yaml, shikuang, model_shikuang, std::string);
     } else {
         SPDLOG_DEBUG("没有适配加载配置类型：{}", name);
     }
@@ -75,12 +74,11 @@ static YAML::Node toYaml() {
     }
     {
         YAML::Node node;
-        node["bach"]      = lifuren::config::CONFIG.model_bach;
-        node["chopin"]    = lifuren::config::CONFIG.model_chopin;
-        node["mozart"]    = lifuren::config::CONFIG.model_mozart;
-        node["shikuang"]  = lifuren::config::CONFIG.model_shikuang;
-        node["beethoven"] = lifuren::config::CONFIG.model_beethoven;
-        yaml["model"]     = node;
+        node["bach"]     = lifuren::config::CONFIG.model_bach;
+        node["chopin"]   = lifuren::config::CONFIG.model_chopin;
+        node["mozart"]   = lifuren::config::CONFIG.model_mozart;
+        node["shikuang"] = lifuren::config::CONFIG.model_shikuang;
+        yaml["model"]    = node;
     }
     return yaml;
 }

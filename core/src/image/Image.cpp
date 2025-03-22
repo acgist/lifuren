@@ -31,20 +31,9 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Chopin
     return {};
 }
 
-template<>
-std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::MozartModel>::pred(const std::string& input) {
-    if(!this->model) {
-        return { false, {} };
-    }
-    // TODO
-    return {};
-}
-
 std::unique_ptr<lifuren::image::ImageModelClient> lifuren::image::getImageClient(const std::string& model) {
     if(model == "chopin") {
         return std::make_unique<lifuren::image::ImageClient<ChopinModel>>();
-    } else if(model == "mozart") {
-        return std::make_unique<lifuren::image::ImageClient<MozartModel>>();
     } else {
         return nullptr;
     }

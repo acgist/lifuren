@@ -309,16 +309,6 @@ extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(const int width, 
  * @param height     目标图片高度
  * @param batch_size 批量大小
  * @param path       数据集路径
- * 
- * @return 图片数据集
- */
-extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
-
-/**
- * @param width      目标图片宽度
- * @param height     目标图片高度
- * @param batch_size 批量大小
- * @param path       数据集路径
  * @param classify   图片分类
  * 
  * @return 图片数据集
@@ -348,7 +338,7 @@ extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& t
  * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadBeethovenDatasetLoader(const size_t batch_size, const std::string& path);
+extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(const size_t batch_size, const std::string& path);
 
 } // END OF score
 

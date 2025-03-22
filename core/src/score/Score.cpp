@@ -21,7 +21,7 @@ public:
 };
 
 template<>
-std::tuple<bool, std::string> lifuren::score::ScoreClient<lifuren::score::BeethovenModel>::pred(const std::string& input) {
+std::tuple<bool, std::string> lifuren::score::ScoreClient<lifuren::score::MozartModel>::pred(const std::string& input) {
     if(!this->model) {
         return { false, {} };
     }
@@ -30,8 +30,8 @@ std::tuple<bool, std::string> lifuren::score::ScoreClient<lifuren::score::Beetho
 }
 
 std::unique_ptr<lifuren::score::ScoreModelClient> lifuren::score::getScoreClient(const std::string& model) {
-    if(model == "beethoven") {
-        return std::make_unique<lifuren::score::ScoreClient<BeethovenModel>>();
+    if(model == "mozart") {
+        return std::make_unique<lifuren::score::ScoreClient<MozartModel>>();
     } else {
         return nullptr;
     }

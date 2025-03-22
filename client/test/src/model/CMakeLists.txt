@@ -29,11 +29,3 @@ target_link_libraries(
     testShikuang
     lifurencore
 )
-
-add_executable(testBeethoven TestBeethoven.cpp)
-add_test(NAME testBeethoven COMMAND testBeethoven)
-set_target_properties(testBeethoven PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testBeethoven
-    lifurencore
-)
