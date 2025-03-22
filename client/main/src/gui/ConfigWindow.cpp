@@ -27,18 +27,18 @@ static const int model_chopin_button_id   = 3003;
 static const int model_mozart_button_id   = 3004;
 static const int model_shikuang_button_id = 3005;
 
-const auto tmp_input_text             = wxT("临时目录");
-const auto tmp_button_text            = wxT("选择临时目录");
-const auto output_input_text          = wxT("输出目录");
-const auto output_button_text         = wxT("选择输出目录");
-const auto model_bach_input_text      = wxT("音频识谱模型文件");
-const auto model_bach_button_text     = wxT("选择音频识谱模型文件");
-const auto model_chopin_input_text    = wxT("五线谱识谱模型文件");
-const auto model_chopin_button_text   = wxT("选择五线谱识谱模型文件");
-const auto model_mozart_input_text    = wxT("钢琴指法模型文件");
-const auto model_mozart_button_text   = wxT("选择钢琴指法模型文件");
-const auto model_shikuang_input_text  = wxT("音频风格迁移模型文件");
-const auto model_shikuang_button_text = wxT("选择音频风格迁移模型文件");
+static const auto tmp_input_text             = wxT("临时目录");
+static const auto tmp_button_text            = wxT("选择临时目录");
+static const auto output_input_text          = wxT("输出目录");
+static const auto output_button_text         = wxT("选择输出目录");
+static const auto model_bach_input_text      = wxT("音频识谱模型文件");
+static const auto model_bach_button_text     = wxT("选择音频识谱模型文件");
+static const auto model_chopin_input_text    = wxT("五线谱识谱模型文件");
+static const auto model_chopin_button_text   = wxT("选择五线谱识谱模型文件");
+static const auto model_mozart_input_text    = wxT("钢琴指法模型文件");
+static const auto model_mozart_button_text   = wxT("选择钢琴指法模型文件");
+static const auto model_shikuang_input_text  = wxT("音频风格迁移模型文件");
+static const auto model_shikuang_button_text = wxT("选择音频风格迁移模型文件");
 
 static void chooseFileCallback     (const wxCommandEvent&, wxTextCtrl*);
 static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl*);
@@ -48,6 +48,20 @@ lifuren::ConfigWindow::ConfigWindow(int width, int height, const wxString& title
 
 lifuren::ConfigWindow::~ConfigWindow() {
     lifuren::config::CONFIG.saveFile();
+    // 置空
+    panel                 = nullptr;
+    tmp_input             = nullptr;
+    tmp_button            = nullptr;
+    output_input          = nullptr;
+    output_button         = nullptr;
+    model_bach_input      = nullptr;
+    model_bach_button     = nullptr;
+    model_chopin_input    = nullptr;
+    model_chopin_button   = nullptr;
+    model_mozart_input    = nullptr;
+    model_mozart_button   = nullptr;
+    model_shikuang_input  = nullptr;
+    model_shikuang_button = nullptr;
 }
 
 void lifuren::ConfigWindow::drawElement() {

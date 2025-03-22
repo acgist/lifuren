@@ -7,7 +7,11 @@ class Jianpu {
   font_size = 1.0;
   
   music_xml = "";
-  selector  = "#jianpu_container";
+  selector  = "";
+
+  constructor(selector = "#jianpu_container") {
+    this.selector = selector;
+  }
 
   render(data) {
     if (data) {

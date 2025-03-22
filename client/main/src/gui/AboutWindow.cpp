@@ -22,6 +22,12 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const wxString& title) 
 }
 
 lifuren::AboutWindow::~AboutWindow() {
+    // 置空
+    panel       = nullptr;
+    home_page   = nullptr;
+    gitee_page  = nullptr;
+    github_page = nullptr;
+    about       = nullptr;
 }
 
 void lifuren::AboutWindow::drawElement() {

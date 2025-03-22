@@ -7,9 +7,13 @@ class Player {
   audio_ctx    = null;  // 播放器上下文
   audio_keys   = new Map(); // 键盘
   audio_source = new Map(); // 音源
-  audio_selector = "#piano_player";
+  audio_selector = "";
   helmholtz_pitch_notation  = new Map(); // 赫尔姆霍茨音调记号法
   scientific_pitch_notation = new Map(); // 科学音调记号法
+
+  constructor(audio_selector = "#piano_player") {
+    this.audio_selector = audio_selector;
+  }
 
   listen(selector) {
     document.querySelectorAll(selector).forEach(key => {
@@ -92,5 +96,6 @@ class Player {
     source.buffer = buffer;
     source.connect(this.audio_ctx.destination);
     source.start(0);
+    // TODO: 判断是否需要释放
   }
 };

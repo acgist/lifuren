@@ -12,9 +12,11 @@
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
 
-static wxPanel * panel{ nullptr };
-#if wxUSE_WEBVIEW
+static wxPanel  * panel   { nullptr };
 static wxWebView* web_view{ nullptr };
+
+#if defined(_DEBUG) || !defined(NDEBUG)
+const static wxString debug_path = wxT("D:/gitee/lifuren/client/");
 #endif
 
 static void push_audio();
@@ -23,6 +25,8 @@ lifuren::MusicScoreWindow::MusicScoreWindow(int width, int height, const wxStrin
 }
 
 lifuren::MusicScoreWindow::~MusicScoreWindow() {
+    // 置空
+    panel    = nullptr;
     web_view = nullptr;
 }
 
@@ -63,7 +67,7 @@ void lifuren::MusicScoreWindow::bindEvent() {
 void lifuren::MusicScoreWindow::fillData() {
     if(web_view) {
         #if defined(_DEBUG) || !defined(NDEBUG)
-        auto file = wxString(wxT("D:/gitee/lifuren/client/webview/index.html"));
+        auto file = debug_path + wxString(wxT("webview/index.html"));
         #else
         auto file = lifuren::app_base_dir("webview/index.html");
         #endif
@@ -79,7 +83,7 @@ static void push_audio() {
             return;
         }
         #if defined(_DEBUG) || !defined(NDEBUG)
-        auto path = wxT("D:/gitee/lifuren/client/webview/audio/" + std::to_string(i) + ".mp3");
+        auto path = debug_path + wxT("webview/audio/" + std::to_string(i) + ".mp3");
         #else
         auto path = lifuren::app_base_dir(wxT("webview/audio/" + std::to_string(i) + ".mp3"));
         #endif

@@ -32,13 +32,13 @@ static void config_callback     (const wxCommandEvent&);
 static void about_callback      (const wxCommandEvent&);
 static void message_callback    (const char*);
 
-static auto bach_text         = wxT("音频识谱");
-static auto chopin_text       = wxT("五线谱识谱");
-static auto shikuang_text     = wxT("音频风格迁移");
-static auto music_score_text  = wxT("乐谱查看");
-static auto config_text       = wxT("配置");
-static auto about_text        = wxT("关于");
-static auto message_text_text = wxT("日志");
+static const auto bach_text         = wxT("音频识谱");
+static const auto chopin_text       = wxT("五线谱识谱");
+static const auto shikuang_text     = wxT("音频风格迁移");
+static const auto music_score_text  = wxT("乐谱查看");
+static const auto config_text       = wxT("配置");
+static const auto about_text        = wxT("关于");
+static const auto message_text_text = wxT("日志");
 
 static const auto bach_id         = 1000;
 static const auto chopin_id       = 1001;
@@ -48,8 +48,8 @@ static const auto config_id       = 1004;
 static const auto about_id        = 1005;
 static const auto message_text_id = 1006;
 
-static int thread_event_thread  = 100;
-static int thread_event_message = 101;
+static const int thread_event_thread  = 100;
+static const int thread_event_message = 101;
 
 static bool running = false;
 static lifuren::MainWindow* mainWindow{ nullptr };
@@ -68,6 +68,16 @@ lifuren::MainWindow::~MainWindow() {
     }
     lifuren::message::unregisterMessageCallback();
     mainWindow = nullptr;
+    // 置空
+    panel              = nullptr;
+    bach_button        = nullptr;
+    chopin_button      = nullptr;
+    mozart_button      = nullptr;
+    shikuang_button    = nullptr;
+    music_score_button = nullptr;
+    config_button      = nullptr;
+    about_button       = nullptr;
+    message_text       = nullptr;
 }
 
 void lifuren::MainWindow::drawElement() {
@@ -157,11 +167,21 @@ static void shikuang_callback(const wxCommandEvent&) {
 }
 
 static void music_score_callback(const wxCommandEvent&) {
+    #if wxUSE_WEBVIEW
     message_text->Clear();
     lifuren::MusicScoreWindow* musicScoreWindow = new lifuren::MusicScoreWindow(LFR_DIALOG_WIDTH, LFR_DIALOG_HEIGHT);
     musicScoreWindow->init();
     musicScoreWindow->Show(true);
     musicScoreWindow->Maximize(true);
+    #else
+    wxMessageDialog dialog(
+        nullptr,
+        wxT("缺少WebView模块"),
+        wxT("失败提示"),
+        wxOK | wxCENTRE | wxICON_WARNING
+    );
+    dialog.ShowModal();
+    #endif
 }
 
 static void config_callback(const wxCommandEvent&) {
