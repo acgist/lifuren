@@ -61,29 +61,40 @@ void lifuren::MusicScoreWindow::bindEvent() {
 
 void lifuren::MusicScoreWindow::fillData() {
     if(web_view) {
-        auto file = lifuren::config::baseFile("./webview/index.html");
-        SPDLOG_DEBUG("加载页面：{}", file);
+        #if defined(_DEBUG) || !defined(NDEBUG)
+        auto file = wxString(wxT("D:/gitee/lifuren/client/webview/index.html"));
+        #else
+        auto file = lifuren::app_base_dir("webview/index.html");
+        #endif
+        SPDLOG_DEBUG("加载页面：{}", file.mb_str(wxConvUTF8).data());
         web_view->LoadURL(file);
     }
 }
 
 static void push_audio() {
-    auto path = wxFileName(wxStandardPaths::Get().GetExecutablePath().BeforeLast(wxFileName::GetPathSeparator()) + wxFileName::GetPathSeparator() + "webview/audio/1.mp3");
     wxFileSystem fs;
-    auto file = fs.OpenFile(path.GetFullPath());
-    if(!file) {
-        SPDLOG_WARN("打开文件失败：{}", path.GetFullPath().mb_str(wxConvUTF8).data());
-        return;
+    for(int i = 1; i <= 88; ++i) {
+        #if defined(_DEBUG) || !defined(NDEBUG)
+        auto path = wxT("D:/gitee/lifuren/client/webview/audio/" + std::to_string(i) + ".mp3");
+        #else
+        auto path = lifuren::app_base_dir(wxT("webview/audio/" + std::to_string(i) + ".mp3"));
+        #endif
+        auto file = fs.OpenFile(path);
+        if(!file) {
+            SPDLOG_WARN("打开文件失败：{}", path.mb_str(wxConvUTF8).data());
+            return;
+        }
+        auto stream = file->GetStream();
+        if(!stream) {
+            SPDLOG_WARN("打开文件失败：{}", path.mb_str(wxConvUTF8).data());
+            return;
+        }
+        size_t length = stream->GetLength();
+        std::vector<char> data(length);
+        stream->ReadAll(data.data(), length);
+        auto audio_source = wxBase64Encode(data.data(), length);
+        web_view->RunScript(wxT("register_audio('" + std::to_string(i) + "','piano', `" + audio_source + "`)"));
+        SPDLOG_DEBUG("注册音源：{} - {}", i, length);
+        delete file;
     }
-    auto stream = file->GetStream();
-    if(!stream) {
-        SPDLOG_WARN("打开文件失败：{}", path.GetFullPath().mb_str(wxConvUTF8).data());
-        return;
-    }
-    size_t length = stream->GetLength();
-    std::vector<char> data(length);
-    stream->ReadAll(data.data(), length);
-    auto str = wxBase64Encode(data.data(), length);
-    web_view->RunScriptAsync("register_audio(1,`" + str + "`)");
-    delete file;
 }

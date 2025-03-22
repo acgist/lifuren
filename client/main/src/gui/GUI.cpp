@@ -62,6 +62,10 @@ std::string lifuren::directory_chooser(const wxString& title, const wxString& di
     return filename;
 }
 
+wxString lifuren::app_base_dir(const wxString& path) {
+    return wxFileName(wxStandardPaths::Get().GetExecutablePath().BeforeLast(wxFileName::GetPathSeparator()) + wxFileName::GetPathSeparator() + path).GetFullPath();
+}
+
 lifuren::Window::Window(int width, int height, const wxString& title) : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(width, height)) {
     this->SetTitle(title);
     SPDLOG_DEBUG("打开窗口：{}", this->GetTitle().mb_str(wxConvUTF8).data());
@@ -80,8 +84,7 @@ void lifuren::Window::init() {
 }
 
 void lifuren::Window::loadIcon() {
-    auto path = wxFileName(wxStandardPaths::Get().GetExecutablePath().BeforeLast(wxFileName::GetPathSeparator()) + wxFileName::GetPathSeparator() + "logo.ico");
-    this->SetIcon(wxIcon(path.GetFullPath(), wxBITMAP_TYPE_ICO));
+    this->SetIcon(wxIcon(app_base_dir("logo.ico"), wxBITMAP_TYPE_ICO));
 }
 
 void lifuren::Window::drawElement() {

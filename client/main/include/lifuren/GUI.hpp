@@ -162,8 +162,6 @@ protected:
 };
 
 /**
- * 选择文件
- * 
  * @param title     窗口标题
  * @param filter    文件过滤：*.{cxx,cpp}
  * @param directory 当前目录
@@ -173,14 +171,19 @@ protected:
 extern std::string file_chooser(const wxString& title, const wxString& filter = wxT(""), const wxString& directory = wxT(""));
 
 /**
- * 选择目录
- * 
  * @param title     窗口标题
  * @param directory 当前目录
  * 
  * @return 选择目录路径
  */
 extern std::string directory_chooser(const wxString& title, const wxString& directory = "");
+
+/**
+ * @param path 相对路径
+ * 
+ * @return 绝对路径
+ */
+extern wxString app_base_dir(const wxString& path);
 
 } // END OF lifuren
 

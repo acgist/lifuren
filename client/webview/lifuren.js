@@ -20,7 +20,7 @@ async function load_music_xml_staff(music_xml) {
     drawTitle : true,
     autoResize: false,
     pageFormat: "A4_P",
-    cursorsOptions: [{ type: 3, color: "#CCCC00", alpha: 0.6, follow: true }],
+    cursorsOptions: [{ type: 0, color: "#CCCC00", alpha: 0.6, follow: true }],
     pageBackgroundColor: "#FFFFFF",
   });
   display_staff.load(music_xml).then(() => {
@@ -218,38 +218,10 @@ async function zoom_reset() {
   }
 }
 
-function register_audio(id, audio) {
-  console.info("注册音频", id, audio);
-
-      let audiox = document.createElement("audio");
-      document.querySelector("#piano_player").appendChild(audiox);
-      const mediaSource = new MediaSource();
-      let sourceBuffer;
-      audiox.src = window.URL.createObjectURL(mediaSource)
-      mediaSource.addEventListener('sourceopen', () => {
-      sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
-      let rawData = atob(audio)
-      console.info(typeof (rawData))
-      const data = new Uint8Array(rawData.length);
-      for (let i = 0; i < rawData.length; ++i) {
-        data[i] = rawData.charCodeAt(i);
-      }
-      var queue = [];
-      if(data instanceof Uint8Array) {
-        if (!sourceBuffer.updating) {
-            sourceBuffer.appendBuffer(data);
-        } else {
-            queue.push(data);
-        }
-        sourceBuffer.addEventListener('updateend', function (_) {
-            if (queue.length > 0) {
-              sourceBuffer.appendBuffer(queue.shift());
-            }
-            audiox.play();
-        });
-    }
-
-   });
+function register_audio(id, type, audio) {
+  if(player) {
+    player.register(id, type, audio);
+  }
 }
 
 function init_lifuren(music_xml) {
@@ -293,3 +265,27 @@ function init_lifuren(music_xml) {
   }
   player.listen(".key");
 }
+
+// var allNotes = []
+// display_staff.cursor.reset()
+// const iterator = display_staff.cursor.Iterator;
+
+// while(!iterator.EndReached){
+//    const voices = iterator.CurrentVoiceEntries;
+//    for(var i = 0; i < voices.length; i++){
+//       const v = voices[i];
+//       const notes = v.Notes;
+//       for(var j = 0; j < notes.length; j++){
+//             const note = notes[j];
+//             // make sure our note is not silent
+//             if(note != null && note.halfTone != 0 && !note.isRest()){
+//                allNotes.push({
+//                    "id":note.parentStaffEntry.parentStaff.idInMusicSheet,
+//                   "note": note.halfTone+12, // see issue #224
+//                   "time": iterator.currentTimeStamp.RealValue * 4
+//                })
+//             }
+//        }
+//     }
+//     iterator.moveToNext()
+// }

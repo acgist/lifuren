@@ -110,6 +110,8 @@ val/乐谱2.xml
 
 #### 数据集
 
+* https://beam.kisarazu.ac.jp/~saito/research/PianoFingeringDataset/
+
 ```
 train/乐谱1.xml
 train/指法1.xml
