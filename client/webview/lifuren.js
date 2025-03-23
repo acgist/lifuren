@@ -1,291 +1,311 @@
 /**
  * 李夫人
  */
-let zoom  = 1.0;  // 缩放
-let staff = true; // 五线谱
+class Lifuren {
 
-let player;
-let display_staff;
-let display_jianpu;
-let music_xml_cache;
+  zoom  = 1.0;  // 缩放
+  show_staff = true;  // 是否显示五线谱
+  show_piano = false; // 是否显示钢琴键盘
+  
+  player = null;
+  music_xml = null;
+  display_staff = null;
+  display_jianpu = null;
+  
+  a4_width  = 210;
+  a4_height = 297;
 
-const a4_width  = 210;
-const a4_height = 297;
-
-async function load_music_xml_staff(music_xml) {
-  music_xml_cache = music_xml;
-  display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay("staff_container");
-  display_staff.setOptions({
-    backend   : "svg",
-    drawTitle : true,
-    autoResize: false,
-    pageFormat: "A4_P",
-    cursorsOptions: [{ type: 0, color: "#CCCC00", alpha: 0.6, follow: true }],
-    pageBackgroundColor: "#FFFFFF",
-  });
-  display_staff.load(music_xml).then(() => {
-    display_staff.render();
-    // display_staff.cursor.show();
-    // display_staff.cursor.hide();
-    // display_staff.cursor.reset();
-    // display_staff.cursor.previous();
-    // display_staff.cursor.next();
-  });
-}
-
-async function load_music_xml_jianpu(music_xml) {
-  music_xml_cache = music_xml;
-  display_jianpu = new Jianpu();
-  display_jianpu.render(music_xml);
-}
-
-async function load_music_xml(music_xml) {
-  if(staff) {
-    await load_music_xml_staff(music_xml);
-  } else {
-    await load_music_xml_jianpu(music_xml);
-  }
-}
-
-async function open_score() {
-  const [picker] = await window.showOpenFilePicker({
-    types: [{
-      accept: { "text/xml": ['.xml', '.musicxml'] },
-      description: "乐谱"
-    }]
-  });
-  const file = await picker?.getFile();
-  if(file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      load_music_xml(e.target.result);
-    };
-    reader.readAsText(file);
-  } else {
-    console.info("用户没有选择文件");
-  }
-};
-
-async function swap_score() {
-  staff = !staff;
-  if(staff) {
-    document.querySelector("#staff_container").style  = "display:block;";
-    document.querySelector("#jianpu_container").style = "display:none;";
-    load_music_xml_staff(music_xml_cache);
-  } else {
-    document.querySelector("#staff_container").style  = "display:none;";
-    document.querySelector("#jianpu_container").style = "display:block;";
-    load_music_xml_jianpu(music_xml_cache);
-  }
-}
-
-async function save_pdf_staff() {
-  const backends = display_staff.drawer.Backends;
-  let svgElement = backends[0].getSvgElement();
-  let pageWidth  = a4_width;
-  let pageHeight = a4_height;
-  if (!display_staff.rules.PageFormat?.IsUndefined) {
-    pageWidth  = display_staff.rules.PageFormat.width;
-    pageHeight = display_staff.rules.PageFormat.height;
-  } else {
-    pageHeight = pageWidth * svgElement.clientHeight / svgElement.clientWidth;
-  }
-  const pdf = new jspdf.jsPDF({
-    unit  : "mm",
-    format: [pageWidth, pageHeight],
-    orientation: pageHeight > pageWidth ? "p" : "l"
-  });
-  for (let index = 0; index < backends.length; ++index) {
-    if (index > 0) {
-      pdf.addPage();
-    }
-    svgElement = backends[index].getSvgElement();
-    await pdf.svg(svgElement, {
-      x: 0,
-      y: 0,
-      width : pageWidth,
-      height: pageHeight,
-    })
-  }
-  pdf.save((display_staff.sheet.FullNameString || "lifuren") + ".pdf");
-};
-
-async function save_pdf_jianpu() {
-};
-
-async function save_pdf() {
-  if(staff) {
-    await save_pdf_staff();
-  } else {
-    await save_pdf_jianpu();
-  }
-}
-
-async function download_img(index, svgElement) {
-  const canvas     = document.createElement('canvas');
-  canvas.width     = svgElement.width.baseVal.value;
-  canvas.height    = svgElement.height.baseVal.value;
-  const ctx        = canvas.getContext('2d');
-  const svgContent = new XMLSerializer().serializeToString(svgElement);
-  const img = new Image();
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0);
-    const imgURL = canvas.toDataURL({ format: "image/png" });
-    const dlLink = document.createElement('a');
-    dlLink.href     = imgURL;
-    dlLink.download = (display_staff.sheet.FullNameString || "lifuren") + "-" + index + ".png";
-    dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
-    document.body.appendChild(dlLink);
-    dlLink.click();
-    document.body.removeChild(dlLink);
-  };
-  let content = "";
-  const chunk = 8 * 1024;
-  const array = new TextEncoder().encode(svgContent);
-  let i;
-  for (i = 0; i < array.length / chunk; ++i) {
-    content += String.fromCharCode(...array.slice(i * chunk, (i + 1) * chunk));
-  }
-  if(array.length % chunk != 0) {
-    content += String.fromCharCode.apply(...array.slice(i * chunk));
-  }
-  img.src = 'data:image/svg+xml;base64,' + btoa(content);
-}
-
-async function save_img_staff() {
-  const backends = display_staff.drawer.Backends;
-  for(let i = 0; i < backends.length; ++i) {
-    await download_img(i, backends[i].getSvgElement());
-  }
-};
-
-async function save_img_jianpu() {
-};
-
-async function save_img() {
-  if(staff) {
-    await save_img_staff();
-  } else {
-    await save_img_jianpu();
-  }
-}
-
-async function zoom_in_staff() {
-  display_staff.Zoom = zoom += 0.1;
-  display_staff.render();
-};
-
-async function zoom_in_jianput() {
-};
-
-async function zoom_in() {
-  if(staff) {
-    await zoom_in_staff();
-  } else {
-    await zoom_in_jianput();
-  }
-}
-
-async function zoom_out_staff() {
-  display_staff.Zoom = zoom -= 0.1;
-  display_staff.render();
-};
-
-async function zoom_out_jianput() {
-};
-
-async function zoom_out() {
-  if(staff) {
-    await zoom_out_staff();
-  } else {
-    await zoom_out_jianput();
-  }
-}
-
-async function zoom_reset_staff() {
-  display_staff.Zoom = zoom = 1.0;
-  display_staff.render();
-};
-
-async function zoom_reset_jianput() {
-};
-
-async function zoom_reset() {
-  if(staff) {
-    await zoom_reset_staff();
-  } else {
-    await zoom_reset_jianput();
-  }
-}
-
-function register_audio(id, type, audio) {
-  if(player) {
-    player.register(id, type, audio);
-  }
-}
-
-function init_lifuren(music_xml) {
-  document.querySelector("#open_score").onclick = async () => {
-    await open_score();
-  };
-  document.querySelector("#play_score").onclick = async () => {
-  };
-  document.querySelector("#rule_score").onclick = async () => {
-  };
-  document.querySelector("#swap_score").onclick = async () => {
-    await swap_score();
-  };
-  document.querySelector("#tone_score").onclick = async () => {
-  };
-  document.querySelector("#save_pdf").onclick = async () => {
-    save_pdf();
-  };
-  document.querySelector("#save_img").onclick = async () => {
-    save_img();
-  };
-  document.querySelector("#zoom_in").onclick = async () => {
-    zoom_in()
-  };
-  document.querySelector("#zoom_out").onclick = async () => {
-    zoom_out();
-  };
-  document.querySelector("#zoom_reset").onclick = async () => {
-    zoom_reset();
-  };
-  if(music_xml) {
-    load_music_xml(music_xml);
-  }
-  if(player) {
-    // -
-  } else {
-    player = new Player();
+  staff_selector = "";
+  jianpu_selector = "";
+  piano_selector = "";
+  piano_keys_selector = "";
+  
+  constructor(
+    staff_selector = "#staff_container",
+    jianpu_selector = "#jianpu_container",
+    piano_selector = "#piano_container",
+    piano_keys_selector = "#piano_container .key"
+  ) {
+    this.staff_selector = staff_selector;
+    this.jianpu_selector = jianpu_selector;
+    this.piano_selector = piano_selector;
+    this.piano_keys_selector = piano_keys_selector;
+    this.player = new Player(piano_keys_selector);
+    this.player.listen(".key");
     if(window.lfr_backend) {
       window.lfr_backend.postMessage("audio");
     }
+    // 初始化五线谱
+    this.display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay(this.staff_selector.substring(1));
+    this.display_staff.setOptions({
+      backend   : "svg",
+      drawTitle : true,
+      autoResize: false,
+      pageFormat: "A4_P",
+      cursorsOptions: [{ type: 0, color: "#CCCC00", alpha: 0.6, follow: true }],
+      pageBackgroundColor: "#FFFFFF",
+    });
+    // 初始化简谱
+    this.display_jianpu = new Jianpu(this.jianpu_container);
   }
-  player.listen(".key");
-}
+  
+  async load_music_xml_staff(music_xml) {
+    this.music_xml = music_xml;
+    this.display_staff.load(music_xml).then(() => {
+      this.display_staff.render();
+    });
+  }
+  
+  async load_music_xml_jianpu(music_xml) {
+    this.music_xml = music_xml;
+    this.display_jianpu.load(music_xml);
+    this.display_jianpu.render();
+  }
+  
+  async load_music_xml(music_xml) {
+    if(this.show_staff) {
+      await this.load_music_xml_staff(music_xml);
+    } else {
+      await this.load_music_xml_jianpu(music_xml);
+    }
+  }
+  
+  async open_score() {
+    const [picker] = await window.showOpenFilePicker({
+      types: [{
+        accept: { "text/xml": ['.xml', '.musicxml'] },
+        description: "乐谱"
+      }]
+    });
+    const file = await picker?.getFile();
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        await this.load_music_xml(e.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      console.info("用户没有选择文件");
+    }
+  };
+  
+  async play_score() {
+    if(!this.show_staff) {
+      alert("只有五线谱支持播放");
+      return;
+    }
+    const allNotes = [];
+    this.display_staff.cursor.reset();
+    const iterator = this.display_staff.cursor.Iterator;
+    while (!iterator.EndReached) {
+      const voices = iterator.CurrentVoiceEntries;
+      for (var i = 0; i < voices.length; i++) {
+        const v = voices[i];
+        const notes = v.Notes;
+        for (var j = 0; j < notes.length; j++) {
+          const note = notes[j];
+          if (note != null && note.halfTone != 0 && !note.isRest()) {
+            allNotes.push({
+              "id"  : note.parentStaffEntry.parentStaff.idInMusicSheet,
+              "note": note.halfTone ,
+              "time": iterator.currentTimeStamp.RealValue * 4
+            })
+          }
+        }
+      }
+      iterator.moveToNext()
+    }
+    console.info(allNotes);
+    this.display_staff.cursor.reset();
+    this.display_staff.cursor.show();
+    this.player.playList(allNotes, () => {
+      this.display_staff.cursor.next();
+      // this.display_staff.cursor.hide();
+      // this.display_staff.cursor.reset();
+      // this.display_staff.cursor.previous();
+    });
+  }
 
-// var allNotes = []
-// display_staff.cursor.reset()
-// const iterator = display_staff.cursor.Iterator;
+  async stop_score() {
+    this.player.stopPlay();
+  }
 
-// while(!iterator.EndReached){
-//    const voices = iterator.CurrentVoiceEntries;
-//    for(var i = 0; i < voices.length; i++){
-//       const v = voices[i];
-//       const notes = v.Notes;
-//       for(var j = 0; j < notes.length; j++){
-//             const note = notes[j];
-//             // make sure our note is not silent
-//             if(note != null && note.halfTone != 0 && !note.isRest()){
-//                allNotes.push({
-//                    "id":note.parentStaffEntry.parentStaff.idInMusicSheet,
-//                   "note": note.halfTone+12, // see issue #224
-//                   "time": iterator.currentTimeStamp.RealValue * 4
-//                })
-//             }
-//        }
-//     }
-//     iterator.moveToNext()
-// }
+  async swap_score() {
+    this.show_staff = !this.show_staff;
+    if(this.show_staff) {
+      document.querySelector(this.staff_selector).style  = "display:block;";
+      document.querySelector(this.jianpu_selector).style = "display:none;";
+      this.load_music_xml_staff(this.music_xml);
+    } else {
+      document.querySelector(this.staff_selector).style  = "display:none;";
+      document.querySelector(this.jianpu_selector).style = "display:block;";
+      this.load_music_xml_jianpu(this.music_xml);
+    }
+  }
+  
+  async rule_score() {
+    if(!this.show_staff) {
+      alert("只有五线谱支持指法");
+      return;
+    }
+    if(this.show_piano) {
+      document.querySelector(this.piano_selector).style = "display:none;";
+    } else {
+      document.querySelector(this.piano_selector).style = "display:block;";
+    }
+    this.show_piano = !this.show_piano;
+  }
+  
+  async tone_score() {
+    if(this.show_staff) {
+      alert("只有简谱支持移调");
+      return;
+    }
+  }
+  
+  async save_pdf_staff() {
+    const backends = this.display_staff.drawer.Backends;
+    let svgElement = backends[0].getSvgElement();
+    let pageWidth  = this.a4_width;
+    let pageHeight = this.a4_height;
+    if (!this.display_staff.rules.PageFormat?.IsUndefined) {
+      pageWidth  = this.display_staff.rules.PageFormat.width;
+      pageHeight = this.display_staff.rules.PageFormat.height;
+    } else {
+      pageHeight = pageWidth * svgElement.clientHeight / svgElement.clientWidth;
+    }
+    const pdf = new jspdf.jsPDF({
+      unit  : "mm",
+      format: [pageWidth, pageHeight],
+      orientation: pageHeight > pageWidth ? "p" : "l"
+    });
+    for (let index = 0; index < backends.length; ++index) {
+      if (index > 0) {
+        pdf.addPage();
+      }
+      svgElement = backends[index].getSvgElement();
+      await pdf.svg(svgElement, {
+        x: 0,
+        y: 0,
+        width : pageWidth,
+        height: pageHeight,
+      })
+    }
+    pdf.save((this.display_staff.sheet.FullNameString || "lifuren") + ".pdf");
+  };
+  
+  async save_pdf_jianpu() {
+  };
+  
+  async save_pdf() {
+    if(this.show_staff) {
+      await this.save_pdf_staff();
+    } else {
+      await this.save_pdf_jianpu();
+    }
+  }
+  
+  async download_img(index, svgElement) {
+    const canvas     = document.createElement('canvas');
+    canvas.width     = svgElement.width.baseVal.value;
+    canvas.height    = svgElement.height.baseVal.value;
+    const ctx        = canvas.getContext('2d');
+    const svgContent = new XMLSerializer().serializeToString(svgElement);
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      const imgURL = canvas.toDataURL({ format: "image/png" });
+      const dlLink = document.createElement('a');
+      dlLink.href     = imgURL;
+      dlLink.download = (this.display_staff.sheet.FullNameString || "lifuren") + "-" + index + ".png";
+      dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
+      document.body.appendChild(dlLink);
+      dlLink.click();
+      document.body.removeChild(dlLink);
+    };
+    let content = "";
+    const chunk = 8 * 1024;
+    const array = new TextEncoder().encode(svgContent);
+    let i;
+    for (i = 0; i < array.length / chunk; ++i) {
+      content += String.fromCharCode(...array.slice(i * chunk, (i + 1) * chunk));
+    }
+    if(array.length % chunk != 0) {
+      content += String.fromCharCode.apply(...array.slice(i * chunk));
+    }
+    img.src = 'data:image/svg+xml;base64,' + btoa(content);
+  }
+  
+  async save_img_staff() {
+    const backends = this.display_staff.drawer.Backends;
+    for(let i = 0; i < backends.length; ++i) {
+      await this.download_img(i, backends[i].getSvgElement());
+    }
+  };
+  
+  async save_img_jianpu() {
+  };
+  
+  async save_img() {
+    if(this.show_staff) {
+      await this.save_img_staff();
+    } else {
+      await this.save_img_jianpu();
+    }
+  }
+  
+  async zoom_in_staff() {
+    this.display_staff.Zoom = this.zoom += 0.1;
+    this.display_staff.render();
+  };
+  
+  async zoom_in_jianput() {
+  };
+  
+  async zoom_in() {
+    if(this.show_staff) {
+      await this.zoom_in_staff();
+    } else {
+      await this.zoom_in_jianput();
+    }
+  }
+  
+  async zoom_out_staff() {
+    this.display_staff.Zoom = this.zoom -= 0.1;
+    this.display_staff.render();
+  };
+  
+  async zoom_out_jianput() {
+  };
+  
+  async zoom_out() {
+    if(this.show_staff) {
+      await this.zoom_out_staff();
+    } else {
+      await this.zoom_out_jianput();
+    }
+  }
+  
+  async zoom_reset_staff() {
+    this.display_staff.Zoom = this.zoom = 1.0;
+    this.display_staff.render();
+  };
+  
+  async zoom_reset_jianput() {
+  };
+  
+  async zoom_reset() {
+    if(this.show_staff) {
+      await this.zoom_reset_staff();
+    } else {
+      await this.zoom_reset_jianput();
+    }
+  }
+  
+  async register_audio(id, type, audio) {
+    if(this.player) {
+      this.player.register(id, type, audio);
+    }
+  }
+
+};

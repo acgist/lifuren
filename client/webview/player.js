@@ -7,16 +7,16 @@ class Player {
   audio_ctx    = null;  // 播放器上下文
   audio_keys   = new Map(); // 键盘
   audio_source = new Map(); // 音源
-  audio_selector = "";
+  piano_keys_selector = "";
   helmholtz_pitch_notation  = new Map(); // 赫尔姆霍茨音调记号法
   scientific_pitch_notation = new Map(); // 科学音调记号法
 
-  constructor(audio_selector = "#piano_player") {
-    this.audio_selector = audio_selector;
+  constructor(piano_keys_selector = "#piano_container .key") {
+    this.piano_keys_selector = piano_keys_selector;
   }
 
-  listen(selector) {
-    document.querySelectorAll(selector).forEach(key => {
+  listen() {
+    document.querySelectorAll(this.piano_keys_selector).forEach(key => {
       const key_code   = key.getAttribute("key-code");
       const key_code_h = key.childNodes[1].text;
       const key_code_s = key.childNodes[2].text;
@@ -46,10 +46,12 @@ class Player {
         }
       };
     });
-    this.audio_ctx = new AudioContext();
   }
 
   register(id, type, audio) {
+    if(!this.audio_ctx) {
+      this.audio_ctx = new AudioContext();
+    }
     const rawData  = atob(audio)
     const rawArray = new Uint8Array(rawData.length);
     for (let i = 0; i < rawData.length; ++i) {
@@ -90,12 +92,41 @@ class Player {
   }
 
   play(key_code, type = "piano") {
-    const buffer  = this.audio_source.get(type)?.get(key_code);
+    if(!this.audio_ctx) {
+      console.warn("没有注册音频上下文");
+      return;
+    }
+    const buffer = this.audio_source.get(type)?.get(key_code);
+    if(!buffer) {
+      console.warn("没有注册音频", key_code, type);
+      return;
+    }
     const source  = this.audio_ctx.createBufferSource();
     source.loop   = false;
     source.buffer = buffer;
     source.connect(this.audio_ctx.destination);
     source.start(0);
     // TODO: 判断是否需要释放
+  }
+
+  playList(list, next, index = 0, old_time = 0, types = null) {
+    while(index < list.length) {
+      const { id, note, time } = list[index];
+      ++index;
+      if(old_time == time) {
+        this.play_key(null, note + "");
+      } else {
+        next();
+        setTimeout(() => {
+          old_time = time;
+          this.playList(list, next, index, old_time, types);
+        }, (time - old_time) * 1000);
+        break;
+      }
+    }
+  }
+
+  stopPlay() {
+
   }
 };
