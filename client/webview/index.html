@@ -32,11 +32,9 @@
     <a class="action_bt" id="zoom_out"   title="缩小"><span class="icon-zoom-out"   ></span></a>
     <a class="action_bt" id="zoom_reset" title="重置"><span class="icon-spinner11"  ></span></a>
   </div>
-  <div id="staff_container"  class="container"></div><!-- 五线 -->
-  <div id="jianpu_container" class="container"></div><!-- 简谱 -->
-  <div id="piano_padding"    class="padding"  ></div><!-- 填充 -->
-  <div id="piano_player"     class="player"   ></div><!-- 播放 -->
-  <div id="piano_container"  class="piano"    >      <!-- 键盘 -->
+  <div id="score_container" class="container"></div><!-- 谱面 -->
+  <div id="piano_padding"   class="padding"  ></div><!-- 填充 -->
+  <div id="piano_player"    class="piano"    >      <!-- 钢琴 -->
     <!-- 白键 -->
     <div class="wkeys">
       <!-- 低音区 -->
@@ -180,8 +178,12 @@
 一顾倾人城，再顾倾人国。
 宁不知倾城与倾国，佳人难再得。
     `);
-    const lifuren = new Lifuren();
+    // 乐谱
     const music_xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><score-partwise version="4.0"><part-list><score-part id="P1"><part-name>Music</part-name></score-part></part-list><part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes><note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><type>whole</type></note></measure></part></score-partwise>`;
+    // 加载
+    const lifuren = new Lifuren();
+    lifuren.load_music_xml(music_xml);
+    // 功能
     document.querySelector("#open_score").onclick = async () => {
       await lifuren.open_score();
     };
@@ -226,7 +228,6 @@
     document.querySelector("#zoom_reset").onclick = async () => {
       await lifuren.zoom_reset();
     };
-    lifuren.load_music_xml(music_xml);
   </script>
 </body>
 

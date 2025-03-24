@@ -172,9 +172,7 @@ static void embedding(const std::vector<std::string>& args) {
     }
     const auto& type    = args[0];
     const auto& dataset = args[1];
-    if(type == "bach" && lifuren::audio::allDatasetPreprocessBach(dataset)) {
-        SPDLOG_INFO("巴赫嵌入成功");
-    } else if(type == "shikuang" && lifuren::audio::allDatasetPreprocessShikuang(dataset)) {
+    if(type == "shikuang" && lifuren::audio::allDatasetPreprocessShikuang(dataset)) {
         SPDLOG_INFO("师旷嵌入成功");
     } else {
         SPDLOG_WARN("嵌入失败");
@@ -184,10 +182,10 @@ static void embedding(const std::vector<std::string>& args) {
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] audio [bach|shikuang] [pred|train] [model_file|model_path] [audio_file|dataset]
-./lifuren[.exe] image [chopin]        [pred|train] [model_file|model_path] [image_file|dataset]
-./lifuren[.exe] score [mozart]        [pred|train] [model_file|model_path] [xml_file  |dataset]
-./lifuren[.exe] embedding [bach|shikuang] dataset
+./lifuren[.exe] audio [shikuang] [pred|train] [model_file|model_path] [audio_file|dataset]
+./lifuren[.exe] image [chopin]   [pred|train] [model_file|model_path] [image_file|dataset]
+./lifuren[.exe] score [mozart]   [pred|train] [model_file|model_path] [xml_file  |dataset]
+./lifuren[.exe] embedding [shikuang] dataset
 ./lifuren[.exe] [?|help]
 )" << std::endl;
 }

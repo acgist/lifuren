@@ -1,11 +1,3 @@
-add_executable(testBach TestBach.cpp)
-add_test(NAME testBach COMMAND testBach)
-set_target_properties(testBach PROPERTIES FOLDER "test-model")
-target_link_libraries(
-    testBach
-    lifurencore
-)
-
 add_executable(testChopin TestChopin.cpp)
 add_test(NAME testChopin COMMAND testChopin)
 set_target_properties(testChopin PROPERTIES FOLDER "test-model")

@@ -7,10 +7,10 @@ class Jianpu {
   font_size = 1.0;
   
   music_xml = "";
-  jianpu_selector  = "";
+  score_selector  = "";
 
-  constructor(jianpu_selector = "#jianpu_container") {
-    this.jianpu_selector = jianpu_selector;
+  constructor(score_selector = "#score_container") {
+    this.score_selector = score_selector;
   }
 
   load(data) {
@@ -25,7 +25,7 @@ class Jianpu {
     var width  = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
     var height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
     var partAttr = measures[0].attributes;
-    var g = d3.select(this.jianpu_selector)
+    var g = d3.select(this.score_selector)
       .html("")
       .append("svg")
       .attr("width", width)
@@ -79,7 +79,7 @@ class Jianpu {
     console.log(noteCount);
     noteCount.push(eachNoteCount);
     marginLeft = (width - totalWidth) / 2;
-    d3.select(this.jianpu_selector).select("svg").attr("height", marginTop + noteCount.length * eachHeight);
+    d3.select(this.score_selector).select("svg").attr("height", marginTop + noteCount.length * eachHeight);
     g.append("text")
       .attr("transform", `translate(${marginLeft + totalWidth / 2 - 20},${titleTop + 30})`)
       .attr("font-weight", "bold")
@@ -509,6 +509,9 @@ class Jianpu {
       number.text = stepList[tempNum];
       return number;
     }
+    return new Promise((resolve, reject) => {
+      resolve();
+    });
   }
 
   render() {

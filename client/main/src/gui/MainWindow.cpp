@@ -15,7 +15,6 @@
 #include "lifuren/Message.hpp"
 
 static wxPanel   * panel             { nullptr };
-static wxButton  * bach_button       { nullptr };
 static wxButton  * chopin_button     { nullptr };
 static wxButton  * mozart_button     { nullptr };
 static wxButton  * shikuang_button   { nullptr };
@@ -24,7 +23,6 @@ static wxButton  * config_button     { nullptr };
 static wxButton  * about_button      { nullptr };
 static wxTextCtrl* message_text      { nullptr };
 
-static void bach_callback       (const wxCommandEvent&);
 static void chopin_callback     (const wxCommandEvent&);
 static void shikuang_callback   (const wxCommandEvent&);
 static void music_score_callback(const wxCommandEvent&);
@@ -32,7 +30,6 @@ static void config_callback     (const wxCommandEvent&);
 static void about_callback      (const wxCommandEvent&);
 static void message_callback    (const char*);
 
-static const auto bach_text         = wxT("音频识谱");
 static const auto chopin_text       = wxT("五线谱识谱");
 static const auto shikuang_text     = wxT("音频风格迁移");
 static const auto music_score_text  = wxT("乐谱查看");
@@ -40,13 +37,12 @@ static const auto config_text       = wxT("配置");
 static const auto about_text        = wxT("关于");
 static const auto message_text_text = wxT("日志");
 
-static const auto bach_id         = 1000;
-static const auto chopin_id       = 1001;
-static const auto shikuang_id     = 1002;
-static const auto music_score_id  = 1003;
-static const auto config_id       = 1004;
-static const auto about_id        = 1005;
-static const auto message_text_id = 1006;
+static const auto chopin_id       = 1000;
+static const auto shikuang_id     = 1001;
+static const auto music_score_id  = 1002;
+static const auto config_id       = 1003;
+static const auto about_id        = 1004;
+static const auto message_text_id = 1005;
 
 static const int thread_event_thread  = 100;
 static const int thread_event_message = 101;
@@ -70,7 +66,6 @@ lifuren::MainWindow::~MainWindow() {
     mainWindow = nullptr;
     // 置空
     panel              = nullptr;
-    bach_button        = nullptr;
     chopin_button      = nullptr;
     mozart_button      = nullptr;
     shikuang_button    = nullptr;
@@ -84,8 +79,7 @@ void lifuren::MainWindow::drawElement() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
     panel              = new wxPanel(this);
-    bach_button        = new wxButton  (panel, bach_id,         bach_text,         wxPoint(          10,  10), wxSize((w - 40) / 2,      80));
-    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint((w / 2) +  5,  10), wxSize((w - 40) / 2,      80));
+    chopin_button      = new wxButton  (panel, chopin_id,       chopin_text,       wxPoint(          10,  10), wxSize((w - 20),          80));
     shikuang_button    = new wxButton  (panel, shikuang_id,     shikuang_text,     wxPoint(          10, 100), wxSize((w - 20),          80));
     music_score_button = new wxButton  (panel, music_score_id,  music_score_text,  wxPoint(          10, 190), wxSize((w - 20),          80));
     config_button      = new wxButton  (panel, config_id,       config_text,       wxPoint(          10, 280), wxSize((w - 30) / 2,      80));
@@ -122,7 +116,6 @@ void lifuren::MainWindow::bindEvent() {
     this->Bind(wxEVT_BUTTON, [](const wxCommandEvent& event) {
         const auto id = event.GetId();
         switch(id) {
-            case bach_id       : bach_callback(event);        break;
             case chopin_id     : chopin_callback(event);      break;
             case shikuang_id   : shikuang_callback(event);    break;
             case music_score_id: music_score_callback(event); break;
@@ -131,17 +124,6 @@ void lifuren::MainWindow::bindEvent() {
         }
     });
     lifuren::message::registerMessageCallback(message_callback);
-}
-
-static void bach_callback(const wxCommandEvent&) {
-    run("音频识谱", wxT("选择音频"), wxT("音频文件|*.aac;*.mp3;*.flac"), [](std::string file) -> std::tuple<bool, std::string> {
-        auto client = lifuren::audio::getAudioClient("bach");
-        if(client->load(lifuren::config::CONFIG.model_bach)) {
-            return client->pred(file);
-        } else {
-            return { false, {} };
-        }
-    });
 }
 
 static void chopin_callback(const wxCommandEvent&) {

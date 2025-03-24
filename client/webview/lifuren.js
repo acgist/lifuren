@@ -3,40 +3,39 @@
  */
 class Lifuren {
 
-  zoom  = 1.0;  // 缩放
+  zoom       = 1.0;   // 谱面缩放
   show_staff = true;  // 是否显示五线谱
   show_piano = false; // 是否显示钢琴键盘
   
-  player = null;
-  music_xml = null;
-  display_staff = null;
-  display_jianpu = null;
+  player         = null; // 播放器
+  music_xml      = null; // 乐谱内容
+  display_staff  = null; // 五线谱渲染器
+  display_jianpu = null; // 简谱渲染器
   
-  a4_width  = 210;
-  a4_height = 297;
+  a4_width  = 210; // A4宽度
+  a4_height = 297; // A4高度
 
-  staff_selector = "";
-  jianpu_selector = "";
-  piano_selector = "";
-  piano_keys_selector = "";
+  score_selector      = ""; // 谱面选择器
+  piano_selector      = ""; // 钢琴选择器
+  piano_keys_selector = ""; // 琴键选择器
   
   constructor(
-    staff_selector = "#staff_container",
-    jianpu_selector = "#jianpu_container",
-    piano_selector = "#piano_container",
-    piano_keys_selector = "#piano_container .key"
+    score_selector      = "#score_container",
+    piano_selector      = "#piano_player",
+    piano_keys_selector = "#piano_player .key"
   ) {
-    this.staff_selector = staff_selector;
-    this.jianpu_selector = jianpu_selector;
-    this.piano_selector = piano_selector;
+    this.score_selector      = score_selector;
+    this.piano_selector      = piano_selector;
     this.piano_keys_selector = piano_keys_selector;
+    // 初始化播放器
     this.player = new Player(piano_keys_selector);
-    this.player.listen(".key");
+    this.player.listen();
     if(window.lfr_backend) {
       window.lfr_backend.postMessage("audio");
     }
-    // 初始化五线谱
-    this.display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay(this.staff_selector.substring(1));
+    console.debug("初始化播放器");
+    // 初始化五线谱渲染器
+    this.display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay(this.score_selector.substring(1));
     this.display_staff.setOptions({
       backend   : "svg",
       drawTitle : true,
@@ -45,21 +44,26 @@ class Lifuren {
       cursorsOptions: [{ type: 0, color: "#CCCC00", alpha: 0.6, follow: true }],
       pageBackgroundColor: "#FFFFFF",
     });
-    // 初始化简谱
-    this.display_jianpu = new Jianpu(this.jianpu_container);
+    console.debug("初始化五线谱渲染器");
+    // 初始化简谱渲染器
+    this.display_jianpu = new Jianpu(this.score_selector);
+    console.debug("初始化简谱渲染器");
   }
   
   async load_music_xml_staff(music_xml) {
     this.music_xml = music_xml;
-    this.display_staff.load(music_xml).then(() => {
+    this.display_staff.load(music_xml)
+    .then(() => {
       this.display_staff.render();
     });
   }
   
   async load_music_xml_jianpu(music_xml) {
     this.music_xml = music_xml;
-    this.display_jianpu.load(music_xml);
-    this.display_jianpu.render();
+    this.display_jianpu.load(music_xml)
+    .then(() => {
+      this.display_jianpu.render();
+    });
   }
   
   async load_music_xml(music_xml) {
@@ -132,13 +136,10 @@ class Lifuren {
 
   async swap_score() {
     this.show_staff = !this.show_staff;
+    document.querySelector(this.score_selector).innerHTML  = "";
     if(this.show_staff) {
-      document.querySelector(this.staff_selector).style  = "display:block;";
-      document.querySelector(this.jianpu_selector).style = "display:none;";
       this.load_music_xml_staff(this.music_xml);
     } else {
-      document.querySelector(this.staff_selector).style  = "display:none;";
-      document.querySelector(this.jianpu_selector).style = "display:block;";
       this.load_music_xml_jianpu(this.music_xml);
     }
   }

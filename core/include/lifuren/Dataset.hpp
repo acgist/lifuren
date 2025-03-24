@@ -231,18 +231,6 @@ extern std::vector<short> pcm_istft(
 );
 
 /**
- * 巴赫音频嵌入
- * 
- * @param path    数据集上级目录
- * @param dataset 数据集目录
- * @param stream  嵌入文件流
- * @param pool    线程池
- * 
- * @return 是否成功
- */
-extern bool embedding_bach(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
-
-/**
  * 师旷音频嵌入
  * 
  * @param path    数据集上级目录
@@ -253,14 +241,6 @@ extern bool embedding_bach(const std::string& path, const std::string& dataset, 
  * @return 是否成功
  */
 extern bool embedding_shikuang(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
-
-/**
- * @param batch_size 批量大小
- * @param path       数据集路径
- * 
- * @return 音频数据集
- */
-extern lifuren::dataset::DatasetLoader loadBachDatasetLoader(const size_t batch_size, const std::string& path);
 
 /**
  * @param batch_size 批量大小
@@ -282,6 +262,13 @@ namespace image {
 extern void resize(cv::Mat& image, const int width, const int height);
 
 /**
+ * @param image  图片
+ * @param width  目标图片宽度
+ * @param height 目标图片高度
+ */
+extern void resize_staff(cv::Mat& image, const int width, const int height);
+
+/**
  * @param image 图片
  * 
  * @return 图片张量
@@ -293,6 +280,13 @@ extern torch::Tensor mat_to_tensor(const cv::Mat& image);
  * @param tensor 图片张量
  */
 extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
+
+/**
+ * @param image 图片
+ * 
+ * @return 图片列表
+ */
+extern std::vector<cv::Mat> staff_slice(cv::Mat& image);
 
 /**
  * @param width      目标图片宽度

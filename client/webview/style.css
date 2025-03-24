@@ -3,7 +3,7 @@
 @media screen and (min-width:1200px){html{font-size:18px}}
 @media screen and (min-width:1600px){html{font-size:20px}}
 @font-face{font-family:'icomoon';src:url('font/icomoon.eot?bk83mb');src:url('font/icomoon.eot?bk83mb#iefix') format('embedded-opentype'),url('font/icomoon.ttf?bk83mb') format('truetype'),url('font/icomoon.woff?bk83mb') format('woff'),url('font/icomoon.svg?bk83mb#icomoon') format('svg');font-weight:normal;font-style:normal;font-display:block}
-[class^="icon-"],[class*=" icon-"]{font-family:'icomoon' !important;speak:never;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+[class^="icon-"],[class*=" icon-"]{font-family:'icomoon' !important;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1}
 .icon-piano:before           {content:"\e900"}
 .icon-music:before           {content:"\e900"}
 .icon-image:before           {content:"\e90d"}
@@ -103,40 +103,40 @@
 .action a{margin:0.2rem;display:none;width:2rem;height:2rem;border-radius:100%;font-size:0.8rem;line-height:2rem;text-align:center;cursor:pointer}
 .action a:first-child{display:block}
 .action:hover a{display:block}
-.action_bt{vertical-align:middle;transform:translateZ(0);box-shadow:0 0 1px rgba(0,0,0,0.5);backface-visibility:hidden;-moz-osx-font-smoothing:grayscale;position:relative;overflow:hidden;background:#C00;transition-property:color,font-size;transition-duration:0.5s}
-.action_bt:before{content:"";position:absolute;z-index:-1;top:0;left:0;right:0;bottom:0;background:#f0f0f0;border-radius:100%;transform:scale(2);transition-property:transform;transition-duration:0.5s;transition-timing-function:ease-out}
-.action_bt:hover,.action_bt:focus,.action_bt:active{color:#fff;font-size:1rem}
+.action_bt{vertical-align:middle;transform:translateZ(0);box-shadow:0 0 1px rgba(0,0,0,0.5);backface-visibility:hidden;position:relative;overflow:hidden;background:#C00;transition-property:color,font-size;transition-duration:0.5s}
+.action_bt:before{content:"";position:absolute;z-index:-1;top:0;left:0;right:0;bottom:0;background:#F0F0F0;border-radius:100%;transform:scale(2);transition-property:transform;transition-duration:0.5s;transition-timing-function:ease-out}
+.action_bt:hover,.action_bt:focus,.action_bt:active{color:#FFF;font-size:1rem}
 .action_bt:hover:before,.action_bt:focus:before,.action_bt:active:before{transform:scale(0)}
 .padding{height:14rem;}
 .player {display:none;}
-.piano  {position:fixed;left:0;width:100%;height:14rem;bottom:4rem;background:#fff;overflow:hidden;font-size:0.8rem;user-select:none;display:none;z-index:9999}
+.piano  {position:fixed;left:0;width:100%;height:14rem;bottom:4rem;background:#FFF;overflow:hidden;font-size:0.8rem;user-select:none;display:none;z-index:9999}
 .piano .key{cursor:pointer}
 .piano .wkeys{display:flex;flex-wrap:nowrap;flex-direction:row;width:100%;height:100%;padding:0 0.6%}
-.piano .wkeys .wkey{width:1.9%;margin:0;background:linear-gradient(-30deg,#f5f5f5,#fff);box-shadow:inset 0 1px 0 #eee,inset 0 -1px 0 #666,inset 1px 0 0 #fff,inset -1px 0 0 #ccc,0 1px 1px rgba(0,0,0,.4);position:relative;border-radius:0 0 5px 5px}
-.piano .wkeys .wkey:hover {box-shadow:#ffa500 0px 0px 5px 0px inset}
-.piano .wkeys .wkey.active{box-shadow:#ffa500 0px 0px 5px 0px inset;background:linear-gradient(-20deg,#ffa500,#fff)}
-.piano .wkeys .wkey:first-child{border-left:1px solid #bbb}
+.piano .wkeys .wkey{width:1.9%;margin:0;background:linear-gradient(-30deg,#F5F5F5,#FFF);box-shadow:inset 0 1px 0 #EEE,inset 0 -1px 0 #666,inset 1px 0 0 #FFF,inset -1px 0 0 #CCC,0 1px 1px rgba(0,0,0,.4);position:relative;border-radius:0 0 5px 5px}
+.piano .wkeys .wkey:hover {box-shadow:#FFA500 0px 0px 5px 0px inset}
+.piano .wkeys .wkey.active{box-shadow:#FFA500 0px 0px 5px 0px inset;background:linear-gradient(-20deg,#FFA500,#FFF)}
+.piano .wkeys .wkey:first-child{border-left:1px solid #BBB}
 .piano .wkeys .wkey a{width:80%;height:1.2rem;bottom:0;margin:0 10%;color:#373737;text-align:center;line-height:1.2rem;font-weight:600;position:absolute;bottom:5%}
 .piano .wkeys .wkey a:nth-child(2){bottom:15%}
 .piano .wkeys .wkey a:last-child{bottom:15%;display:none}
-.piano .wkeys .wkey:nth-child(n+1):nth-child(-n+2)   a:nth-child(2){background:#dbe2ef}
-.piano .wkeys .wkey:nth-child(n+3):nth-child(-n+9)   a:nth-child(2){background:#dcedc1}
-.piano .wkeys .wkey:nth-child(n+10):nth-child(-n+16) a:nth-child(2){background:#a8e6cf}
-.piano .wkeys .wkey:nth-child(n+17):nth-child(-n+23) a:nth-child(2){background:#61c0bf}
-.piano .wkeys .wkey:nth-child(n+24):nth-child(-n+30) a:nth-child(2){background:#fae3d9}
-.piano .wkeys .wkey:nth-child(n+31):nth-child(-n+37) a:nth-child(2){background:#ffaaa5}
-.piano .wkeys .wkey:nth-child(n+38):nth-child(-n+44) a:nth-child(2){background:#f07b3f}
-.piano .wkeys .wkey:nth-child(n+45):nth-child(-n+51) a:nth-child(2){background:#f85f73}
-.piano .wkeys .wkey:nth-child(n+52)                  a:nth-child(2){background:#b83b5e}
-.piano .wkeys .wkey:nth-child(n+1):nth-child(-n+2)   a:last-child{background:#dbe2ef}
-.piano .wkeys .wkey:nth-child(n+3):nth-child(-n+9)   a:last-child{background:#dcedc1}
-.piano .wkeys .wkey:nth-child(n+10):nth-child(-n+16) a:last-child{background:#a8e6cf}
-.piano .wkeys .wkey:nth-child(n+17):nth-child(-n+23) a:last-child{background:#61c0bf}
-.piano .wkeys .wkey:nth-child(n+24):nth-child(-n+30) a:last-child{background:#fae3d9}
-.piano .wkeys .wkey:nth-child(n+31):nth-child(-n+37) a:last-child{background:#ffaaa5}
-.piano .wkeys .wkey:nth-child(n+38):nth-child(-n+44) a:last-child{background:#f07b3f}
-.piano .wkeys .wkey:nth-child(n+45):nth-child(-n+51) a:last-child{background:#f85f73}
-.piano .wkeys .wkey:nth-child(n+52)                  a:last-child{background:#b83b5e}
+.piano .wkeys .wkey:nth-child(n+1):nth-child(-n+2)   a:nth-child(2){background:#DBE2EF}
+.piano .wkeys .wkey:nth-child(n+3):nth-child(-n+9)   a:nth-child(2){background:#DCEDC1}
+.piano .wkeys .wkey:nth-child(n+10):nth-child(-n+16) a:nth-child(2){background:#A8E6CF}
+.piano .wkeys .wkey:nth-child(n+17):nth-child(-n+23) a:nth-child(2){background:#61C0BF}
+.piano .wkeys .wkey:nth-child(n+24):nth-child(-n+30) a:nth-child(2){background:#FAE3D9}
+.piano .wkeys .wkey:nth-child(n+31):nth-child(-n+37) a:nth-child(2){background:#FFAAA5}
+.piano .wkeys .wkey:nth-child(n+38):nth-child(-n+44) a:nth-child(2){background:#F07B3F}
+.piano .wkeys .wkey:nth-child(n+45):nth-child(-n+51) a:nth-child(2){background:#F85F73}
+.piano .wkeys .wkey:nth-child(n+52)                  a:nth-child(2){background:#B83B5E}
+.piano .wkeys .wkey:nth-child(n+1):nth-child(-n+2)   a:last-child{background:#DBE2EF}
+.piano .wkeys .wkey:nth-child(n+3):nth-child(-n+9)   a:last-child{background:#DCEDC1}
+.piano .wkeys .wkey:nth-child(n+10):nth-child(-n+16) a:last-child{background:#A8E6CF}
+.piano .wkeys .wkey:nth-child(n+17):nth-child(-n+23) a:last-child{background:#61C0BF}
+.piano .wkeys .wkey:nth-child(n+24):nth-child(-n+30) a:last-child{background:#FAE3D9}
+.piano .wkeys .wkey:nth-child(n+31):nth-child(-n+37) a:last-child{background:#FFAAA5}
+.piano .wkeys .wkey:nth-child(n+38):nth-child(-n+44) a:last-child{background:#F07B3F}
+.piano .wkeys .wkey:nth-child(n+45):nth-child(-n+51) a:last-child{background:#F85F73}
+.piano .wkeys .wkey:nth-child(n+52)                  a:last-child{background:#B83B5E}
 .piano .bkeys{width:100%}
 .piano .bkeys .keys{position:absolute;width:13.3%;padding-bottom:10%;top:0}
 .piano .bkeys .keys a{display:none}

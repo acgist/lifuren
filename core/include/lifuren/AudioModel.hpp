@@ -27,40 +27,6 @@
 namespace lifuren::audio {
 
 /**
- * 巴赫模型（音频识谱）
- */
-class BachModuleImpl : public torch::nn::Module {
-
-private:
-    // TODO: 定义结构
-
-public:
-    BachModuleImpl();
-    ~BachModuleImpl();
-
-public:
-    torch::Tensor forward(torch::Tensor input);
-
-};
-
-TORCH_MODULE(BachModule);
-
-/**
- * 巴赫模型（音频识谱）
- */
-class BachModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::BachModule> {
-
-public:
-    BachModel(lifuren::config::ModelParams params = {});
-    ~BachModel();
-    
-public:
-    void defineDataset() override;
-    void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
-
-};
-
-/**
  * 师旷模型（音频风格迁移）
  */
 class ShikuangModuleImpl : public torch::nn::Module {

@@ -29,15 +29,6 @@ using AudioModelClient = ModelClient<lifuren::config::ModelParams, std::string, 
 extern std::unique_ptr<lifuren::audio::AudioModelClient> getAudioClient(const std::string& model);
 
 /**
- * 巴赫数据集预处理
- * 
- * @param path 数据集目录
- * 
- * @return 是否成功
- */
-extern bool allDatasetPreprocessBach(const std::string& path);
-
-/**
  * 师旷数据集处理
  * 
  * @param path 数据集目录

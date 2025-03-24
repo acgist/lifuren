@@ -3,15 +3,15 @@
  */
 class Player {
 
-  auto_playing = false; // 自动播放
-  audio_ctx    = null;  // 播放器上下文
-  audio_keys   = new Map(); // 键盘
-  audio_source = new Map(); // 音源
+  audio_ctx     = null;  // 播放器上下文
+  audio_keys    = new Map(); // 键盘
+  audio_source  = new Map(); // 音源
+  audio_playing = false; // 播放
   piano_keys_selector = "";
   helmholtz_pitch_notation  = new Map(); // 赫尔姆霍茨音调记号法
   scientific_pitch_notation = new Map(); // 科学音调记号法
 
-  constructor(piano_keys_selector = "#piano_container .key") {
+  constructor(piano_keys_selector = "#piano_player .key") {
     this.piano_keys_selector = piano_keys_selector;
   }
 
@@ -24,14 +24,14 @@ class Player {
       this.helmholtz_pitch_notation.set(key_code_h, key_code);
       this.scientific_pitch_notation.set(key_code_s, key_code);
       key.onmouseup = () => {
-        if(this.auto_playing) {
+        if(this.audio_playing) {
           // -
         } else {
           key.classList.remove("active");
         }
       };
       key.onmouseout = () => {
-        if(this.auto_playing) {
+        if(this.audio_playing) {
           // -
         } else {
           key.classList.remove("active");

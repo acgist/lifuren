@@ -2,40 +2,6 @@
 
 #include "lifuren/File.hpp"
 
-lifuren::audio::BachModuleImpl::BachModuleImpl() {
-}
-
-lifuren::audio::BachModuleImpl::~BachModuleImpl() {
-}
-
-torch::Tensor lifuren::audio::BachModuleImpl::forward(torch::Tensor input) {
-    // TODO
-    return {};
-}
-
-lifuren::audio::BachModel::BachModel(lifuren::config::ModelParams params) : Model(params) {
-}
-
-lifuren::audio::BachModel::~BachModel() {
-}
-
-void lifuren::audio::BachModel::defineDataset() {
-    if(lifuren::file::exists(this->params.train_path)) {
-        this->trainDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.train_path);
-    }
-    if(lifuren::file::exists(this->params.val_path)) {
-        this->valDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.val_path);
-    }
-    if(lifuren::file::exists(this->params.test_path)) {
-        this->testDataset = lifuren::dataset::audio::loadBachDatasetLoader(this->params.batch_size, this->params.test_path);
-    }
-}
-
-void lifuren::audio::BachModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
-    pred = this->model->forward(feature);
-    loss = this->loss->forward(pred, label);
-}
-
 lifuren::audio::ShikuangModuleImpl::ShikuangModuleImpl() {
     this->norm = this->register_module("norm", torch::nn::BatchNorm2d(201));
     this->conv1 = this->register_module("conv1", torch::nn::Conv1d(torch::nn::Conv1dOptions(14, 32, 3)));

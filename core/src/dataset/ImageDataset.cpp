@@ -11,12 +11,25 @@ void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int 
     const int rows = image.rows;
     const double ws = 1.0 * cols / width;
     const double hs = 1.0 * rows / height;
-    const double scale = std::max(ws, hs);
+    const double scale = std::min(ws, hs);
     const int w = std::max(static_cast<int>(width  * scale), cols);
     const int h = std::max(static_cast<int>(height * scale), rows);
     cv::Mat result = cv::Mat::zeros(h, w, CV_8UC3);
     image.copyTo(result(cv::Rect(0, 0, cols, rows)));
     cv::resize(result, image, cv::Size(width, height));
+}
+
+void lifuren::dataset::image::resize_staff(cv::Mat& image, const int width, const int height) {
+    const int cols = image.cols;
+    const int rows = image.rows;
+    const double ws = 1.0 * cols / width;
+    const double hs = 1.0 * rows / height;
+    const double scale = std::max(ws, hs);
+    const int w = std::max(static_cast<int>(width  * scale), cols);
+    const int h = std::max(static_cast<int>(height * scale), rows);
+    cv::Mat result = cv::Mat::zeros(h, w, CV_8UC1);
+    image.copyTo(result(cv::Rect(0, 0, cols, rows)));
+    cv::resize(result, image, cv::Size(width, height), 0, 0, cv::INTER_AREA);
 }
 
 torch::Tensor lifuren::dataset::image::mat_to_tensor(const cv::Mat& image) {
@@ -32,6 +45,18 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
     }
     auto image_tensor = tensor.permute({1, 2, 0}).mul(255.0).to(torch::kByte).contiguous();
     std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
+}
+
+std::vector<cv::Mat> lifuren::dataset::image::staff_slice(cv::Mat& image) {
+    if(image.empty()) {
+        return {};
+    }
+    if(image.channels() != 1) {
+        cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
+    }
+    const int thresh = cv::mean(image)[0] / 2;
+    cv::threshold(image, image, thresh, 255, cv::THRESH_BINARY);
+    return {};
 }
 
 lifuren::dataset::DatasetLoader lifuren::dataset::image::loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {

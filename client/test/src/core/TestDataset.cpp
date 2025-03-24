@@ -64,15 +64,15 @@
     cv::destroyAllWindows();
 }
 
-[[maybe_unused]] static void testScore() {
+[[maybe_unused]] static void testStaff() {
+    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "staff", "00.png" }).string()) };
+    lifuren::dataset::image::resize_staff(image, 640, 1280);
+    cv::imshow("image", image);
+    cv::waitKey(0);
+    auto images = lifuren::dataset::image::staff_slice(image);
 }
 
-[[maybe_unused]] static void testEmbeddingBach() {
-    lifuren::dataset::allDatasetPreprocess(
-        lifuren::file::join({lifuren::config::CONFIG.tmp, "bach"}).string(),
-        lifuren::config::LIFUREN_EMBEDDING_FILE,
-        &lifuren::dataset::audio::embedding_bach
-    );
+[[maybe_unused]] static void testScore() {
 }
 
 [[maybe_unused]] static void testEmbeddingShikuang() {
@@ -83,7 +83,10 @@
     );
 }
 
-[[maybe_unused]] static void testLoadBachDatasetLoader() {
+[[maybe_unused]] static void testLoadChopinDatasetLoader() {
+}
+
+[[maybe_unused]] static void testLoadMozartDatasetLoader() {
 }
 
 [[maybe_unused]] static void testLoadShikuangDatasetLoader() {
@@ -113,12 +116,6 @@
     output.close();
 }
 
-[[maybe_unused]] static void testLoadChopinDatasetLoader() {
-}
-
-[[maybe_unused]] static void testLoadMozartDatasetLoader() {
-}
-
 [[maybe_unused]] static void testLoadClassifyDatasetLoader() {
     auto loader = lifuren::dataset::image::loadClassifyDatasetLoader(
         200, 200, 5,
@@ -142,12 +139,11 @@ LFR_TEST(
     // testToFile();
     // testStft();
     // testImage();
+    testStaff();
     // testScore();
-    // testEmbeddingBach();
     // testEmbeddingShikuang();
-    // testLoadBachDatasetLoader();
-    // testLoadShikuangDatasetLoader();
     // testLoadChopinDatasetLoader();
     // testLoadMozartDatasetLoader();
+    // testLoadShikuangDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );

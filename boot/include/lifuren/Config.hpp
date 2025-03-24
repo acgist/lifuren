@@ -75,7 +75,6 @@ class Config {
 public:
     std::string tmp;            // 临时目录
     std::string output;         // 输出目录
-    std::string model_bach;     // 巴赫模型文件
     std::string model_chopin;   // 肖邦模型文件
     std::string model_mozart;   // 莫扎特模型文件
     std::string model_shikuang; // 师旷模型文件

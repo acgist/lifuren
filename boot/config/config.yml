@@ -3,7 +3,6 @@ config:
   tmp: /tmp
   output: /data/lifuren/output
 model:
-  bach: /data/lifuren/bach.pt
   chopin: /data/lifuren/chopin.pt
   mozart: /data/lifuren/mozart.pt
   shikuang: /data/lifuren/shikuang.pt
