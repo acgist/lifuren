@@ -3,26 +3,28 @@
  */
 class Player {
 
-  audio_ctx     = null;  // 播放器上下文
-  audio_keys    = new Map(); // 键盘
-  audio_source  = new Map(); // 音源
-  audio_playing = false; // 播放
-  piano_keys_selector = "";
+  audio_ctx      = null;      // 播放器上下文
+  audio_keys     = new Map(); // 键盘
+  audio_source   = new Map(); // 音源
+  audio_playing  = false;     // 播放
+  piano_selector = "";        // 琴键选择器
+  active_keys    = [];        // 激活键盘
   helmholtz_pitch_notation  = new Map(); // 赫尔姆霍茨音调记号法
   scientific_pitch_notation = new Map(); // 科学音调记号法
 
-  constructor(piano_keys_selector = "#piano_player .key") {
-    this.piano_keys_selector = piano_keys_selector;
+  constructor(piano_selector = "#piano_player .key") {
+    this.piano_selector = piano_selector;
   }
 
   listen() {
-    document.querySelectorAll(this.piano_keys_selector).forEach(key => {
+    document.querySelectorAll(this.piano_selector).forEach(key => {
       const key_code   = key.getAttribute("key-code");
       const key_code_h = key.childNodes[1].text;
       const key_code_s = key.childNodes[2].text;
       this.audio_keys.set(key_code, key);
       this.helmholtz_pitch_notation.set(key_code_h, key_code);
       this.scientific_pitch_notation.set(key_code_s, key_code);
+      console.debug("注册键盘", key_code, key_code_h, key_code_s);
       key.onmouseup = () => {
         if(this.audio_playing) {
           // -
@@ -43,6 +45,8 @@ class Player {
       key.onmouseover = (e) => {
         if(e.buttons) {
           this.play_key(key);
+        } else {
+          // -
         }
       };
     });
@@ -57,18 +61,25 @@ class Player {
     for (let i = 0; i < rawData.length; ++i) {
       rawArray[i] = rawData.charCodeAt(i);
     }
-    let source = this.audio_source.get(type);
-    if(!source) {
-      source = new Map();
-      this.audio_source.set(type, source);
+    let type_source = this.audio_source.get(type);
+    if(!type_source) {
+      type_source = new Map();
+      this.audio_source.set(type, type_source);
     }
-    this.audio_ctx.decodeAudioData(rawArray.buffer.slice(0)).then(data => {
-      source.set(id, data);
-      console.info("注册音源", id, type, data.length);
+    this.audio_ctx.decodeAudioData(rawArray.buffer.slice(0)).then(audioData => {
+      type_source.set(id, audioData);
+      console.debug("注册音源", id, type, audioData.length);
     });
   }
 
-  play_key(key, key_code, key_code_h, key_code_s) {
+  reset_key() {
+    for(const key of this.active_keys) {
+      key.classList.remove("active");
+    }
+    this.active_keys.length = 0;
+  }
+
+  play_key(key, key_code, key_code_h, key_code_s, type) {
     if(!key) {
       if(!key_code) {
         if(key_code_h) {
@@ -88,10 +99,12 @@ class Player {
       key_code = key.getAttribute("key-code");
     }
     key.classList.add("active");
-    this.play(key_code);
+    this.active_keys.push(key);
+    this.play_audio(key_code, type);
   }
 
-  play(key_code, type = "piano") {
+  play_audio(key_code, type = "piano") {
+    console.debug("播放音频", key_code);
     if(!this.audio_ctx) {
       console.warn("没有注册音频上下文");
       return;
@@ -109,24 +122,34 @@ class Player {
     // TODO: 判断是否需要释放
   }
 
-  playList(list, next, index = 0, old_time = 0, types = null) {
-    while(index < list.length) {
-      const { id, note, time } = list[index];
-      ++index;
+  play_list(list, play_next, play_ended, index = 0, old_time = 0.0, types = null) {
+    if(index === 0) {
+      this.audio_playing = true;
+    }
+    while(index < list.length && this.audio_playing) {
+      const { id, note, time, rest } = list[index];
       if(old_time == time) {
-        this.play_key(null, note + "");
+        ++index;
+        if(rest) {
+          // -
+        } else {
+          this.play_key(null, note + "", null, null, types ? types[id] : "piano");
+        }
       } else {
-        next();
         setTimeout(() => {
-          old_time = time;
-          this.playList(list, next, index, old_time, types);
+          play_next();
+          this.reset_key();
+          this.play_list(list, play_next, play_ended, index, time, types);
         }, (time - old_time) * 1000);
-        break;
+        return;
       }
     }
+    console.debug("播放完成");
+    play_ended();
+    this.reset_key();
   }
 
-  stopPlay() {
-
+  stop_play() {
+    this.audio_playing = false;
   }
 };

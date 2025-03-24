@@ -3,7 +3,6 @@
  */
 class Jianpu {
 
-  zoom_size = 1.0;
   font_size = 1.0;
   
   music_xml = "";
@@ -512,6 +511,10 @@ class Jianpu {
     return new Promise((resolve, reject) => {
       resolve();
     });
+  }
+
+  tone() {
+    
   }
 
   render() {

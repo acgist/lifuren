@@ -24,13 +24,10 @@
     <a class="action_bt" id="open_score" title="打开"><span class="icon-folder-open"></span></a>
     <a class="action_bt" id="play_score" title="演奏"><span class="icon-play3"      ></span></a>
     <a class="action_bt" id="swap_score" title="转换"><span class="icon-loop"       ></span></a>
-    <a class="action_bt" id="rule_score" title="指法"><span class="icon-music"      ></span></a>
+    <a class="action_bt" id="keys_score" title="键盘"><span class="icon-music"      ></span></a>
     <a class="action_bt" id="tone_score" title="移调"><span class="icon-equalizer2" ></span></a>
     <a class="action_bt" id="save_pdf"   title="文档"><span class="icon-files-empty"></span></a>
     <a class="action_bt" id="save_img"   title="图片"><span class="icon-images"     ></span></a>
-    <a class="action_bt" id="zoom_in"    title="放大"><span class="icon-zoom-in"    ></span></a>
-    <a class="action_bt" id="zoom_out"   title="缩小"><span class="icon-zoom-out"   ></span></a>
-    <a class="action_bt" id="zoom_reset" title="重置"><span class="icon-spinner11"  ></span></a>
   </div>
   <div id="score_container" class="container"></div><!-- 谱面 -->
   <div id="piano_padding"   class="padding"  ></div><!-- 填充 -->
@@ -188,26 +185,32 @@
       await lifuren.open_score();
     };
     document.querySelector("#play_score").onclick = async () => {
-      await lifuren.play_score();
       const button = document.querySelector("#play_score");
       if(button.style.color) {
         button.style = "";
         button.firstElementChild.classList = 'icon-play3';
+        await lifuren.stop_score();
       } else {
         button.style = "color:red";
         button.firstElementChild.classList = 'icon-stop2';
+        await lifuren.play_score(() => {
+          button.style = "";
+          button.firstElementChild.classList = 'icon-play3';
+        });
       }
     };
     document.querySelector("#swap_score").onclick = async () => {
       await lifuren.swap_score();
     };
-    document.querySelector("#rule_score").onclick = async () => {
-      await lifuren.rule_score();
-      const button = document.querySelector("#rule_score");
+    document.querySelector("#keys_score").onclick = async () => {
+      const button = document.querySelector("#keys_score");
+      const pianoPlayer = document.querySelector("#piano_player");
       if(button.style.color) {
         button.style = "";
+        pianoPlayer.style = "display:none;";
       } else {
         button.style = "color:green";
+        pianoPlayer.style = "display:block;";
       }
     };
     document.querySelector("#tone_score").onclick = async () => {
@@ -218,15 +221,6 @@
     };
     document.querySelector("#save_img").onclick = async () => {
       await lifuren.save_img();
-    };
-    document.querySelector("#zoom_in").onclick = async () => {
-      await lifuren.zoom_in()
-    };
-    document.querySelector("#zoom_out").onclick = async () => {
-      await lifuren.zoom_out();
-    };
-    document.querySelector("#zoom_reset").onclick = async () => {
-      await lifuren.zoom_reset();
     };
   </script>
 </body>

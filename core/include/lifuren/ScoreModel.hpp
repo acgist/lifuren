@@ -26,7 +26,7 @@ namespace lifuren::score {
 
 
 /**
- * 莫扎特模型（乐谱钢琴指法）
+ * 莫扎特模型（钢琴指法标记）
  */
 class MozartModuleImpl : public torch::nn::Module {
 
@@ -45,7 +45,7 @@ public:
 TORCH_MODULE(MozartModule);
 
 /**
- * 莫扎特模型（乐谱钢琴指法）
+ * 莫扎特模型（钢琴指法标记）
  */
 class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::MozartModule> {
 

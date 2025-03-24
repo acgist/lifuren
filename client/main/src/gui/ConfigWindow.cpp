@@ -30,8 +30,8 @@ static const auto output_input_text          = wxT("输出目录");
 static const auto output_button_text         = wxT("选择输出目录");
 static const auto model_chopin_input_text    = wxT("五线谱识谱模型文件");
 static const auto model_chopin_button_text   = wxT("选择五线谱识谱模型文件");
-static const auto model_mozart_input_text    = wxT("钢琴指法模型文件");
-static const auto model_mozart_button_text   = wxT("选择钢琴指法模型文件");
+static const auto model_mozart_input_text    = wxT("钢琴指法标记模型文件");
+static const auto model_mozart_button_text   = wxT("选择钢琴指法标记模型文件");
 static const auto model_shikuang_input_text  = wxT("音频风格迁移模型文件");
 static const auto model_shikuang_button_text = wxT("选择音频风格迁移模型文件");
 
