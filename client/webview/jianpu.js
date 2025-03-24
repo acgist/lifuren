@@ -2,35 +2,208 @@
  * 简谱
  */
 class Jianpu {
-
-  font_size = 1.0;
   
-  music_xml = "";
-  score_selector  = "";
+  zoom  = 1.0;  // 缩放
+  music = null; // 乐谱
+
+  a4_width  = 210; // A4宽度
+  a4_height = 297; // A4高度
+
+  score_selector = ""; // 谱面选择器
+
+  page_svg  = new Map(); // 页码映射
+  page_size = 0;         // 总的页数
+
+  margin_top  = 20; // 上边距
+  margin_left = 20; // 左边距
+  x = 0; // 当前X
+  y = 0; // 当前Y
+  width  = 0; // 宽度
+  height = 0; // 高度
+  note_row_spacing = 20; // 行间距
+  note_col_spacing = 20; // 列间距
+
+  // 0=C/a
+  // 负数降调：1=F/d 2=bB/g 3=bE/c 4=bA/f 5=bD/bb 6=bG/be 7=bC/ba
+  // 正数升调：1=G/e 2=D/b  3=A/#f 4=E/#c 5=B/#g  6=#F/#d 7=#C/#a
+  fifths_mapping = {
+    '-1': 'F',
+    '-2': 'bB',
+    '-3': 'bE',
+    '-4': 'bA',
+    '-5': 'bD',
+    '-6': 'bG',
+    '-7': 'bC',
+    '1' : 'G',
+    '2' : 'D',
+    '3' : 'A',
+    '4' : 'E',
+    '5' : 'B',
+    '6' : '#F',
+    '7' : '#C',
+  };
 
   constructor(score_selector = "#score_container") {
     this.score_selector = score_selector;
   }
 
-  load(data) {
-    if (data) {
-      this.music_xml = data;
-    } else {
-      data = this.music_xml;
-    }
+  load(music_xml) {
     const parser = new fxp.XMLParser();
-    var musicJson = parser.parse(data);
-    var measures = musicJson["score-partwise"].part.measure;
-    var width  = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
-    var height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
-    var partAttr = measures[0].attributes;
-    var g = d3.select(this.score_selector)
-      .html("")
-      .append("svg")
-      .attr("width", width)
+    try {
+      this.music = parser.parse(music_xml);
+      console.debug("乐谱内容", this.music);
+      this.page_size = 1;
+      this.page_svg.clear();
+      d3.select(this.score_selector).html("");
+    } catch (error) {
+      console.error("解析musicXML异常", music_xml, error);
+      return new Promise((resolve, reject) => {
+        resolve();
+      });
+    }
+    return new Promise((resolve, reject) => {
+      resolve();
+    });
+  }
+
+  tona() {
+    // TODO
+  }
+
+  render_page(g, svg) {
+      // TODO 每个开始位置:per-minute
+    // tona.append("tspan")
+    //   .attr("dx", this.zoom * 20)
+    //   .text("♩ = 187")
+  }
+
+  render_credit(g, svg, credits, measures) {
+    // 标题
+    for(const credit of credits) {
+      if(credit['credit-type'] === "title") {
+        let node = g.append("text")
+          .attr("transform",   `translate(${this.width / 2}, ${this.y + this.zoom * 30})`)
+          .attr("font-size",   this.zoom * 30)
+          .attr("font-weight", "bold")
+          .attr("text-anchor", "middle")
+          .text(credit['credit-words']);
+          this.y += node.node().scrollHeight;
+        }
+    }
+    // 副标题
+    for(const credit of credits) {
+      if(credit['credit-type'] === "subtitle") {
+        let node = g.append("text")
+          .attr("transform",   `translate(${this.width / 2}, ${this.y + this.zoom * 20})`)
+          .attr("font-size",   this.zoom * 20)
+          .attr("text-anchor", "middle")
+          .text(credit['credit-words']);
+        this.y += node.node().scrollHeight;
+      }
+    }
+    // 调式 节奏
+    const measure    = measures[0];
+    const attributes = measure?.attributes;
+    if(attributes) {
+      // 调式
+      const tona = g.append("text")
+        .attr("transform", `translate(${this.margin_left}, ${this.y + this.zoom * 16})`)
+        .attr("font-size", this.zoom * 16);
+      const fifths = attributes.key?.fifths;
+      if(fifths && fifths !== 0) {
+        const value = this.fifths_mapping[fifths + ""];
+        if(value) {
+          tona.append("tspan")
+            .text("1=")
+          if(value.length == 2) {
+            tona.append("tspan")
+              .attr("font-size", this.zoom * 14)
+              .attr("baseline-shift", "super")
+              .text(value.substring(0, 1))
+            tona.append("tspan")
+              .text(value.substring(1))
+          } else {
+            tona.append("tspan")
+              .text(value)
+          }
+        }
+      } else {
+        tona.append("tspan").text("1=C");
+      }
+      // 节奏
+      const time = attributes.time;
+      if(time) {
+        const beats    = time["beats"];
+        const beatType = time["beat-type"];
+        console.info(time)
+        if(beats && beatType) {
+          tona.append("tspan")
+            .attr("dx", this.zoom * 10)
+            .text(`${beats}/${beatType}`)
+        }
+      }
+    }
+    // g.append("text")
+    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 60})`)
+    //   .attr("font-size", 15)
+    //   .text("作词：吴柳");
+    // g.append("text")
+    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 80})`)
+    //   .attr("font-size", 15)
+    //   .text("作编曲：丸山公詳");
+    // g.append("text")
+    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 100})`)
+    //   .attr("font-size", 15)
+    //   .text("歌：雲翼星辰");
+  }
+
+  render() {
+    const container = document.querySelector(this.score_selector);
+    this.width  = container.offsetWidth;
+    this.height = (1.0 * this.width / this.a4_width * this.a4_height).toFixed(0);
+    const root = this.music["score-partwise"];
+    if(!root) {
+      console.warn("无效乐谱");
+      return;
+    }
+    
+    // this.render_old(measures);
+
+    const partlist = root["part-list"];
+    const credits  = root.credit;
+    // TODO: 多个part
+    const measures = root.part?.measure;
+    if(!measures || measures.length <= 0) {
+      console.warn("无效乐谱");
+      return;
+    }
+    this.y = this.margin_top;
+    this.x = this.margin_left;
+    const svg = d3.select(this.score_selector)
+      .append("svg");
+    this.page_svg.set(this.page_size++, svg);
+    const g = svg
+      .attr("width",  this.width)
+      .attr("height", this.height)
+      .append("g");
+    this.render_credit(g, svg, credits, measures);
+    this.render_page(g, svg);
+
+  }
+
+  render_old(measures) {
+    const container = document.querySelector(this.score_selector);
+    const width  = container.offsetWidth;
+    const height = (1.0 * width / this.a4_width * this.a4_height).toFixed(0);
+    const svg = d3.select(this.score_selector)
+      .append("svg");
+    this.page_svg.set(this.page_size++, svg);
+    const g = svg
+      .attr("width",  width)
       .attr("height", height)
       .append("g");
-
+      
+    var partAttr = measures[0].attributes;
     //绘制小节音符
     var start = 0;//该小节前的小节的位置
     var length = 0;//该小节的长度
@@ -61,7 +234,6 @@ class Jianpu {
         .data(measures[j].note)
         .enter()
         .each(function (d, i, n) {
-          //console.log(d.duration);
           eachNoteCount++;
           var divisions = partAttr.divisions;
           if (d.duration > divisions) {
@@ -72,13 +244,13 @@ class Jianpu {
       eachNoteCount++;
 
     }
+    console.info(noteCount)
+
     var maxLength = d3.max(noteCount);
     var totalWidth = maxLength * initSpacing;
-    console.log(maxLength);
-    console.log(noteCount);
     noteCount.push(eachNoteCount);
     marginLeft = (width - totalWidth) / 2;
-    d3.select(this.score_selector).select("svg").attr("height", marginTop + noteCount.length * eachHeight);
+    svg.attr("height", marginTop + noteCount.length * eachHeight);
     g.append("text")
       .attr("transform", `translate(${marginLeft + totalWidth / 2 - 20},${titleTop + 30})`)
       .attr("font-weight", "bold")
@@ -205,7 +377,6 @@ class Jianpu {
           let durList = d3.map(n, d => note2number(d.__data__).dur);
           let octList = d3.map(n, d => note2number(d.__data__).octave);
           if (number.dur == divisions / 2) {
-            console.log(d);
 
             d3.select(this)
               .append("line")
@@ -508,17 +679,6 @@ class Jianpu {
       number.text = stepList[tempNum];
       return number;
     }
-    return new Promise((resolve, reject) => {
-      resolve();
-    });
-  }
-
-  tone() {
-    
-  }
-
-  render() {
-    
   }
 
 };

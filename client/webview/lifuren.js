@@ -3,7 +3,7 @@
  */
 class Lifuren {
 
-  show_staff = true;  // 是否显示五线谱
+  show_staff = false;  // 是否显示五线谱
   
   player         = null; // 播放器
   music_xml      = null; // 乐谱内容
@@ -104,31 +104,29 @@ class Lifuren {
         bpm = (1.0 * this.display_staff.sheet.defaultStartTempoInBpm / 60).toFixed(2);
       }
       const voices = iterator.CurrentVoiceEntries;
-      for (var i = 0; i < voices.length; i++) {
-        const v = voices[i];
-        const notes = v.Notes;
-        for (var j = 0; j < notes.length; j++) {
+      for(let i = 0; i < voices.length; i++) {
+        const notes = voices[i].Notes;
+        for (let j = 0; j < notes.length; j++) {
           const note = notes[j];
-          if (note != null) {
-            note_list.push({
-              "id"  : note.parentStaffEntry.parentStaff.idInMusicSheet,
-              "note": note.halfTone - 12 + 4,
-              "time": iterator.currentTimeStamp.RealValue * bpm,
-              "rest": note.isRest()
-            })
-          }
+          note_list.push({
+            "id"  : note.parentStaffEntry.parentStaff.idInMusicSheet,
+            "note": note.halfTone - 12 + 3 + 1, // 钢琴键盘：十二平均律 + 只有三个键 + 从一开始
+            "time": iterator.currentTimeStamp.RealValue * bpm,
+            "rest": note.isRest()
+          });
         }
       }
-      iterator.moveToNext()
+      iterator.moveToNext();
     }
-    console.debug("音符列表", note_list);
     this.display_staff.cursor.reset();
     this.display_staff.cursor.show();
     this.player.play_list(note_list, () => {
       this.display_staff.cursor.next();
     }, () => {
       this.display_staff.cursor.hide();
-      play_ended();
+      if(play_ended) {
+        play_ended();
+      }
     });
   }
 
@@ -245,9 +243,9 @@ class Lifuren {
     }
   }
   
-  async register_audio(id, type, audio) {
+  async register_audio_source(id, type, audio) {
     if(this.player) {
-      this.player.register(id, type, audio);
+      this.player.register_audio_source(id, type, audio);
     }
   }
 

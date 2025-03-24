@@ -16,7 +16,7 @@ class Player {
     this.piano_selector = piano_selector;
   }
 
-  listen() {
+  async listen() {
     document.querySelectorAll(this.piano_selector).forEach(key => {
       const key_code   = key.getAttribute("key-code");
       const key_code_h = key.childNodes[1].text;
@@ -52,7 +52,7 @@ class Player {
     });
   }
 
-  register(id, type, audio) {
+  async register_audio_source(id, type, audio) {
     if(!this.audio_ctx) {
       this.audio_ctx = new AudioContext();
     }
@@ -61,38 +61,40 @@ class Player {
     for (let i = 0; i < rawData.length; ++i) {
       rawArray[i] = rawData.charCodeAt(i);
     }
-    let type_source = this.audio_source.get(type);
-    if(!type_source) {
-      type_source = new Map();
-      this.audio_source.set(type, type_source);
+    let audio_source = this.audio_source.get(type);
+    if(!audio_source) {
+      audio_source = new Map();
+      this.audio_source.set(type, audio_source);
     }
     this.audio_ctx.decodeAudioData(rawArray.buffer.slice(0)).then(audioData => {
-      type_source.set(id, audioData);
+      audio_source.set(id, audioData);
       console.debug("注册音源", id, type, audioData.length);
     });
   }
 
-  reset_key() {
+  async reset_key() {
     for(const key of this.active_keys) {
       key.classList.remove("active");
     }
     this.active_keys.length = 0;
   }
 
-  play_key(key, key_code, key_code_h, key_code_s, type) {
+  async play_key(key, key_code, key_code_h, key_code_s, type) {
     if(!key) {
       if(!key_code) {
         if(key_code_h) {
           key_code = this.helmholtz_pitch_notation.get(key_code_h);
         } else if(key_code_s) {
           key_code = this.scientific_pitch_notation.get(key_code_s);
-        } {
+        } else {
+          console.warn("缺少键盘编码");
           return;
         }
       }
       key = this.audio_keys.get(key_code);
     }
     if(!key) {
+      console.warn("键盘匹配失败");
       return;
     }
     if(!key_code) {
@@ -103,7 +105,7 @@ class Player {
     this.play_audio(key_code, type);
   }
 
-  play_audio(key_code, type = "piano") {
+  async play_audio(key_code, type = "piano") {
     console.debug("播放音频", key_code);
     if(!this.audio_ctx) {
       console.warn("没有注册音频上下文");
@@ -122,7 +124,7 @@ class Player {
     // TODO: 判断是否需要释放
   }
 
-  play_list(list, play_next, play_ended, index = 0, old_time = 0.0, types = null) {
+  async play_list(list, play_next, play_ended, index = 0, old_time = 0.0, types = null) {
     if(index === 0) {
       this.audio_playing = true;
     }
@@ -137,7 +139,9 @@ class Player {
         }
       } else {
         setTimeout(() => {
-          play_next();
+          if(play_next) {
+            play_next();
+          }
           this.reset_key();
           this.play_list(list, play_next, play_ended, index, time, types);
         }, (time - old_time) * 1000);
@@ -145,11 +149,14 @@ class Player {
       }
     }
     console.debug("播放完成");
-    play_ended();
+    if(play_ended) {
+      play_ended();
+    }
     this.reset_key();
   }
 
-  stop_play() {
+  async stop_play() {
     this.audio_playing = false;
   }
+
 };

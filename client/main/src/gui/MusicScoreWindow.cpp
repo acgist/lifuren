@@ -101,7 +101,7 @@ static void push_audio() {
         std::vector<char> data(length);
         stream->ReadAll(data.data(), length);
         auto audio_source = wxBase64Encode(data.data(), length);
-        web_view->RunScript(wxT("lifuren.register_audio('" + std::to_string(i) + "','piano', `" + audio_source + "`)"));
+        web_view->RunScript(wxT("lifuren.register_audio_source('" + std::to_string(i) + "','piano', `" + audio_source + "`)"));
         SPDLOG_DEBUG("注册音源：{} - {}", i, length);
         delete file;
     }
