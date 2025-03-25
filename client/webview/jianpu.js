@@ -66,13 +66,15 @@ class Jianpu {
     });
   }
 
-  tona() {
+  tone() {
     // TODO
+    // 五声调式：CDEGA（宫、商、角、徵、羽）
+    // 自然调式：CDEFGAB
   }
 
   render_page(g, svg) {
       // TODO 每个开始位置:per-minute
-    // tona.append("tspan")
+    // tone.append("tspan")
     //   .attr("dx", this.zoom * 20)
     //   .text("♩ = 187")
   }
@@ -81,7 +83,7 @@ class Jianpu {
     // 标题
     for(const credit of credits) {
       if(credit['credit-type'] === "title") {
-        let node = g.append("text")
+        const node = g.append("text")
           .attr("transform",   `translate(${this.width / 2}, ${this.y + this.zoom * 30})`)
           .attr("font-size",   this.zoom * 30)
           .attr("font-weight", "bold")
@@ -93,7 +95,7 @@ class Jianpu {
     // 副标题
     for(const credit of credits) {
       if(credit['credit-type'] === "subtitle") {
-        let node = g.append("text")
+        const node = g.append("text")
           .attr("transform",   `translate(${this.width / 2}, ${this.y + this.zoom * 20})`)
           .attr("font-size",   this.zoom * 20)
           .attr("text-anchor", "middle")
@@ -101,60 +103,72 @@ class Jianpu {
         this.y += node.node().scrollHeight;
       }
     }
+    let left_height  = 0;
+    let right_height = 0;
     // 调式 节奏
     const measure    = measures[0];
     const attributes = measure?.attributes;
     if(attributes) {
       // 调式
-      const tona = g.append("text")
+      const fifths = attributes.key?.fifths;
+      const node = g.append("text")
         .attr("transform", `translate(${this.margin_left}, ${this.y + this.zoom * 16})`)
         .attr("font-size", this.zoom * 16);
-      const fifths = attributes.key?.fifths;
       if(fifths && fifths !== 0) {
         const value = this.fifths_mapping[fifths + ""];
         if(value) {
-          tona.append("tspan")
+          node.append("tspan")
             .text("1=")
           if(value.length == 2) {
-            tona.append("tspan")
+            node.append("tspan")
               .attr("font-size", this.zoom * 14)
               .attr("baseline-shift", "super")
               .text(value.substring(0, 1))
-            tona.append("tspan")
+              node.append("tspan")
               .text(value.substring(1))
           } else {
-            tona.append("tspan")
+            node.append("tspan")
               .text(value)
           }
         }
       } else {
-        tona.append("tspan").text("1=C");
+        node.append("tspan").text("1=C");
       }
       // 节奏
       const time = attributes.time;
       if(time) {
         const beats    = time["beats"];
         const beatType = time["beat-type"];
-        console.info(time)
         if(beats && beatType) {
-          tona.append("tspan")
+          node.append("tspan")
             .attr("dx", this.zoom * 10)
             .text(`${beats}/${beatType}`)
         }
       }
+      left_height += node.node().scrollHeight;
     }
-    // g.append("text")
-    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 60})`)
-    //   .attr("font-size", 15)
-    //   .text("作词：吴柳");
-    // g.append("text")
-    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 80})`)
-    //   .attr("font-size", 15)
-    //   .text("作编曲：丸山公詳");
-    // g.append("text")
-    //   .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 100})`)
-    //   .attr("font-size", 15)
-    //   .text("歌：雲翼星辰");
+    for(const credit of credits) {
+      if(credit['credit-type'] === "composer") {
+        const words = credit['credit-words'];
+        if(Array.isArray(words)) {
+          for(const word of words) {
+            console.info(word)
+            const node = g.append("text")
+              .attr("transform", `translate(${this.width / 4 * 3}, ${this.y + right_height + this.zoom * 16})`)
+              .attr("font-size", this.zoom * 16)
+              .text(word);
+            right_height += node.node().scrollHeight;
+          }
+        } else {
+          const node = g.append("text")
+            .attr("transform", `translate(${this.width / 4 * 3}, ${this.y + right_height + this.zoom * 16})`)
+            .attr("font-size", this.zoom * 16)
+            .text(credit['credit-words']);
+          right_height += node.node().scrollHeight;
+        }
+      }
+    }
+    this.y += Math.max(left_height, right_height);
   }
 
   render() {
@@ -167,7 +181,8 @@ class Jianpu {
       return;
     }
     
-    // this.render_old(measures);
+    // this.render_old(root.part?.measure);
+    // return;
 
     const partlist = root["part-list"];
     const credits  = root.credit;

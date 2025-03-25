@@ -50,10 +50,8 @@ public:
 class Score {
 
 public:
-    std::string name;     // 名称
-    std::string author;   // 作者
-    std::string style;    // 风格
-    std::string tonality; // 调性
+    std::string name;   // 名称
+    std::string author; // 作者
     std::map<std::string, std::vector<Measure>> measureMap; // 多声部小节列表
 
 public:
