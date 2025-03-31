@@ -60,7 +60,7 @@ public:
 
 TORCH_MODULE(GenderModule);
 
-class GenderModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::optim::Adam, GenderModule> {
+class GenderModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::optim::Adam, GenderModule, lifuren::dataset::RndDatasetLoader> {
 
 public:
     GenderModel(lifuren::config::ModelParams params = {

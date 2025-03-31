@@ -53,7 +53,7 @@ TORCH_MODULE(ShikuangModule);
 /**
  * 师旷模型（音频风格迁移）
  */
-class ShikuangModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::ShikuangModule> {
+class ShikuangModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::audio::ShikuangModule, lifuren::dataset::RndDatasetLoader> {
 
 public:
     ShikuangModel(lifuren::config::ModelParams params = {});

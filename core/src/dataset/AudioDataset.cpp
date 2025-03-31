@@ -545,7 +545,7 @@ static void embedding_shikuang(std::ofstream& stream, const std::string& source)
     SPDLOG_DEBUG("音频文件嵌入完成：{}", source);
 }
 
-lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoader(const size_t batch_size, const std::string& path) {
+lifuren::dataset::RndDatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoader(const size_t batch_size, const std::string& path) {
     auto dataset = lifuren::dataset::Dataset(
         lifuren::file::join({path, lifuren::config::LIFUREN_HIDDEN_FILE}).string(),
         { ".embedding" },
@@ -575,7 +575,7 @@ lifuren::dataset::DatasetLoader lifuren::dataset::audio::loadShikuangDatasetLoad
     ).map(torch::data::transforms::Stack<>());
     torch::data::DataLoaderOptions options(batch_size);
     options.drop_last() = true;
-    return torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), std::move(options));
+    return torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), std::move(options));
 }
 
 bool lifuren::audio::allDatasetPreprocessShikuang(const std::string& path) {

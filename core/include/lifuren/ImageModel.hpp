@@ -43,7 +43,7 @@ TORCH_MODULE(ChopinModule);
 /**
  * 肖邦模型（五线谱识谱）
  */
-class ChopinModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::ChopinModule> {
+class ChopinModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::ChopinModule, lifuren::dataset::RndDatasetLoader> {
 
 public:
     ChopinModel(lifuren::config::ModelParams params = {});

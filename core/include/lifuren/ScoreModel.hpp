@@ -47,7 +47,7 @@ TORCH_MODULE(MozartModule);
 /**
  * 莫扎特模型（钢琴指法标记）
  */
-class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::MozartModule> {
+class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::MozartModule, lifuren::dataset::SeqDatasetLoader> {
 
 public:
     MozartModel(lifuren::config::ModelParams params = {});

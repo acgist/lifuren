@@ -15,10 +15,9 @@
 #ifndef LFR_HEADER_CORE_DATASET_HPP
 #define LFR_HEADER_CORE_DATASET_HPP
 
-// 如果需要验证数据集预处理使用SequentialSampler替换RandomSampler
 #ifndef LFT_SAMPLER
-// #define LFT_SAMPLER torch::data::samplers::RandomSampler
-#define LFT_SAMPLER torch::data::samplers::SequentialSampler
+#define LFT_RND_SAMPLER torch::data::samplers::RandomSampler
+#define LFT_SEQ_SAMPLER torch::data::samplers::SequentialSampler
 #endif
 
 #include <map>
@@ -162,7 +161,12 @@ public:
 
 };
 
-using DatasetLoader = decltype(torch::data::make_data_loader<LFT_SAMPLER>(
+using RndDatasetLoader = decltype(torch::data::make_data_loader<LFT_RND_SAMPLER>(
+    lifuren::dataset::Dataset{}.map(torch::data::transforms::Stack<>()),
+    torch::data::DataLoaderOptions{}
+));
+
+using SeqDatasetLoader = decltype(torch::data::make_data_loader<LFT_SEQ_SAMPLER>(
     lifuren::dataset::Dataset{}.map(torch::data::transforms::Stack<>()),
     torch::data::DataLoaderOptions{}
 ));
@@ -248,7 +252,7 @@ extern bool embedding_shikuang(const std::string& path, const std::string& datas
  * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadShikuangDatasetLoader(const size_t batch_size, const std::string& path);
+extern lifuren::dataset::RndDatasetLoader loadShikuangDatasetLoader(const size_t batch_size, const std::string& path);
 
 } // END OF audio
 
@@ -296,7 +300,7 @@ extern std::vector<cv::Mat> staff_slice(cv::Mat& image);
  * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
+extern lifuren::dataset::RndDatasetLoader loadChopinDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 /**
  * @param width      目标图片宽度
@@ -307,24 +311,30 @@ extern lifuren::dataset::DatasetLoader loadChopinDatasetLoader(const int width, 
  * 
  * @return 图片数据集
  */
-extern lifuren::dataset::DatasetLoader loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify);
+extern lifuren::dataset::RndDatasetLoader loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify);
 
 } // END OF image
 
 namespace score {
 
-/**
- * @param score 乐谱
- * 
- * @return 乐谱张量
- */
-extern torch::Tensor score_to_tensor(const lifuren::music::Score& score);
+struct Finger {
+
+    float duration; // 持续时间
+    int step;   // 音高：1-12
+    int octave; // 八度：0-9
+    int hand;   // 左手|右手：0|1
+    int finger; // 手指：1-5
+    
+};
 
 /**
- * @param score  乐谱
- * @param tensor 乐谱张量
+ * 双手分开
+ * 
+ * @param path 路径
+ * 
+ * @return 指法列表
  */
-extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& tensor);
+extern std::vector<std::vector<Finger>> load_finger(const std::string& path);
 
 /**
  * @param batch_size 批量大小
@@ -332,7 +342,7 @@ extern void tensor_to_score(lifuren::music::Score& score, const torch::Tensor& t
  * 
  * @return 音频数据集
  */
-extern lifuren::dataset::DatasetLoader loadMozartDatasetLoader(const size_t batch_size, const std::string& path);
+extern lifuren::dataset::SeqDatasetLoader loadMozartDatasetLoader(const size_t batch_size, const std::string& path);
 
 } // END OF score
 

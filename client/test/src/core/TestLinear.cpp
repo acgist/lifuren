@@ -30,8 +30,8 @@ public:
 
 TORCH_MODULE(LinearModule);
 
-// class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, LinearModule> {
-class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::AdamW, LinearModule> {
+// class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, LinearModule, lifuren::dataset::RndDatasetLoader> {
+class LinearModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::AdamW, LinearModule, lifuren::dataset::RndDatasetLoader> {
 
 public:
     LinearModel(lifuren::config::ModelParams params = {
@@ -70,7 +70,7 @@ public:
             features.push_back(torch::tensor( { f } ));
         }
         auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
-        this->trainDataset = torch::data::make_data_loader<LFT_SAMPLER>(std::move(dataset), this->params.batch_size);
+        this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
     }
 
 };

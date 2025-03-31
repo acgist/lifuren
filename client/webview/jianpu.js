@@ -80,6 +80,9 @@ class Jianpu {
   }
 
   render_credit(g, svg, credits, measures) {
+    if(!credits) {
+      return;
+    }
     // 标题
     for(const credit of credits) {
       if(credit['credit-type'] === "title") {
@@ -176,7 +179,7 @@ class Jianpu {
     this.width  = container.offsetWidth;
     this.height = (1.0 * this.width / this.a4_width * this.a4_height).toFixed(0);
     const root = this.music["score-partwise"];
-    if(!root) {
+    if(!root || !root.part) {
       console.warn("无效乐谱");
       return;
     }
@@ -184,13 +187,13 @@ class Jianpu {
     // this.render_old(root.part?.measure);
     // return;
 
-    const partlist = root["part-list"];
-    const credits  = root.credit;
-    // TODO: 多个part
-    const measures = root.part?.measure;
-    if(!measures || measures.length <= 0) {
-      console.warn("无效乐谱");
-      return;
+    const measures = [];
+    if(Array.isArray(root.part)) {
+      for(const part of root.part) {
+        measures.push(part.measure);
+      }
+    } else {
+      measures.push(root.part.measure);
     }
     this.y = this.margin_top;
     this.x = this.margin_left;
@@ -201,7 +204,7 @@ class Jianpu {
       .attr("width",  this.width)
       .attr("height", this.height)
       .append("g");
-    this.render_credit(g, svg, credits, measures);
+    this.render_credit(g, svg, root.credit, measures);
     this.render_page(g, svg);
 
   }

@@ -73,6 +73,8 @@
 }
 
 [[maybe_unused]] static void testScore() {
+    auto ret = lifuren::dataset::score::load_finger(lifuren::file::join({ lifuren::config::CONFIG.tmp, "PianoFingeringDataset_v1.2", "FingeringFiles", "001-1_fingering.txt" }).string());
+    SPDLOG_DEBUG("数据长度：{}", ret.size());
 }
 
 [[maybe_unused]] static void testEmbeddingShikuang() {
@@ -87,6 +89,23 @@
 }
 
 [[maybe_unused]] static void testLoadMozartDatasetLoader() {
+    auto loader = lifuren::dataset::score::loadMozartDatasetLoader(
+        100,
+        lifuren::file::join({
+            lifuren::config::CONFIG.tmp,
+            "mozart",
+            "train"
+        }).string()
+    );
+    lifuren::logTensor("曲谱特征数量", loader->begin()->data.sizes());
+    lifuren::logTensor("曲谱标签数量", loader->begin()->target.sizes());
+    SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
+    lifuren::logTensor("曲谱特征", loader->begin()->data[0]);
+    lifuren::logTensor("曲谱标签1", loader->begin()->target[0]);
+    lifuren::logTensor("曲谱标签2", loader->begin()->target[1]);
+    lifuren::logTensor("曲谱标签3", loader->begin()->target[2]);
+    lifuren::logTensor("曲谱标签4", loader->begin()->target[3]);
+    lifuren::logTensor("曲谱标签5", loader->begin()->target[4]);
 }
 
 [[maybe_unused]] static void testLoadShikuangDatasetLoader() {
@@ -139,11 +158,11 @@ LFR_TEST(
     // testToFile();
     // testStft();
     // testImage();
-    testStaff();
+    // testStaff();
     // testScore();
     // testEmbeddingShikuang();
     // testLoadChopinDatasetLoader();
-    // testLoadMozartDatasetLoader();
+    testLoadMozartDatasetLoader();
     // testLoadShikuangDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );
