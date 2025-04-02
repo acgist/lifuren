@@ -8,6 +8,10 @@
  * 
  * 乐谱
  * 
+ * https://www.w3.org/2021/06/musicxml40/musicxml-reference/elements/
+ * https://www.w3.org/2021/06/musicxml40/musicxml-reference/examples/
+ * https://www.w3.org/2021/06/musicxml40/musicxml-reference/element-tree/
+ * 
  * @author acgist
  * 
  * @version 1.0.0
@@ -16,6 +20,10 @@
 #define LFR_HEADER_CORE_SCORE_HPP
 
 #include "lifuren/Client.hpp"
+
+#include <map>
+#include <string>
+#include <vector>
 
 namespace lifuren::score {
 

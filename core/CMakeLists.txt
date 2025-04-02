@@ -23,6 +23,7 @@ if(CMAKE_HOST_WIN32)
         ${OpenCV_LIBS}
         ${TORCH_LIBRARIES}
         ${FFMPEG_LIBRARIES}
+        tinyxml2::tinyxml2
     )
     target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 else()
@@ -31,6 +32,7 @@ else()
         lifurenboot
         ${OpenCV_LIBS}
         ${TORCH_LIBRARIES}
+        tinyxml2
         avutil
         avcodec
         avformat

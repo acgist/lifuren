@@ -9,7 +9,6 @@
 #include "lifuren/Audio.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/MusicScore.hpp"
 
 extern "C" {
 

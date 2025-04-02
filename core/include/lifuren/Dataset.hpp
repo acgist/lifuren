@@ -29,7 +29,6 @@
 #include "torch/data.h"
 
 #include "lifuren/Thread.hpp"
-#include "lifuren/MusicScore.hpp"
 
 // 音频配置
 // PCM数据大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
@@ -317,18 +316,90 @@ extern lifuren::dataset::RndDatasetLoader loadClassifyDatasetLoader(const int wi
 
 namespace score {
 
-struct Finger {
+/**
+ * 音符
+ */
+class Note {
 
-    float duration; // 持续时间
-    int step;   // 音高：1-12
-    int octave; // 八度：0-9
-    int hand;   // 左手|右手：0|1
-    int finger; // 手指：1-5
+public:
+    char step   = 0; // 音高：CDEFGAB
+    int  alter  = 0; // 升降
+    int  octave = 0; // 八度：0-9
+    int  finger = 0; // 指法：0=没有 1-5=指头
+
+};
+
+/**
+ * 小节
+ */
+class Measure {
+
+public:
+    std::vector<Note> noteList; // 音符列表
     
 };
 
 /**
- * 双手分开
+ * 五线谱
+ */
+class Staff {
+
+public:
+    int fifths = 0; // 谱号
+    std::vector<Measure> measureList; // 小节列表
+
+};
+
+/**
+ * 乐谱
+ */
+class Score {
+
+public:
+    std::string file_path; // 原始文件路径
+    std::map<std::string, std::map<int, Staff>> staffMap; // 多声部五线谱列表
+
+public:
+    /**
+     * @return 是否为空
+     */
+    bool empty();
+
+};
+
+/**
+ * @param file 文件路径
+ * 
+ * @return 乐谱
+ */
+extern Score load_xml(const std::string& file);
+
+/**
+ * @param file  文件路径
+ * @param score 乐谱
+ * 
+ * @return 是否成功
+ */
+extern bool save_xml(const std::string& file, const Score& score);
+
+/**
+ * 指法
+ */
+struct Finger {
+
+    int step   = 0; // 音高：1-12
+    int octave = 0; // 八度：0-9
+    int hand   = 0; // 左手|右手：0|1
+    int finger = 0; // 手指：1-5
+    
+};
+
+/**
+ * 1=大拇指
+ * 2=食指
+ * 3=中指
+ * 4=无名指
+ * 5=小指
  * 
  * @param path 路径
  * 

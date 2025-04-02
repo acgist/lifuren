@@ -6,6 +6,20 @@
 #include "lifuren/Torch.hpp"
 #include "lifuren/Dataset.hpp"
 
+[[maybe_unused]] static void testXML() {
+    auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "music.xml" }).string();
+    lifuren::dataset::score::Score score = lifuren::dataset::score::load_xml(path);
+    for(const auto& [k, staff] : score.staffMap["P1"]) {
+        for(const auto& measure : staff.measureList) {
+            for(const auto& note : measure.noteList) {
+                SPDLOG_DEBUG("音符：{} {} {} {}", k, note.step, note.alter, note.octave);
+            }
+        }
+    }
+    path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "music.copy.xml" }).string();
+    // lifuren::dataset::score::save_xml(path, {});
+}
+
 [[maybe_unused]] static void testToPcm() {
     lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "tts.mp3"}).string());
     // lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.aac"}).string());
@@ -154,6 +168,7 @@
 }
 
 LFR_TEST(
+    testXML();
     // testToPcm();
     // testToFile();
     // testStft();
@@ -162,7 +177,7 @@ LFR_TEST(
     // testScore();
     // testEmbeddingShikuang();
     // testLoadChopinDatasetLoader();
-    testLoadMozartDatasetLoader();
+    // testLoadMozartDatasetLoader();
     // testLoadShikuangDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );

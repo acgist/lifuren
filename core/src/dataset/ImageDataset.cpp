@@ -71,13 +71,13 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadChopinDatasetLoa
             std::vector<torch::Tensor>& features,
             const torch::DeviceType   & device
         ) {
-            auto score = lifuren::music::load_xml(l_file);
-            auto image = cv::imread(f_file);
-            if(score.empty() || image.empty()) {
-                SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
-                return;
-            }
-            // TODO: 分片
+            // auto score = lifuren::music::load_xml(l_file);
+            // auto image = cv::imread(f_file);
+            // if(score.empty() || image.empty()) {
+            //     SPDLOG_WARN("加载数据失败：{} - {}", l_file, f_file);
+            //     return;
+            // }
+            // TODO: 分片：直线检测
             // auto l_tensor = lifuren::dataset::score::score_to_tensor(score);
             // lifuren::dataset::image::resize(image, width, height);
             // auto f_tensor = lifuren::dataset::image::mat_to_tensor(image);

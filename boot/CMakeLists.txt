@@ -8,7 +8,6 @@ add_library(
     src/Logger.cpp
     src/String.cpp
     src/Message.cpp
-    src/MusicScore.cpp
 )
 
 if(CMAKE_HOST_WIN32)
@@ -16,7 +15,6 @@ if(CMAKE_HOST_WIN32)
         ${PROJECT_NAME}
         spdlog::spdlog
         yaml-cpp::yaml-cpp
-        tinyxml2::tinyxml2
     )
 else()
     target_link_libraries(
@@ -24,7 +22,6 @@ else()
         fmt
         spdlog
         yaml-cpp
-        tinyxml2
     )
 endif()
 
