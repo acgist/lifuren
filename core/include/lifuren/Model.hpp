@@ -154,15 +154,16 @@ inline void classify_evaluate(
           size_t& accu_val,
           size_t& data_val
 ) {
-    auto target_size = target.numel();
-    auto target_pred = pred.argmax(1);
-    auto accu = target_pred.eq(target).sum();
+    auto target_index = target.argmax(1);
+    auto pred_index   = pred.argmax(1);
+    auto batch_size   = pred_index.numel();
+    auto accu = pred_index.eq(target_index).sum();
     accu_val += accu.template item<int>();
-    data_val += target_size;
-    int64_t* target_iter      = target.data_ptr<int64_t>();
-    int64_t* target_pred_iter = target_pred.data_ptr<int64_t>();
-    for (int64_t i = 0; i < target_size; ++i, ++target_iter, ++target_pred_iter) {
-        confusion_matrix[*target_iter][*target_pred_iter].add_(1);
+    data_val += batch_size;
+    int64_t* target_index_iter = target_index.data_ptr<int64_t>();
+    int64_t* pred_index_iter   = pred_index.data_ptr<int64_t>();
+    for (int64_t i = 0; i < batch_size; ++i, ++target_index_iter, ++pred_index_iter) {
+        confusion_matrix[*target_index_iter][*pred_index_iter].add_(1);
     }
 }
 

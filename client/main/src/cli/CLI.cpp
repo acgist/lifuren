@@ -27,7 +27,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     lifuren::message::registerMessageCallback(messageCallback);
     std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
-        SPDLOG_DEBUG("命令参数：{} {}", i, argv[i]);
+        SPDLOG_DEBUG("命令参数：{} - {}", i, argv[i]);
         if(i >= 2) {
             args.push_back(argv[i]);
         }

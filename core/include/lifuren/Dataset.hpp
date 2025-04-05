@@ -359,12 +359,6 @@ public:
     std::string file_path; // 原始文件路径
     std::map<std::string, std::map<int, Staff>> staffMap; // 多声部五线谱列表
 
-public:
-    /**
-     * @return 是否为空
-     */
-    bool empty();
-
 };
 
 /**

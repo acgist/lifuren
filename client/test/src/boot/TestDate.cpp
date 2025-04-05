@@ -19,7 +19,6 @@
     std::tm tm = lifuren::date::parse_tm        (datetime, LFR_DATE_TIME_FORMAT);
     SPDLOG_DEBUG("字符串转为日期时间：{}", date);
     SPDLOG_DEBUG("字符串转为日期时间：{}-{:#02d}-{:#02d} {:#02d}:{:#02d}:{:#02d}", 1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-
 }
 
 [[maybe_unused]] static void testMillis() {

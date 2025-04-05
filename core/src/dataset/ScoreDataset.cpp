@@ -36,10 +36,6 @@ static void parse_note   (lifuren::dataset::score::Score&, tinyxml2::XMLElement*
 
 static int parse_fifths(tinyxml2::XMLElement*);
 
-bool lifuren::dataset::score::Score::empty() {
-    return this->staffMap.empty();
-}
-
 lifuren::dataset::score::Score lifuren::dataset::score::load_xml(const std::string& path) {
     tinyxml2::XMLDocument doc;
     lifuren::dataset::score::Score score;
@@ -102,26 +98,35 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::score::loadMozartDatasetLoa
         ) {
             // 音高 八度 左手|右手
             // 12 + 10 + 1 = 23
-            const static int feature_dims = 23;
+            const static int feature_dims = 3;
             auto vectors = lifuren::dataset::score::load_finger(file);
             for(const auto& vector : vectors) {
+                if(vector.empty()) {
+                    continue;
+                }
                 std::vector<float> label;
                 std::vector<float> feature;
                 label.resize(5);
                 feature.resize(feature_dims * 5);
                 for(size_t i = 0; i < vector.size(); ++i) {
                     const auto value = vector[i];
-                    std::fill(label.begin(),   label.end(),   0.0F);
-                    std::fill(feature.begin(), feature.end(), 0.0F);
+                    std::fill(label.begin(),   label.end(),   0.5F);
+                    std::fill(feature.begin(), feature.end(), 0.5F);
                     label[value.finger - 1]    = 1.0F;
-                    feature[value.step - 1]    = 1.0F;
-                    feature[value.octave + 12] = 1.0F;
-                    feature[22]                = value.hand;
+                    // feature[value.step   -  1] = 1.0F;
+                    // feature[value.octave + 12] = 1.0F;
+                    // feature[22]                = value.hand;
+                    feature[0] = value.step  * 1.0F;
+                    feature[1] = value.octave * 1.0F;
+                    feature[2]                = value.hand;
                     for(size_t j = 1; j < 5 && i + j < vector.size(); ++j) {
                         const auto next = vector[i + j];
-                        feature[j * feature_dims + next.step - 1]    = 1.0F;
-                        feature[j * feature_dims + next.octave + 12] = 1.0F;
-                        feature[j * feature_dims + 22]               = next.hand;
+                        feature[j * feature_dims + 0] = value.step  * 1.0F;
+                        feature[j * feature_dims + 1] = value.octave * 1.0F;
+                        feature[j * feature_dims + 2]                = value.hand;
+                        // feature[j * feature_dims + next.step   -  1] = 1.0F;
+                        // feature[j * feature_dims + next.octave + 12] = 1.0F;
+                        // feature[j * feature_dims + 22]               = next.hand;
                     }
                     auto label_tensor   = torch::from_blob(label.data(),   { 5               }, torch::kFloat32);
                     auto feature_tensor = torch::from_blob(feature.data(), { 5, feature_dims }, torch::kFloat32);
@@ -136,8 +141,55 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::score::loadMozartDatasetLoa
 
 static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_xml(const std::string& file) {
     auto score = lifuren::dataset::score::load_xml(file);
-    // score.staffMap.
-    return {};
+    if(score.staffMap.size() != 1) {
+        SPDLOG_DEBUG("不支持的乐谱格式：{} - {}", file, score.staffMap.size());
+        return {};
+    }
+    auto staff_map = score.staffMap.begin()->second;
+    if(staff_map.size() != 2) {
+        SPDLOG_DEBUG("不支持的乐谱格式：{} - {}", file, staff_map.size());
+        return {};
+    }
+    std::vector<lifuren::dataset::score::Finger> fingers_r;
+    std::vector<lifuren::dataset::score::Finger> fingers_l;
+    fingers_r.reserve(1024);
+    fingers_l.reserve(1024);
+    int index = 0;
+    for(const auto& [k, staff] : staff_map) {
+        for(const auto& measure : staff.measureList) {
+            for(const auto& note : measure.noteList) {
+                lifuren::dataset::score::Finger finger;
+                auto step_iter = step_map.find(std::string(1, note.step));
+                if(step_iter == step_map.end()) {
+                    SPDLOG_WARN("不支持的符号：{}", note.step);
+                    return {};
+                }
+                if(note.finger < 1 || note.finger > 5) {
+                    SPDLOG_DEBUG("指法标记错误：{} - {} - {}", note.step, note.octave, note.finger);
+                    continue;
+                }
+                finger.step   = step_iter->second + note.alter;
+                finger.octave = note.octave;
+                finger.finger = note.finger;
+                if(finger.step < 1) {
+                    finger.step   += 12;
+                    finger.octave -= 1;
+                } else if(finger.step > 12) {
+                    finger.step   -= 12;
+                    finger.octave += 1;
+                }
+                if(index == 0) {
+                    finger.hand = 1;
+                    fingers_r.push_back(std::move(finger));
+                } else {
+                    finger.hand = 0;
+                    fingers_l.push_back(std::move(finger));
+                }
+            }
+        }
+        ++index;
+    }
+    return {fingers_l, fingers_r};
 }
 
 static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_txt(const std::string& file) {
@@ -162,8 +214,8 @@ static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_txt(c
         }
         auto pitch = vector[3];
         int pitch_length = pitch.length();
-        auto iter = step_map.find(pitch.substr(0, pitch_length - 1));
-        if(iter == step_map.end()) {
+        auto step_iter = step_map.find(pitch.substr(0, pitch_length - 1));
+        if(step_iter == step_map.end()) {
             SPDLOG_WARN("不支持的符号：{}", pitch);
             stream.close();
             return {};
@@ -171,14 +223,14 @@ static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_txt(c
         auto finger = std::atoi(vector[7].c_str());
         if(finger < 0) {
             fingers_l.push_back({
-                .step   = iter->second,
+                .step   = step_iter->second,
                 .octave = std::atoi(pitch.substr(pitch_length - 1).c_str()),
                 .hand   = 0,
                 .finger = std::abs(finger)
             });
         } else {
             fingers_r.push_back({
-                .step   = iter->second,
+                .step   = step_iter->second,
                 .octave = std::atoi(pitch.substr(pitch_length - 1).c_str()),
                 .hand   = 1,
                 .finger = finger
@@ -186,7 +238,7 @@ static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_txt(c
         }
     }
     stream.close();
-    return {fingers_r, fingers_l};
+    return {fingers_l, fingers_r};
 }
 
 static void parse_part(lifuren::dataset::score::Score& score, tinyxml2::XMLElement* element) {

@@ -31,7 +31,11 @@ namespace lifuren::score {
 class MozartModuleImpl : public torch::nn::Module {
 
 private:
-    // TODO: 定义结构
+    torch::nn::Embedding embedding_1{ nullptr };
+    torch::nn::GRU gru_1{ nullptr };
+    torch::nn::GRU gru_2{ nullptr };
+    torch::nn::Linear linear_1{ nullptr };
+    torch::nn::Linear linear_2{ nullptr };
 
 public:
     MozartModuleImpl();
@@ -47,7 +51,7 @@ TORCH_MODULE(MozartModule);
 /**
  * 莫扎特模型（钢琴指法标记）
  */
-class MozartModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::score::MozartModule, lifuren::dataset::SeqDatasetLoader> {
+class MozartModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::optim::SGD, lifuren::score::MozartModule, lifuren::dataset::SeqDatasetLoader> {
 
 public:
     MozartModel(lifuren::config::ModelParams params = {});

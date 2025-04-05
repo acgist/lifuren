@@ -27,7 +27,7 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Chopin
     if(!this->model) {
         return { false, {} };
     }
-    // TODO
+    // TODO: 图片列表 排序 切割
     return {};
 }
 

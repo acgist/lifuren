@@ -124,6 +124,7 @@ lifuren::dataset::Dataset::Dataset(
         const auto entry_path = entry.path();
         const auto entry_name = entry_path.filename().string();
         const auto entry_iter = classify.find(entry_name);
+        assert(entry_iter->second >= 0 && entry_iter->second < classify.size(), "分类错误：{}", entry_iter->second);
         if(entry.is_directory() && entry_iter != classify.end()) {
             SPDLOG_DEBUG("加载分类：{}", entry_path.string());
             std::vector<std::string> files;
@@ -136,7 +137,10 @@ lifuren::dataset::Dataset::Dataset(
                 }
                 this->features.push_back(std::move(tensor));
             }
-            this->labels.resize(this->features.size(), torch::full({ 1 }, entry_iter->second, torch::kFloat32).to(this->device));
+            std::vector<float> label;
+            label.resize(classify.size(), 0.0F);
+            label[entry_iter->second] = 1.0F;
+            this->labels.resize(this->features.size(), torch::from_blob(label.data(), { static_cast<int>(label.size()) }, torch::kFloat32).clone().to(this->device));
         } else {
             SPDLOG_DEBUG("忽略目录：{}", entry_path.string());
         }

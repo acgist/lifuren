@@ -94,7 +94,6 @@ public:
     }
 
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
-        label = std::move(label.squeeze().to(torch::kInt64));
         Model::logic(feature, label, pred, loss);
     }
 

@@ -187,7 +187,7 @@ static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
     #if LFR_OLD_FFMPEG
     auto mono = AV_CH_LAYOUT_MONO;
     SPDLOG_DEBUG(
-        "重采样信息：{} {} {} -> {} {} {}",
+        "重采样信息：{} - {} - {} -> {} - {} - {}",
         frame->channel_layout, av_get_sample_fmt_name(format),            frame->sample_rate,
         mono,                  av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE
     );
@@ -200,7 +200,7 @@ static bool open_swr(SwrContext** swrCtx, AVFrame* frame) {
     #else
     static AVChannelLayout mono = AV_CHANNEL_LAYOUT_MONO;
     SPDLOG_DEBUG(
-        "重采样信息：{} {} {} -> {} {} {}",
+        "重采样信息：{} - {} - {} -> {} - {} - {}",
         frame->ch_layout.nb_channels, av_get_sample_fmt_name(format),            frame->sample_rate,
         mono.nb_channels,             av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), LFR_SAMPLE_RATE
     );

@@ -12,7 +12,7 @@
     for(const auto& [k, staff] : score.staffMap["P1"]) {
         for(const auto& measure : staff.measureList) {
             for(const auto& note : measure.noteList) {
-                SPDLOG_DEBUG("音符：{} {} {} {}", k, note.step, note.alter, note.octave);
+                SPDLOG_DEBUG("音符：{} - {} - {} - {} - {}", k, note.step, note.alter, note.octave, note.finger);
             }
         }
     }
@@ -168,7 +168,7 @@
 }
 
 LFR_TEST(
-    testXML();
+    // testXML();
     // testToPcm();
     // testToFile();
     // testStft();
@@ -177,7 +177,7 @@ LFR_TEST(
     // testScore();
     // testEmbeddingShikuang();
     // testLoadChopinDatasetLoader();
-    // testLoadMozartDatasetLoader();
+    testLoadMozartDatasetLoader();
     // testLoadShikuangDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );
