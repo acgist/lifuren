@@ -72,15 +72,93 @@ class Jianpu {
     // 自然调式：CDEFGAB
   }
 
-  render_page(g, svg) {
+  render_page(g, svg, measures) {
       // TODO 每个开始位置:per-minute
     // tone.append("tspan")
     //   .attr("dx", this.zoom * 20)
     //   .text("♩ = 187")
+    const mapping = [];
+    let mapping_index = 0;
+    for(let index = 0; index < measures.length; ++index) {
+      mapping[index] = [];
+      for(let jndex = 0; jndex < measures[index].length; ++jndex) {
+        for(let kndex = 0; kndex < measures[index][jndex].note.length; ++kndex) {
+          const staff = measures[index][jndex].note[kndex].staff || 0;
+          if(mapping[index][staff]) {
+            continue;
+          }
+          mapping[index][staff] = ++mapping_index;
+        }
+      }
+    }
+    let height = 0;
+    let x_mapping = [];
+    const measure = measures[0];
+    for(let jndex = 0; jndex < measure.length; ++jndex) {
+      const jianpu = this;
+      const partAttr = measure[jndex].attributes;
+      const nodes = [];
+      let max_index = 0;
+      for(let index = 0; index < measures.length; ++index) {
+        for(let note of measures[index][jndex].note) {
+          note.staff_index = mapping[index][note.staff || 0];
+          max_index = Math.max(max_index, note.staff_index);
+          nodes.push(note);
+        }
+      }
+      if (measure[jndex].print) {
+        this.y += height * max_index + 16;
+        x_mapping = [];
+        height = 0;
+      }
+      g.selectAll(".note")
+      .data(nodes)
+      .enter()
+      .each(function(note, i, n) {
+        x_mapping[note.staff_index] = x_mapping[note.staff_index] || 0;
+        const noteText = d3.select(this)
+          .append("text")
+          .attr("text-anchor", "middle")
+          .attr("transform", `translate(${jianpu.margin_left + x_mapping[note.staff_index] || 0}, ${jianpu.y + jianpu.zoom * 16 + jianpu.zoom * note.staff_index * 32})`);
+        const number = jianpu.note2number(note, partAttr);
+        if (number.text.length == 1) {
+          noteText.text(number.text);
+        } else {
+          noteText.append("tspan")
+            .attr("baseline-shift", "super")
+            .attr("dy", () => {
+              if (number.text[0] == "#")
+                return 8;
+              else
+                return 4;
+            })
+            .attr("font-size", 12)
+            .attr("dx", -5)
+            .text(number.text[0]);
+            noteText.append("tspan")
+            .attr("dy", () => {
+              if (number.text[0] == "#")
+                return -8;
+              else
+                return -4;
+            })
+            .text(number.text[1]);
+        }
+        x_mapping[note.staff_index] += 14;
+        height = noteText.node().scrollHeight;
+      });
+    }
   }
 
   render_credit(g, svg, credits, measures) {
     if(!credits) {
+      const node = g.append("text")
+      .attr("transform",   `translate(${this.width / 2}, ${this.y + this.zoom * 30})`)
+      .attr("font-size",   this.zoom * 30)
+      .attr("font-weight", "bold")
+      .attr("text-anchor", "middle")
+      .text("Untitled Score");
+      this.y += node.node().scrollHeight;
       return;
     }
     // 标题
@@ -183,10 +261,6 @@ class Jianpu {
       console.warn("无效乐谱");
       return;
     }
-    
-    // this.render_old(root.part?.measure);
-    // return;
-
     const measures = [];
     if(Array.isArray(root.part)) {
       for(const part of root.part) {
@@ -195,6 +269,22 @@ class Jianpu {
     } else {
       measures.push(root.part.measure);
     }
+    for(let index = 0; index < measures.length; ++index) {
+      if(!Array.isArray(measures[index])) {
+        measures[index] = [measures[index]];
+      }
+      for(let jndex = 0; jndex < measures[index].length; ++jndex) {
+        if(!Array.isArray(measures[index][jndex].note)) {
+          measures[index][jndex].note = [measures[index][jndex].note];
+        }
+      }
+    }
+
+    // for(let vindex = 0; vindex < measures.length; vindex++) {
+    //   this.render_old(measures[vindex]);
+    // }
+    // return;
+
     this.y = this.margin_top;
     this.x = this.margin_left;
     const svg = d3.select(this.score_selector)
@@ -205,8 +295,7 @@ class Jianpu {
       .attr("height", this.height)
       .append("g");
     this.render_credit(g, svg, root.credit, measures);
-    this.render_page(g, svg);
-
+    this.render_page(g, svg, measures);
   }
 
   render_old(measures) {
@@ -238,12 +327,12 @@ class Jianpu {
 
     var noteCount = [];
     var eachNoteCount = 0;
+
     for (let j = 0; j < measures.length; j++) {
       if (measures[j].print) {
         noteCount.push(eachNoteCount);
         eachNoteCount = 0;
       }
-
       if (measures[j].note.length == undefined) {
         measures[j].note = [measures[j].note];
       }
@@ -264,47 +353,6 @@ class Jianpu {
     }
     console.info(noteCount)
 
-    var maxLength = d3.max(noteCount);
-    var totalWidth = maxLength * initSpacing;
-    noteCount.push(eachNoteCount);
-    marginLeft = (width - totalWidth) / 2;
-    svg.attr("height", marginTop + noteCount.length * eachHeight);
-    g.append("text")
-      .attr("transform", `translate(${marginLeft + totalWidth / 2 - 20},${titleTop + 30})`)
-      .attr("font-weight", "bold")
-      .attr("text-anchor", "middle")
-      .attr("font-size", 30)
-      .text("三色绘恋");
-    var textD = g.append("text")
-      .attr("transform", `translate(${marginLeft},${titleTop + 60})`)
-      .attr("font-size", 18);
-    textD.append("tspan")
-      .text("1=")
-    textD.append("tspan")
-      .attr("baseline-shift", "super")
-      .attr("font-size", 15)
-      .text("b")
-    textD.append("tspan")
-      .text("D")
-    textD.append("tspan")
-      .attr("dx", 20)
-      .text("4/4")
-    g.append("text")
-      .attr("transform", `translate(${marginLeft},${titleTop + 90})`)
-      .attr("font-size", 18)
-      .text("BPM = 187");
-    g.append("text")
-      .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 60})`)
-      .attr("font-size", 15)
-      .text("作词：吴柳");
-    g.append("text")
-      .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 80})`)
-      .attr("font-size", 15)
-      .text("作编曲：丸山公詳");
-    g.append("text")
-      .attr("transform", `translate(${marginLeft + maxLength * initSpacing - 150},${titleTop + 100})`)
-      .attr("font-size", 15)
-      .text("歌：雲翼星辰");
 
 
     for (var j = 0; j < measures.length; j++) {
@@ -313,7 +361,7 @@ class Jianpu {
       if (measures[j].print) {
         start = 0;
         lineIndex++;
-        noteSpacing = initSpacing * maxLength / noteCount[lineIndex];
+        noteSpacing = initSpacing * 60 / noteCount[lineIndex];
         //console.log(noteSpacing);
       }
       else
@@ -332,6 +380,9 @@ class Jianpu {
         .data(measures[j].note)
         .enter()
         .each(function (d, i, n) {
+          // if(d.staff == 2) {
+          //   return;
+          // }
           //console.log(n[0].__data__);
           var number = note2number(d);
           var divisions = partAttr.divisions;
@@ -697,6 +748,59 @@ class Jianpu {
       number.text = stepList[tempNum];
       return number;
     }
+  }
+
+  note2number(note, partAttr) {
+    var keyAlter = [{ fifth: 7, key: "#C", alter: -1 },
+    { fifth: 0, key: "C", alter: 0 },
+    { fifth: -7, key: "bC", alter: 1 },
+    { fifth: -5, key: "bD", alter: -1 },
+    { fifth: -4, key: "D", alter: -2 },
+    { fifth: -3, key: "bE", alter: -3 },
+    { fifth: 4, key: "E", alter: -4 },
+    { fifth: 5, key: "B", alter: 1 },
+    { fifth: -1, key: "F", alter: -5 },
+    { fifth: 1, key: "G", alter: 5 }];
+    var stepList = ["1", "#1", "2", "#2", "3", "4", "#4", "5", "#5", "6", "#6", "7"];
+    var step2num = [{ step: "C", num: 0 }, { step: "D", num: 2 }, { step: "E", num: 4 },
+    { step: "F", num: 5 }, { step: "G", num: 7 }, { step: "A", num: 9 }, { step: "B", num: 11 }];
+    var number = { text: "0", tied: 0, octave: 4, dur: 0 };
+    var tempNum;
+    if (note.notations != undefined && note.notations.tied != undefined)
+      number.tied = 1;
+    else
+      number.tied = 0;
+    if (note.rest != undefined) {
+      number.text = "0";
+      number.dur = note.duration;
+      number.octave = note.octave;
+      return number;
+    }
+    for (let i = 0; i < step2num.length; i++) {
+      if (step2num[i].step == note.pitch.step) {
+        tempNum = step2num[i].num;
+        break;
+      }
+    }
+    for (let i = 0; i < keyAlter.length; i++) {
+      if (partAttr && partAttr.key && keyAlter[i].fifth == partAttr.key.fifths) {
+        tempNum += keyAlter[i].alter;
+        break;
+      }
+    }
+    if (note.pitch.alter != undefined) tempNum += note.pitch.alter;
+    number.octave = note.pitch.octave;
+    if (tempNum < 0) {
+      tempNum += 12;
+      number.octave--;
+    }
+    else if (tempNum > 11) {
+      tempNum -= 12;
+      number.octave++;
+    }
+    number.dur = note.duration;
+    number.text = stepList[tempNum];
+    return number;
   }
 
 };
