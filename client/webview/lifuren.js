@@ -3,12 +3,9 @@
  */
 class Lifuren {
 
-  show_staff = false;  // 是否显示五线谱
-  
-  player         = null; // 播放器
-  music_xml      = null; // 乐谱内容
-  display_staff  = null; // 五线谱渲染器
-  display_jianpu = null; // 简谱渲染器
+  player    = null; // 播放器
+  music_xml = null; // 乐谱内容
+  display   = null; // 谱面渲染器
   
   a4_width  = 210; // A4宽度
   a4_height = 297; // A4高度
@@ -29,9 +26,9 @@ class Lifuren {
       window.lfr_backend.postMessage("audio");
     }
     console.debug("初始化播放器");
-    // 初始化五线谱渲染器
-    this.display_staff = new opensheetmusicdisplay.OpenSheetMusicDisplay(this.score_selector.substring(1));
-    this.display_staff.setOptions({
+    // 初始化渲染器
+    this.display = new opensheetmusicdisplay.OpenSheetMusicDisplay(this.score_selector.substring(1));
+    this.display.setOptions({
       backend   : "svg",
       drawTitle : true,
       autoResize: false,
@@ -39,36 +36,16 @@ class Lifuren {
       cursorsOptions: [{ type: 0, color: "#CCCC00", alpha: 0.6, follow: true }],
       pageBackgroundColor: "#FFFFFF",
     });
-    console.debug("初始化五线谱渲染器");
-    // 初始化简谱渲染器
-    this.display_jianpu = new Jianpu(this.score_selector);
-    console.debug("初始化简谱渲染器");
-  }
-  
-  async load_music_xml_staff(music_xml) {
-    this.stop_score();
-    this.music_xml = music_xml;
-    this.display_staff.load(music_xml)
-    .then(() => {
-      this.display_staff.render();
-    });
-  }
-  
-  async load_music_xml_jianpu(music_xml) {
-    this.stop_score();
-    this.music_xml = music_xml;
-    this.display_jianpu.load(music_xml)
-    .then(() => {
-      this.display_jianpu.render();
-    });
+    console.debug("初始化渲染器");
   }
   
   async load_music_xml(music_xml) {
-    if(this.show_staff) {
-      await this.load_music_xml_staff(music_xml);
-    } else {
-      await this.load_music_xml_jianpu(music_xml);
-    }
+    this.stop_score();
+    this.music_xml = music_xml;
+    this.display.load(music_xml)
+    .then(() => {
+      this.display.render();
+    });
   }
   
   async open_score() {
@@ -91,17 +68,13 @@ class Lifuren {
   };
   
   async play_score(play_ended) {
-    if(!this.show_staff) {
-      alert("该功能只支持五线谱谱面");
-      return;
-    }
     const note_list = [];
-    this.display_staff.cursor.reset();
-    const iterator = this.display_staff.cursor.Iterator;
+    this.display.cursor.reset();
+    const iterator = this.display.cursor.Iterator;
     while (!iterator.EndReached) {
       let bpm = 4;
-      if(this.display_staff.sheet.hasBPMInfo) {
-        bpm = (1.0 * this.display_staff.sheet.defaultStartTempoInBpm / 60).toFixed(2);
+      if(this.display.sheet.hasBPMInfo) {
+        bpm = (1.0 * this.display.sheet.defaultStartTempoInBpm / 60).toFixed(2);
       }
       const voices = iterator.CurrentVoiceEntries;
       for(let i = 0; i < voices.length; i++) {
@@ -118,12 +91,12 @@ class Lifuren {
       }
       iterator.moveToNext();
     }
-    this.display_staff.cursor.reset();
-    this.display_staff.cursor.show();
+    this.display.cursor.reset();
+    this.display.cursor.show();
     this.player.play_list(note_list, () => {
-      this.display_staff.cursor.next();
+      this.display.cursor.next();
     }, () => {
-      this.display_staff.cursor.hide();
+      this.display.cursor.hide();
       if(play_ended) {
         play_ended();
       }
@@ -134,32 +107,14 @@ class Lifuren {
     this.player.stop_play();
   }
 
-  async swap_score() {
-    this.show_staff = !this.show_staff;
-    document.querySelector(this.score_selector).innerHTML = "";
-    if(this.show_staff) {
-      this.load_music_xml_staff(this.music_xml);
-    } else {
-      this.load_music_xml_jianpu(this.music_xml);
-    }
-  }
-  
-  async tone_score() {
-    if(this.show_staff) {
-      alert("该功能只支持简谱谱面");
-      return;
-    }
-    this.display_jianpu.tone();
-  }
-  
-  async save_pdf_staff() {
-    const backends = this.display_staff.drawer.Backends;
+  async save_pdf() {
+    const backends = this.display.drawer.Backends;
     let svgElement = backends[0].getSvgElement();
     let pageWidth  = this.a4_width;
     let pageHeight = this.a4_height;
-    if (!this.display_staff.rules.PageFormat?.IsUndefined) {
-      pageWidth  = this.display_staff.rules.PageFormat.width;
-      pageHeight = this.display_staff.rules.PageFormat.height;
+    if (!this.display.rules.PageFormat?.IsUndefined) {
+      pageWidth  = this.display.rules.PageFormat.width;
+      pageHeight = this.display.rules.PageFormat.height;
     } else {
       pageHeight = pageWidth * svgElement.clientHeight / svgElement.clientWidth;
     }
@@ -180,19 +135,8 @@ class Lifuren {
         height: pageHeight,
       })
     }
-    pdf.save((this.display_staff.sheet.FullNameString || "lifuren") + ".pdf");
+    pdf.save((this.display.sheet.FullNameString || "lifuren") + ".pdf");
   };
-  
-  async save_pdf_jianpu() {
-  };
-  
-  async save_pdf() {
-    if(this.show_staff) {
-      await this.save_pdf_staff();
-    } else {
-      await this.save_pdf_jianpu();
-    }
-  }
   
   async download_img(index, svgElement) {
     const canvas     = document.createElement("canvas");
@@ -206,7 +150,7 @@ class Lifuren {
       const imgURL = canvas.toDataURL({ format: "image/png" });
       const dlLink = document.createElement('a');
       dlLink.href     = imgURL;
-      dlLink.download = (this.display_staff.sheet.FullNameString || "lifuren") + "-" + index + ".png";
+      dlLink.download = (this.display.sheet.FullNameString || "lifuren") + "-" + index + ".png";
       dlLink.dataset.downloadurl = ["image/png", dlLink.download, dlLink.href].join(':');
       document.body.appendChild(dlLink);
       dlLink.click();
@@ -225,23 +169,12 @@ class Lifuren {
     img.src = "data:image/svg+xml;base64," + btoa(content);
   }
   
-  async save_img_staff() {
-    const backends = this.display_staff.drawer.Backends;
+  async save_img() {
+    const backends = this.display.drawer.Backends;
     for(let i = 0; i < backends.length; ++i) {
       await this.download_img(i, backends[i].getSvgElement());
     }
   };
-  
-  async save_img_jianpu() {
-  };
-  
-  async save_img() {
-    if(this.show_staff) {
-      await this.save_img_staff();
-    } else {
-      await this.save_img_jianpu();
-    }
-  }
   
   async register_audio_source(id, type, audio) {
     if(this.player) {

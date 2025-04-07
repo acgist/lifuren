@@ -10,8 +10,8 @@ if(ENABLE_GUI)
         src/gui/GUI.cpp
         src/gui/MainWindow.cpp
         src/gui/AboutWindow.cpp
+        src/gui/ScoreWindow.cpp
         src/gui/ConfigWindow.cpp
-        src/gui/MusicScoreWindow.cpp
     )
 endif()
     

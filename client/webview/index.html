@@ -10,8 +10,6 @@
 
   <link rel="stylesheet" href="./style.css" />
 
-  <script type="text/javascript" src="./lib/d3.min.js"></script>
-  <script type="text/javascript" src="./lib/fxp.min.js"></script>
   <script type="text/javascript" src="./lib/jspdf.umd.min.js"></script>
   <script type="text/javascript" src="./lib/svg2pdf.umd.min.js"></script>
   <script type="text/javascript" src="./lib/opensheetmusicdisplay.min.js"></script>
@@ -23,9 +21,7 @@
     <a class="action_bt" id="action"     title="操作"><span class="icon-list"       ></span></a>
     <a class="action_bt" id="open_score" title="打开"><span class="icon-folder-open"></span></a>
     <a class="action_bt" id="play_score" title="演奏"><span class="icon-play3"      ></span></a>
-    <a class="action_bt" id="swap_score" title="转换"><span class="icon-loop"       ></span></a>
     <a class="action_bt" id="keys_score" title="键盘"><span class="icon-music"      ></span></a>
-    <a class="action_bt" id="tone_score" title="移调"><span class="icon-equalizer2" ></span></a>
     <a class="action_bt" id="save_pdf"   title="文档"><span class="icon-files-empty"></span></a>
     <a class="action_bt" id="save_img"   title="图片"><span class="icon-images"     ></span></a>
   </div>
@@ -167,7 +163,6 @@
     </div>
   </div>
   <script type="text/javascript" src="./player.js"></script>
-  <script type="text/javascript" src="./jianpu.js"></script>
   <script type="text/javascript" src="./lifuren.js"></script>
   <script type="text/javascript">
     console.info(`
@@ -180,10 +175,11 @@
     // 加载
     const lifuren = new Lifuren();
     lifuren.load_music_xml(music_xml);
-    // 功能
+    // 打开
     document.querySelector("#open_score").onclick = async () => {
       await lifuren.open_score();
     };
+    // 播放
     document.querySelector("#play_score").onclick = async () => {
       const button = document.querySelector("#play_score");
       if(button.style.color) {
@@ -199,26 +195,23 @@
         });
       }
     };
-    document.querySelector("#swap_score").onclick = async () => {
-      await lifuren.swap_score();
-    };
+    // 键盘
     document.querySelector("#keys_score").onclick = async () => {
-      const button = document.querySelector("#keys_score");
+      const button      = document.querySelector("#keys_score");
       const pianoPlayer = document.querySelector("#piano_player");
       if(button.style.color) {
-        button.style = "";
+        button.style      = "";
         pianoPlayer.style = "display:none;";
       } else {
-        button.style = "color:green";
+        button.style      = "color:green";
         pianoPlayer.style = "display:block;";
       }
     };
-    document.querySelector("#tone_score").onclick = async () => {
-      await lifuren.tone_score();
-    };
+    // 保存文档
     document.querySelector("#save_pdf").onclick = async () => {
       await lifuren.save_pdf();
     };
+    // 保存图片
     document.querySelector("#save_img").onclick = async () => {
       await lifuren.save_img();
     };
