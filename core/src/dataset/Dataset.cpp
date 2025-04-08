@@ -124,7 +124,6 @@ lifuren::dataset::Dataset::Dataset(
         const auto entry_path = entry.path();
         const auto entry_name = entry_path.filename().string();
         const auto entry_iter = classify.find(entry_name);
-        assert(entry_iter->second >= 0 && entry_iter->second < classify.size(), "分类错误：{}", entry_iter->second);
         if(entry.is_directory() && entry_iter != classify.end()) {
             SPDLOG_DEBUG("加载分类：{}", entry_path.string());
             std::vector<std::string> files;

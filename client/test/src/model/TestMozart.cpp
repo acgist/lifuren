@@ -8,9 +8,9 @@
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::score::MozartModel model({
-        .lr         = 0.01F,
+        .lr         = 0.001F,
         .batch_size = 10,
-        .epoch_size = 128,
+        .epoch_size = 256,
         .class_size = 6,
         .classify   = true,
         .model_name = "mozart",
