@@ -87,55 +87,86 @@ std::vector<std::vector<lifuren::dataset::score::Finger>> lifuren::dataset::scor
 }
 
 lifuren::dataset::SeqDatasetLoader lifuren::dataset::score::loadMozartDatasetLoader(const size_t batch_size, const std::string& path) {
+    std::vector<int> classify_size(6, 0);
+    std::vector<std::vector<torch::Tensor>> labels_tensors;
+    std::vector<std::vector<torch::Tensor>> features_tensors;
     auto dataset = lifuren::dataset::Dataset(
         path,
         { ".txt", ".xml", ".musicxml" },
-        [] (
+        [batch_size, &classify_size, &labels_tensors, &features_tensors] (
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
             std::vector<torch::Tensor>& features,
             const torch::DeviceType   & device
         ) {
-            // 音高 八度 左手|右手
-            // 12 + 10 + 1 = 23
-            const static int feature_dims = 3;
-            auto vectors = lifuren::dataset::score::load_finger(file);
+            // 左手|右手 音高 八度
+            // 2 + 12 + 10 = 24
+            const static int feature_dims = 4;
+            const auto vectors = lifuren::dataset::score::load_finger(file);
             for(const auto& vector : vectors) {
                 if(vector.empty()) {
                     continue;
                 }
-                std::vector<float> label;
-                std::vector<float> feature;
-                label.resize(5);
-                feature.resize(feature_dims * 5);
+                std::vector<float> label(6, 0.0F);
+                // 前四 + 当前 + 后四
+                std::vector<float> feature(feature_dims * 9, 0.0F);
+                std::vector<torch::Tensor> label_tensors;
+                std::vector<torch::Tensor> feature_tensors;
                 for(size_t i = 0; i < vector.size(); ++i) {
                     const auto value = vector[i];
-                    std::fill(label.begin(),   label.end(),   0.5F);
-                    std::fill(feature.begin(), feature.end(), 0.5F);
-                    label[value.finger - 1]    = 1.0F;
-                    // feature[value.step   -  1] = 1.0F;
-                    // feature[value.octave + 12] = 1.0F;
-                    // feature[22]                = value.hand;
-                    feature[0] = value.step  * 1.0F;
-                    feature[1] = value.octave * 1.0F;
-                    feature[2]                = value.hand;
-                    for(size_t j = 1; j < 5 && i + j < vector.size(); ++j) {
+                    std::fill(label.begin(),   label.end(),   0.0F);
+                    std::fill(feature.begin(), feature.end(), 0.0F);
+                    label[value.finger] = 1.0F;
+                    for(size_t j = -4; j < 5; ++j) {
+                        if(i + j < 0 || i + j >= vector.size()) {
+                            continue;
+                        }
                         const auto next = vector[i + j];
-                        feature[j * feature_dims + 0] = value.step  * 1.0F;
-                        feature[j * feature_dims + 1] = value.octave * 1.0F;
-                        feature[j * feature_dims + 2]                = value.hand;
-                        // feature[j * feature_dims + next.step   -  1] = 1.0F;
-                        // feature[j * feature_dims + next.octave + 12] = 1.0F;
-                        // feature[j * feature_dims + 22]               = next.hand;
+                        feature[j * feature_dims + 0] = 1.0F /  10 * (next.hand + 1);
+                        feature[j * feature_dims + 1] = 1.0F /  10 * next.step;
+                        feature[j * feature_dims + 2] = 1.0F /  10 * next.octave;
+                        feature[j * feature_dims + 3] = 1.0F / 120 * (next.step * 12 + next.octave);
                     }
-                    auto label_tensor   = torch::from_blob(label.data(),   { 5               }, torch::kFloat32);
-                    auto feature_tensor = torch::from_blob(feature.data(), { 5, feature_dims }, torch::kFloat32);
-                    labels.push_back(label_tensor.clone().to(device));
-                    features.push_back(feature_tensor.clone().to(device));
+                    auto label_tensor   = torch::from_blob(label.data(),   { 6               }, torch::kFloat32);
+                    auto feature_tensor = torch::from_blob(feature.data(), { 9, feature_dims }, torch::kFloat32).t();
+                    label_tensors.push_back(label_tensor.clone().to(device));
+                    feature_tensors.push_back(feature_tensor.clone().to(device));
+                }
+                labels_tensors.push_back(std::move(label_tensors));
+                features_tensors.push_back(std::move(feature_tensors));
+                if(labels_tensors.size() >= batch_size) {
+                    size_t sum = 0;
+                    for(const auto& value : features_tensors) {
+                        sum += value.size();
+                    }
+                    // 取平均值：避免数据严重膨胀
+                    size_t max_length = sum / features_tensors.size();
+                    for (size_t i = 0; i < max_length; i++) {
+                        for(const auto& value : labels_tensors) {
+                            if(i < value.size()) {
+                                labels.push_back(value[i]);
+                            } else {
+                                labels.push_back(torch::tensor({ 1, 0, 0, 0, 0, 0 }, torch::kFloat32).to(device));
+                            }
+                            classify_size[labels.back().argmax(0).item<int>()] += 1;
+                        }
+                        for(const auto& value : features_tensors) {
+                            if(i < value.size()) {
+                                features.push_back(value[i]);
+                            } else {
+                                features.push_back(torch::zeros({ 9, feature_dims }, torch::kFloat32).t().to(device));
+                            }
+                        }
+                    }
+                    labels_tensors.clear();
+                    features_tensors.clear();
                 }
             }
         }
     ).map(torch::data::transforms::Stack<>());
+    for(const auto& size : classify_size) {
+        SPDLOG_DEBUG("分类数量：{}", size);
+    }
     return torch::data::make_data_loader<LFT_SEQ_SAMPLER>(std::move(dataset), batch_size);
 }
 
@@ -223,16 +254,16 @@ static std::vector<std::vector<lifuren::dataset::score::Finger>> load_from_txt(c
         auto finger = std::atoi(vector[7].c_str());
         if(finger < 0) {
             fingers_l.push_back({
+                .hand   = 0,
                 .step   = step_iter->second,
                 .octave = std::atoi(pitch.substr(pitch_length - 1).c_str()),
-                .hand   = 0,
                 .finger = std::abs(finger)
             });
         } else {
             fingers_r.push_back({
+                .hand   = 1,
                 .step   = step_iter->second,
                 .octave = std::atoi(pitch.substr(pitch_length - 1).c_str()),
-                .hand   = 1,
                 .finger = finger
             });
         }

@@ -155,7 +155,7 @@ inline void classify_evaluate(
           size_t& data_val
 ) {
     auto target_index = target.argmax(1);
-    auto pred_index   = pred.argmax(1);
+    auto pred_index   = torch::log_softmax(pred, 1).argmax(1);
     auto batch_size   = pred_index.numel();
     auto accu = pred_index.eq(target_index).sum();
     accu_val += accu.template item<int>();

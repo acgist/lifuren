@@ -31,11 +31,15 @@ namespace lifuren::score {
 class MozartModuleImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Embedding embedding_1{ nullptr };
+    torch::nn::BatchNorm1d norm{ nullptr };
     torch::nn::GRU gru_1{ nullptr };
     torch::nn::GRU gru_2{ nullptr };
     torch::nn::Linear linear_1{ nullptr };
     torch::nn::Linear linear_2{ nullptr };
+    torch::nn::Linear linear_3{ nullptr };
+    torch::nn::Linear linear_4{ nullptr };
+    torch::Tensor hh1{ nullptr };
+    torch::Tensor hh2{ nullptr };
 
 public:
     MozartModuleImpl();

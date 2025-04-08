@@ -9,9 +9,9 @@
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::score::MozartModel model({
         .lr         = 0.01F,
-        .batch_size = 100,
+        .batch_size = 10,
         .epoch_size = 128,
-        .class_size = 5,
+        .class_size = 6,
         .classify   = true,
         .model_name = "mozart",
         .train_path = lifuren::file::join({path, "mozart", lifuren::config::DATASET_TRAIN}).string(),

@@ -30,15 +30,15 @@ public:
         feature->push_back(torch::nn::BatchNorm2d(8));
         feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 16, 3)));
         feature->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
-        this->feature = register_module("feature", feature);
+        this->feature = this->register_module("feature", feature);
         // 池化
         torch::nn::Sequential pool;
         pool->push_back(torch::nn::AdaptiveMaxPool2d(torch::nn::AdaptiveMaxPool2dOptions(16)));
-        this->pool = register_module("pool", pool);
+        this->pool = this->register_module("pool", pool);
         // 分类
         torch::nn::Sequential classify;
         classify->push_back(torch::nn::Linear(torch::nn::LinearOptions(16 * 16 * 16, 2)));
-        this->classify = register_module("classify", classify);
+        this->classify = this->register_module("classify", classify);
     }
 
     torch::Tensor forward(torch::Tensor x) {
@@ -46,14 +46,15 @@ public:
         x = this->pool->forward(x);
         x = x.flatten(1);
         x = this->classify->forward(x);
-        return torch::log_sigmoid(x);
+        // return torch::log_sigmoid(x);
         // return torch::log_softmax(x, 1);
+        return x;
     }
     
     ~GenderModuleImpl() {
-        unregister_module("feature");
-        unregister_module("pool");
-        unregister_module("classify");
+        this->unregister_module("feature");
+        this->unregister_module("pool");
+        this->unregister_module("classify");
     }
 
 };

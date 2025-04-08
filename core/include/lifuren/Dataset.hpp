@@ -381,9 +381,9 @@ extern bool save_xml(const std::string& file, const Score& score);
  */
 struct Finger {
 
+    int hand   = 0; // 左手|右手：0|1
     int step   = 0; // 音高：1-12
     int octave = 0; // 八度：0-9
-    int hand   = 0; // 左手|右手：0|1
     int finger = 0; // 手指：1-5
     
 };
