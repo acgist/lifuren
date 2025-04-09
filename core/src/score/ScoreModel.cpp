@@ -19,7 +19,7 @@ lifuren::score::MozartModuleImpl::MozartModuleImpl() {
     this->gru_2 = register_module("gru_2", torch::nn::GRU(gru_options_2));
     this->norm_1 = register_module("norm_1", torch::nn::BatchNorm1d(dims));
     this->linear_1 = register_module("linear_1", torch::nn::Linear(4, gru_size));
-    this->linear_2 = register_module("linear_2", torch::nn::Linear(gru_size * dims * 3, 6));
+    this->linear_2 = register_module("linear_2", torch::nn::Linear(gru_size * dims * 2, 6));
 }
 
 lifuren::score::MozartModuleImpl::~MozartModuleImpl() {
@@ -44,7 +44,7 @@ torch::Tensor lifuren::score::MozartModuleImpl::forward(torch::Tensor input) {
     auto output = this->linear_1->forward(this->norm_1->forward(input));
     auto [o1, h1] = this->gru_1->forward(output, this->hh1);
     auto [o2, h2] = this->gru_2->forward(o1, this->hh2);
-    output = this->linear_2->forward(torch::flatten(torch::cat({output, o1, o2}, 1), 1, 2));
+    output = this->linear_2->forward(torch::flatten(torch::cat({output, o2}, 1), 1, 2));
     return output;
 }
 

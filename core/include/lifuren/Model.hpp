@@ -154,8 +154,11 @@ inline void classify_evaluate(
           size_t& accu_val,
           size_t& data_val
 ) {
-    auto target_index = target.argmax(1);
-    auto pred_index   = torch::log_softmax(pred, 1).argmax(1);
+    torch::NoGradGuard no_grad_guard;
+    auto target_index = target.argmax(1).to(torch::kCPU);
+    auto pred_index   = torch::log_softmax(pred, 1).argmax(1).to(torch::kCPU);
+    // auto target_index = target.detach().argmax(1).to(torch::kCPU);
+    // auto pred_index   = torch::log_softmax(pred.detach(), 1).argmax(1).to(torch::kCPU);
     auto batch_size   = pred_index.numel();
     auto accu = pred_index.eq(target_index).sum();
     accu_val += accu.template item<int>();
@@ -308,7 +311,7 @@ void lifuren::Model<L, P, M, D>::train(const size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->train();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
         torch::Tensor pred;
@@ -340,7 +343,7 @@ void lifuren::Model<L, P, M, D>::val(const size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->valDataset) {
         torch::Tensor pred;
@@ -369,7 +372,7 @@ void lifuren::Model<L, P, M, D>::test() {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->testDataset) {
         torch::Tensor pred;

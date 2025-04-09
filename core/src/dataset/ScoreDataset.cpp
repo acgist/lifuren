@@ -137,11 +137,17 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::score::loadMozartDatasetLoa
                 labels_tensors.push_back(std::move(label_tensors));
                 features_tensors.push_back(std::move(feature_tensors));
                 if(labels_tensors.size() >= batch_size) {
+                    size_t sum = 0;
                     size_t max = 0;
+                    size_t min = std::numeric_limits<size_t>::max();
                     for(const auto& value : features_tensors) {
+                        sum += value.size();
                         max = std::max(max, value.size());
+                        min = std::min(min, value.size());
                     }
-                    for (size_t i = 0; i < max; i++) {
+                    size_t length = sum / labels_tensors.size();
+                    // size_t length = (max + min) / 2;
+                    for (size_t i = 0; i < length; i++) {
                         for(const auto& value : labels_tensors) {
                             if(i < value.size()) {
                                 labels.push_back(value[i]);
