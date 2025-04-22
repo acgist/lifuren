@@ -1,0 +1,7 @@
+# 公共配置
+config:
+  tmp: D:\tmp
+  output: D:\tmp\lifuren\output
+model:
+  wudaozi: D:\tmp\lifuren\wudaozi.pt
+  shikuang: D:\tmp\lifuren\shikuang.pt

@@ -1,0 +1,60 @@
+/**
+ * Copyright(c) 2024-present acgist. All Rights Reserved.
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * gitee : https://gitee.com/acgist/lifuren
+ * github: https://github.com/acgist/lifuren
+ * 
+ * https://learn.microsoft.com/zh-cn/windows/win32/menurc/versioninfo-resource
+ * 
+ * win.rc
+ * 
+ * @author acgist
+ * 
+ * @version 1.0.0
+ */
+#pragma code_page(65001)
+
+#ifndef LFR_RC
+#define LFR_RC
+
+#include <verrsrc.h>
+
+IDI_ICON1 ICON DISCARDABLE "logo.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+#ifndef _DEBUG
+FILEFLAGS       VS_FF_DEBUG
+#else
+FILEFLAGS       VS_FF_DEBUG | VS_FF_PRERELEASE
+#endif
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP | VFT_DLL | VFT_STATIC_LIB
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "acgist"
+            VALUE "FileDescription",  "李夫人"
+            VALUE "FileVersion",      "1.0.0.0"
+            VALUE "InternalName",     "李夫人"
+            VALUE "LegalCopyright",   "Copyright © 2013-2024 ACGIST.COM. All Rights Reserved."
+            VALUE "LegalTrademarks",  "lifuren"
+            VALUE "OriginalFilename", "lifuren.exe"
+            VALUE "ProductName",      "李夫人"
+            VALUE "ProductVersion",   "1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1252
+    END
+END
+
+#endif // LFR_RC
