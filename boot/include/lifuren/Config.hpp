@@ -32,7 +32,6 @@ struct ModelParams {
     size_t      thread_size{ 0           }; // 线程数量
     size_t      class_size { 2           }; // 任务分类数量
     bool        classify   { false       }; // 是否分类任务
-    bool        first_none { false       }; // 忽略首个分类
     bool        check_point{ false       }; // 是否保存快照
     std::string model_name { "lifuren"   }; // 模型名称
     std::string model_path { "./lifuren" }; // 模型路径
@@ -54,19 +53,12 @@ extern std::string base_dir; // 项目启动绝对路径
 
 extern lifuren::config::Config CONFIG; // 全局配置
 
-const std::string LIFUREN_HIDDEN_FILE    = ".lifuren";        // 隐藏文件
-const std::string LIFUREN_EMBEDDING_FILE = "model.embedding"; // 嵌入文件：训练嵌入数据集
-
 const std::string DATASET_TRAIN = "train"; // 训练数据集
 const std::string DATASET_VAL   = "val";   // 验证数据集
 const std::string DATASET_TEST  = "test";  // 测试数据集
 
-/**
- * 注意：一秒钟的并发不能超过十万
- * 
- * @return ID(yyMMddHHmmss'xxxxx)
- */
-extern size_t uuid() noexcept(true);
+const std::string LIFUREN_HIDDEN_FILE    = ".lifuren";        // 隐藏文件
+const std::string LIFUREN_EMBEDDING_FILE = "model.embedding"; // 嵌入文件
 
 /**
  * 配置
@@ -74,16 +66,10 @@ extern size_t uuid() noexcept(true);
 class Config {
 
 public:
-    std::string tmp;            // 临时目录
-    std::string output;         // 输出目录
+    std::string tmp;    // 临时目录
+    std::string output; // 输出目录
     std::string model_wudaozi;  // 视频风格迁移模型文件
     std::string model_shikuang; // 音频风格迁移模型文件
-
-public:
-    /**
-     * @return YAML
-     */
-    std::string toYaml();
 
 public:
     /**
@@ -103,6 +89,13 @@ public:
  * @param argv 参数内容
  */
 extern void init(const int argc, const char* const argv[]);
+
+/**
+ * 注意：一秒钟的并发不能超过十万
+ * 
+ * @return ID(yyMMddHHmmss'xxxxx)
+ */
+extern size_t uuid() noexcept(true);
 
 /**
  * @param path 相对路径

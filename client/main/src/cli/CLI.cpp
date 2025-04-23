@@ -13,9 +13,10 @@
 #include "lifuren/Message.hpp"
 
 static void audio    (const std::vector<std::string>&); // 音频任务
-static void image    (const std::vector<std::string>&); // 图片任务
+static void image    (const std::vector<std::string>&); // 图片任务|视频任务
 static void embedding(const std::vector<std::string>&); // 数据嵌入
 static void help(); // 帮助
+
 static void messageCallback(const char*); // 消息回调
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
@@ -26,9 +27,10 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{} - {}", i, argv[i]);
-        if(i >= 2) {
-            args.push_back(argv[i]);
+        if(i < 2) {
+            continue;
         }
+        args.push_back(argv[i]);
     }
     const char* const command = argv[1];
     if(std::strcmp(command, "audio") == 0) {
@@ -47,6 +49,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
 static void audio(const std::vector<std::string>& args) {
     if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
+        ::help();
         return;
     }
     const auto& client_name = args[0];
@@ -86,6 +89,7 @@ static void audio(const std::vector<std::string>& args) {
 static void image(const std::vector<std::string>& args) {
     if(args.size() < 4) {
         SPDLOG_WARN("缺少参数");
+        ::help();
         return;
     }
     const auto& client_name = args[0];
@@ -125,6 +129,7 @@ static void image(const std::vector<std::string>& args) {
 static void embedding(const std::vector<std::string>& args) {
     if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
+        ::help();
         return;
     }
     const auto& type    = args[0];

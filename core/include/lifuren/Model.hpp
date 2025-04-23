@@ -406,17 +406,15 @@ inline void lifuren::Model<L, P, M, D>::printEvaluation(
     torch::Tensor confusion_matrix
 ) {
     if(this->params.classify) {
-        const size_t av = this->params.first_none ? accu_val - confusion_matrix[0][0].template item<int>() : accu_val;
-        const size_t dv = this->params.first_none ? data_val - confusion_matrix[0][0].template item<int>() : data_val;
         SPDLOG_INFO(
             "当前{}第 {} 轮，损失值为：{:.6f}，耗时：{}，正确率为：{} / {} = {:.6f}。",
             name,
             epoch,
             loss,
             duration,
-            av,
-            dv,
-            1.0F * av / dv
+            accu_val,
+            data_val,
+            1.0F * accu_val / data_val
         );
         lifuren::logTensor("混淆矩阵", confusion_matrix);
     } else {

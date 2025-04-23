@@ -26,7 +26,7 @@ static const auto tmp_button_text            = wxT("选择临时目录");
 static const auto output_input_text          = wxT("输出目录");
 static const auto output_button_text         = wxT("选择输出目录");
 static const auto model_wudaozi_input_text   = wxT("视频风格迁移模型文件");
-static const auto model_wudaozi_button_text  = wxT("视频风格迁移模型文件");
+static const auto model_wudaozi_button_text  = wxT("选择视频风格迁移模型文件");
 static const auto model_shikuang_input_text  = wxT("音频风格迁移模型文件");
 static const auto model_shikuang_button_text = wxT("选择音频风格迁移模型文件");
 
@@ -38,7 +38,6 @@ lifuren::ConfigWindow::ConfigWindow(int width, int height, const wxString& title
 
 lifuren::ConfigWindow::~ConfigWindow() {
     lifuren::config::CONFIG.saveFile();
-    // 置空
     panel                 = nullptr;
     tmp_input             = nullptr;
     tmp_button            = nullptr;
@@ -50,18 +49,18 @@ lifuren::ConfigWindow::~ConfigWindow() {
     model_shikuang_button = nullptr;
 }
 
-void lifuren::ConfigWindow::drawElement() {
+void lifuren::ConfigWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
-    panel                  = new wxPanel(this);
-    tmp_input              = new wxTextCtrl(panel, wxID_ANY,                 tmp_input_text            , wxPoint((w - 640) / 2,        10), wxSize(400, 30));
-    tmp_button             = new wxButton  (panel, tmp_button_id,            tmp_button_text           , wxPoint((w - 640) / 2 + 410,  10), wxSize(240, 30));
-    output_input           = new wxTextCtrl(panel, wxID_ANY,                 output_input_text         , wxPoint((w - 640) / 2,        50), wxSize(400, 30));
-    output_button          = new wxButton  (panel, output_button_id,         output_button_text        , wxPoint((w - 640) / 2 + 410,  50), wxSize(240, 30));
-    model_wudaozi_input    = new wxTextCtrl(panel, wxID_ANY,                 model_wudaozi_input_text  , wxPoint((w - 640) / 2,        90), wxSize(400, 30));
-    model_wudaozi_button   = new wxButton  (panel, model_wudaozi_button_id,  model_wudaozi_button_text , wxPoint((w - 640) / 2 + 410,  90), wxSize(240, 30));
-    model_shikuang_input   = new wxTextCtrl(panel, wxID_ANY,                 model_shikuang_input_text , wxPoint((w - 640) / 2,       130), wxSize(400, 30));
-    model_shikuang_button  = new wxButton  (panel, model_shikuang_button_id, model_shikuang_button_text, wxPoint((w - 640) / 2 + 410, 130), wxSize(240, 30));
+    panel                 = new wxPanel(this);
+    tmp_input             = new wxTextCtrl(panel, wxID_ANY,                 tmp_input_text,             wxPoint((w - 640) / 2,        10), wxSize(400, 30));
+    tmp_button            = new wxButton  (panel, tmp_button_id,            tmp_button_text,            wxPoint((w - 640) / 2 + 410,  10), wxSize(240, 30));
+    output_input          = new wxTextCtrl(panel, wxID_ANY,                 output_input_text,          wxPoint((w - 640) / 2,        50), wxSize(400, 30));
+    output_button         = new wxButton  (panel, output_button_id,         output_button_text,         wxPoint((w - 640) / 2 + 410,  50), wxSize(240, 30));
+    model_wudaozi_input   = new wxTextCtrl(panel, wxID_ANY,                 model_wudaozi_input_text,   wxPoint((w - 640) / 2,        90), wxSize(400, 30));
+    model_wudaozi_button  = new wxButton  (panel, model_wudaozi_button_id,  model_wudaozi_button_text,  wxPoint((w - 640) / 2 + 410,  90), wxSize(240, 30));
+    model_shikuang_input  = new wxTextCtrl(panel, wxID_ANY,                 model_shikuang_input_text,  wxPoint((w - 640) / 2,       130), wxSize(400, 30));
+    model_shikuang_button = new wxButton  (panel, model_shikuang_button_id, model_shikuang_button_text, wxPoint((w - 640) / 2 + 410, 130), wxSize(240, 30));
 }
 
 void lifuren::ConfigWindow::bindEvent() {
@@ -78,14 +77,14 @@ void lifuren::ConfigWindow::bindEvent() {
 
 void lifuren::ConfigWindow::fillData() {
     const auto& config = lifuren::config::CONFIG;
-    tmp_input            ->Clear();
-    output_input         ->Clear();
-    model_wudaozi_input  ->Clear();
-    model_shikuang_input ->Clear();
-    tmp_input            ->AppendText(wxString::FromUTF8(config.tmp.c_str()           ));
-    output_input         ->AppendText(wxString::FromUTF8(config.output.c_str()        ));
-    model_wudaozi_input  ->AppendText(wxString::FromUTF8(config.model_wudaozi.c_str() ));
-    model_shikuang_input ->AppendText(wxString::FromUTF8(config.model_shikuang.c_str()));
+    tmp_input           ->Clear();
+    output_input        ->Clear();
+    model_wudaozi_input ->Clear();
+    model_shikuang_input->Clear();
+    tmp_input           ->AppendText(wxString::FromUTF8(config.tmp.c_str()           ));
+    output_input        ->AppendText(wxString::FromUTF8(config.output.c_str()        ));
+    model_wudaozi_input ->AppendText(wxString::FromUTF8(config.model_wudaozi.c_str() ));
+    model_shikuang_input->AppendText(wxString::FromUTF8(config.model_shikuang.c_str()));
 }
 
 static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
@@ -110,9 +109,9 @@ static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl* input) {
     if(file.empty()) {
         return;
     }
-    auto& config = lifuren::config::CONFIG;
     input->Clear();
     input->AppendText(wxString::FromUTF8(file));
+    auto& config = lifuren::config::CONFIG;
     if(input == tmp_input) {
         config.tmp = file;
     } else if(input == output_input) {

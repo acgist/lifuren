@@ -44,7 +44,7 @@ BEGIN
             VALUE "FileDescription",  "李夫人"
             VALUE "FileVersion",      "1.0.0.0"
             VALUE "InternalName",     "李夫人"
-            VALUE "LegalCopyright",   "Copyright © 2013-2024 ACGIST.COM. All Rights Reserved."
+            VALUE "LegalCopyright",   "Copyright © 2013-2025 ACGIST.COM. All Rights Reserved."
             VALUE "LegalTrademarks",  "lifuren"
             VALUE "OriginalFilename", "lifuren.exe"
             VALUE "ProductName",      "李夫人"

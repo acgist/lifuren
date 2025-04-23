@@ -8,4 +8,3 @@
 |libtorch|2.6.0|https://github.com/pytorch/pytorch|
 |yaml-cpp|0.8.0|https://github.com/jbeder/yaml-cpp|
 |wxWidgets|3.2.4|https://github.com/wxWidgets/wxWidgets|
-

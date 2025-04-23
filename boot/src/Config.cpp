@@ -23,24 +23,27 @@ if(name && !name.IsNull() && name.IsScalar()) {               \
 
 std::string lifuren::config::base_dir = "";
 
-lifuren::config::Config lifuren::config::CONFIG{};
+lifuren::config::Config lifuren::config::CONFIG{ };
 
 /**
  * @param config 配置
- * @param name   配置名称
- * @param yaml   配置内容
+ * @param name   名称
+ * @param yaml   内容
  */
 static void loadYaml(lifuren::config::Config& config, const std::string& name, const YAML::Node & yaml);
+
 /**
  * @return YAML
  */
 static YAML::Node toYaml();
+
 /**
  * @param path 文件路径
  * 
  * @return YAML
  */
 static YAML::Node loadFile(const std::string& path);
+
 /**
  * @param yaml YAML
  * @param path 文件路径
@@ -83,7 +86,12 @@ static YAML::Node loadFile(const std::string& path) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         return {};
     }
-    return YAML::LoadFile(path);
+    try {
+        return YAML::LoadFile(path);
+    } catch(const std::exception& e) {
+        SPDLOG_ERROR("加载YAML异常：{}", e.what());
+    }
+    return {};
 }
 
 static bool saveFile(const YAML::Node& yaml, const std::string& path) {
@@ -91,7 +99,7 @@ static bool saveFile(const YAML::Node& yaml, const std::string& path) {
     std::ofstream output;
     output.open(path, std::ios_base::out | std::ios_base::trunc);
     if(!output.is_open()) {
-        SPDLOG_WARN("打开文件失败：{}", path);
+        SPDLOG_WARN("打开配置文件失败：{}", path);
         return false;
     }
     output << yaml;
@@ -99,17 +107,10 @@ static bool saveFile(const YAML::Node& yaml, const std::string& path) {
     return true;
 }
 
-std::string lifuren::config::Config::toYaml() {
-    YAML::Node node = ::toYaml();
-    std::stringstream stream;
-    stream << node;
-    return stream.str();
-}
-
 lifuren::config::Config lifuren::config::Config::loadFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_DEBUG("加载配置：{}", path);
-    lifuren::config::Config config{};
+    SPDLOG_DEBUG("加载配置文件：{}", path);
+    lifuren::config::Config config{ };
     YAML::Node yaml = ::loadFile(path);
     if(!yaml || yaml.IsNull() || yaml.size() == 0) {
         return config;
@@ -120,7 +121,7 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
         try {
             ::loadYaml(config, key, value);
         } catch(...) {
-            SPDLOG_ERROR("加载配置异常：{}", key);
+            SPDLOG_ERROR("加载配置文件异常：{}", key);
         }
     }
     return config;
@@ -128,7 +129,7 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
 
 bool lifuren::config::Config::saveFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_INFO("保存配置：{}", path);
+    SPDLOG_INFO("保存配置文件：{}", path);
     return ::saveFile(::toYaml(), path);
 }
 

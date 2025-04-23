@@ -22,7 +22,6 @@ lifuren::AboutWindow::AboutWindow(int width, int height, const wxString& title) 
 }
 
 lifuren::AboutWindow::~AboutWindow() {
-    // 置空
     panel       = nullptr;
     home_page   = nullptr;
     gitee_page  = nullptr;
@@ -30,7 +29,7 @@ lifuren::AboutWindow::~AboutWindow() {
     about       = nullptr;
 }
 
-void lifuren::AboutWindow::drawElement() {
+void lifuren::AboutWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
     panel       = new wxPanel(this);

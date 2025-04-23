@@ -39,9 +39,13 @@ void lifuren::initGUI() {
 }
 
 std::string lifuren::file_chooser(const wxString& title, const wxString& filter, const wxString& directory) {
-    wxFileDialog chooser(nullptr, title, wxString::FromUTF8(last_directory), "", filter, wxFD_OPEN);
+    wxString last_directory = directory;
+    if(last_directory.empty()) {
+        last_directory = wxString::FromUTF8(::last_directory);
+    }
+    wxFileDialog chooser(nullptr, title, last_directory, "", filter, wxFD_OPEN);
     if(chooser.ShowModal() == wxID_CANCEL) {
-        SPDLOG_DEBUG("取消选择文件");
+        SPDLOG_DEBUG("取消选择文件：{}", title.mb_str(wxConvUTF8).data());
         return {};
     }
     std::string filename = chooser.GetPath().mb_str(wxConvUTF8).data();
@@ -51,9 +55,13 @@ std::string lifuren::file_chooser(const wxString& title, const wxString& filter,
 }
 
 std::string lifuren::directory_chooser(const wxString& title, const wxString& directory) {
-    wxDirDialog chooser(nullptr, title, directory);
+    wxString last_directory = directory;
+    if(last_directory.empty()) {
+        last_directory = wxString::FromUTF8(::last_directory);
+    }
+    wxDirDialog chooser(nullptr, title, last_directory);
     if(chooser.ShowModal() == wxID_CANCEL) {
-        SPDLOG_DEBUG("取消选择目录");
+        SPDLOG_DEBUG("取消选择目录：{}", title.mb_str(wxConvUTF8).data());
         return {};
     }
     std::string filename = chooser.GetPath().mb_str(wxConvUTF8).data();
@@ -78,7 +86,7 @@ lifuren::Window::~Window() {
 void lifuren::Window::init() {
     this->Centre();
     this->loadIcon();
-    this->drawElement();
+    this->drawWidget();
     this->bindEvent();
     this->fillData();
 }
@@ -87,7 +95,7 @@ void lifuren::Window::loadIcon() {
     this->SetIcon(wxIcon(app_base_dir("logo.ico"), wxBITMAP_TYPE_ICO));
 }
 
-void lifuren::Window::drawElement() {
+void lifuren::Window::drawWidget() {
 }
 
 void lifuren::Window::bindEvent() {

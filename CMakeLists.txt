@@ -25,8 +25,8 @@ endif()
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 
-option(ENABLE_TEST "打开测试" ON)
 option(ENABLE_GUI  "编译界面" ON)
+option(ENABLE_TEST "打开测试" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
 

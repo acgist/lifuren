@@ -49,7 +49,7 @@ extern void initGUI(); // 加载GUI
 class Application : public wxApp {
 
 public:
-    bool OnInit();
+    bool OnInit() override;
 
 };
 
@@ -71,10 +71,10 @@ public:
     virtual void init(); // 初始化窗口
 
 protected:
-    virtual void loadIcon   (); // 设置图标
-    virtual void drawElement(); // 绘制组件
-    virtual void bindEvent  (); // 绑定事件
-    virtual void fillData   (); // 数据填充
+    virtual void loadIcon  (); // 设置图标
+    virtual void drawWidget(); // 绘制组件
+    virtual void bindEvent (); // 绑定事件
+    virtual void fillData  (); // 数据填充
 
 };
 
@@ -89,12 +89,12 @@ public:
      * @param height 窗口高度
      * @param title  窗口名称
      */
-    MainWindow(int width, int height, const wxString& title = wxT("李夫人"));
+    MainWindow(int width, int height, const wxString& title = L"李夫人");
     ~MainWindow();
 
 protected:
-    void drawElement() override;
-    void bindEvent  () override;
+    void drawWidget() override;
+    void bindEvent () override;
 
 };
 
@@ -113,9 +113,9 @@ public:
     virtual ~ConfigWindow();
 
 protected:
-    virtual void drawElement() override;
-    virtual void bindEvent  () override;
-    virtual void fillData   () override;
+    virtual void drawWidget() override;
+    virtual void bindEvent () override;
+    virtual void fillData  () override;
 
 };
 
@@ -134,9 +134,9 @@ public:
     virtual ~AboutWindow();
 
 protected:
-    virtual void drawElement() override;
-    virtual void bindEvent  () override;
-    virtual void fillData   () override;
+    virtual void drawWidget() override;
+    virtual void bindEvent () override;
+    virtual void fillData  () override;
 
 };
 
@@ -147,7 +147,7 @@ protected:
  * 
  * @return 选择文件路径
  */
-extern std::string file_chooser(const wxString& title, const wxString& filter = wxT(""), const wxString& directory = wxT(""));
+extern std::string file_chooser(const wxString& title, const wxString& filter = "", const wxString& directory = "");
 
 /**
  * @param title     窗口标题
