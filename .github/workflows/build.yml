@@ -18,9 +18,6 @@ jobs:
           # add-apt-repository
           # add-apt-repository -r
           # https://launchpad.net/ubuntu/+ppas
-          # sudo add-apt-repository -y ppa:ecal/cmake-3.25
-          # sudo add-apt-repository -y ppa:savoury1/ffmpeg6
-          # sudo add-apt-repository -y ppa:bkryza/build-deps-2202
           sudo add-apt-repository -y ppa:leamas-alec/wxwidgets3.2
           sudo apt update
           ################################ ffmpeg

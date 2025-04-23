@@ -6,14 +6,11 @@
 #include "lifuren/Torch.hpp"
 #include "lifuren/Dataset.hpp"
 
-[[maybe_unused]] static void testToPcm() {
+[[maybe_unused]] static void testPcm() {
     lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "tts.mp3"}).string());
     // lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.aac"}).string());
     // lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.mp3"}).string());
     // lifuren::dataset::audio::toPcm(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.flac"}).string());
-}
-
-[[maybe_unused]] static void testToFile() {
     lifuren::dataset::audio::toFile(lifuren::file::join({lifuren::config::CONFIG.tmp, "lifuren", "audio.pcm"}).string());
 }
 
@@ -72,6 +69,9 @@
     );
 }
 
+[[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
+}
+
 [[maybe_unused]] static void testLoadShikuangDatasetLoader() {
     auto loader = lifuren::dataset::audio::loadShikuangDatasetLoader(
         200,
@@ -118,11 +118,11 @@
 }
 
 LFR_TEST(
-    // testToPcm();
-    // testToFile();
+    // testPcm();
     // testStft();
     // testImage();
     // testEmbeddingShikuang();
+    // testLoadWudaoziDatasetLoader()
     testLoadShikuangDatasetLoader();
     // testLoadClassifyDatasetLoader();
 );

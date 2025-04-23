@@ -43,7 +43,7 @@ TORCH_MODULE(WudaoziModule);
 /**
  * 吴道子模型（视频风格迁移）
  */
-class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::WudaoziModule, lifuren::dataset::RndDatasetLoader> {
+class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
 
 public:
     WudaoziModel(lifuren::config::ModelParams params = {});

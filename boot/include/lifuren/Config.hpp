@@ -32,7 +32,7 @@ struct ModelParams {
     size_t      thread_size{ 0           }; // 线程数量
     size_t      class_size { 2           }; // 任务分类数量
     bool        classify   { false       }; // 是否分类任务
-    bool        first_none { false       }; // 第一个分类是没意义的
+    bool        first_none { false       }; // 忽略首个分类
     bool        check_point{ false       }; // 是否保存快照
     std::string model_name { "lifuren"   }; // 模型名称
     std::string model_path { "./lifuren" }; // 模型路径

@@ -19,4 +19,4 @@ vcpkg install opencv:x64-windows
 
 ## 注意事项
 
-* 建议直接使用官网下载
+* 建议直接使用官网下载避免编译时间过长

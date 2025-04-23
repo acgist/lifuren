@@ -291,7 +291,7 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * 
  * @return 图片数据集
  */
-extern lifuren::dataset::RndDatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
+extern lifuren::dataset::SeqDatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 /**
  * @param width      目标图片宽度

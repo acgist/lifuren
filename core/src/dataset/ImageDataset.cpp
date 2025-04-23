@@ -34,7 +34,7 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
     std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
 }
 
-lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
+lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
     auto dataset = lifuren::dataset::Dataset(
         path,
         ".xml",
@@ -57,7 +57,7 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             // features.push_back(f_tensor.clone().to(device));
         }
     ).map(torch::data::transforms::Stack<>());
-    return torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), batch_size);
+    return torch::data::make_data_loader<LFT_SEQ_SAMPLER>(std::move(dataset), batch_size);
 }
 
 lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify) {
