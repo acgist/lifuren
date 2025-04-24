@@ -40,6 +40,10 @@
 * 半监督学习
 * 自监督学习
 
+* 元学习
+* 迁移学习
+* 强化学习
+
 #### 算法模式
 
 * 判别式模型
@@ -103,6 +107,7 @@
 ###### CLIP
 ###### Flux
 ###### LoRA
+#### 注意力机制
 #### 大语言模型（LLM）
 ###### gemma
 ###### llama
@@ -114,22 +119,18 @@
 ## 术语
 
 #### 早停（early stopping）
-#### 正则化（Regularization）
+#### 滤波器（filter）
+#### 感受野（receptive field）
 #### 丢弃法（Dropout）
 #### 归一化（Normalization）
+#### 正则化（Regularization）
 #### 标准化（Standardization）
-#### 感受野（receptive field）
-#### 滤波器（filter）
 #### 学习率（learning rate）
 #### 超参数（hyperparameter）
-#### 过拟合
-#### 欠拟合
+#### 过拟合（overfitting）
+#### 欠拟合（underfitting）
 #### 计算图
 #### 预训练
-#### 元学习
-#### 迁移学习
-#### 强化学习
-#### 终身学习
 #### 网络压缩
 #### 模型量化（Quantization）
 #### 模型微调（Fine-tune）
@@ -139,19 +140,21 @@
 ###### Tanh
 ###### Sigmod
 #### 优化算法
-###### 批量梯度下降法（BGD）
-###### 随机梯度下降法（SGD）
 ###### Adam
 ###### AdamW
 ###### Adamax
 ###### AdaGrad
 ###### AdaDelta
+###### 批量梯度下降法（BGD）
+###### 随机梯度下降法（SGD）
 #### 损失函数
 ###### 均方误差（MSE）
 ###### 交叉熵损失（Cross Entropy Loss）
 ###### 均方根误差（RMSE）
 ###### 平均绝对值误差（MAE）
 ###### 负对数似然损失（NLL）
+#### 训练误差
+#### 泛化误差
 #### 特征工程
 #### 共享参数
 #### 数据增强
@@ -197,7 +200,7 @@
 
 ## 学习资料
 
-* https://zh-v2.d2l.ai
+* https://zh.d2l.ai
 * https://github.com/datawhalechina
 * https://github.com/datawhalechina/fun-rec
 * https://github.com/datawhalechina/easy-rl

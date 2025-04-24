@@ -29,6 +29,6 @@
 }
 
 LFR_TEST(
-    testTrain();
-    // testPred();
+    // testTrain();
+    testPred();
 );

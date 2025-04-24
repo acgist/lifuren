@@ -49,7 +49,7 @@
 }
 
 [[maybe_unused]] static void testImage() {
-    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "image.png" }).string()) };
+    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "image.jpg" }).string()) };
     cv::imshow("image", image);
     cv::waitKey();
     lifuren::dataset::image::resize(image, 640, 480);
@@ -70,6 +70,29 @@
 }
 
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
+    auto loader = lifuren::dataset::image::loadWudaoziDatasetLoader(
+        640, 480,
+        200,
+        lifuren::file::join({
+            lifuren::config::CONFIG.tmp,
+            "wudaozi",
+            "train"
+        }).string()
+    );
+    auto iterator = loader->begin();
+    // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
+    lifuren::logTensor("视频特征数量", iterator->data.sizes());
+    lifuren::logTensor("视频标签数量", iterator->target.sizes());
+    cv::Mat image(480, 640, CV_8UC3);
+    const int length = iterator->data.sizes()[0];
+    for(; iterator != loader->end(); ++iterator) {
+        for(int i = 0; i < length; ++i) {
+            auto tensor = iterator->data[i];
+            lifuren::dataset::image::tensor_to_mat(image, tensor);
+            cv::imshow("image", image);
+            cv::waitKey(20);
+        }
+    }
 }
 
 [[maybe_unused]] static void testLoadShikuangDatasetLoader() {
@@ -81,11 +104,10 @@
             "train"
         }).string()
     );
-    lifuren::logTensor("音频特征数量", loader->begin()->data.sizes());
-    lifuren::logTensor("音频标签数量", loader->begin()->target.sizes());
-    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
-    cv::Mat mat(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
     auto iterator = loader->begin();
+    // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
+    lifuren::logTensor("音频特征数量", iterator->data.sizes());
+    lifuren::logTensor("音频标签数量", iterator->target.sizes());
     const int length = iterator->data.sizes()[0];
     std::ofstream output;
     output.open(lifuren::file::join({ lifuren::config::CONFIG.tmp, "shikuang_dataset.pcm" }).string(), std::ios_base::binary);
@@ -99,30 +121,11 @@
     output.close();
 }
 
-[[maybe_unused]] static void testLoadClassifyDatasetLoader() {
-    auto loader = lifuren::dataset::image::loadClassifyDatasetLoader(
-        200, 200, 5,
-        lifuren::file::join({
-            lifuren::config::CONFIG.tmp,
-            "gender",
-            "train"
-        }).string(),
-        {
-            { "man",   1.0F },
-            { "woman", 0.0F }
-        }
-    );
-    lifuren::logTensor("图片特征数量", loader->begin()->data.sizes());
-    lifuren::logTensor("图片标签数量", loader->begin()->target.sizes());
-    // SPDLOG_INFO("批次数量：{}", std::distance(loader->begin(), loader->end()));
-}
-
 LFR_TEST(
     // testPcm();
     // testStft();
     // testImage();
     // testEmbeddingShikuang();
-    // testLoadWudaoziDatasetLoader()
-    testLoadShikuangDatasetLoader();
-    // testLoadClassifyDatasetLoader();
+    testLoadWudaoziDatasetLoader();
+    // testLoadShikuangDatasetLoader();
 );

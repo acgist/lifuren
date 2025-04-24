@@ -31,6 +31,8 @@ namespace lifuren::thread {
  */
 class ThreadPool {
 
+using thread_task = std::function<void()>;
+
 public:
     /**
      * @param threads 线程数量
@@ -61,15 +63,15 @@ private:
     std::mutex mutex_w; // 等待锁
     std::condition_variable condition_t; // 任务锁条件
     std::condition_variable condition_w; // 等待锁条件
-    std::vector<std::thread>          workers; // 工作线程
-    std::queue<std::function<void()>> tasks;   // 任务队列
+    std::queue<thread_task>  tasks;   // 任务队列
+    std::vector<std::thread> workers; // 工作线程
 };
  
 inline ThreadPool::ThreadPool(size_t threads) : stop(false) {
     for(size_t i = 0; i < threads; ++i) {
         this->workers.emplace_back([this] {
             while(true) {
-                std::function<void()> task{ nullptr };
+                thread_task task{ nullptr };
                 {
                     std::unique_lock<std::mutex> lock(this->mutex_t);
                     this->condition_t.wait(lock, [this] {

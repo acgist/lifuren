@@ -42,6 +42,8 @@
 #define LFR_IMAGE_CONFIG
 #define LFR_IMAGE_WIDTH  640
 #define LFR_IMAGE_HEIGHT 480
+#define LFR_VIDEO_FPS    24
+#define LFR_VIDEO_FRAMES 120
 #endif
 
 namespace cv {
@@ -117,46 +119,6 @@ public:
         const std::vector<std::string>& suffix,
         const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
         const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr
-    );
-    /**
-     * /path/file1.l_suffix
-     * /path/file1.f_suffix
-     * /path/file2.l_suffix
-     * /path/file2.f_suffix
-     * ...
-     * 
-     * @param path      数据集目录
-     * @param l_suffix  标签文件后缀
-     * @param f_suffix  特征文件后缀
-     * @param transform 文件转换函数：void(标签文件路径, 特征文件路径, 标签, 特征, 计算设备)
-     * @param complete  完成回调：void(标签, 特征, 计算设备)
-     */
-    Dataset(
-        const std::string             & path,
-        const std::string             & l_suffix,
-        const std::vector<std::string>& f_suffix,
-        const std::function<void(const std::string&, const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
-        const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr
-    );
-    /**
-     * /path/classify1/file1.suffix
-     * /path/classify1/file2.suffix
-     * /path/classify2/file1.suffix
-     * /path/classify2/file2.suffix
-     * ...
-     * 
-     * @param path      数据集目录
-     * @param suffix    文件后缀
-     * @param classify  标签映射
-     * @param transform 文件转换函数：张量(文件路径, 计算设备)
-     * @param complete  完成回调：void(计算设备)
-     */
-    Dataset(
-        const std::string                 & path,
-        const std::vector<std::string>    & suffix,
-        const std::map<std::string, float>& classify,
-        const std::function<torch::Tensor(const std::string&, const torch::DeviceType&)> transform,
-        const std::function<void(const torch::DeviceType&)> complete = nullptr
     );
     virtual ~Dataset();
 
@@ -292,17 +254,6 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * @return 图片数据集
  */
 extern lifuren::dataset::SeqDatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
-
-/**
- * @param width      目标图片宽度
- * @param height     目标图片高度
- * @param batch_size 批量大小
- * @param path       数据集路径
- * @param classify   图片分类
- * 
- * @return 图片数据集
- */
-extern lifuren::dataset::RndDatasetLoader loadClassifyDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path, const std::map<std::string, float>& classify);
 
 } // END OF image
 
