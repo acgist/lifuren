@@ -5,36 +5,18 @@ add_library(
     src/Layer.cpp
     src/Torch.cpp
     src/OpenCV.cpp
-    src/audio/Audio.cpp
-    src/audio/AudioModel.cpp
     src/image/Image.cpp
     src/image/ImageModel.cpp
     src/dataset/Dataset.cpp
-    src/dataset/AudioDataset.cpp
     src/dataset/ImageDataset.cpp
 )
 
-if(CMAKE_HOST_WIN32)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurenboot
-        ${OpenCV_LIBS}
-        ${TORCH_LIBRARIES}
-        ${FFMPEG_LIBRARIES}
-    )
-    target_include_directories(${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
-else()
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurenboot
-        ${OpenCV_LIBS}
-        ${TORCH_LIBRARIES}
-        avutil
-        avcodec
-        avformat
-        swresample
-    )
-endif()
+target_link_libraries(
+    ${PROJECT_NAME}
+    lifurenboot
+    ${OpenCV_LIBS}
+    ${TORCH_LIBRARIES}
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
 

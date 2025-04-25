@@ -1,7 +1,4 @@
-# 公共配置
-config:
+lifuren:
   tmp: /tmp
   output: /data/lifuren/output
-model:
   wudaozi: /data/lifuren/wudaozi.pt
-  shikuang: /data/lifuren/shikuang.pt

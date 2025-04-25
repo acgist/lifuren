@@ -115,29 +115,22 @@ if(CMAKE_HOST_WIN32)
     set(
         CMAKE_PREFIX_PATH
         ${CMAKE_PREFIX_PATH}
-        deps/ffmpeg
         deps/opencv
         deps/spdlog
-        deps/yaml-cpp
         deps/wxWidgets
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        file(GLOB FFMPEG_DLLS    "deps/ffmpeg/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS    "deps/spdlog/debug/bin/*.dll")
-        file(GLOB YAMLCPP_DLLS   "deps/yaml-cpp/debug/bin/*.dll")
         file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/debug/bin/*.dll")
     else()
-        file(GLOB FFMPEG_DLLS    "deps/ffmpeg/bin/*.dll")
         file(GLOB SPDLOG_DLLS    "deps/spdlog/bin/*.dll")
-        file(GLOB YAMLCPP_DLLS   "deps/yaml-cpp/bin/*.dll")
         file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
     file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
 
-    find_package(FFMPEG    CONFIG REQUIRED)
     find_package(wxWidgets CONFIG REQUIRED gl qa net core)
     # find_package(wxWidgets CONFIG REQUIRED gl qa net core webview)
 elseif(CMAKE_HOST_UNIX)
@@ -147,10 +140,9 @@ endif()
 
 find_package(OpenGL REQUIRED)
 
-find_package(Torch    CONFIG REQUIRED)
-find_package(OpenCV   CONFIG REQUIRED)
-find_package(spdlog   CONFIG REQUIRED)
-find_package(yaml-cpp CONFIG REQUIRED)
+find_package(Torch  CONFIG REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(deps)
 add_subdirectory(boot)

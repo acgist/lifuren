@@ -14,14 +14,12 @@ if(CMAKE_HOST_WIN32)
     target_link_libraries(
         ${PROJECT_NAME}
         spdlog::spdlog
-        yaml-cpp::yaml-cpp
     )
 else()
     target_link_libraries(
         ${PROJECT_NAME}
         fmt
         spdlog
-        yaml-cpp
     )
 endif()
 

@@ -28,15 +28,6 @@
 
 #include "torch/data.h"
 
-#include "lifuren/Thread.hpp"
-
-// 音频配置
-// PCM数据大小：1 ms mono 16 bit = 48000 * 16 * 1 / 8 / 1000 * 1 = 96 byte = 48 short
-#ifndef LFR_AUDIO_PCM_CONFIG
-#define LFR_AUDIO_PCM_CONFIG
-#define LFR_AUDIO_PCM_LENGTH 480
-#endif
-
 // 图片配置
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
@@ -62,23 +53,6 @@ namespace lifuren::dataset {
  * @return 训练集、验证集、测试集
  */
 extern std::vector<std::string> allDataset(const std::string& path);
-
-/**
- * 数据集预处理
- * 
- * @param path       数据集上级目录：/dataset
- * @param model_name 输出文件名称
- * @param preprocess 预处理函数：是否成功(数据集上级目录, 数据集目录, 输出文件流, 线程池)
- * @param model_base 是否在数据集上级目录生成文件
- *  
- * @return 是否成功
- */
-extern bool allDatasetPreprocess(
-    const std::string& path,
-    const std::string& model_name,
-    std::function<bool(const std::string&, const std::string&, std::ofstream&, lifuren::thread::ThreadPool&)> preprocess,
-    bool model_base = false
-);
 
 /**
  * 数据集
@@ -137,91 +111,6 @@ using SeqDatasetLoader = decltype(torch::data::make_data_loader<LFT_SEQ_SAMPLER>
     lifuren::dataset::Dataset{}.map(torch::data::transforms::Stack<>()),
     torch::data::DataLoaderOptions{}
 ));
-
-namespace audio {
-
-/**
- * 音频文件转为PCM文件
- * 
- * 支持音频文件格式：AAC/MP3/FLAC
- * PCM文件格式：48000Hz mono 16bit
- * 
- * @param audioFile 音频文件路径
- * 
- * @return <是否成功, PCM文件路径>
- */
-extern std::tuple<bool, std::string> toPcm(const std::string& audioFile);
-
-/**
- * PCM文件转为音频文件
- * 
- * PCM文件格式：48000Hz mono 16bit
- * 
- * @param pcmFile PCM文件路径
- * 
- * @return <是否成功, 音频文件路径>
- */
-extern std::tuple<bool, std::string> toFile(const std::string& pcmFile);
-
-/**
- * 短时傅里叶变换
- * 
- * 201 = win_size / 2 + 1
- * 480 = 7 | 4800 = 61 | 48000 = 601
- * [1, 201, 61, 2[实部, 虚部]]
- * 
- * @param pcm      PCM数据
- * @param n_fft    傅里叶变换的大小
- * @param hop_size 相邻滑动窗口帧之间的距离
- * @param win_size 窗口帧和STFT滤波器的大小
- * 
- * @return 张量
- */
-extern torch::Tensor pcm_stft(
-    std::vector<short>& pcm,
-    int n_fft    = 400,
-    int hop_size = 80,
-    int win_size = 400
-);
-
-/**
- * 短时傅里叶逆变换
- * 
- * @param tensor   张量
- * @param n_fft    傅里叶变换的大小
- * @param hop_size 相邻滑动窗口帧之间的距离
- * @param win_size 窗口帧和STFT滤波器的大小
- * 
- * @return PCM数据
- */
-extern std::vector<short> pcm_istft(
-    const torch::Tensor& tensor,
-    int n_fft    = 400,
-    int hop_size = 80,
-    int win_size = 400
-);
-
-/**
- * 师旷音频嵌入
- * 
- * @param path    数据集上级目录
- * @param dataset 数据集目录
- * @param stream  嵌入文件流
- * @param pool    线程池
- * 
- * @return 是否成功
- */
-extern bool embedding_shikuang(const std::string& path, const std::string& dataset, std::ofstream& stream, lifuren::thread::ThreadPool& pool);
-
-/**
- * @param batch_size 批量大小
- * @param path       数据集路径
- * 
- * @return 音频数据集
- */
-extern lifuren::dataset::SeqDatasetLoader loadShikuangDatasetLoader(const size_t batch_size, const std::string& path);
-
-} // END OF audio
 
 namespace image {
 

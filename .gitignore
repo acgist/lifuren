@@ -13,9 +13,7 @@
 
 build
 
-deps/ffmpeg
 deps/opencv
 deps/spdlog
 deps/libtorch
-deps/yaml-cpp
 deps/wxWidgets

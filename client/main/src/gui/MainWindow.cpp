@@ -9,35 +9,30 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Audio.hpp"
 #include "lifuren/Image.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Message.hpp"
 
-static wxPanel   * panel          { nullptr };
-static wxButton  * wudaozi_button { nullptr };
-static wxButton  * shikuang_button{ nullptr };
-static wxButton  * config_button  { nullptr };
-static wxButton  * about_button   { nullptr };
-static wxTextCtrl* message_ctrl   { nullptr };
+static wxPanel   * panel         { nullptr };
+static wxButton  * wudaozi_button{ nullptr };
+static wxButton  * config_button { nullptr };
+static wxButton  * about_button  { nullptr };
+static wxTextCtrl* message_ctrl  { nullptr };
 
-static void wudaozi_callback (const wxCommandEvent&);
-static void shikuang_callback(const wxCommandEvent&);
-static void config_callback  (const wxCommandEvent&);
-static void about_callback   (const wxCommandEvent&);
-static void message_callback (const char*);
+static void wudaozi_callback(const wxCommandEvent&);
+static void config_callback (const wxCommandEvent&);
+static void about_callback  (const wxCommandEvent&);
+static void message_callback(const char*);
 
-static const auto wudaozi_text  = wxT("视频风格迁移");
-static const auto shikuang_text = wxT("音频风格迁移");
-static const auto config_text   = wxT("配置");
-static const auto about_text    = wxT("关于");
-static const auto message_text  = wxT("日志");
+static const auto wudaozi_text = wxT("视频风格迁移");
+static const auto config_text  = wxT("配置");
+static const auto about_text   = wxT("关于");
+static const auto message_text = wxT("日志");
 
-static const auto wudaozi_id  = 1000;
-static const auto shikuang_id = 1001;
-static const auto config_id   = 1002;
-static const auto about_id    = 1003;
-static const auto message_id  = 1004;
+static const auto wudaozi_id = 1000;
+static const auto config_id  = 1001;
+static const auto about_id   = 1002;
+static const auto message_id = 1003;
 
 static const int thread_event_thread  = 100;
 static const int thread_event_message = 101;
@@ -60,24 +55,22 @@ lifuren::MainWindow::~MainWindow() {
         thread = nullptr;
     }
     lifuren::message::unregisterMessageCallback();
-    mainWindow      = nullptr;
-    panel           = nullptr;
-    wudaozi_button  = nullptr;
-    shikuang_button = nullptr;
-    config_button   = nullptr;
-    about_button    = nullptr;
-    message_ctrl    = nullptr;
+    mainWindow     = nullptr;
+    panel          = nullptr;
+    wudaozi_button = nullptr;
+    config_button  = nullptr;
+    about_button   = nullptr;
+    message_ctrl   = nullptr;
 }
 
 void lifuren::MainWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
-    panel           = new wxPanel(this);
-    wudaozi_button  = new wxButton  (panel, wudaozi_id,  wudaozi_text,  wxPoint(         10, 100), wxSize((w - 20),          80));
-    shikuang_button = new wxButton  (panel, shikuang_id, shikuang_text, wxPoint(         10,  10), wxSize((w - 20),          80));
-    config_button   = new wxButton  (panel, config_id,   config_text,   wxPoint(         10, 190), wxSize((w - 30) / 2,      80));
-    about_button    = new wxButton  (panel, about_id,    about_text,    wxPoint((w / 2) + 5, 190), wxSize((w - 30) / 2,      80));
-    message_ctrl    = new wxTextCtrl(panel, message_id,  message_text,  wxPoint(         10, 280), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
+    panel          = new wxPanel(this);
+    wudaozi_button = new wxButton  (panel, wudaozi_id,  wudaozi_text,  wxPoint(         10,  10), wxSize((w - 20),          80));
+    config_button  = new wxButton  (panel, config_id,   config_text,   wxPoint(         10, 100), wxSize((w - 30) / 2,      80));
+    about_button   = new wxButton  (panel, about_id,    about_text,    wxPoint((w / 2) + 5, 100), wxSize((w - 30) / 2,      80));
+    message_ctrl   = new wxTextCtrl(panel, message_id,  message_text,  wxPoint(         10, 190), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
     message_ctrl->Disable();
     message_ctrl->SetBackgroundColour(panel->GetBackgroundColour());
 }
@@ -109,10 +102,9 @@ void lifuren::MainWindow::bindEvent() {
     this->Bind(wxEVT_BUTTON, [](const wxCommandEvent& event) {
         const auto id = event.GetId();
         switch(id) {
-            case wudaozi_id : wudaozi_callback(event);  break;
-            case shikuang_id: shikuang_callback(event); break;
-            case config_id  : config_callback(event);   break;
-            case about_id   : about_callback(event);    break;
+            case wudaozi_id: wudaozi_callback(event);  break;
+            case config_id : config_callback(event);   break;
+            case about_id  : about_callback(event);    break;
         }
     });
     lifuren::message::registerMessageCallback(message_callback);
@@ -122,17 +114,6 @@ static void wudaozi_callback(const wxCommandEvent&) {
     run("视频风格迁移", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::image::getImageClient("wudaozi");
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
-            return client->pred(file);
-        } else {
-            return { false, {} };
-        }
-    });
-}
-
-static void shikuang_callback(const wxCommandEvent&) {
-    run("音频风格迁移", wxT("选择音频"), wxT("音频文件|*.aac;*.mp3;*.flac"), [](std::string file) -> std::tuple<bool, std::string> {
-        auto client = lifuren::audio::getAudioClient("shikuang");
-        if(client->load(lifuren::config::CONFIG.model_shikuang)) {
             return client->pred(file);
         } else {
             return { false, {} };

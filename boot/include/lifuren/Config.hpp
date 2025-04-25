@@ -57,8 +57,7 @@ const std::string DATASET_TRAIN = "train"; // 训练数据集
 const std::string DATASET_VAL   = "val";   // 验证数据集
 const std::string DATASET_TEST  = "test";  // 测试数据集
 
-const std::string LIFUREN_HIDDEN_FILE    = ".lifuren";        // 隐藏文件
-const std::string LIFUREN_EMBEDDING_FILE = "model.embedding"; // 嵌入文件
+const std::string LIFUREN_HIDDEN_FILE = ".lifuren";        // 隐藏文件
 
 /**
  * 配置
@@ -68,8 +67,7 @@ class Config {
 public:
     std::string tmp;    // 临时目录
     std::string output; // 输出目录
-    std::string model_wudaozi;  // 视频风格迁移模型文件
-    std::string model_shikuang; // 音频风格迁移模型文件
+    std::string model_wudaozi; // 视频风格迁移模型文件
 
 public:
     /**
