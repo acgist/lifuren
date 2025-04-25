@@ -8,8 +8,6 @@
  * 
  * 音频模型
  * 
- * TODO: stft loss
- * 
  * https://pytorch.org/docs/stable/generated/torch.stft.html
  * https://pytorch.org/docs/stable/generated/torch.istft.html
  * 

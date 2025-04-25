@@ -46,10 +46,7 @@ jobs:
           g++ -v
           cmake -version
           mkdir build ; cd $_
-          cmake ..
+          cmake .. -DCMAKE_BUILD_TYPE=Release
           make
-          # make -j 2
-          ls -lh Debug/bin
-          ls -lh Debug/lib
           sudo make install
           make clean

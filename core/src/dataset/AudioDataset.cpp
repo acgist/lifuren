@@ -457,19 +457,14 @@ torch::Tensor lifuren::dataset::audio::pcm_stft(
     int hop_size,
     int win_size
 ) {
-    auto tensor = torch::from_blob(pcm.data(), { 1, static_cast<int>(pcm.size()) }, torch::kShort).to(torch::kFloat32);
-         tensor = tensor / NORMALIZATION;
-    // auto norm_factor = torch::sqrt(tensor.sizes()[1] / torch::sum(tensor.pow(2.0)));
-    //      tensor = tensor * norm_factor;
+    auto data = torch::from_blob(pcm.data(), { 1, static_cast<int>(pcm.size()) }, torch::kShort).to(torch::kFloat32) / NORMALIZATION;
     auto wind = torch::hann_window(win_size);
-    auto real = torch::view_as_real(torch::stft(tensor, n_fft, hop_size, win_size, wind, true, "reflect", false, std::nullopt, true));
-    // // 幅度
+    auto real = torch::view_as_real(torch::stft(data, n_fft, hop_size, win_size, wind, true, "reflect", false, std::nullopt, true));
+    // 幅度: sqrt(x^2 + y^2)
     auto mag = torch::sqrt(real.pow(2).sum(-1));
-    // // 相位
-    auto pha = torch::atan2(real.index({"...", 1}), real.index({"...", 0}));
-    // auto com = torch::stack({mag, pha}, -1);
-    auto com = torch::stack({mag * torch::cos(pha), mag * torch::sin(pha)}, -1);
-    return com;
+    // 相位: atan2(y, x)
+    auto pha = torch::atan2(real.index({ "...", 1 }), real.index({ "...", 0 }));
+    return torch::stack({ mag, pha }, -1).squeeze();
 }
 
 std::vector<short> lifuren::dataset::audio::pcm_istft(
@@ -478,17 +473,15 @@ std::vector<short> lifuren::dataset::audio::pcm_istft(
     int hop_size,
     int win_size
 ) {
-    auto mag = tensor.index({"...", 0});
-    auto pha = tensor.index({"...", 1});
-    auto com = torch::complex(mag, pha);
-    // auto com = torch::complex(mag * torch::cos(pha), mag * torch::sin(pha));
-    auto wind   = torch::hann_window(win_size);
-    auto result = torch::istft(com, n_fft, hop_size, win_size, wind, true);
-    // auto result = torch::istft(torch::view_as_complex(tensor), n_fft, hop_size, win_size, wind, true);
-         result = result * NORMALIZATION;
-    float* data = reinterpret_cast<float*>(result.data_ptr());
+    auto copy = tensor.unsqueeze(0);
+    auto wind = torch::hann_window(win_size);
+    auto mag  = copy.index({ "...", 0 });
+    auto pha  = copy.index({ "...", 1 });
+    auto com  = torch::complex(mag * torch::cos(pha), mag * torch::sin(pha));
+    auto ret  = torch::istft(com, n_fft, hop_size, win_size, wind, true) * NORMALIZATION;
+    float* data = reinterpret_cast<float*>(ret.data_ptr());
     std::vector<short> pcm;
-    pcm.resize(result.sizes()[1]);
+    pcm.resize(ret.sizes()[1]);
     std::copy_n(data, pcm.size(), pcm.data());
     return pcm;
 }

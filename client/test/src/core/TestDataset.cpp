@@ -125,7 +125,7 @@ LFR_TEST(
     // testPcm();
     // testStft();
     // testImage();
-    // testEmbeddingShikuang();
-    testLoadWudaoziDatasetLoader();
+    testEmbeddingShikuang();
+    // testLoadWudaoziDatasetLoader();
     // testLoadShikuangDatasetLoader();
 );

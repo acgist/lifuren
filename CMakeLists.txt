@@ -152,9 +152,9 @@ find_package(OpenCV   CONFIG REQUIRED)
 find_package(spdlog   CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
+add_subdirectory(deps)
 add_subdirectory(boot)
 add_subdirectory(core)
-add_subdirectory(deps)
 add_subdirectory(client)
 
 set(INSTALL_DOCUMENT "LICENSE" "README.md" "docs/AI.md" "docs/CLI.md" "docs/Model.md" "docs/Deploy.md")
