@@ -12,17 +12,26 @@
 class ClassifyModuleImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Linear linear{ nullptr };
+    torch::nn::BatchNorm1d norm{ nullptr };
+    torch::nn::Linear linear1  { nullptr };
+    torch::nn::Linear linear2  { nullptr };
 
 public:
     ClassifyModuleImpl() {
-        linear = register_module("linear", torch::nn::Linear(torch::nn::LinearOptions(2, 4)));
+        this->norm    = this->register_module("norm",    torch::nn::BatchNorm1d(2));
+        this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions(2, 8)));
+        this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(8, 4)));
     }
-    torch::Tensor forward(torch::Tensor x) {
-        return this->linear->forward(x);
+    torch::Tensor forward(torch::Tensor input) {
+        // auto output = this->linear1(input);
+        auto output = this->linear1(this->norm(input));
+             output = this->linear2(torch::tanh(output));
+        return output;
     }
     virtual ~ClassifyModuleImpl() {
-        unregister_module("linear");
+        this->unregister_module("norm");
+        this->unregister_module("linear1");
+        this->unregister_module("linear2");
     }
 
 };
@@ -33,9 +42,9 @@ class ClassifyModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::
 
 public:
     ClassifyModel(lifuren::config::ModelParams params = {
-        .lr         = 0.001F,
+        .lr         = 0.1F,
         .batch_size = 100,
-        .epoch_size = 8,
+        .epoch_size = 16,
         .class_size = 4,
         .classify   = true
     }) : Model(params) {
@@ -57,8 +66,8 @@ public:
             float l[] = { 0, 0, 0, 0 };
             float f[] = { w(rand) * label + b(rand), w(rand) * label + b(rand) };
             l[label]  = 1.0F;
-            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32));
-            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32));
+            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone());
+            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone());
         }
         auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
@@ -72,11 +81,11 @@ public:
     classify.trainValAndTest(false, false);
     classify.print(true);
     classify.save();
-    auto pred = torch::log_softmax(classify.pred(torch::tensor({ 3.0F, 4.0F }, torch::kFloat32)).reshape({1, 2}), 1);
+    auto pred = torch::log_softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2})), 1);
     lifuren::logTensor("预测结果", pred);
-    auto class_id = pred.argmax(1);
-    int class_val = class_id.item<int>();
-    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), pred[class_val].item().toFloat());
+    auto class_id  = pred.argmax(1);
+    auto class_idx = class_id.item<int>();
+    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), pred[0][class_idx].item().toFloat());
 }
 
 [[maybe_unused]] static void testPred() {
@@ -84,11 +93,19 @@ public:
     classify.define();
     classify.load();
     classify.print();
-    auto pred = torch::log_softmax(classify.pred(torch::tensor({ 3.0F, 4.0F }, torch::kFloat32)).reshape({1, 2}), 1);
+    std::vector<float> data = {
+        0.1F,   0.2F,
+        2.0F,   1.0F,
+        10.0F, 11.0F,
+        20.0F, 22.0F,
+        30.0F, 33.0F,
+        90.0F, 99.0F,
+    };
+    auto pred = torch::log_softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32)), 1);
     lifuren::logTensor("当前预测", pred);
-    auto class_id = pred.argmax(1);
-    int class_val = class_id.item<int>();
-    SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), pred[class_val].item().toFloat());
+    lifuren::logTensor("预测类别", pred.argmax(1));
+    lifuren::logTensor("预测类别", std::get<1>(pred.max(1)));
+    lifuren::logTensor("预测概率", std::get<0>(pred.max(1)));
 }
 
 LFR_TEST(

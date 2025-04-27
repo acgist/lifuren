@@ -34,8 +34,8 @@
     lifuren::logTensor("视频特征数量", iterator->data.sizes());
     lifuren::logTensor("视频标签数量", iterator->target.sizes());
     cv::Mat image(480, 640, CV_8UC3);
-    const int length = iterator->data.sizes()[0];
     for(; iterator != loader->end(); ++iterator) {
+        const int length = iterator->data.sizes()[0];
         for(int i = 0; i < length; ++i) {
             auto tensor = iterator->data[i];
             lifuren::dataset::image::tensor_to_mat(image, tensor);
@@ -46,8 +46,6 @@
 }
 
 LFR_TEST(
-    // testPcm();
-    // testStft();
     // testImage();
     testLoadWudaoziDatasetLoader();
 );
