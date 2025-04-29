@@ -38,9 +38,9 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
         return { false, output };
     }
     int index = 0;
-    lifuren::dataset::image::resize(image, 640, 480);
+    lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image);
-    for(int i = 0; i < LFR_VIDEO_FRAMES; ++i) {
+    for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
         auto result = this->model->pred(tensor);
         lifuren::dataset::image::tensor_to_mat(image, result);
         writer.write(image);

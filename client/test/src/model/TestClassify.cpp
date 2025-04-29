@@ -19,13 +19,12 @@ private:
 public:
     ClassifyModuleImpl() {
         this->norm    = this->register_module("norm",    torch::nn::BatchNorm1d(2));
-        this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions(2, 8)));
-        this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(8, 4)));
+        this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions( 2, 16)));
+        this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
     }
     torch::Tensor forward(torch::Tensor input) {
-        // auto output = this->linear1(input);
         auto output = this->linear1(this->norm(input));
-             output = this->linear2(torch::tanh(output));
+             output = this->linear2(torch::relu(output));
         return output;
     }
     virtual ~ClassifyModuleImpl() {
@@ -42,9 +41,9 @@ class ClassifyModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::
 
 public:
     ClassifyModel(lifuren::config::ModelParams params = {
-        .lr         = 0.1F,
+        .lr         = 0.01F,
         .batch_size = 100,
-        .epoch_size = 16,
+        .epoch_size = 64,
         .class_size = 4,
         .classify   = true
     }) : Model(params) {
@@ -55,8 +54,8 @@ public:
 public:
     void defineDataset() override {
         std::mt19937 rand(std::random_device{}());
-        std::normal_distribution<float> w(10, 2);
-        std::normal_distribution<float> b(0.5, 0.2);
+        std::normal_distribution<float> w(10.0, 1.0); // 标准差越大越难拟合
+        std::normal_distribution<float> b( 0.5, 0.2);
         std::vector<torch::Tensor> labels;
         std::vector<torch::Tensor> features;
         labels  .reserve(4000);
@@ -81,7 +80,7 @@ public:
     classify.trainValAndTest(false, false);
     classify.print(true);
     classify.save();
-    auto pred = torch::log_softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2})), 1);
+    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2})), 1);
     lifuren::logTensor("预测结果", pred);
     auto class_id  = pred.argmax(1);
     auto class_idx = class_id.item<int>();
@@ -101,7 +100,7 @@ public:
         30.0F, 33.0F,
         90.0F, 99.0F,
     };
-    auto pred = torch::log_softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32)), 1);
+    auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32)), 1);
     lifuren::logTensor("当前预测", pred);
     lifuren::logTensor("预测类别", pred.argmax(1));
     lifuren::logTensor("预测类别", std::get<1>(pred.max(1)));

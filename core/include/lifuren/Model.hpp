@@ -156,9 +156,9 @@ inline void classify_evaluate(
 ) {
     torch::NoGradGuard no_grad_guard;
     auto target_index = target.argmax(1).to(torch::kCPU);
-    auto pred_index   = torch::log_softmax(pred, 1).argmax(1).to(torch::kCPU);
+    auto pred_index   = torch::softmax(pred, 1).argmax(1).to(torch::kCPU);
     // auto target_index = target.detach().argmax(1).to(torch::kCPU);
-    // auto pred_index   = torch::log_softmax(pred.detach(), 1).argmax(1).to(torch::kCPU);
+    // auto pred_index   = torch::softmax(pred.detach(), 1).argmax(1).to(torch::kCPU);
     auto batch_size = pred_index.numel();
     auto accu = pred_index.eq(target_index).sum();
     accu_val += accu.template item<int>();

@@ -20,21 +20,21 @@
 #define LFT_SEQ_SAMPLER torch::data::samplers::SequentialSampler
 #endif
 
-#include <map>
 #include <string>
 #include <vector>
-#include <fstream>
 #include <functional>
 
 #include "torch/data.h"
 
+// TODO: 补帧
 // 图片配置
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_WIDTH  640
-#define LFR_IMAGE_HEIGHT 480
-#define LFR_VIDEO_FPS    24
-#define LFR_VIDEO_FRAMES 120
+#define LFR_IMAGE_WIDTH      270 // 宽度：16:9
+#define LFR_IMAGE_HEIGHT     480 // 高度：16:9
+#define LFR_VIDEO_FPS        24  // 帧率
+#define LFR_VIDEO_FRAME_SIZE 120 // 帧数
+#define LFR_VIDEO_FRAME_STEP 4   // 帧数间隔
 #endif
 
 namespace cv {

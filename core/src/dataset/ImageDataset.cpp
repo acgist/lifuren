@@ -50,16 +50,27 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 SPDLOG_WARN("加载视频文件失败：{}", file);
                 return;
             }
-            size_t count = 0;
-            cv::Mat frame;
-            while(video.read(frame)) {
-                ++count;
-                lifuren::dataset::image::resize(frame, width, height);
-                auto tensor = lifuren::dataset::image::mat_to_tensor(frame);
-                labels  .push_back(tensor.clone().to(device));
-                features.push_back(tensor.clone().to(device));
+            size_t index = 0;
+            size_t frame = 0;
+            cv::Mat label;
+            cv::Mat feature;
+            while(video.read(feature)) {
+                #if LFR_VIDEO_FRAME_STEP > 0
+                if(++index % LFR_VIDEO_FRAME_STEP != 0) {
+                    continue;
+                }
+                #else
+                ++index;
+                #endif
+                lifuren::dataset::image::resize(feature, width, height);
+                if(!label.empty()) {
+                    ++frame;
+                    labels  .push_back(lifuren::dataset::image::mat_to_tensor(label  ).clone().to(device));
+                    features.push_back(lifuren::dataset::image::mat_to_tensor(feature).clone().to(device));
+                }
+                label = feature;
             }
-            SPDLOG_DEBUG("加载视频文件帧数：{} - {}", file, count);
+            SPDLOG_DEBUG("加载视频文件帧数：{} - {} / {}", file, frame, index);
             video.release();
         }
     ).map(torch::data::transforms::Stack<>());
