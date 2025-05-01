@@ -19,6 +19,19 @@
     cv::destroyAllWindows();
 }
 
+[[maybe_unused]] static void testVideo() {
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
+    // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "h.mp4" }).string());
+    cv::Mat frame;
+    while(video.read(frame)) {
+        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
+        cv::imshow("frame", frame);
+        cv::waitKey(20);
+    }
+    cv::waitKey();
+    cv::destroyAllWindows();
+}
+
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
     auto loader = lifuren::dataset::image::loadWudaoziDatasetLoader(
         LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT,
@@ -47,5 +60,6 @@
 
 LFR_TEST(
     // testImage();
-    testLoadWudaoziDatasetLoader();
+    testVideo();
+    // testLoadWudaoziDatasetLoader();
 );

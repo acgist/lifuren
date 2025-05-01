@@ -67,10 +67,10 @@ void lifuren::MainWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
     panel          = new wxPanel(this);
-    wudaozi_button = new wxButton  (panel, wudaozi_id,  wudaozi_text,  wxPoint(         10,  10), wxSize((w - 20),          80));
-    config_button  = new wxButton  (panel, config_id,   config_text,   wxPoint(         10, 100), wxSize((w - 30) / 2,      80));
-    about_button   = new wxButton  (panel, about_id,    about_text,    wxPoint((w / 2) + 5, 100), wxSize((w - 30) / 2,      80));
-    message_ctrl   = new wxTextCtrl(panel, message_id,  message_text,  wxPoint(         10, 190), wxSize((w - 20),     h - 380), wxTE_MULTILINE);
+    wudaozi_button = new wxButton  (panel, wudaozi_id, wudaozi_text, wxPoint(          10,  10), wxSize((w - 20),          80));
+    config_button  = new wxButton  (panel, config_id,  config_text,  wxPoint(          10, 100), wxSize((w - 30) / 2,      80));
+    about_button   = new wxButton  (panel, about_id,   about_text,   wxPoint((w / 2) +  5, 100), wxSize((w - 30) / 2,      80));
+    message_ctrl   = new wxTextCtrl(panel, message_id, message_text, wxPoint(          10, 190), wxSize((w - 20),     h - 200), wxTE_MULTILINE);
     message_ctrl->Disable();
     message_ctrl->SetBackgroundColour(panel->GetBackgroundColour());
 }
@@ -102,9 +102,9 @@ void lifuren::MainWindow::bindEvent() {
     this->Bind(wxEVT_BUTTON, [](const wxCommandEvent& event) {
         const auto id = event.GetId();
         switch(id) {
-            case wudaozi_id: wudaozi_callback(event);  break;
-            case config_id : config_callback(event);   break;
-            case about_id  : about_callback(event);    break;
+            case wudaozi_id: wudaozi_callback(event); break;
+            case config_id : config_callback(event);  break;
+            case about_id  : about_callback(event);   break;
         }
     });
     lifuren::message::registerMessageCallback(message_callback);

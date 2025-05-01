@@ -37,7 +37,7 @@ lifuren::dataset::Dataset::Dataset(
 }
 
 lifuren::dataset::Dataset::Dataset(
-    const std::string             & path,
+    const std::string& path,
     const std::vector<std::string>& suffix,
     const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
     const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete

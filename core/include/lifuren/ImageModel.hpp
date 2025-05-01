@@ -27,11 +27,15 @@ namespace lifuren::image {
 class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
+    // 颜色
+    // 姿势
+    // 时间
+    // 空间
     torch::nn::BatchNorm2d norm { nullptr };
-    torch::nn::Conv1d conv1 { nullptr };
-    torch::nn::Conv1d conv2 { nullptr };
-    torch::nn::ConvTranspose1d convt1 { nullptr };
-    torch::nn::ConvTranspose1d convt2 { nullptr };
+    torch::nn::Conv2d conv1 { nullptr };
+    torch::nn::Conv2d conv2 { nullptr };
+    torch::nn::ConvTranspose2d convt1 { nullptr };
+    torch::nn::ConvTranspose2d convt2 { nullptr };
     torch::nn::Linear linear1 { nullptr };
 
 public:

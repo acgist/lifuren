@@ -6,7 +6,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Layer.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
 

@@ -7,6 +7,7 @@
 #include "opencv2/opencv.hpp"
 
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
+    #ifdef LFR_VIDEO_FILL
     const int cols = image.cols;
     const int rows = image.rows;
     const double ws = 1.0 * cols / width;
@@ -17,6 +18,17 @@ void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int 
     cv::Mat result = cv::Mat::zeros(h, w, CV_8UC3);
     image.copyTo(result(cv::Rect(0, 0, cols, rows)));
     cv::resize(result, image, cv::Size(width, height));
+    #else
+    const int cols = image.cols;
+    const int rows = image.rows;
+    const double ws = 1.0 * cols / width;
+    const double hs = 1.0 * rows / height;
+    const double scale = std::min(ws, hs);
+    const int w = std::min(static_cast<int>(width  * scale), cols);
+    const int h = std::min(static_cast<int>(height * scale), rows);
+    image = image(cv::Rect((cols - w) / 2, (rows - h) / 2, w, h));
+    cv::resize(image, image, cv::Size(width, height));
+    #endif
 }
 
 torch::Tensor lifuren::dataset::image::mat_to_tensor(const cv::Mat& image) {

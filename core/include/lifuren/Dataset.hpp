@@ -34,7 +34,7 @@
 #define LFR_IMAGE_HEIGHT     480 // 高度：16:9
 #define LFR_VIDEO_FPS        24  // 帧率
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
-#define LFR_VIDEO_FRAME_STEP 4   // 帧数间隔
+#define LFR_VIDEO_FRAME_STEP 2   // 帧数间隔
 #endif
 
 namespace cv {
@@ -89,7 +89,7 @@ public:
      * @param complete  完成回调：void(标签, 特征, 计算设备)
      */
     Dataset(
-        const std::string             & path,
+        const std::string& path,
         const std::vector<std::string>& suffix,
         const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
         const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr
