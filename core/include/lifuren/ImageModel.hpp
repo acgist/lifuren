@@ -28,7 +28,8 @@ class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
     // 颜色
-    // 姿势
+    // 体型
+    // 动作
     // 时间
     // 空间
     torch::nn::BatchNorm2d norm { nullptr };
