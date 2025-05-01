@@ -121,15 +121,16 @@ if(CMAKE_HOST_WIN32)
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        file(GLOB OPENCV_DLLS    "deps/opencv/debug/bin/*.dll")
         file(GLOB SPDLOG_DLLS    "deps/spdlog/debug/bin/*.dll")
         file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/debug/bin/*.dll")
     else()
+        file(GLOB OPENCV_DLLS    "deps/opencv/bin/*.dll")
         file(GLOB SPDLOG_DLLS    "deps/spdlog/bin/*.dll")
         file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
-    file(GLOB OPENCV_DLLS "deps/opencv/x64/vc16/bin/*.dll")
 
     find_package(wxWidgets CONFIG REQUIRED gl qa net core)
     # find_package(wxWidgets CONFIG REQUIRED gl qa net core webview)
@@ -140,8 +141,9 @@ endif()
 
 find_package(OpenGL REQUIRED)
 
-find_package(Torch  CONFIG REQUIRED)
+# 注意顺序
 find_package(OpenCV CONFIG REQUIRED)
+find_package(Torch  CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(deps)

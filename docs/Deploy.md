@@ -95,8 +95,6 @@ vcpkg export libtorch  --zip
 vcpkg export wxwidgets --zip
 ```
 
-> wxwidgets[webview]
-
 #### 编译命令
 
 ```
