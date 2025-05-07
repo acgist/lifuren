@@ -10,7 +10,38 @@ sudo apt install ffmpeg
 
 # Windows
 vcpkg install ffmpeg:x64-windows
+
+# 源码编译
+apt install nasm yasm
+apt install libx264-dev libopenh264-dev
+git clone https://github.com/FFmpeg/nv-codec-headers.git
+cd nv-codec-headers
+git switch sdk/12.1
+sudo make install
+wget http://www.ffmpeg.org/releases/ffmpeg-6.1.1.tar.xz
+tar -Jxvf ffmpeg-6.1.1.tar.xz
+cd ffmpeg-6.1.1/
+PKG_CONFIG_PATH="/usr/local/lib/pkgconfig/"
+./configure            \
+  --enable-static      \
+  --enable-shared      \
+  --enable-gpl         \
+  --enable-libx264     \
+  --enable-libopenh264 \
+  --enable-cuda        \
+  --enable-cuvid       \
+  --enable-nvenc       \
+  --enable-libnpp      \
+  --enable-nonfree     \
+  --enable-cuda-nvcc   \
+  --extra-cflags="-I/usr/local/cuda/include" --extra-ldflags="-L/usr/local/cuda/lib64"
+make -j
+sudo make install
 ```
+
+* 如果不用`CUDA`编解码器可以不用编译相关参数
+* 编码器和解码器根据需要添加`./configure --list-encoders ./configure --list-decoders`
+* `--enable-libnpp`必须添加`--extra-cflags="-I/usr/local/cuda/include" --extra-ldflags="-L/usr/local/cuda/lib64"`
 
 ## 常用功能
 

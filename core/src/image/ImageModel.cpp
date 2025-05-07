@@ -3,6 +3,13 @@
 #include "lifuren/File.hpp"
 
 lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl() {
+    torch::nn::Sequential feature;
+    feature->push_back(torch::nn::BatchNorm2d(3));
+    feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
+    feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
+    feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
+    feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
+    this->feature = this->register_module("feature", feature);
     // this->norm   = this->register_module("norm",    torch::nn::BatchNorm2d(3));
     // this->conv1  = this->register_module("conv1",   torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
     // this->conv2  = this->register_module("conv2",   torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
@@ -22,7 +29,7 @@ torch::Tensor lifuren::image::WudaoziModuleImpl::forward(torch::Tensor input) {
     // output = this->convt1(output);
     // output = this->convt2(output);
     // return output;
-    return {};
+    return this->feature->forward(input);
 }
 
 lifuren::image::WudaoziModel::WudaoziModel(lifuren::config::ModelParams params) : Model(params) {

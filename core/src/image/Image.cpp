@@ -41,8 +41,8 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0);
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->model->pred(tensor);
-        lifuren::dataset::image::tensor_to_mat(image, result.squeeze());
+        auto result = this->model->pred(tensor.to(lifuren::getDevice()));
+        lifuren::dataset::image::tensor_to_mat(image, result.squeeze().to(torch::kCPU));
         writer.write(image);
         tensor = result;
     }

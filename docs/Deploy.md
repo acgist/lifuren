@@ -63,6 +63,19 @@ cmake --build . --parallel 8
 cmake --install .
 ```
 
+## 连接文件
+
+```
+vim /etc/ld.so.conf
+
+---
+/usr/local/lib/
+/usr/local/lib64/
+---
+
+ldconfig
+```
+
 ## Windows
 
 #### 编译环境
