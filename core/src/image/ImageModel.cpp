@@ -4,17 +4,15 @@
 
 lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl() {
     torch::nn::Sequential feature;
-    feature->push_back(torch::nn::BatchNorm2d(3));
     feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
     feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
     feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
     feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
     this->feature = this->register_module("feature", feature);
-    // this->norm   = this->register_module("norm",    torch::nn::BatchNorm2d(3));
-    // this->conv1  = this->register_module("conv1",   torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
-    // this->conv2  = this->register_module("conv2",   torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
-    // this->convt1 = this->register_module("convt1",  torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
-    // this->convt2 = this->register_module("convt2",  torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
+    // this->conv1  = this->register_module("conv1",  torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
+    // this->conv2  = this->register_module("conv2",  torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
+    // this->convt1 = this->register_module("convt1", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
+    // this->convt2 = this->register_module("convt2", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {

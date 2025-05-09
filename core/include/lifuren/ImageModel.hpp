@@ -28,19 +28,15 @@ class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
     torch::nn::Sequential feature        { nullptr }; // 特征
-    torch::nn::Sequential feature_body   { nullptr }; // 特征体型
-    torch::nn::Sequential feature_pose   { nullptr }; // 特征动作
-    torch::nn::Sequential feature_live   { nullptr }; // 特征时空
     torch::nn::Sequential feature_colour { nullptr }; // 特征色调
-    torch::nn::Sequential body { nullptr }; // 体型
-    torch::nn::Sequential pose { nullptr }; // 动作
-    torch::nn::Sequential live         { nullptr }; // 时空
-    torch::nn::Sequential live_static  { nullptr }; // 时空静态
-    torch::nn::Sequential live_dynamic { nullptr }; // 时空动态
-    torch::nn::Sequential colour         { nullptr }; // 色调
     torch::nn::Sequential colour_static  { nullptr }; // 色调静态
     torch::nn::Sequential colour_dynamic { nullptr }; // 色调动态
-    torch::nn::Sequential embody { nullptr }; // 具象化
+    torch::nn::Sequential feature_live   { nullptr }; // 特征时空
+    torch::nn::Sequential live_static    { nullptr }; // 时空静态
+    torch::nn::Sequential live_dynamic   { nullptr }; // 时空动态
+    torch::nn::Sequential feature_body   { nullptr }; // 特征体型
+    torch::nn::Sequential feature_pose   { nullptr }; // 特征动作
+    torch::nn::Sequential embody         { nullptr }; // 具象化
 
 public:
     WudaoziModuleImpl();

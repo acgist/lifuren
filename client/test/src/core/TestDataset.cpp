@@ -20,10 +20,33 @@
 }
 
 [[maybe_unused]] static void testVideo() {
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
+    // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "h.mp4" }).string());
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1CtSKYQEKt.mp4" }).string());
+    // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1D1V7zQEV4.mp4" }).string());
+    // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1RYowY7EkK.mp4" }).string());
+    cv::Mat old;
+    cv::Mat diff;
     cv::Mat frame;
     while(video.read(frame)) {
+        double min = 0;
+        double max = 0;
+        cv::minMaxLoc(frame, &min, &max);
+        if(max == 0 && min == 0) {
+            continue;
+        }
+        if(!old.empty()) {
+            cv::absdiff(frame, old, diff);
+            auto mean = cv::mean(diff)[0];
+            SPDLOG_INFO("差异：{}", mean);
+            if(mean == 0) {
+                continue;
+            } else if(mean > LFR_VIDEO_DIFF) {
+                cv::waitKey();
+            } else {
+            }
+        }
+        old = frame;
         lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
         cv::imshow("frame", frame);
         cv::waitKey(20);
@@ -51,15 +74,20 @@
         const int length = iterator->data.sizes()[0];
         for(int i = 0; i < length; ++i) {
             auto tensor = iterator->data[i];
+            if(tensor.count_nonzero().item<int>() == 0) {
+                cv::waitKey();
+            }
             lifuren::dataset::image::tensor_to_mat(image, tensor);
             cv::imshow("image", image);
             cv::waitKey(20);
         }
     }
+    cv::waitKey();
+    cv::destroyAllWindows();
 }
 
 LFR_TEST(
     // testImage();
-    testVideo();
-    // testLoadWudaoziDatasetLoader();
+    // testVideo();
+    testLoadWudaoziDatasetLoader();
 );

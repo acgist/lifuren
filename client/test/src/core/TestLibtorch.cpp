@@ -43,25 +43,31 @@
 }
 
 [[maybe_unused]] static void testTensor() {
-    auto tensor = torch::randn({ 2, 3 });
-    // auto tensor = torch::randn({ 2, 3, 3 });
+    // auto tensor = torch::randn({ 2, 3 });
+    // // auto tensor = torch::randn({ 2, 3, 3 });
+    // lifuren::logTensor("tensor", tensor);
+    // lifuren::logTensor("tensor", tensor.index({ 0 }));
+    // lifuren::logTensor("tensor", tensor.index({ 1 }));
+    // lifuren::logTensor("tensor", tensor.index({ "...", 0 }));
+    // lifuren::logTensor("tensor", tensor.index({ "...", 1 }));
+    // lifuren::logTensor("tensor", tensor.select(0, 0));
+    // lifuren::logTensor("tensor", tensor.select(0, 1));
+    // auto xxxxxx = torch::randn({ 2, 3 });
+    // lifuren::logTensor("xxxxxx", xxxxxx);
+    // lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx },  0));
+    // lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx },  1));
+    // lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx }, -1));
+    // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx },  0));
+    // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx },  1));
+    // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1));
+    // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 0 }));
+    // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 1 }));
+    float l[] = { 1, 2, 3, 4 };
+    // 错误
+    // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat16).clone();
+    // 正确
+    auto tensor = torch::from_blob(l, { 4 }, torch::kFloat32).to(torch::kFloat16).clone();
     lifuren::logTensor("tensor", tensor);
-    lifuren::logTensor("tensor", tensor.index({ 0 }));
-    lifuren::logTensor("tensor", tensor.index({ 1 }));
-    lifuren::logTensor("tensor", tensor.index({ "...", 0 }));
-    lifuren::logTensor("tensor", tensor.index({ "...", 1 }));
-    lifuren::logTensor("tensor", tensor.select(0, 0));
-    lifuren::logTensor("tensor", tensor.select(0, 1));
-    auto xxxxxx = torch::randn({ 2, 3 });
-    lifuren::logTensor("xxxxxx", xxxxxx);
-    lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx },  0));
-    lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx },  1));
-    lifuren::logTensor("cat tensor", torch::cat({ tensor, xxxxxx }, -1));
-    lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx },  0));
-    lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx },  1));
-    lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1));
-    lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 0 }));
-    lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 1 }));
 }
 
 LFR_TEST(

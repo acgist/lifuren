@@ -27,14 +27,23 @@
 #include "torch/data.h"
 
 // TODO: 补帧
-// 图片配置
+/**
+ * 图片配置
+ *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 55.61 GB/Hour 
+ * dataset size = 180    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 55.61 GB/Hour
+ */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_WIDTH      270 // 宽度：16:9
-#define LFR_IMAGE_HEIGHT     480 // 高度：16:9
-#define LFR_VIDEO_FPS        24  // 帧率
-#define LFR_VIDEO_FRAME_SIZE 120 // 帧数
-#define LFR_VIDEO_FRAME_STEP 2   // 帧数间隔
+#define LFR_IMAGE_WIDTH       180 // 宽度：16:9
+#define LFR_IMAGE_HEIGHT      320 // 高度：16:9
+// #define LFR_IMAGE_WIDTH    270 // 宽度：16:9
+// #define LFR_IMAGE_HEIGHT   480 // 高度：16:9
+#define LFR_VIDEO_FPS         24  // 帧率
+#define LFR_VIDEO_DIFF        30  // 差异：上下文切换
+#define LFR_VIDEO_FRAME_MIN   15  // 最小帧数
+#define LFR_VIDEO_FRAME_MAX   150 // 最大帧数
+#define LFR_VIDEO_FRAME_SIZE  120 // 帧数
+#define LFR_VIDEO_FRAME_STEP  2   // 帧数间隔（抽帧）
 #endif
 
 namespace cv {
@@ -60,6 +69,7 @@ extern std::vector<std::string> allDataset(const std::string& path);
 class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
+    // TODO: list or queue ?
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
     std::vector<torch::Tensor> features; // 特征
