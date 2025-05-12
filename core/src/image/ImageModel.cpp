@@ -2,32 +2,22 @@
 
 #include "lifuren/File.hpp"
 
-lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl() {
-    torch::nn::Sequential feature;
-    feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
-    feature->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
-    feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
-    feature->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
-    this->feature = this->register_module("feature", feature);
-    // this->conv1  = this->register_module("conv1",  torch::nn::Conv2d(torch::nn::Conv2dOptions( 3, 32, 3)));
-    // this->conv2  = this->register_module("conv2",  torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3)));
-    // this->convt1 = this->register_module("convt1", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(64, 32, 3)));
-    // this->convt2 = this->register_module("convt2", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(32,  3, 3)));
+lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParams params) : params(params) {
+    this->down_1 = this->register_module("down_1", std::make_shared<lifuren::image::DownSampling>(3, 8));
+    this->live_1 = this->register_module("live_1", std::make_shared<lifuren::image::Live>(static_cast<int>(this->params.batch_size), 176));
+    this->up_1   = this->register_module("up_1",   std::make_shared<lifuren::image::UpSampling>(8, 3));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {
-    // this->unregister_module("norm");
-    // ...
+    this->unregister_module("down_1");
+    this->unregister_module("live_1");
+    this->unregister_module("up_1");
 }
 
 torch::Tensor lifuren::image::WudaoziModuleImpl::forward(torch::Tensor input) {
-    // auto output = this->norm->forward(input);
-    // output = this->conv1(output);
-    // output = this->conv2(output);
-    // output = this->convt1(output);
-    // output = this->convt2(output);
-    // return output;
-    return this->feature->forward(input);
+    auto output = this->down_1->forward(input);
+    auto live = this->live_1->forward(output.slice(1, 0, 1).squeeze(1));
+    return this->up_1->forward(output, live.unsqueeze(1));
 }
 
 lifuren::image::WudaoziModel::WudaoziModel(lifuren::config::ModelParams params) : Model(params) {

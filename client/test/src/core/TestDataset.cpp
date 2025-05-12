@@ -22,12 +22,13 @@
 [[maybe_unused]] static void testVideo() {
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "h.mp4" }).string());
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1CtSKYQEKt.mp4" }).string());
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1kEVfzHExj.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1D1V7zQEV4.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1RYowY7EkK.mp4" }).string());
     cv::Mat old;
     cv::Mat diff;
     cv::Mat frame;
+    int count = 0;
     while(video.read(frame)) {
         double min = 0;
         double max = 0;
@@ -37,11 +38,15 @@
         }
         if(!old.empty()) {
             cv::absdiff(frame, old, diff);
+            ++count;
             auto mean = cv::mean(diff)[0];
             SPDLOG_INFO("差异：{}", mean);
             if(mean == 0) {
+                count = 0;
                 continue;
             } else if(mean > LFR_VIDEO_DIFF) {
+                SPDLOG_INFO("帧数：{}", count);
+                count = 0;
                 cv::waitKey();
             } else {
             }
@@ -53,6 +58,22 @@
     }
     cv::waitKey();
     cv::destroyAllWindows();
+}
+
+[[maybe_unused]] static void testAction() {
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1kEVfzHExj.mp4" }).string());
+    cv::Mat frame;
+    // cv::Mat image;
+    std::vector<cv::Mat> images;
+    while(video.read(frame)) {
+        // cv::cvtColor(frame, image, cv::COLOR_BGR2GRAY);
+        // cv::imshow("image", image);
+        cv::split(frame, images);
+        cv::imshow("image", images[2]);
+        if(cv::waitKey(20) == 27) {
+            break;
+        }
+    }
 }
 
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
@@ -89,5 +110,6 @@
 LFR_TEST(
     // testImage();
     // testVideo();
-    testLoadWudaoziDatasetLoader();
+    testAction();
+    // testLoadWudaoziDatasetLoader();
 );

@@ -22,24 +22,121 @@
 namespace lifuren::image {
 
 /**
+ * 下采样：抽象化
+ */
+class DownSampling : public torch::nn::Module {
+    
+private:
+    torch::nn::Sequential layer{ nullptr };
+
+public:
+    DownSampling(int in, int out) {
+        torch::nn::Sequential layer;
+        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3)));
+        // layer->push_back(torch::nn::BatchNorm2d(out));
+        // layer->push_back(torch::nn::Dropout(0.3));
+        // layer->push_back(torch::nn::ReLU());
+        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
+        // layer->push_back(torch::nn::BatchNorm2d(out));
+        // layer->push_back(torch::nn::Dropout(0.3));
+        // layer->push_back(torch::nn::ReLU());
+        this->layer = this->register_module("down-sampling", layer);
+    }
+    ~DownSampling() {
+        this->unregister_module("down-sampling");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input) {
+        return this->layer->forward(input);
+    }
+
+};
+
+/**
+ * 时空：静态 + 动态
+ */
+class Live : public torch::nn::Module {
+
+private:
+    torch::nn::GRU live_1  { nullptr };
+    torch::Tensor  hidden_1{ nullptr };
+    torch::nn::GRU live_2  { nullptr };
+    torch::Tensor  hidden_2{ nullptr };
+
+public:
+    Live(int batch, int gru_size, int num_layers = 3) {
+        torch::nn::GRUOptions options_1(gru_size, gru_size);
+        torch::nn::GRUOptions options_2(gru_size, gru_size);
+        options_1.num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/;
+        options_2.num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/;
+        this->live_1 = this->register_module("live_1", torch::nn::GRU(options_1));
+        this->live_2 = this->register_module("live_2", torch::nn::GRU(options_2));
+        this->hidden_1 = torch::zeros({num_layers, batch, gru_size}).to(lifuren::getDevice());
+        this->hidden_2 = torch::zeros({num_layers, batch, gru_size}).to(lifuren::getDevice());
+    }
+    ~Live() {
+        this->unregister_module("live_1");
+        this->unregister_module("live_2");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input) {
+        auto [o1, h1] = this->live_1->forward(input, this->hidden_1);
+        auto [o2, h2] = this->live_2->forward(o1,    this->hidden_2);
+        return o2;
+    }
+
+};
+
+/**
+ * 上采样：具象化
+ */
+class UpSampling : public torch::nn::Module {
+
+private:
+    torch::nn::Sequential layer{ nullptr };
+
+public:
+    UpSampling(int in, int out) {
+        torch::nn::Sequential layer;
+        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in,  3)));
+        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, out, 3)));
+        this->layer = this->register_module("up-sampling", layer);
+    }
+    ~UpSampling() {
+        this->unregister_module("up-sampling");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input, torch::Tensor live) {
+        return this->layer->forward(input.mul(live));
+    }
+
+};
+
+/**
  * 吴道子模型（视频风格迁移）
  */
 class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential feature        { nullptr }; // 特征
-    torch::nn::Sequential feature_colour { nullptr }; // 特征色调
-    torch::nn::Sequential colour_static  { nullptr }; // 色调静态
-    torch::nn::Sequential colour_dynamic { nullptr }; // 色调动态
-    torch::nn::Sequential feature_live   { nullptr }; // 特征时空
-    torch::nn::Sequential live_static    { nullptr }; // 时空静态
-    torch::nn::Sequential live_dynamic   { nullptr }; // 时空动态
-    torch::nn::Sequential feature_body   { nullptr }; // 特征体型
-    torch::nn::Sequential feature_pose   { nullptr }; // 特征动作
-    torch::nn::Sequential embody         { nullptr }; // 具象化
+    lifuren::config::ModelParams  params;
+    std::shared_ptr<DownSampling> down_1{ nullptr };
+    std::shared_ptr<DownSampling> down_2{ nullptr };
+    std::shared_ptr<DownSampling> down_3{ nullptr };
+    std::shared_ptr<DownSampling> down_4{ nullptr };
+    std::shared_ptr<Live>         live_1{ nullptr };
+    std::shared_ptr<Live>         live_2{ nullptr };
+    std::shared_ptr<Live>         live_3{ nullptr };
+    std::shared_ptr<Live>         live_4{ nullptr };
+    std::shared_ptr<UpSampling>   up_4  { nullptr };
+    std::shared_ptr<UpSampling>   up_3  { nullptr };
+    std::shared_ptr<UpSampling>   up_2  { nullptr };
+    std::shared_ptr<UpSampling>   up_1  { nullptr };
 
 public:
-    WudaoziModuleImpl();
+    WudaoziModuleImpl(lifuren::config::ModelParams params = {});
     ~WudaoziModuleImpl();
 
 public:

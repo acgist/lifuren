@@ -74,14 +74,8 @@ public:
 public:
     /**
      * @param params 模型参数
-     * @param loss   损失函数
-     * @param model  模型实现
      */
-    Model(
-        lifuren::config::ModelParams params = {},
-        L loss  = {},
-        M model = {}
-    );
+    Model(lifuren::config::ModelParams params = {});
     virtual ~Model();
 
 public:
@@ -171,20 +165,10 @@ inline void classify_evaluate(
 }
 
 template<typename L, typename P, typename M, typename D>
-lifuren::Model<L, P, M, D>::Model(
-    lifuren::config::ModelParams params,
-    L loss,
-    M model
-) : params(std::move(params)),
-    loss(std::move(loss)),
-    model(std::move(model)),
-    device(lifuren::getDevice())
-{
-    if(this->model) {
-        this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
-    } else {
-        SPDLOG_WARN("没有定义模型");
-    }
+lifuren::Model<L, P, M, D>::Model(lifuren::config::ModelParams params) : params(std::move(params)), device(lifuren::getDevice()) {
+    this->loss      = L{};
+    this->model     = M{ this->params };
+    this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
     if(this->params.thread_size == 0) {
         this->params.thread_size = std::thread::hardware_concurrency();
     }

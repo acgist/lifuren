@@ -62,12 +62,18 @@
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1));
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 0 }));
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 1 }));
-    float l[] = { 1, 2, 3, 4 };
-    // 错误
-    // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat16).clone();
-    // 正确
-    auto tensor = torch::from_blob(l, { 4 }, torch::kFloat32).to(torch::kFloat16).clone();
+    // float l[] = { 1, 2, 3, 4 };
+    // // 错误
+    // // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat16).clone();
+    // // 正确
+    // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat32).to(torch::kFloat16).clone();
+    // lifuren::logTensor("tensor", tensor);
+    torch::Tensor tensor = torch::range(1, 36, torch::kFloat32).reshape({2, 3, 2, 3});
     lifuren::logTensor("tensor", tensor);
+    auto a = tensor.slice(1, 0, 1);
+    lifuren::logTensor("tensor", a.squeeze());
+    lifuren::logTensor("tensor", a.squeeze().unsqueeze(1));
+    lifuren::logTensor("tensor", a.mul(tensor));
 }
 
 LFR_TEST(
