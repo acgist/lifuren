@@ -12,25 +12,26 @@
 class ClassifyModuleImpl : public torch::nn::Module {
 
 private:
-    torch::nn::BatchNorm1d norm{ nullptr };
-    torch::nn::Linear linear1  { nullptr };
-    torch::nn::Linear linear2  { nullptr };
+    lifuren::config::ModelParams params;
+    torch::nn::BatchNorm1d norm    { nullptr };
+    torch::nn::Linear      linear_1{ nullptr };
+    torch::nn::Linear      linear_2{ nullptr };
 
 public:
-    ClassifyModuleImpl() {
-        this->norm    = this->register_module("norm",    torch::nn::BatchNorm1d(2));
-        this->linear1 = this->register_module("linear1", torch::nn::Linear(torch::nn::LinearOptions( 2, 16)));
-        this->linear2 = this->register_module("linear2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
+    ClassifyModuleImpl(lifuren::config::ModelParams params = {}) : params(params) {
+        this->norm     = this->register_module("norm",    torch::nn::BatchNorm1d(2));
+        this->linear_1 = this->register_module("linear_1", torch::nn::Linear(torch::nn::LinearOptions( 2, 16)));
+        this->linear_2 = this->register_module("linear_2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
     }
     torch::Tensor forward(torch::Tensor input) {
-        auto output = this->linear1(this->norm(input));
-             output = this->linear2(torch::relu(output));
+        auto output = this->linear_1(this->norm(input));
+             output = this->linear_2(torch::relu(output));
         return output;
     }
     virtual ~ClassifyModuleImpl() {
         this->unregister_module("norm");
-        this->unregister_module("linear1");
-        this->unregister_module("linear2");
+        this->unregister_module("linear_1");
+        this->unregister_module("linear_2");
     }
 
 };
