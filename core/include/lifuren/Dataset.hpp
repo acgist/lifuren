@@ -29,15 +29,17 @@
 // TODO: 补帧
 /**
  * 图片配置
- *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 55.61 GB/Hour 
- * dataset size = 180    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 55.61 GB/Hour
+ * 
+ *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 57.36 GB/Hour 
+ * dataset size = 188    * 316   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 57.36 GB/Hour
+ * 
+ *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 7.97 GB/Batch 
+ * dataset size = 188    * 316   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 7.97 GB/Batch
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_WIDTH       180 // 宽度：16:9
-#define LFR_IMAGE_HEIGHT      320 // 高度：16:9
-// #define LFR_IMAGE_WIDTH    270 // 宽度：16:9
-// #define LFR_IMAGE_HEIGHT   480 // 高度：16:9
+#define LFR_IMAGE_WIDTH       188 // 宽度：16:9
+#define LFR_IMAGE_HEIGHT      316 // 高度：16:9
 #define LFR_VIDEO_FPS         24  // 帧率
 #define LFR_VIDEO_DIFF        30  // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   15  // 最小帧数

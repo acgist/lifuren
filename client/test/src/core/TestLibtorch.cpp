@@ -62,18 +62,32 @@
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1));
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 0 }));
     // lifuren::logTensor("stack tensor", torch::stack({ tensor, xxxxxx }, -1).index({ "...", 1 }));
+    // -
     // float l[] = { 1, 2, 3, 4 };
     // // 错误
     // // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat16).clone();
     // // 正确
     // auto tensor = torch::from_blob(l, { 4 }, torch::kFloat32).to(torch::kFloat16).clone();
     // lifuren::logTensor("tensor", tensor);
-    torch::Tensor tensor = torch::range(1, 36, torch::kFloat32).reshape({2, 3, 2, 3});
-    lifuren::logTensor("tensor", tensor);
-    auto a = tensor.slice(1, 0, 1);
-    lifuren::logTensor("tensor", a.squeeze());
-    lifuren::logTensor("tensor", a.squeeze().unsqueeze(1));
-    lifuren::logTensor("tensor", a.mul(tensor));
+    // -
+    // torch::Tensor tensor = torch::range(1, 36, torch::kFloat32).reshape({2, 3, 2, 3});
+    // lifuren::logTensor("tensor", tensor);
+    // auto a = tensor.slice(1, 0, 1);
+    // lifuren::logTensor("tensor", a.squeeze());
+    // lifuren::logTensor("tensor", a.squeeze().unsqueeze(1));
+    // lifuren::logTensor("tensor", a.mul(tensor));
+    // -
+    // [100, 3, 16, 8]
+    // [100,    16, 8]
+    torch::Tensor a = torch::ones({2, 3, 2, 3});
+    torch::Tensor b = torch::ones({2,    2, 3});
+    torch::Tensor c = torch::ones({2,    2, 3}) * 2;
+    torch::Tensor d = torch::ones({2,    2, 3}) * 3;
+    lifuren::logTensor("a", a);
+    a.select(1, 0).mul_(b);
+    a.select(1, 1).mul_(c);
+    a.select(1, 2).mul_(d);
+    lifuren::logTensor("a", a);
 }
 
 LFR_TEST(

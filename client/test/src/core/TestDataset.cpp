@@ -1,5 +1,7 @@
 #include "lifuren/Test.hpp"
 
+#include "torch/torch.h"
+
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
@@ -109,7 +111,7 @@
 
 LFR_TEST(
     // testImage();
-    // testVideo();
-    testAction();
+    testVideo();
+    // testAction();
     // testLoadWudaoziDatasetLoader();
 );

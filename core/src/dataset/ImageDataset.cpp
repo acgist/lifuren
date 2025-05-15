@@ -144,5 +144,6 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
     SPDLOG_DEBUG("视频数据集加载完成：{}", frame_count);
     torch::data::DataLoaderOptions options(batch_size);
     options.drop_last(true);
+    // TODO: gru
     return torch::data::make_data_loader<LFT_SEQ_SAMPLER>(std::move(dataset), options);
 }

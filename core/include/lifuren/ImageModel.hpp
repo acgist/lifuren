@@ -22,28 +22,29 @@
 namespace lifuren::image {
 
 /**
- * 下采样：抽象化
+ * 下采样 抽象化 编码器
  */
-class DownSampling : public torch::nn::Module {
+class Encoder : public torch::nn::Module {
     
 private:
     torch::nn::Sequential layer{ nullptr };
 
 public:
-    DownSampling(int in, int out) {
+    Encoder(int in, int out) {
         torch::nn::Sequential layer;
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3)));
-        // layer->push_back(torch::nn::BatchNorm2d(out));
-        // layer->push_back(torch::nn::Dropout(0.3));
-        // layer->push_back(torch::nn::ReLU());
+        layer->push_back(torch::nn::BatchNorm2d(out));
+        layer->push_back(torch::nn::Dropout(0.3));
+        layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
-        // layer->push_back(torch::nn::BatchNorm2d(out));
-        // layer->push_back(torch::nn::Dropout(0.3));
-        // layer->push_back(torch::nn::ReLU());
-        this->layer = this->register_module("down-sampling", layer);
+        layer->push_back(torch::nn::BatchNorm2d(out));
+        layer->push_back(torch::nn::Dropout(0.3));
+        layer->push_back(torch::nn::ReLU());
+        layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
+        this->layer = this->register_module("encoder", layer);
     }
-    ~DownSampling() {
-        this->unregister_module("down-sampling");
+    ~Encoder() {
+        this->unregister_module("encoder");
     }
 
 public:
@@ -54,63 +55,73 @@ public:
 };
 
 /**
- * 时空：静态 + 动态
+ * 混合器
  */
-class Live : public torch::nn::Module {
+class Muxer : public torch::nn::Module {
 
 private:
-    torch::nn::GRU live_1  { nullptr };
+    torch::nn::GRU muxer_1 { nullptr };
+    torch::nn::GRU muxer_2 { nullptr };
     torch::Tensor  hidden_1{ nullptr };
-    torch::nn::GRU live_2  { nullptr };
     torch::Tensor  hidden_2{ nullptr };
 
 public:
-    Live(int batch, int gru_size, int num_layers = 3) {
+    Muxer(int batch, int gru_size, int num_layers = 3) {
         torch::nn::GRUOptions options_1(gru_size, gru_size);
         torch::nn::GRUOptions options_2(gru_size, gru_size);
         options_1.num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/;
         options_2.num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/;
-        this->live_1 = this->register_module("live_1", torch::nn::GRU(options_1));
-        this->live_2 = this->register_module("live_2", torch::nn::GRU(options_2));
+        this->muxer_1  = this->register_module("muxer_1", torch::nn::GRU(options_1));
+        this->muxer_2  = this->register_module("muxer_2", torch::nn::GRU(options_2));
         this->hidden_1 = torch::zeros({num_layers, batch, gru_size}).to(lifuren::getDevice());
         this->hidden_2 = torch::zeros({num_layers, batch, gru_size}).to(lifuren::getDevice());
     }
-    ~Live() {
-        this->unregister_module("live_1");
-        this->unregister_module("live_2");
+    ~Muxer() {
+        this->unregister_module("muxer_1");
+        this->unregister_module("muxer_2");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        auto [o1, h1] = this->live_1->forward(input, this->hidden_1);
-        auto [o2, h2] = this->live_2->forward(o1,    this->hidden_2);
+        auto [o1, h1] = this->muxer_1->forward(input, this->hidden_1);
+        auto [o2, h2] = this->muxer_2->forward(o1,    this->hidden_2);
         return o2;
     }
 
 };
 
 /**
- * 上采样：具象化
+ * 上采样 具象化 解码器
  */
-class UpSampling : public torch::nn::Module {
+class Decoder : public torch::nn::Module {
 
 private:
     torch::nn::Sequential layer{ nullptr };
 
 public:
-    UpSampling(int in, int out) {
+    Decoder(int in, int out) {
         torch::nn::Sequential layer;
-        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in,  3)));
-        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, out, 3)));
-        this->layer = this->register_module("up-sampling", layer);
+        torch::nn::ConvTranspose2dOptions options_1(in, in,  3);
+        torch::nn::ConvTranspose2dOptions options_2(in, in,  3);
+        torch::nn::ConvTranspose2dOptions options_3(in, out, 3);
+        options_1.stride(2).kernel_size(2);
+        options_2.stride(1).kernel_size(3);
+        options_3.stride(1).kernel_size(3);
+        layer->push_back(torch::nn::ConvTranspose2d(options_1));
+        layer->push_back(torch::nn::ConvTranspose2d(options_2));
+        layer->push_back(torch::nn::ConvTranspose2d(options_3));
+        this->layer = this->register_module("decoder", layer);
     }
-    ~UpSampling() {
-        this->unregister_module("up-sampling");
+    ~Decoder() {
+        this->unregister_module("decoder");
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor live) {
-        return this->layer->forward(input.mul(live));
+    torch::Tensor forward(torch::Tensor input, torch::Tensor muxer) {
+        input.select(1, 0).mul_(muxer);
+        input.select(1, 1).mul_(muxer);
+        input.select(1, 2).mul_(muxer);
+        return this->layer->forward(input);
     }
 
 };
@@ -122,18 +133,18 @@ class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
     lifuren::config::ModelParams  params;
-    std::shared_ptr<DownSampling> down_1{ nullptr };
-    std::shared_ptr<DownSampling> down_2{ nullptr };
-    std::shared_ptr<DownSampling> down_3{ nullptr };
-    std::shared_ptr<DownSampling> down_4{ nullptr };
-    std::shared_ptr<Live>         live_1{ nullptr };
-    std::shared_ptr<Live>         live_2{ nullptr };
-    std::shared_ptr<Live>         live_3{ nullptr };
-    std::shared_ptr<Live>         live_4{ nullptr };
-    std::shared_ptr<UpSampling>   up_4  { nullptr };
-    std::shared_ptr<UpSampling>   up_3  { nullptr };
-    std::shared_ptr<UpSampling>   up_2  { nullptr };
-    std::shared_ptr<UpSampling>   up_1  { nullptr };
+    std::shared_ptr<Encoder> encoder_1{ nullptr };
+    std::shared_ptr<Encoder> encoder_2{ nullptr };
+    std::shared_ptr<Encoder> encoder_3{ nullptr };
+    std::shared_ptr<Encoder> encoder_4{ nullptr };
+    std::shared_ptr<Muxer>   muxer_1  { nullptr };
+    std::shared_ptr<Muxer>   muxer_2  { nullptr };
+    std::shared_ptr<Muxer>   muxer_3  { nullptr };
+    std::shared_ptr<Muxer>   muxer_4  { nullptr };
+    std::shared_ptr<Decoder> decoder_4{ nullptr };
+    std::shared_ptr<Decoder> decoder_3{ nullptr };
+    std::shared_ptr<Decoder> decoder_2{ nullptr };
+    std::shared_ptr<Decoder> decoder_1{ nullptr };
 
 public:
     WudaoziModuleImpl(lifuren::config::ModelParams params = {});
