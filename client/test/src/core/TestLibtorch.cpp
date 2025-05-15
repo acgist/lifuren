@@ -84,10 +84,10 @@
     torch::Tensor c = torch::ones({2,    2, 3}) * 2;
     torch::Tensor d = torch::ones({2,    2, 3}) * 3;
     lifuren::logTensor("a", a);
-    a.select(1, 0).mul_(b);
-    a.select(1, 1).mul_(c);
-    a.select(1, 2).mul_(d);
-    lifuren::logTensor("a", a);
+    auto b1 = a.select(1, 0).mul(b);
+    auto c1 = a.select(1, 1).mul(c);
+    auto d1 = a.select(1, 2).mul(d);
+    lifuren::logTensor("a", torch::stack({b1, c1, d1}, 1));
 }
 
 LFR_TEST(

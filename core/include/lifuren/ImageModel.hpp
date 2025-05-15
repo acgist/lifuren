@@ -118,10 +118,10 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input, torch::Tensor muxer) {
-        input.select(1, 0).mul_(muxer);
-        input.select(1, 1).mul_(muxer);
-        input.select(1, 2).mul_(muxer);
-        return this->layer->forward(input);
+        auto a = input.select(1, 0).mul(muxer);
+        auto b = input.select(1, 1).mul(muxer);
+        auto c = input.select(1, 2).mul(muxer);
+        return this->layer->forward(torch::stack({a, b, c}, 1));
     }
 
 };
