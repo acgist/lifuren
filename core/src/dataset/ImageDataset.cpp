@@ -49,6 +49,7 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
 lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
     size_t frame_count = 0;
     auto dataset = lifuren::dataset::Dataset(
+        batch_size,
         path,
         { ".mp4" },
         [width, height, &frame_count] (
@@ -139,7 +140,9 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             features_local.clear();
             SPDLOG_DEBUG("加载视频文件完成：{} - {} / {}", file, frame, index);
             video.release();
-        }
+        },
+        nullptr,
+        true
     ).map(torch::data::transforms::Stack<>());
     SPDLOG_DEBUG("视频数据集加载完成：{}", frame_count);
     torch::data::DataLoaderOptions options(batch_size);

@@ -33,14 +33,15 @@ public:
     Encoder(int in, int out) {
         torch::nn::Sequential layer;
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3)));
-        layer->push_back(torch::nn::BatchNorm2d(out));
-        layer->push_back(torch::nn::Dropout(0.3));
-        layer->push_back(torch::nn::ReLU());
+        // layer->push_back(torch::nn::BatchNorm2d(out));
+        // layer->push_back(torch::nn::Dropout(0.3));
+        // layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
-        layer->push_back(torch::nn::BatchNorm2d(out));
-        layer->push_back(torch::nn::Dropout(0.3));
-        layer->push_back(torch::nn::ReLU());
+        // layer->push_back(torch::nn::BatchNorm2d(out));
+        // layer->push_back(torch::nn::Dropout(0.3));
+        // layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
+        layer->push_back(torch::nn::BatchNorm2d(out));
         this->layer = this->register_module("encoder", layer);
     }
     ~Encoder() {
@@ -110,6 +111,7 @@ public:
         layer->push_back(torch::nn::ConvTranspose2d(options_1));
         layer->push_back(torch::nn::ConvTranspose2d(options_2));
         layer->push_back(torch::nn::ConvTranspose2d(options_3));
+        layer->push_back(torch::nn::BatchNorm2d(out));
         this->layer = this->register_module("decoder", layer);
     }
     ~Decoder() {
@@ -118,10 +120,13 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input, torch::Tensor muxer) {
-        auto a = input.select(1, 0).mul(muxer);
-        auto b = input.select(1, 1).mul(muxer);
-        auto c = input.select(1, 2).mul(muxer);
-        return this->layer->forward(torch::stack({a, b, c}, 1));
+        muxer = torch::transpose(muxer, 1, 2);
+        auto array = input.split(1, 1);
+        std::vector<torch::Tensor> vector;
+        for(auto iter = array.begin(); iter != array.end(); ++iter) {
+            vector.push_back(iter->squeeze(1).matmul(muxer));
+        }
+        return this->layer->forward(torch::stack(vector, 1));
     }
 
 };
@@ -160,7 +165,7 @@ TORCH_MODULE(WudaoziModule);
 /**
  * 吴道子模型（视频风格迁移）
  */
-class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::SGD, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
+class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
 
 public:
     WudaoziModel(lifuren::config::ModelParams params = {});

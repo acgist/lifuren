@@ -71,6 +71,8 @@ extern std::vector<std::string> allDataset(const std::string& path);
 class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
+    size_t batch_size;
+    bool   rnn_model;
     // TODO: list or queue ?
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
@@ -83,28 +85,36 @@ public:
     Dataset& operator=(const Dataset& ) = delete;
     Dataset& operator=(      Dataset&&) = delete;
     /**
-     * @param labels   标签
-     * @param features 特征
+     * @param batch_size 批次数量
+     * @param labels     标签
+     * @param features   特征
+     * @param rnn_model  是否RNN网络
      */
     Dataset(
+        size_t batch_size,
         std::vector<torch::Tensor>& labels,
-        std::vector<torch::Tensor>& features
+        std::vector<torch::Tensor>& features,
+        bool rnn_model = false
     );
     /**
      * /path/file1.suffix
      * /path/file2.suffix
      * ...
      * 
-     * @param path      数据集目录
-     * @param suffix    文件后缀
-     * @param transform 文件转换函数：void(文件路径, 标签, 特征, 计算设备)
-     * @param complete  完成回调：void(标签, 特征, 计算设备)
+     * @param batch_size 批次数量
+     * @param path       数据集目录
+     * @param suffix     文件后缀
+     * @param transform  文件转换函数：void(文件路径, 标签, 特征, 计算设备)
+     * @param complete   完成回调：void(标签, 特征, 计算设备)
+     * @param rnn_model  是否RNN网络
      */
     Dataset(
+        size_t batch_size,
         const std::string& path,
         const std::vector<std::string>& suffix,
         const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
-        const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr
+        const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr,
+        bool rnn_model = false
     );
     virtual ~Dataset();
 

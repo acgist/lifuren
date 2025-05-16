@@ -31,17 +31,21 @@ std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
 }
 
 lifuren::dataset::Dataset::Dataset(
+    size_t batch_size,
     std::vector<torch::Tensor>& labels,
-    std::vector<torch::Tensor>& features
-) : device(lifuren::getDevice()), labels(std::move(labels)), features(std::move(features)) {
+    std::vector<torch::Tensor>& features,
+    bool rnn_model
+) : batch_size(batch_size), device(lifuren::getDevice()), labels(std::move(labels)), features(std::move(features)), rnn_model(rnn_model) {
 }
 
 lifuren::dataset::Dataset::Dataset(
+    size_t batch_size,
     const std::string& path,
     const std::vector<std::string>& suffix,
     const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
-    const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete
-) : device(lifuren::getDevice()) {
+    const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete,
+    bool rnn_model
+) : batch_size(batch_size), device(lifuren::getDevice()), rnn_model(rnn_model) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
         SPDLOG_WARN("数据集无效：{}", path);
         return;
@@ -66,8 +70,18 @@ torch::optional<size_t> lifuren::dataset::Dataset::size() const {
 }
 
 torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
-    return {
-        this->features[index],
-        this->labels  [index]
-    };
+    if(this->rnn_model) {
+        size_t row_size = this->labels.size() / this->batch_size;
+        size_t row = index / this->batch_size;
+        size_t col = index % this->batch_size;
+        return {
+            this->features[col * row_size + row],
+            this->labels  [col * row_size + row]
+        };
+    } else {
+        return {
+            this->features[index],
+            this->labels  [index]
+        };
+    }
 }
