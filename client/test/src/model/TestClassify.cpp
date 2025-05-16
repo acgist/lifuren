@@ -69,7 +69,7 @@ public:
             labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone());
             features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone());
         }
-        auto dataset = lifuren::dataset::Dataset(labels, features).map(torch::data::transforms::Stack<>());
+        auto dataset = lifuren::dataset::Dataset(this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
     }
 

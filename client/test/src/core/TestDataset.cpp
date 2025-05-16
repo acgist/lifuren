@@ -81,7 +81,7 @@
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
     auto loader = lifuren::dataset::image::loadWudaoziDatasetLoader(
         LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT,
-        200,
+        20,
         lifuren::file::join({
             lifuren::config::CONFIG.tmp,
             "wudaozi",
@@ -111,7 +111,7 @@
 
 LFR_TEST(
     // testImage();
-    testVideo();
+    // testVideo();
     // testAction();
-    // testLoadWudaoziDatasetLoader();
+    testLoadWudaoziDatasetLoader();
 );

@@ -41,7 +41,6 @@ public:
         // layer->push_back(torch::nn::Dropout(0.3));
         // layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
-        layer->push_back(torch::nn::BatchNorm2d(out));
         this->layer = this->register_module("encoder", layer);
     }
     ~Encoder() {
@@ -84,6 +83,7 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input) {
+        input = input.slice(1, 0, 1).squeeze(1);
         auto [o1, h1] = this->muxer_1->forward(input, this->hidden_1);
         auto [o2, h2] = this->muxer_2->forward(o1,    this->hidden_2);
         return o2;
@@ -100,18 +100,28 @@ private:
     torch::nn::Sequential layer{ nullptr };
 
 public:
-    Decoder(int in, int out) {
+    Decoder(int in, int num = 1) {
         torch::nn::Sequential layer;
-        torch::nn::ConvTranspose2dOptions options_1(in, in,  3);
-        torch::nn::ConvTranspose2dOptions options_2(in, in,  3);
-        torch::nn::ConvTranspose2dOptions options_3(in, out, 3);
-        options_1.stride(2).kernel_size(2);
-        options_2.stride(1).kernel_size(3);
-        options_3.stride(1).kernel_size(3);
-        layer->push_back(torch::nn::ConvTranspose2d(options_1));
-        layer->push_back(torch::nn::ConvTranspose2d(options_2));
-        layer->push_back(torch::nn::ConvTranspose2d(options_3));
-        layer->push_back(torch::nn::BatchNorm2d(out));
+        if(num == 1) {
+            torch::nn::ConvTranspose2dOptions options(in, in, 2);
+            options.stride(2);
+            layer->push_back(torch::nn::ConvTranspose2d(options));
+            layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in, 3)));
+            layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in,  3, 3)));
+        } else {
+            for(int i = 0; i < num - 1; ++i) {
+                torch::nn::ConvTranspose2dOptions options(in, in, 2);
+                options.stride(2);
+                layer->push_back(torch::nn::ConvTranspose2d(options));
+                layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in, 3)));
+                layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in, 3)));
+            }
+            torch::nn::ConvTranspose2dOptions options(in, in, 2);
+            options.stride(2);
+            layer->push_back(torch::nn::ConvTranspose2d(options));
+            layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in, in, 3)));
+            layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(in,  3, 3)));
+        }
         this->layer = this->register_module("decoder", layer);
     }
     ~Decoder() {
@@ -119,14 +129,38 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor muxer) {
-        muxer = torch::transpose(muxer, 1, 2);
-        auto array = input.split(1, 1);
-        std::vector<torch::Tensor> vector;
-        for(auto iter = array.begin(); iter != array.end(); ++iter) {
-            vector.push_back(iter->squeeze(1).matmul(muxer));
-        }
-        return this->layer->forward(torch::stack(vector, 1));
+    torch::Tensor forward(torch::Tensor input) {
+        return this->layer->forward(torch::stack({input, input, input}, 1));
+    }
+
+};
+
+class Embody : public torch::nn::Module {
+
+    private:
+    torch::nn::Sequential layer{ nullptr };
+
+public:
+    Embody(int num_1, int num_2) {
+        torch::nn::Sequential layer;
+        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(3 * 4, num_1, 3)));
+        layer->push_back(torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(num_1, num_2, 3)));
+        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2, num_1, 3)));
+        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
+        this->layer = this->register_module("embody", layer);
+    }
+    ~Embody() {
+        this->unregister_module("embody");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input, torch::Tensor decoder_1, torch::Tensor decoder_2, torch::Tensor decoder_3, torch::Tensor decoder_4) {
+        return this->layer->forward(torch::cat({
+            input.mul(decoder_1),
+            input.mul(decoder_2),
+            input.mul(decoder_3),
+            input.mul(decoder_4)
+        }, 1));
     }
 
 };
@@ -150,6 +184,7 @@ private:
     std::shared_ptr<Decoder> decoder_3{ nullptr };
     std::shared_ptr<Decoder> decoder_2{ nullptr };
     std::shared_ptr<Decoder> decoder_1{ nullptr };
+    std::shared_ptr<Embody>  embody_1 { nullptr };
 
 public:
     WudaoziModuleImpl(lifuren::config::ModelParams params = {});
