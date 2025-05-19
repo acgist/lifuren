@@ -8,6 +8,8 @@
  * 
  * 图片模型
  * 
+ * TODO: 补帧、超分辨率
+ * 
  * @author acgist
  * 
  * @version 1.0.0
@@ -74,20 +76,20 @@ public:
         this->hidden_2 = torch::zeros({num_layers, batch, out}).to(lifuren::getDevice());
         this->muxer_1  = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
         this->muxer_2  = this->register_module("muxer_2", torch::nn::GRU(torch::nn::GRUOptions(out, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
-        this->conv_1   = this->register_module("conv_1", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2)));
+        this->conv_1   = this->register_module("conv_1",  torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2)));
     }
     ~Muxer() {
         this->unregister_module("muxer_1");
         this->unregister_module("muxer_2");
-        this->unregister_module("conv_2");
+        this->unregister_module("conv_1");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
         input = input.flatten(2, 3);
-        auto [o1, h1] = this->muxer_1->forward(input, this->hidden_1);
-        auto [o2, h2] = this->muxer_2->forward(o1,    this->hidden_2);
-        return this->conv_1->forward(o2.reshape({this->batch, this->channel, 80, 48}));
+        auto [o_1, h_1] = this->muxer_1->forward(input, this->hidden_1);
+        auto [o_2, h_2] = this->muxer_2->forward(  o_1, this->hidden_2);
+        return this->conv_1->forward(o_2.reshape({this->batch, this->channel, 80, 48}));
     }
 
 };
@@ -97,28 +99,35 @@ public:
  */
 class Decoder : public torch::nn::Module {
 
-    private:
-    torch::nn::Sequential layer{ nullptr };
+private:
+    torch::nn::Sequential layer_1{ nullptr };
+    torch::nn::Sequential layer_2{ nullptr };
+    torch::nn::Sequential layer_3{ nullptr };
 
 public:
-    Decoder(int num_1) {
-        int num_2 = num_1 / 2;
-        torch::nn::Sequential layer;
-        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1, num_2, 3)));
-        layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2,     3, 3)));
-        this->layer = this->register_module("decoder", layer);
+    Decoder(int num_1, int num_2, int num_3) {
+        torch::nn::Sequential layer_1;
+        torch::nn::Sequential layer_2;
+        torch::nn::Sequential layer_3;
+        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
+        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2, num_1, 3)));
+        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
+        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3, num_2, 3)));
+        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2, num_1, 3)));
+        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
+        this->layer_1 = this->register_module("decoder_1", layer_1);
+        this->layer_2 = this->register_module("decoder_2", layer_2);
+        this->layer_3 = this->register_module("decoder_3", layer_3);
     }
     ~Decoder() {
-        this->unregister_module("decoder");
+        this->unregister_module("decoder_1");
+        this->unregister_module("decoder_2");
+        this->unregister_module("decoder_3");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input, torch::Tensor muxer_1, torch::Tensor muxer_2, torch::Tensor muxer_3) {
-        return this->layer->forward(torch::cat({
-            muxer_1,
-            muxer_2,
-            muxer_3
-        }, 1));
+        return this->layer_1->forward(muxer_1).add(this->layer_2->forward(muxer_2)).add(this->layer_3->forward(muxer_3));
     }
 
 };
@@ -150,9 +159,13 @@ public:
 TORCH_MODULE(WudaoziModule);
 
 /**
+ * L1Loss
+ * MSELoss
+ * HuberLoss
+ * SmoothL1Loss
  * 吴道子模型（视频风格迁移）
  */
-class WudaoziModel : public lifuren::Model<torch::nn::MSELoss, torch::optim::Adam, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
+class WudaoziModel : public lifuren::Model<torch::nn::L1Loss, torch::optim::Adam, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
 
 public:
     WudaoziModel(lifuren::config::ModelParams params = {});

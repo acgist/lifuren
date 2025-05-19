@@ -26,7 +26,6 @@
 
 #include "torch/data.h"
 
-// TODO: 补帧
 /**
  * 图片配置
  * 
