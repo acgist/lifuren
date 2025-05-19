@@ -9,60 +9,33 @@ lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParam
     // 156 *  92 - 2 - 2 / 2 =  76 * 44
     //  76 *  44 - 2 - 2 / 2 =  36 * 20
     //  36 *  20 - 2 - 2 / 2 =  16 *  8
-    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>( 3,  16));
-    this->encoder_2 = this->register_module("encoder_2", std::make_shared<lifuren::image::Encoder>(16,  32));
-    this->encoder_3 = this->register_module("encoder_3", std::make_shared<lifuren::image::Encoder>(32,  64));
-    this->encoder_4 = this->register_module("encoder_4", std::make_shared<lifuren::image::Encoder>(64, 128));
-    // 100 * 92
-    // 100 * 44
-    // 100 * 20
-    // 100 *  8
-    this->muxer_1 = this->register_module("muxer_1", std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 92));
-    this->muxer_2 = this->register_module("muxer_2", std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 44));
-    this->muxer_3 = this->register_module("muxer_3", std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 20));
-    this->muxer_4 = this->register_module("muxer_4", std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size),  8));
-    // 16  *  8 * 2 + 2 + 2 =  36 *  20
-    // 36  * 20 * 2 + 2 + 2 =  76 *  44
-    // 76  * 44 * 2 + 2 + 2 = 156 *  92
-    // 156 * 92 * 2 + 2 + 2 = 316 * 188
-    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(3, 1));
-    this->decoder_2 = this->register_module("decoder_2", std::make_shared<lifuren::image::Decoder>( 3, 2));
-    this->decoder_3 = this->register_module("decoder_3", std::make_shared<lifuren::image::Decoder>( 3, 3));
-    this->decoder_4 = this->register_module("decoder_4", std::make_shared<lifuren::image::Decoder>( 3, 4));
-    // 
-    this->embody_1 = this->register_module("embody_1", std::make_shared<lifuren::image::Embody>(16, 32));
+    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>( 3, 16));
+    this->encoder_2 = this->register_module("encoder_2", std::make_shared<lifuren::image::Encoder>(16, 32));
+    this->encoder_3 = this->register_module("encoder_3", std::make_shared<lifuren::image::Encoder>(32, 64));
+    this->muxer_1   = this->register_module("muxer_1",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 16, 76 * 44, 160 / 2 * 96 / 2));
+    this->muxer_2   = this->register_module("muxer_2",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 32, 36 * 20, 160 / 2 * 96 / 2));
+    this->muxer_3   = this->register_module("muxer_3",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 64, 16 *  8, 160 / 2 * 96 / 2));
+    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(16 + 32 + 64));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {
     this->unregister_module("encoder_1");
     this->unregister_module("encoder_2");
     this->unregister_module("encoder_3");
-    this->unregister_module("encoder_4");
     this->unregister_module("muxer_1");
     this->unregister_module("muxer_2");
     this->unregister_module("muxer_3");
-    this->unregister_module("muxer_4");
     this->unregister_module("decoder_1");
-    this->unregister_module("decoder_2");
-    this->unregister_module("decoder_3");
-    this->unregister_module("decoder_4");
-    this->unregister_module("embody_1");
 }
 
 torch::Tensor lifuren::image::WudaoziModuleImpl::forward(torch::Tensor input) {
     auto encoder_1 = this->encoder_1->forward(input);
     auto encoder_2 = this->encoder_2->forward(encoder_1);
     auto encoder_3 = this->encoder_3->forward(encoder_2);
-    auto encoder_4 = this->encoder_4->forward(encoder_3);
     auto muxer_1   = this->muxer_1  ->forward(encoder_1);
     auto muxer_2   = this->muxer_2  ->forward(encoder_2);
     auto muxer_3   = this->muxer_3  ->forward(encoder_3);
-    auto muxer_4   = this->muxer_4  ->forward(encoder_4);
-    auto decoder_1 = this->decoder_1->forward(muxer_1);
-    auto decoder_2 = this->decoder_2->forward(muxer_2);
-    auto decoder_3 = this->decoder_3->forward(muxer_3);
-    auto decoder_4 = this->decoder_4->forward(muxer_4);
-    return this->embody_1->forward(input, decoder_1, decoder_2, decoder_3, decoder_4);
+    return this->decoder_1->forward(input, muxer_1, muxer_2, muxer_3);
 }
 
 lifuren::image::WudaoziModel::WudaoziModel(lifuren::config::ModelParams params) : Model(params) {

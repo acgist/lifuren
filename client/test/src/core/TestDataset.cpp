@@ -111,7 +111,7 @@
 
 LFR_TEST(
     // testImage();
-    // testVideo();
+    testVideo();
     // testAction();
-    testLoadWudaoziDatasetLoader();
+    // testLoadWudaoziDatasetLoader();
 );

@@ -30,6 +30,11 @@
 /**
  * 图片配置
  * 
+ * 316 * 188 - 2 - 2 / 2 = 156 * 92
+ * 156 *  92 - 2 - 2 / 2 =  76 * 44
+ *  76 *  44 - 2 - 2 / 2 =  36 * 20
+ *  36 *  20 - 2 - 2 / 2 =  16 *  8
+ * 
  *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 57.36 GB/Hour 
  * dataset size = 188    * 316   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 57.36 GB/Hour
  * 
@@ -38,8 +43,8 @@
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_WIDTH       188 // 宽度：16:9
-#define LFR_IMAGE_HEIGHT      316 // 高度：16:9
+#define LFR_IMAGE_WIDTH        92 // 宽度：16:9
+#define LFR_IMAGE_HEIGHT      156 // 高度：16:9
 #define LFR_VIDEO_FPS         24  // 帧率
 #define LFR_VIDEO_DIFF        30  // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   15  // 最小帧数

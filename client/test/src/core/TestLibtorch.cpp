@@ -105,12 +105,9 @@
     // lifuren::logTensor("a", torch::stack(vector, 1));
     // lifuren::logTensor("a", torch::stack(vector, 1).matmul(a));
     // -
-    torch::nn::ConvTranspose2dOptions options(2, 2, 4);
-    options.stride(4);
-    torch::nn::ConvTranspose2d conv(options);
-    auto tensor = torch::ones({2, 2, 2}, torch::kFloat32);
-    lifuren::logTensor("tensor", tensor);
-    lifuren::logTensor("tensor", conv->forward(tensor));
+    torch::Tensor a = torch::ones({2, 3, 2, 3});
+    lifuren::logTensor("tensor", a.flatten(1, 3));
+    lifuren::logTensor("tensor", a.flatten(2, 3));
 }
 
 LFR_TEST(
