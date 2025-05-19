@@ -15,7 +15,7 @@ lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParam
     this->muxer_1   = this->register_module("muxer_1",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 16, 76 * 44, 160 / 2 * 96 / 2));
     this->muxer_2   = this->register_module("muxer_2",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 32, 36 * 20, 160 / 2 * 96 / 2));
     this->muxer_3   = this->register_module("muxer_3",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 64, 16 *  8, 160 / 2 * 96 / 2));
-    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(16 + 32 + 64));
+    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(16, 32, 64));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {
