@@ -66,8 +66,8 @@ public:
             float l[] = { 0, 0, 0, 0 };
             float f[] = { w(rand) * label + b(rand), w(rand) * label + b(rand) };
             l[label]  = 1.0F;
-            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone());
-            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone());
+            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).to(LFR_DTYPE).clone());
+            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).to(LFR_DTYPE).clone());
         }
         auto dataset = lifuren::dataset::Dataset(this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);

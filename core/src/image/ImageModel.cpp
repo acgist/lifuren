@@ -9,13 +9,13 @@ lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParam
     // 156 *  92 - 2 - 2 / 2 =  76 * 44
     //  76 *  44 - 2 - 2 / 2 =  36 * 20
     //  36 *  20 - 2 - 2 / 2 =  16 *  8
-    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>( 3, 16));
-    this->encoder_2 = this->register_module("encoder_2", std::make_shared<lifuren::image::Encoder>(16, 32));
-    this->encoder_3 = this->register_module("encoder_3", std::make_shared<lifuren::image::Encoder>(32, 64));
-    this->muxer_1   = this->register_module("muxer_1",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 16, 76 * 44, 160 / 2 * 96 / 2));
-    this->muxer_2   = this->register_module("muxer_2",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 32, 36 * 20, 160 / 2 * 96 / 2));
-    this->muxer_3   = this->register_module("muxer_3",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 64, 16 *  8, 160 / 2 * 96 / 2));
-    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(16, 32, 64));
+    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>( 3,  16));
+    this->encoder_2 = this->register_module("encoder_2", std::make_shared<lifuren::image::Encoder>(16,  64));
+    this->encoder_3 = this->register_module("encoder_3", std::make_shared<lifuren::image::Encoder>(64, 256));
+    this->muxer_1   = this->register_module("muxer_1",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size),  16, 76 * 44, 160 / 2 * 96 / 2));
+    this->muxer_2   = this->register_module("muxer_2",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size),  64, 36 * 20, 160 / 2 * 96 / 2));
+    this->muxer_3   = this->register_module("muxer_3",   std::make_shared<lifuren::image::Muxer>(static_cast<int>(this->params.batch_size), 256, 16 *  8, 160 / 2 * 96 / 2));
+    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(16, 64, 256));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {

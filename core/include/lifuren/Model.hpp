@@ -172,6 +172,7 @@ lifuren::Model<L, P, M, D>::Model(lifuren::config::ModelParams params) : params(
     if(this->params.thread_size == 0) {
         this->params.thread_size = std::thread::hardware_concurrency();
     }
+    this->model->to(LFR_DTYPE);
     torch::set_num_threads(this->params.thread_size);
     SPDLOG_DEBUG("定义模型：{}", this->params.model_name);
     SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));

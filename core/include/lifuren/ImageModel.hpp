@@ -35,13 +35,13 @@ public:
     Encoder(int in, int out) {
         torch::nn::Sequential layer;
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3)));
-        // layer->push_back(torch::nn::BatchNorm2d(out));
-        // layer->push_back(torch::nn::Dropout(0.3));
-        // layer->push_back(torch::nn::ReLU());
+        layer->push_back(torch::nn::BatchNorm2d(out));
+        layer->push_back(torch::nn::Dropout(0.1));
+        layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
-        // layer->push_back(torch::nn::BatchNorm2d(out));
-        // layer->push_back(torch::nn::Dropout(0.3));
-        // layer->push_back(torch::nn::ReLU());
+        layer->push_back(torch::nn::BatchNorm2d(out));
+        layer->push_back(torch::nn::Dropout(0.1));
+        layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         this->layer = this->register_module("encoder", layer);
     }
@@ -65,22 +65,21 @@ private:
     int batch;
     int channel;
     torch::Tensor  hidden_1{ nullptr };
-    torch::Tensor  hidden_2{ nullptr };
     torch::nn::GRU muxer_1 { nullptr };
-    torch::nn::GRU muxer_2 { nullptr };
     torch::nn::ConvTranspose2d conv_1{ nullptr };
 
 public:
     Muxer(int batch, int channel, int in, int out, int num_layers = 1) : batch(batch), channel(channel) {
         this->hidden_1 = torch::zeros({num_layers, batch, out}).to(lifuren::getDevice());
-        this->hidden_2 = torch::zeros({num_layers, batch, out}).to(lifuren::getDevice());
-        this->muxer_1  = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
-        this->muxer_2  = this->register_module("muxer_2", torch::nn::GRU(torch::nn::GRUOptions(out, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
-        this->conv_1   = this->register_module("conv_1",  torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2)));
+        if(num_layers > 1) {
+            this->muxer_1 = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+        } else {
+            this->muxer_1 = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+        }
+        this->conv_1 = this->register_module("conv_1", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2)));
     }
     ~Muxer() {
         this->unregister_module("muxer_1");
-        this->unregister_module("muxer_2");
         this->unregister_module("conv_1");
     }
 
@@ -88,8 +87,7 @@ public:
     torch::Tensor forward(torch::Tensor input) {
         input = input.flatten(2, 3);
         auto [o_1, h_1] = this->muxer_1->forward(input, this->hidden_1);
-        auto [o_2, h_2] = this->muxer_2->forward(  o_1, this->hidden_2);
-        return this->conv_1->forward(o_2.reshape({this->batch, this->channel, 80, 48}));
+        return this->conv_1->forward(o_1.reshape({this->batch, this->channel, 80, 48}));
     }
 
 };
@@ -109,12 +107,12 @@ public:
         torch::nn::Sequential layer_1;
         torch::nn::Sequential layer_2;
         torch::nn::Sequential layer_3;
-        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
-        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2, num_1, 3)));
-        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
-        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3, num_2, 3)));
-        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2, num_1, 3)));
-        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1,     3, 3)));
+        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1    , num_1 / 2, 3)));
+        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1 / 2,         3, 3)));
+        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2    , num_2 / 2, 3)));
+        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2 / 2,         3, 3)));
+        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3    , num_3 / 2, 3)));
+        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3 / 2,         3, 3)));
         this->layer_1 = this->register_module("decoder_1", layer_1);
         this->layer_2 = this->register_module("decoder_2", layer_2);
         this->layer_3 = this->register_module("decoder_3", layer_3);
