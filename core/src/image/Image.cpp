@@ -39,10 +39,10 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
     }
     int index = 0;
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0);
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(LFR_DTYPE).to(lifuren::getDevice());
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->model->pred(tensor.to(lifuren::getDevice()));
-        lifuren::dataset::image::tensor_to_mat(image, result.squeeze().to(torch::kCPU));
+        auto result = this->model->pred(tensor);
+        lifuren::dataset::image::tensor_to_mat(image, result.squeeze().to(torch::kCPU).to(torch::kFloat32));
         writer.write(image);
         tensor = result;
     }

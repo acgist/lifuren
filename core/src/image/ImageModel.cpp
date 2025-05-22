@@ -56,6 +56,13 @@ void lifuren::image::WudaoziModel::defineDataset() {
     }
 }
 
+void lifuren::image::WudaoziModel::defineOptimizer() {
+    torch::optim::AdamOptions optims;
+    optims.lr (this->params.lr);
+    optims.eps(0.0001);
+    this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
+}
+
 void lifuren::image::WudaoziModel::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     pred = this->model->forward(feature);
     loss = this->loss->forward(pred, label);

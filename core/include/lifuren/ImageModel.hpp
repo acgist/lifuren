@@ -17,8 +17,6 @@
 #ifndef LFR_HEADER_CORE_IMAGE_MODEL_HPP
 #define LFR_HEADER_CORE_IMAGE_MODEL_HPP
 
-#include "torch/optim.h"
-
 #include "lifuren/Model.hpp"
 
 namespace lifuren::image {
@@ -39,7 +37,7 @@ public:
         layer->push_back(torch::nn::Dropout(0.1));
         layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
-        layer->push_back(torch::nn::BatchNorm2d(out));
+        // layer->push_back(torch::nn::BatchNorm2d(out));
         layer->push_back(torch::nn::Dropout(0.1));
         layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
@@ -70,13 +68,16 @@ private:
 
 public:
     Muxer(int batch, int channel, int in, int out, int num_layers = 1) : batch(batch), channel(channel) {
-        this->hidden_1 = torch::zeros({num_layers, batch, out}).to(lifuren::getDevice());
+        this->hidden_1 = torch::zeros({num_layers, batch, out}).to(LFR_DTYPE).to(lifuren::getDevice());
         if(num_layers > 1) {
-            this->muxer_1 = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+            auto muxer_1  = torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true));
+            this->muxer_1 = this->register_module("muxer_1", muxer_1);
         } else {
-            this->muxer_1 = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+            auto muxer_1  = torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true).dropout(0.1));
+            this->muxer_1 = this->register_module("muxer_1", muxer_1);
         }
-        this->conv_1 = this->register_module("conv_1", torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2)));
+        auto conv_1  = torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2));
+        this->conv_1 = this->register_module("conv_1", conv_1);
     }
     ~Muxer() {
         this->unregister_module("muxer_1");
@@ -161,6 +162,7 @@ TORCH_MODULE(WudaoziModule);
  * MSELoss
  * HuberLoss
  * SmoothL1Loss
+ * 
  * 吴道子模型（视频风格迁移）
  */
 class WudaoziModel : public lifuren::Model<torch::nn::L1Loss, torch::optim::Adam, lifuren::image::WudaoziModule, lifuren::dataset::SeqDatasetLoader> {
@@ -170,7 +172,8 @@ public:
     ~WudaoziModel();
     
 public:
-    void defineDataset() override;
+    void defineDataset()   override;
+    void defineOptimizer() override;
     void logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override;
 
 };

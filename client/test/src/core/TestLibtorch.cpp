@@ -105,9 +105,14 @@
     // lifuren::logTensor("a", torch::stack(vector, 1));
     // lifuren::logTensor("a", torch::stack(vector, 1).matmul(a));
     // -
-    torch::Tensor a = torch::ones({2, 3, 2, 3});
-    lifuren::logTensor("tensor", a.flatten(1, 3));
-    lifuren::logTensor("tensor", a.flatten(2, 3));
+    // torch::Tensor a = torch::ones({2, 3, 2, 3});
+    // lifuren::logTensor("tensor", a.flatten(1, 3));
+    // lifuren::logTensor("tensor", a.flatten(2, 3));
+    // -
+    torch::Tensor a = torch::rand({2, 3}) / 1024;
+    lifuren::logTensor("a", a);
+    lifuren::logTensor("a", a.to(torch::kFloat16));
+    lifuren::logTensor("a", a.to(torch::kBFloat16));
 }
 
 LFR_TEST(

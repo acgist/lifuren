@@ -75,7 +75,7 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             cv::Mat diff;
             cv::Mat label;
             cv::Mat feature;
-            torch::Tensor zero = torch::zeros({ 3, height, width }).to(device);
+            torch::Tensor zero = torch::zeros({ 3, height, width }).to(LFR_DTYPE).to(device);
             std::vector<torch::Tensor> labels_local;
             std::vector<torch::Tensor> features_local;
             while(video.read(feature)) {
@@ -120,8 +120,8 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                     }
                 }
                 if(!label.empty()) {
-                    labels_local  .push_back(lifuren::dataset::image::mat_to_tensor(label  ).clone().to(device));
-                    features_local.push_back(lifuren::dataset::image::mat_to_tensor(feature).clone().to(device));
+                    labels_local  .push_back(lifuren::dataset::image::mat_to_tensor(label  ).clone().to(LFR_DTYPE).to(device));
+                    features_local.push_back(lifuren::dataset::image::mat_to_tensor(feature).clone().to(LFR_DTYPE).to(device));
                 }
                 label = feature;
             }

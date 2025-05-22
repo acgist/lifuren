@@ -26,6 +26,7 @@
 #include <concepts>
 
 #include "torch/nn.h"
+#include "torch/optim.h"
 #include "torch/serialize.h"
 
 #include "spdlog/spdlog.h"
@@ -84,7 +85,7 @@ public:
     // 加载模型
     virtual bool load(const std::string& path = "./lifuren.pt", torch::DeviceType device = torch::DeviceType::CPU);
     // 定义模型
-    virtual bool define(const bool define_weight = true, const bool define_dataset = true);
+    virtual bool define(const bool define_weight = true, const bool define_dataset = true, const bool define_optimizer = true);
     // 打印模型
     virtual void print(const bool details = false);
     // 训练模型
@@ -127,6 +128,8 @@ protected:
     virtual void defineWeight();
     // 定义数据集
     virtual void defineDataset() = 0;
+    // 定义优化函数
+    virtual void defineOptimizer();
 
 };
 
@@ -166,13 +169,11 @@ inline void classify_evaluate(
 
 template<typename L, typename P, typename M, typename D>
 lifuren::Model<L, P, M, D>::Model(lifuren::config::ModelParams params) : params(std::move(params)), device(lifuren::getDevice()) {
-    this->loss      = L{};
-    this->model     = M{ this->params };
-    this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
+    this->loss  = L{};
+    this->model = M{ this->params };
     if(this->params.thread_size == 0) {
         this->params.thread_size = std::thread::hardware_concurrency();
     }
-    this->model->to(LFR_DTYPE);
     torch::set_num_threads(this->params.thread_size);
     SPDLOG_DEBUG("定义模型：{}", this->params.model_name);
     SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
@@ -210,19 +211,25 @@ bool lifuren::Model<L, P, M, D>::load(const std::string& path, torch::DeviceType
         SPDLOG_ERROR("加载模型异常：{} - {}", path, e.what());
         return false;
     }
+    this->model->to(LFR_DTYPE);
     this->model->to(this->device);
     this->model->eval();
+    this->print();
     return true;
 }
 
 template<typename L, typename P, typename M, typename D>
-bool lifuren::Model<L, P, M, D>::define(const bool define_weight, const bool define_dataset) {
+bool lifuren::Model<L, P, M, D>::define(const bool define_weight, const bool define_dataset, const bool define_optimizer) {
     if(define_weight) {
         this->defineWeight();
     }
     if(define_dataset) {
         this->defineDataset();
     }
+    if(define_optimizer) {
+        this->defineOptimizer();
+    }
+    this->model->to(LFR_DTYPE);
     this->model->to(this->device);
     this->print();
     return true;
@@ -378,6 +385,11 @@ void lifuren::Model<L, P, M, D>::test() {
 
 template<typename L, typename P, typename M, typename D>
 inline void lifuren::Model<L, P, M, D>::defineWeight() {
+}
+
+template<typename L, typename P, typename M, typename D>
+inline void lifuren::Model<L, P, M, D>::defineOptimizer() {
+    this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
 }
 
 template<typename L, typename P, typename M, typename D>

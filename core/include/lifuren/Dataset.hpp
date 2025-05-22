@@ -36,11 +36,11 @@
  * 
  * 模型大小
  * 
- *              params size * kFloat16 / KB   / MB   / GB   = 1.74GB
- * model size = 400000000   * 2        / 1024 / 1024 / 1024 = 1.74GB
+ *              params size * kFloat16 / KB   / MB   / GB   = 0.37GB
+ * model size = 200000000   * 2        / 1024 / 1024 / 1024 = 0.37GB
  * 
- *              params size * kFloat32 / KB   / MB   / GB   = 1.49GB
- * model size = 400000000   * 4        / 1024 / 1024 / 1024 = 1.49GB
+ *              params size * kFloat32 / KB   / MB   / GB   = 0.75GB
+ * model size = 200000000   * 4        / 1024 / 1024 / 1024 = 0.75GB
  * 
  * 一批训练数据大小
  * 

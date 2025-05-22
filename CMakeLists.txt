@@ -77,6 +77,7 @@ endif()
 add_definitions(-DSPDLOG_COMPILED_LIB)
 add_definitions(-DLFR_DTYPE=torch::kFloat16)
 # add_definitions(-DLFR_DTYPE=torch::kFloat32)
+# add_definitions(-DLFR_DTYPE=torch::kBFloat16)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
