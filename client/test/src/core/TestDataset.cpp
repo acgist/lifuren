@@ -24,24 +24,27 @@
 [[maybe_unused]] static void testVideo() {
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "h.mp4" }).string());
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1kEVfzHExj.mp4" }).string());
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1CtSKYQEKt.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1D1V7zQEV4.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1RYowY7EkK.mp4" }).string());
+    double mean;
     cv::Mat old;
     cv::Mat diff;
     cv::Mat frame;
+    cv::Mat source;
     int count = 0;
     while(video.read(frame)) {
-        double min = 0;
-        double max = 0;
-        cv::minMaxLoc(frame, &min, &max);
-        if(max == 0 && min == 0) {
+        mean = cv::mean(frame)[0];
+        if(mean < 10.0) {
+            SPDLOG_INFO("黑屏：{}", mean);
+            cv::imshow("black", frame);
+            cv::waitKey();
             continue;
         }
         if(!old.empty()) {
             cv::absdiff(frame, old, diff);
             ++count;
-            auto mean = cv::mean(diff)[0];
+            mean = cv::mean(diff)[0];
             SPDLOG_INFO("差异：{}", mean);
             if(mean == 0) {
                 count = 0;
@@ -52,30 +55,22 @@
                 cv::waitKey();
             } else {
             }
+            diff = frame - old;
+            source = diff + old;
+            lifuren::dataset::image::resize(diff, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+            lifuren::dataset::image::resize(source, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+            cv::imshow("diff", diff);
+            cv::imshow("source", source);
         }
         old = frame;
-        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
+        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         cv::imshow("frame", frame);
-        cv::waitKey(20);
-    }
-    cv::waitKey();
-    cv::destroyAllWindows();
-}
-
-[[maybe_unused]] static void testAction() {
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1kEVfzHExj.mp4" }).string());
-    cv::Mat frame;
-    // cv::Mat image;
-    std::vector<cv::Mat> images;
-    while(video.read(frame)) {
-        // cv::cvtColor(frame, image, cv::COLOR_BGR2GRAY);
-        // cv::imshow("image", image);
-        cv::split(frame, images);
-        cv::imshow("image", images[2]);
         if(cv::waitKey(20) == 27) {
             break;
         }
     }
+    cv::waitKey();
+    cv::destroyAllWindows();
 }
 
 [[maybe_unused]] static void testLoadWudaoziDatasetLoader() {
@@ -112,6 +107,5 @@
 LFR_TEST(
     // testImage();
     testVideo();
-    // testAction();
     // testLoadWudaoziDatasetLoader();
 );

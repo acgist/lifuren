@@ -79,40 +79,14 @@
     // -
     // [100, 3, 16, 8]
     // [100,    16, 8]
-    // torch::Tensor a = torch::ones({2, 3, 2, 3});
-    // torch::Tensor b = torch::ones({2,    2, 3});
-    // torch::Tensor c = torch::ones({2,    2, 3}) * 2;
-    // torch::Tensor d = torch::ones({2,    2, 3}) * 3;
-    // lifuren::logTensor("a", a);
-    // // auto b1 = a.select(1, 0).mul(b);
-    // // auto c1 = a.select(1, 1).mul(c);
-    // // auto d1 = a.select(1, 2).mul(d);
-    // int i = 0;
-    // auto array = a.split(1, 1);
-    // std::vector<torch::Tensor> vector;
-    // for(auto iter = array.begin(); iter != array.end(); ++i, ++iter) {
-    //     if(i % 3 == 0) {
-    //         lifuren::logTensor("a", iter->squeeze(1).sizes());
-    //         lifuren::logTensor("a", torch::transpose(b, 1, 2).sizes());
-    //         vector.push_back(iter->squeeze(1).matmul(torch::transpose(b, 1, 2)));
-    //     } else if(i % 3 == 1) {
-    //         vector.push_back(iter->squeeze(1).matmul(torch::transpose(c, 1, 2)));
-    //     } else {
-    //         vector.push_back(iter->squeeze(1).matmul(torch::transpose(d, 1, 2)));
-    //     }
-    //     lifuren::logTensor("a", *iter);
-    // }
-    // lifuren::logTensor("a", torch::stack(vector, 1));
-    // lifuren::logTensor("a", torch::stack(vector, 1).matmul(a));
-    // -
-    // torch::Tensor a = torch::ones({2, 3, 2, 3});
-    // lifuren::logTensor("tensor", a.flatten(1, 3));
-    // lifuren::logTensor("tensor", a.flatten(2, 3));
-    // -
-    torch::Tensor a = torch::rand({2, 3}) / 1024;
+    torch::Tensor a = torch::ones({2, 3, 2, 3});
+    torch::Tensor b = torch::ones({2, 3, 3, 2});
+    torch::Tensor c = torch::ones({2, 3, 3, 2}) * 2;
+    torch::Tensor d = torch::ones({2, 3, 3, 2}) * 3;
     lifuren::logTensor("a", a);
-    lifuren::logTensor("a", a.to(torch::kFloat16));
-    lifuren::logTensor("a", a.to(torch::kBFloat16));
+    lifuren::logTensor("a", a.matmul(b));
+    lifuren::logTensor("a", a.matmul(c));
+    lifuren::logTensor("a", a.matmul(d));
 }
 
 LFR_TEST(

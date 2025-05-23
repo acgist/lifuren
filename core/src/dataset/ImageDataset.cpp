@@ -48,11 +48,12 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
 
 lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
     size_t frame_count = 0;
+    size_t video_count = 0;
     auto dataset = lifuren::dataset::Dataset(
         batch_size,
         path,
         { ".mp4" },
-        [width, height, &frame_count] (
+        [width, height, &frame_count, &video_count] (
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
             std::vector<torch::Tensor>& features,
@@ -72,13 +73,15 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             SPDLOG_DEBUG("加载视频文件开始：{} - {} - {} - {} - {}", video_fps, video_frame_type, video_frame_count, video_frame_width, video_frame_height);
             size_t index = 0;
             size_t frame = 0;
+            double mean;
             cv::Mat diff;
-            cv::Mat label;
-            cv::Mat feature;
+            cv::Mat dst_frame; // 目标视频帧
+            cv::Mat old_frame; // 上次视频帧
+            cv::Mat src_frame; // 当前视频帧
             torch::Tensor zero = torch::zeros({ 3, height, width }).to(LFR_DTYPE).to(device);
-            std::vector<torch::Tensor> labels_local;
-            std::vector<torch::Tensor> features_local;
-            while(video.read(feature)) {
+            std::vector<torch::Tensor> labels_batch;
+            std::vector<torch::Tensor> features_batch;
+            while(video.read(src_frame)) {
                 #if LFR_VIDEO_FRAME_STEP > 0
                 if(++index % LFR_VIDEO_FRAME_STEP != 0) {
                     continue;
@@ -86,67 +89,61 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 #else
                 ++index;
                 #endif
-                lifuren::dataset::image::resize(feature, width, height);
-                double min = 0;
-                double max = 0;
-                cv::minMaxLoc(feature, &min, &max);
-                if(max == 0 && min == 0) {
-                    // 跳过黑屏
+                lifuren::dataset::image::resize(src_frame, width, height);
+                mean = cv::mean(src_frame)[0];
+                if(mean <= 10.0) {
+                    // 跳过黑屏或者暗屏
                     continue;
                 }
-                if(!label.empty()) {
-                    cv::absdiff(feature, label, diff);
-                    auto diff_mean = cv::mean(diff)[0];
-                    if(diff_mean == 0) {
+                if(!old_frame.empty()) {
+                    cv::absdiff(src_frame, old_frame, diff);
+                    mean = cv::mean(diff)[0];
+                    if(mean == 0) {
                         // 没有变化
                         continue;
-                    } else if(diff_mean > LFR_VIDEO_DIFF || labels_local.size() >= LFR_VIDEO_FRAME_MAX) {
-                        label = feature;
-                        if(labels_local.size() >= LFR_VIDEO_FRAME_MIN) {
-                            SPDLOG_DEBUG("加载视频片段：{} - {}", labels_local.size(), features_local.size());
-                            frame += labels_local.size();
-                            labels_local  .push_back(zero);
-                            features_local.push_back(zero);
-                            labels  .insert(labels  .end(), std::make_move_iterator(labels_local  .begin()), std::make_move_iterator(labels_local  .end()));
-                            features.insert(features.end(), std::make_move_iterator(features_local.begin()), std::make_move_iterator(features_local.end()));
+                    } else if(mean > LFR_VIDEO_DIFF || labels_batch.size() >= LFR_VIDEO_FRAME_MAX) {
+                        if(labels_batch.size() >= LFR_VIDEO_FRAME_MIN) {
+                            SPDLOG_DEBUG("加载视频片段：{} - {}", labels_batch.size(), features_batch.size());
+                            frame += labels_batch.size();
+                            labels_batch  .push_back(zero);
+                            features_batch.push_back(zero);
+                            labels  .insert(labels  .end(), std::make_move_iterator(labels_batch  .begin()), std::make_move_iterator(labels_batch  .end()));
+                            features.insert(features.end(), std::make_move_iterator(features_batch.begin()), std::make_move_iterator(features_batch.end()));
                         } else {
-                            SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_local.size(), features_local.size());
+                            SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_batch.size(), features_batch.size());
                         }
-                        labels_local  .clear();
-                        features_local.clear();
-                        continue;
+                        labels_batch  .clear();
+                        features_batch.clear();
                     } else {
-                        // -
+                        dst_frame = src_frame - old_frame;
+                        labels_batch  .push_back(lifuren::dataset::image::mat_to_tensor(dst_frame).clone().to(LFR_DTYPE).to(device));
+                        features_batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame).clone().to(LFR_DTYPE).to(device));
                     }
                 }
-                if(!label.empty()) {
-                    labels_local  .push_back(lifuren::dataset::image::mat_to_tensor(label  ).clone().to(LFR_DTYPE).to(device));
-                    features_local.push_back(lifuren::dataset::image::mat_to_tensor(feature).clone().to(LFR_DTYPE).to(device));
-                }
-                label = feature;
+                old_frame = src_frame;
             }
-            if(labels_local.size() >= LFR_VIDEO_FRAME_MIN) {
-                SPDLOG_DEBUG("加载视频片段：{} - {}", labels_local.size(), features_local.size());
-                frame += labels_local.size();
-                labels_local  .push_back(zero);
-                features_local.push_back(zero);
-                labels  .insert(labels  .end(), std::make_move_iterator(labels_local  .begin()), std::make_move_iterator(labels_local  .end()));
-                features.insert(features.end(), std::make_move_iterator(features_local.begin()), std::make_move_iterator(features_local.end()));
+            if(labels_batch.size() >= LFR_VIDEO_FRAME_MIN) {
+                SPDLOG_DEBUG("加载视频片段：{} - {}", labels_batch.size(), features_batch.size());
+                frame += labels_batch.size();
+                labels_batch  .push_back(zero);
+                features_batch.push_back(zero);
+                labels  .insert(labels  .end(), std::make_move_iterator(labels_batch  .begin()), std::make_move_iterator(labels_batch  .end()));
+                features.insert(features.end(), std::make_move_iterator(features_batch.begin()), std::make_move_iterator(features_batch.end()));
             } else {
-                SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_local.size(), features_local.size());
+                SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_batch.size(), features_batch.size());
             }
-            frame_count += frame;
-            labels_local  .clear();
-            features_local.clear();
-            SPDLOG_DEBUG("加载视频文件完成：{} - {} / {}", file, frame, index);
+            labels_batch  .clear();
+            features_batch.clear();
+            SPDLOG_DEBUG("加载视频文件完成：{} -> {} - {} / {}", video_count, file, frame, index);
             video.release();
+            ++video_count;
+            frame_count += frame;
         },
         nullptr,
         true
     ).map(torch::data::transforms::Stack<>());
-    SPDLOG_DEBUG("视频数据集加载完成：{}", frame_count);
+    SPDLOG_DEBUG("视频数据集加载完成：{} - {}", video_count, frame_count);
     torch::data::DataLoaderOptions options(batch_size);
     options.drop_last(true);
-    // TODO: gru
     return torch::data::make_data_loader<LFT_SEQ_SAMPLER>(std::move(dataset), options);
 }

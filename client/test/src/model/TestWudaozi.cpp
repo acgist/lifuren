@@ -12,7 +12,7 @@
     lifuren::image::WudaoziModel model({
         .lr         = 0.001F,
         .batch_size = 100,
-        .epoch_size = 2,
+        .epoch_size = 32,
         .model_name = "wudaozi",
         .train_path = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_TRAIN}).string(),
         .val_path   = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_VAL  }).string(),
@@ -33,7 +33,7 @@
 }
 
 [[maybe_unused]] static void testPlay() {
-    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi_gen.mp4"}).string());
+    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
     if(!video.isOpened()) {
         SPDLOG_WARN("打开视频失败");
         return;
@@ -48,7 +48,7 @@
 }
 
 LFR_TEST(
-    testTrain();
-    testPred();
+    // testTrain();
+    // testPred();
     testPlay();
 );

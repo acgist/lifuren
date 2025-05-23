@@ -34,12 +34,8 @@ public:
         torch::nn::Sequential layer;
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3)));
         layer->push_back(torch::nn::BatchNorm2d(out));
-        layer->push_back(torch::nn::Dropout(0.1));
         layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3)));
-        // layer->push_back(torch::nn::BatchNorm2d(out));
-        layer->push_back(torch::nn::Dropout(0.1));
-        layer->push_back(torch::nn::ReLU());
         layer->push_back(torch::nn::MaxPool2d(torch::nn::MaxPool2dOptions(2)));
         this->layer = this->register_module("encoder", layer);
     }
@@ -60,35 +56,30 @@ public:
 class Muxer : public torch::nn::Module {
 
 private:
+    int w;
+    int h;
     int batch;
     int channel;
     torch::Tensor  hidden_1{ nullptr };
-    torch::nn::GRU muxer_1 { nullptr };
-    torch::nn::ConvTranspose2d conv_1{ nullptr };
+    torch::nn::GRU gru_1   { nullptr };
+    torch::nn::Linear linear_1{ nullptr };
 
 public:
-    Muxer(int batch, int channel, int in, int out, int num_layers = 1) : batch(batch), channel(channel) {
+    Muxer(int w, int h, int batch, int channel, int in, int out, int num_layers = 1) : w(w), h(h), batch(batch), channel(channel) {
         this->hidden_1 = torch::zeros({num_layers, batch, out}).to(LFR_DTYPE).to(lifuren::getDevice());
-        if(num_layers > 1) {
-            auto muxer_1  = torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true));
-            this->muxer_1 = this->register_module("muxer_1", muxer_1);
-        } else {
-            auto muxer_1  = torch::nn::GRU(torch::nn::GRUOptions( in, out).num_layers(num_layers).batch_first(true).dropout(0.1));
-            this->muxer_1 = this->register_module("muxer_1", muxer_1);
-        }
-        auto conv_1  = torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channel, channel, 2).stride(2));
-        this->conv_1 = this->register_module("conv_1", conv_1);
+        this->gru_1    = this->register_module("muxer_1", torch::nn::GRU(torch::nn::GRUOptions(in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+        this->linear_1 = this->register_module("linear_1", torch::nn::Linear(w * h, w * h * 4));
     }
     ~Muxer() {
         this->unregister_module("muxer_1");
-        this->unregister_module("conv_1");
+        this->unregister_module("linear_1");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
         input = input.flatten(2, 3);
-        auto [o_1, h_1] = this->muxer_1->forward(input, this->hidden_1);
-        return this->conv_1->forward(o_1.reshape({this->batch, this->channel, 80, 48}));
+        auto [o_1, h_1] = this->gru_1->forward(input, this->hidden_1);
+        return this->linear_1->forward(o_1).reshape({this->batch, this->channel, this->w * 2, this->h * 2});
     }
 
 };
@@ -100,33 +91,21 @@ class Decoder : public torch::nn::Module {
 
 private:
     torch::nn::Sequential layer_1{ nullptr };
-    torch::nn::Sequential layer_2{ nullptr };
-    torch::nn::Sequential layer_3{ nullptr };
 
 public:
-    Decoder(int num_1, int num_2, int num_3) {
+    Decoder(int channel_1) {
         torch::nn::Sequential layer_1;
-        torch::nn::Sequential layer_2;
-        torch::nn::Sequential layer_3;
-        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1    , num_1 / 2, 3)));
-        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_1 / 2,         3, 3)));
-        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2    , num_2 / 2, 3)));
-        layer_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_2 / 2,         3, 3)));
-        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3    , num_3 / 2, 3)));
-        layer_3->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(num_3 / 2,         3, 3)));
+        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(channel_1, channel_1, 3)));
+        layer_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(channel_1,         3, 3)));
         this->layer_1 = this->register_module("decoder_1", layer_1);
-        this->layer_2 = this->register_module("decoder_2", layer_2);
-        this->layer_3 = this->register_module("decoder_3", layer_3);
     }
     ~Decoder() {
         this->unregister_module("decoder_1");
-        this->unregister_module("decoder_2");
-        this->unregister_module("decoder_3");
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor muxer_1, torch::Tensor muxer_2, torch::Tensor muxer_3) {
-        return this->layer_1->forward(muxer_1).add(this->layer_2->forward(muxer_2)).add(this->layer_3->forward(muxer_3));
+    torch::Tensor forward(torch::Tensor encoder, torch::Tensor muxer) {
+        return this->layer_1->forward(muxer);
     }
 
 };
@@ -140,10 +119,7 @@ private:
     lifuren::config::ModelParams  params;
     std::shared_ptr<Encoder> encoder_1{ nullptr };
     std::shared_ptr<Encoder> encoder_2{ nullptr };
-    std::shared_ptr<Encoder> encoder_3{ nullptr };
     std::shared_ptr<Muxer>   muxer_1  { nullptr };
-    std::shared_ptr<Muxer>   muxer_2  { nullptr };
-    std::shared_ptr<Muxer>   muxer_3  { nullptr };
     std::shared_ptr<Decoder> decoder_1{ nullptr };
 
 public:
