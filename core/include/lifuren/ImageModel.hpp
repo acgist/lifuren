@@ -39,10 +39,10 @@ public:
                 layer->push_back(torch::nn::ReLU());
             }
         }
-        this->layer = this->register_module("encoder", layer);
+        this->layer = this->register_module("conv", layer);
     }
     ~Encoder() {
-        this->unregister_module("encoder");
+        this->unregister_module("conv");
     }
 
 public:
@@ -64,16 +64,16 @@ public:
     Decoder(int in, int out, int num_layers = 1) {
         torch::nn::Sequential layer;
         for(int i = 1; i <= num_layers; ++i) {
-            layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(i == 1 ? in : out, out, 3).stride(1).padding(1)));
+            layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, i != num_layers ? in : out, 3).stride(1).padding(1)));
             if(i != num_layers) {
-                layer->push_back(torch::nn::BatchNorm2d(out));
+                layer->push_back(torch::nn::BatchNorm2d(in));
                 layer->push_back(torch::nn::ReLU());
             }
         }
-        this->layer = this->register_module("decoder", layer);
+        this->layer = this->register_module("conv", layer);
     }
     ~Decoder() {
-        this->unregister_module("decoder");
+        this->unregister_module("conv");
     }
 
 public:
@@ -96,21 +96,21 @@ private:
     int batch;
     int in_channel;
     int out_channel;
-    torch::nn::Conv2d conv  { nullptr };
-    torch::nn::GRU    muxer { nullptr };
     torch::Tensor     hidden{ nullptr };
+    torch::nn::GRU    gru   { nullptr };
+    torch::nn::Conv2d conv  { nullptr };
 
 public:
     Muxer(
         int w, int h, int w_scale, int h_scale, int in, int out, int batch, int int_channel, int out_channel, int num_layers = 1
     ) : w(w), h(h), w_scale(w_scale), h_scale(h_scale), batch(batch), in_channel(in_channel), out_channel(out_channel) {
-        this->conv   = this->register_module("conv", torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channel, out_channel, 3).stride(1).padding(1)));
-        this->muxer  = this->register_module("muxer", torch::nn::GRU(torch::nn::GRUOptions(in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
         this->hidden = torch::zeros({ num_layers, batch, out }).to(LFR_DTYPE).to(lifuren::getDevice());
+        this->gru    = this->register_module("gru", torch::nn::GRU(torch::nn::GRUOptions(in, out).num_layers(num_layers).batch_first(true)/*.dropout(0.1)*/));
+        this->conv   = this->register_module("conv", torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channel, out_channel, 3).stride(1).padding(1)));
     }
     ~Muxer() {
+        this->unregister_module("gru");
         this->unregister_module("conv");
-        this->unregister_module("muxer");
     }
 
 public:
@@ -119,7 +119,7 @@ public:
             .reshape({ this->batch, this->in_channel * this->h_scale,                 this->h / this->h_scale, this->w                 }).permute({ 0, 1, 3, 2 })
             .reshape({ this->batch, this->in_channel * this->h_scale * this->w_scale, this->w / this->w_scale, this->h / this->h_scale }).permute({ 0, 1, 3, 2 });
         auto i_2 = this->conv->forward(i_1).flatten(2, 3);
-        auto [o_1, h_1] = this->muxer->forward(i_2, this->hidden);
+        auto [o_1, h_1] = this->gru->forward(i_2, this->hidden);
         return o_1
             .reshape({ this->batch, this->in_channel * this->out_channel * this->h_scale * this->w_scale, this->h / this->h_scale, this->w / this->w_scale }).permute({ 0, 1, 3, 2 })
             .reshape({ this->batch, this->in_channel * this->out_channel * this->h_scale,                 this->w,                 this->h / this->h_scale }).permute({ 0, 1, 3, 2 })

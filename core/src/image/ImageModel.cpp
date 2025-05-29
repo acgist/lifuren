@@ -5,10 +5,10 @@
 #include "opencv2/opencv.hpp"
 
 lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParams params) : params(params) {
-    const int channel    = 8;
-    const int num_conv   = 4;
     const int w_scale    = 3;
     const int h_scale    = 4;
+    const int channel    = 24; // 12 24 48 86
+    const int num_conv   = 4;
     const int batch_size = static_cast<int>(this->params.batch_size);
     this->muxer_1 = this->register_module("muxer_1", std::make_shared<lifuren::image::Muxer>(
         LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT,
