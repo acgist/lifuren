@@ -115,7 +115,11 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                         labels_batch  .clear();
                         features_batch.clear();
                     } else {
+                        #ifdef LFR_VIDEO_DIFF_FRAME
                         dst_frame = src_frame - old_frame;
+                        #else
+                        dst_frame = src_frame;
+                        #endif
                         labels_batch  .push_back(lifuren::dataset::image::mat_to_tensor(dst_frame).clone().to(LFR_DTYPE).to(device));
                         features_batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame).clone().to(LFR_DTYPE).to(device));
                     }

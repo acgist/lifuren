@@ -29,19 +29,22 @@
         .batch_size = 1
     });
     auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.jpg"}).string());
+    // auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.mp4"}).string());
     SPDLOG_INFO("输出结果：{} - {}", success, output);
 }
 
 [[maybe_unused]] static void testPlay() {
-    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
+    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
+    // cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
     if(!video.isOpened()) {
         SPDLOG_WARN("打开视频失败");
         return;
     }
     cv::Mat frame;
     while(video.read(frame)) {
+        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
         cv::imshow("frame", frame);
-        if(cv::waitKey(5000) == 27) {
+        if(cv::waitKey(60'000) == 27) {
             break;
         }
     }

@@ -22,7 +22,7 @@ torch::DeviceType lifuren::getDevice() {
 }
 
 void lifuren::logTensor(const std::string& message, const at::Tensor& tensor) {
-    if(tensor.numel() >= 256) {
+    if(tensor.numel() >= 512) {
         SPDLOG_DEBUG("{}\n{}", message, tensor.sizes());
     } else {
         SPDLOG_DEBUG("{}\n{}", message, tensor);

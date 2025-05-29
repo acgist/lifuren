@@ -77,16 +77,22 @@
     // lifuren::logTensor("tensor", a.squeeze().unsqueeze(1));
     // lifuren::logTensor("tensor", a.mul(tensor));
     // -
-    // [100, 3, 16, 8]
-    // [100,    16, 8]
-    torch::Tensor a = torch::ones({2, 3, 2, 3});
-    torch::Tensor b = torch::ones({2, 3, 3, 2});
-    torch::Tensor c = torch::ones({2, 3, 3, 2}) * 2;
-    torch::Tensor d = torch::ones({2, 3, 3, 2}) * 3;
+    // torch::Tensor a = torch::ones({2, 6, 2, 2});
+    // torch::Tensor b = torch::ones({2, 2, 2, 2});
+    // // torch::Tensor b = torch::ones({2, 1, 2, 3});
+    // // torch::Tensor b = torch::ones({2, 3, 2, 3});
+    // lifuren::logTensor("a", a);
+    // lifuren::logTensor("b", b);
+    // // lifuren::logTensor("c", a.mul(b));
+    // lifuren::logTensor("c", a.matmul(b));
+    // -
+    torch::Tensor a = torch::arange(0, 2 * 16 * 9).reshape({2, 1, 16, 9});
     lifuren::logTensor("a", a);
-    lifuren::logTensor("a", a.matmul(b));
-    lifuren::logTensor("a", a.matmul(c));
-    lifuren::logTensor("a", a.matmul(d));
+    lifuren::logTensor("a", a.reshape({ 2, 4, 4, 9 }).permute({ 0, 1, 3, 2 }).reshape({ 2, 12, 3, 4 }).permute({ 0, 1, 3, 2 }));
+    lifuren::logTensor("a", a
+        .reshape({ 2, 4, 4, 9 }).permute({ 0, 1, 3, 2 }).reshape({ 2, 12, 3, 4 }).permute({ 0, 1,  3, 2 })
+        .permute({ 0, 1, 3, 2 }).reshape({ 2, 4, 9, 4 }).permute({ 0,  1, 3, 2 }).reshape({ 2, 1, 16, 9 })
+    );
 }
 
 LFR_TEST(
