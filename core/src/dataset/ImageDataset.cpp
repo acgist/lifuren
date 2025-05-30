@@ -66,11 +66,10 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 return;
             }
             const auto video_fps          = video.get(cv::CAP_PROP_FPS);
-            const auto video_frame_type   = video.get(cv::CAP_PROP_FRAME_TYPE);
             const auto video_frame_count  = video.get(cv::CAP_PROP_FRAME_COUNT);
             const auto video_frame_width  = video.get(cv::CAP_PROP_FRAME_WIDTH);
             const auto video_frame_height = video.get(cv::CAP_PROP_FRAME_HEIGHT);
-            SPDLOG_DEBUG("加载视频文件开始：{} - {} - {} - {} - {}", video_fps, video_frame_type, video_frame_count, video_frame_width, video_frame_height);
+            SPDLOG_DEBUG("加载视频文件开始：{} - {} - {} - {}", video_fps, video_frame_count, video_frame_width, video_frame_height);
             size_t index = 0;
             size_t frame = 0;
             double mean;

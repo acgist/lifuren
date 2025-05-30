@@ -94,11 +94,10 @@ class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
     size_t batch_size;
-    bool   rnn_model;
-    // TODO: list or queue ?
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
     std::vector<torch::Tensor> features; // 特征
+    bool rnn_model;
 
 public:
     Dataset() = default;

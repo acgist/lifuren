@@ -5,20 +5,19 @@
 #include "opencv2/opencv.hpp"
 
 lifuren::image::WudaoziModuleImpl::WudaoziModuleImpl(lifuren::config::ModelParams params) : params(params) {
-    const int w_scale    = 3;
-    const int h_scale    = 4;
-    const int channel    = 24; // 12 24 48 86
-    const int num_conv   = 4;
+    const int w_scale    = 6;
+    const int h_scale    = 8;
+    const int num_conv   = 3;
     const int batch_size = static_cast<int>(this->params.batch_size);
     this->muxer_1 = this->register_module("muxer_1", std::make_shared<lifuren::image::Muxer>(
         LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT,
         w_scale, h_scale,
         LFR_IMAGE_WIDTH * LFR_IMAGE_HEIGHT / h_scale / w_scale,
         LFR_IMAGE_WIDTH * LFR_IMAGE_HEIGHT / h_scale / w_scale,
-        batch_size, 1, channel
+        batch_size, 1, 3
     ));
-    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>(3, channel, num_conv));
-    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(channel, 3, num_conv));
+    this->encoder_1 = this->register_module("encoder_1", std::make_shared<lifuren::image::Encoder>(3, num_conv));
+    this->decoder_1 = this->register_module("decoder_1", std::make_shared<lifuren::image::Decoder>(3, num_conv));
 }
 
 lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {
@@ -28,8 +27,8 @@ lifuren::image::WudaoziModuleImpl::~WudaoziModuleImpl() {
 }
 
 torch::Tensor lifuren::image::WudaoziModuleImpl::forward(torch::Tensor input) {
-    auto encoder_1 = this->encoder_1->forward(input);
     auto muxer_1   = this->muxer_1  ->forward(input.slice(1, 0, 1));
+    auto encoder_1 = this->encoder_1->forward(input);
     auto decoder_1 = this->decoder_1->forward(encoder_1.mul(muxer_1));
     return decoder_1;
 }

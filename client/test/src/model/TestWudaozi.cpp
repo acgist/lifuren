@@ -34,8 +34,8 @@
 }
 
 [[maybe_unused]] static void testPlay() {
-    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
-    // cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
+    // cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
+    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
     if(!video.isOpened()) {
         SPDLOG_WARN("打开视频失败");
         return;
