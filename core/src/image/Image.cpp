@@ -31,7 +31,7 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
         return { false, {} };
     }
     const auto output = lifuren::file::modify_filename(input, ".mp4", "gen");
-    cv::VideoWriter writer(output, cv::VideoWriter::fourcc('m', 'p', '4', 'v'), LFR_VIDEO_FPS, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
+    cv::VideoWriter writer(output, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), LFR_VIDEO_FPS, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
     if(!writer.isOpened()) {
         SPDLOG_WARN("视频文件打开失败：{}", output);
         return { false, output };
@@ -56,7 +56,7 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
         return { false, {} };
     }
     const auto output = lifuren::file::modify_filename(input, ".mp4", "gen");
-    cv::VideoWriter writer(output, cv::VideoWriter::fourcc('m', 'p', '4', 'v'), LFR_VIDEO_FPS, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
+    cv::VideoWriter writer(output, cv::VideoWriter::fourcc('a', 'v', 'c', '1'), LFR_VIDEO_FPS, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
     if(!writer.isOpened()) {
         SPDLOG_WARN("视频文件打开失败：{}", output);
         return { false, output };

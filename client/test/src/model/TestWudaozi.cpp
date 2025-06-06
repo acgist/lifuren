@@ -20,16 +20,16 @@
     });
     model.define();
     model.trainValAndTest();
-    model.save(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.pt"}).string());
+    model.save(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string());
 }
 
 [[maybe_unused]] static void testPred() {
     auto client = lifuren::image::getImageClient("wudaozi");
-    client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.pt"}).string(), {
+    client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string(), {
         .batch_size = 1
     });
-    auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.jpg"}).string());
-    // auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi.mp4"}).string());
+    auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string());
+    // auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
     SPDLOG_INFO("输出结果：{} - {}", success, output);
 }
 
