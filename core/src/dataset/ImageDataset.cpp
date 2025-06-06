@@ -74,12 +74,10 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             size_t frame = 0;
             double mean;
             cv::Mat diff;
-            cv::Mat dst_frame; // 目标视频帧
             cv::Mat old_frame; // 上次视频帧
             cv::Mat src_frame; // 当前视频帧
             torch::Tensor zero = torch::zeros({ 3, height, width }).to(LFR_DTYPE).to(device);
-            std::vector<torch::Tensor> labels_batch;
-            std::vector<torch::Tensor> features_batch;
+            std::vector<torch::Tensor> batch;
             while(video.read(src_frame)) {
                 #if LFR_VIDEO_FRAME_STEP > 0
                 if(++index % LFR_VIDEO_FRAME_STEP != 0) {
@@ -100,43 +98,33 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                     if(mean == 0) {
                         // 没有变化
                         continue;
-                    } else if(mean > LFR_VIDEO_DIFF || labels_batch.size() >= LFR_VIDEO_FRAME_MAX) {
-                        if(labels_batch.size() >= LFR_VIDEO_FRAME_MIN) {
-                            SPDLOG_DEBUG("加载视频片段：{} - {}", labels_batch.size(), features_batch.size());
-                            frame += labels_batch.size();
-                            labels_batch  .push_back(zero);
-                            features_batch.push_back(zero);
-                            labels  .insert(labels  .end(), std::make_move_iterator(labels_batch  .begin()), std::make_move_iterator(labels_batch  .end()));
-                            features.insert(features.end(), std::make_move_iterator(features_batch.begin()), std::make_move_iterator(features_batch.end()));
+                    } else if(mean > LFR_VIDEO_DIFF || batch.size() >= LFR_VIDEO_FRAME_MAX) {
+                        if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
+                            SPDLOG_DEBUG("加载视频片段：{}", batch.size());
+                            frame += batch.size();
+                            batch.push_back(zero);
+                            labels  .insert(labels  .end(), batch.begin() + 1, batch.end());
+                            features.insert(features.end(), batch.begin(),     batch.end() - 1);
                         } else {
-                            SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_batch.size(), features_batch.size());
+                            SPDLOG_DEBUG("丢弃视频片段：{}", batch.size());
                         }
-                        labels_batch  .clear();
-                        features_batch.clear();
+                        batch.clear();
                     } else {
-                        #ifdef LFR_VIDEO_DIFF_FRAME
-                        dst_frame = src_frame - old_frame;
-                        #else
-                        dst_frame = src_frame;
-                        #endif
-                        labels_batch  .push_back(lifuren::dataset::image::mat_to_tensor(dst_frame).clone().to(LFR_DTYPE).to(device));
-                        features_batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame).clone().to(LFR_DTYPE).to(device));
+                        batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame).clone().to(LFR_DTYPE).to(device));
                     }
                 }
                 old_frame = src_frame;
             }
-            if(labels_batch.size() >= LFR_VIDEO_FRAME_MIN) {
-                SPDLOG_DEBUG("加载视频片段：{} - {}", labels_batch.size(), features_batch.size());
-                frame += labels_batch.size();
-                labels_batch  .push_back(zero);
-                features_batch.push_back(zero);
-                labels  .insert(labels  .end(), std::make_move_iterator(labels_batch  .begin()), std::make_move_iterator(labels_batch  .end()));
-                features.insert(features.end(), std::make_move_iterator(features_batch.begin()), std::make_move_iterator(features_batch.end()));
+            if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
+                SPDLOG_DEBUG("加载视频片段：{}", batch.size());
+                frame += batch.size();
+                batch.push_back(zero);
+                labels  .insert(labels  .end(), batch.begin() + 1, batch.end());
+                features.insert(features.end(), batch.begin(),     batch.end() - 1);
             } else {
-                SPDLOG_DEBUG("丢弃视频片段：{} - {}", labels_batch.size(), features_batch.size());
+                SPDLOG_DEBUG("丢弃视频片段：{}", batch.size());
             }
-            labels_batch  .clear();
-            features_batch.clear();
+            batch.clear();
             SPDLOG_DEBUG("加载视频文件完成：{} -> {} - {} / {}", video_count, file, frame, index);
             video.release();
             ++video_count;

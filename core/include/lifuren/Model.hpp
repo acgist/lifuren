@@ -65,8 +65,8 @@ protected:
     D trainDataset{ nullptr }; // 训练数据集
     D valDataset  { nullptr }; // 验证数据集
     D testDataset { nullptr }; // 测试数据集
-    L loss  { nullptr }; // 损失函数
-    M model { nullptr }; // 模型实现
+    L loss        { nullptr }; // 损失函数
+    M model       { nullptr }; // 模型实现
     std::unique_ptr<P> optimizer{ nullptr }; // 优化函数
 
 public:
@@ -154,8 +154,6 @@ inline void classify_evaluate(
     torch::NoGradGuard no_grad_guard;
     auto target_index = target.argmax(1).to(torch::kCPU);
     auto pred_index   = torch::softmax(pred, 1).argmax(1).to(torch::kCPU);
-    // auto target_index = target.detach().argmax(1).to(torch::kCPU);
-    // auto pred_index   = torch::softmax(pred.detach(), 1).argmax(1).to(torch::kCPU);
     auto batch_size = pred_index.numel();
     auto accu = pred_index.eq(target_index).sum();
     accu_val += accu.template item<int>();
@@ -288,7 +286,7 @@ torch::Tensor lifuren::Model<L, P, M, D>::pred(const torch::Tensor& input) {
 template<typename L, typename P, typename M, typename D>
 inline void lifuren::Model<L, P, M, D>::logic(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) {
     pred = this->model->forward(feature);
-    loss = this->loss(pred, label);
+    loss = this->loss->forward(pred, label);
 }
 
 template<typename L, typename P, typename M, typename D>
@@ -302,15 +300,15 @@ void lifuren::Model<L, P, M, D>::train(const size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->train();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
         torch::Tensor pred;
         torch::Tensor loss;
         torch::Tensor data   = batch.data;
         torch::Tensor target = batch.target;
-        this->logic(data, target, pred, loss);
         this->optimizer->zero_grad();
+        this->logic(data, target, pred, loss);
         loss.backward();
         this->optimizer->step();
         if(this->params.classify) {
@@ -334,7 +332,7 @@ void lifuren::Model<L, P, M, D>::val(const size_t epoch) {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->valDataset) {
         torch::Tensor pred;
@@ -363,7 +361,7 @@ void lifuren::Model<L, P, M, D>::test() {
     double loss_val = 0.0;
     size_t batch_count = 0;
     this->model->eval();
-    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(this->device);
+    auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->testDataset) {
         torch::Tensor pred;

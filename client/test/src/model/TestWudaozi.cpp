@@ -12,7 +12,7 @@
     lifuren::image::WudaoziModel model({
         .lr         = 0.001F,
         .batch_size = 100,
-        .epoch_size = 32,
+        .epoch_size = 4096,
         .model_name = "wudaozi",
         .train_path = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_TRAIN}).string(),
         .val_path   = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_VAL  }).string(),
@@ -51,7 +51,7 @@
 }
 
 LFR_TEST(
-    // testTrain();
-    // testPred();
+    testTrain();
+    testPred();
     testPlay();
 );
