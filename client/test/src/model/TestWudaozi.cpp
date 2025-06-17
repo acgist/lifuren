@@ -10,9 +10,9 @@
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
     lifuren::image::WudaoziModel model({
-        .lr         = 0.001F,
+        .lr         = 0.001F, // 0.01F
         .batch_size = 100,
-        .epoch_size = 4096,
+        .epoch_size = 256,
         .model_name = "wudaozi",
         .train_path = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_TRAIN}).string(),
         .val_path   = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_VAL  }).string(),
@@ -34,16 +34,19 @@
 }
 
 [[maybe_unused]] static void testPlay() {
-    // cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
-    cv::VideoCapture video(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
-    if(!video.isOpened()) {
+    cv::VideoCapture video    (lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"    }).string());
+    cv::VideoCapture video_gen(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi_gen.mp4"}).string());
+    if(!video.isOpened() || !video_gen.isOpened()) {
         SPDLOG_WARN("打开视频失败");
         return;
     }
     cv::Mat frame;
-    while(video.read(frame)) {
-        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-        cv::imshow("frame", frame);
+    cv::Mat frame_gen;
+    while(video.read(frame) && video_gen.read(frame_gen)) {
+        lifuren::dataset::image::resize(frame,     LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        lifuren::dataset::image::resize(frame_gen, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        cv::imshow("frame",     frame);
+        cv::imshow("frame_gen", frame_gen);
         if(cv::waitKey(60'000) == 27) {
             break;
         }
@@ -51,7 +54,7 @@
 }
 
 LFR_TEST(
-    testTrain();
-    testPred();
+    // testTrain();
+    // testPred();
     testPlay();
 );

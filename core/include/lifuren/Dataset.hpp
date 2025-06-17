@@ -44,30 +44,31 @@
  * 
  * 一批训练数据大小
  * 
- *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 3.86 GB/Batch 
- * dataset size = 180    * 320   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 3.86 GB/Batch
+ *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 3.78 GB/Batch
+ * dataset size = 176    * 320   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 3.78 GB/Batch
  * 
- *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 7.72 GB/Batch 
- * dataset size = 180    * 320   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 7.72 GB/Batch
+ *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 7.55 GB/Batch
+ * dataset size = 176    * 320   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 7.55 GB/Batch
  * 
  * 一小时数据集大小
  * 
- *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 27.81 GB/Hour 
- * dataset size = 180    * 320   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 27.81 GB/Hour
+ *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 27.19 GB/Hour
+ * dataset size = 176    * 320   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 27.19 GB/Hour
  * 
- *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 55.62 GB/Hour 
- * dataset size = 180    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 55.62 GB/Hour
+ *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 54.38 GB/Hour
+ * dataset size = 176    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 54.38 GB/Hour
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
 #define LFR_IMAGE_HEIGHT     320 // 高度：16:9
-#define LFR_IMAGE_WIDTH      180 // 宽度：16:9
+#define LFR_IMAGE_WIDTH      176 // 宽度：16:9
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
-#define LFR_VIDEO_FRAME_MAX  150 // 最大帧数
+#define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
+#define LFR_VIDEO_QUEUE_SIZE   3 // 视频帧数序列长度：3/5/7...
 #endif
 
 namespace cv {

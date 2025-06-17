@@ -76,8 +76,15 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             cv::Mat diff;
             cv::Mat old_frame; // 上次视频帧
             cv::Mat src_frame; // 当前视频帧
-            torch::Tensor zero = torch::zeros({ 3, height, width }).to(LFR_DTYPE).to(device);
+            // BOS PAD EOS
+            torch::Tensor bos = torch::zeros({ 3, height, width });
+            torch::Tensor pad = torch::ones ({ 3, height, width });
+            // torch::Tensor eos = torch::zeros({ 3, height, width });
             std::vector<torch::Tensor> batch;
+            batch.push_back(bos);
+            for(int i = 0; i < LFR_VIDEO_QUEUE_SIZE - 2; ++i) {
+                batch.push_back(pad);
+            }
             while(video.read(src_frame)) {
                 #if LFR_VIDEO_FRAME_STEP > 0
                 if(++index % LFR_VIDEO_FRAME_STEP != 0) {
@@ -102,15 +109,21 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                         if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
                             SPDLOG_DEBUG("加载视频片段：{}", batch.size());
                             frame += batch.size();
-                            batch.push_back(zero);
-                            labels  .insert(labels  .end(), batch.begin() + 1, batch.end());
-                            features.insert(features.end(), batch.begin(),     batch.end() - 1);
+                            auto feature = torch::stack(batch, 0).clone().to(LFR_DTYPE).to(device);
+                            for(size_t i = 0; i < batch.size() - LFR_VIDEO_QUEUE_SIZE; ++i) {
+                                features.push_back(feature.slice(0, i,                        i + LFR_VIDEO_QUEUE_SIZE    ));
+                                labels  .push_back(feature.slice(0, i + LFR_VIDEO_QUEUE_SIZE, i + LFR_VIDEO_QUEUE_SIZE + 1).squeeze(0));
+                            }
                         } else {
                             SPDLOG_DEBUG("丢弃视频片段：{}", batch.size());
                         }
                         batch.clear();
+                        batch.push_back(bos);
+                        for(int i = 0; i < LFR_VIDEO_QUEUE_SIZE - 2; ++i) {
+                            batch.push_back(pad);
+                        }
                     } else {
-                        batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame).clone().to(LFR_DTYPE).to(device));
+                        batch.push_back(lifuren::dataset::image::mat_to_tensor(old_frame));
                     }
                 }
                 old_frame = src_frame;
@@ -118,9 +131,11 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
                 SPDLOG_DEBUG("加载视频片段：{}", batch.size());
                 frame += batch.size();
-                batch.push_back(zero);
-                labels  .insert(labels  .end(), batch.begin() + 1, batch.end());
-                features.insert(features.end(), batch.begin(),     batch.end() - 1);
+                auto feature = torch::stack(batch, 0).clone().to(LFR_DTYPE).to(device);
+                for(size_t i = 0; i < batch.size() - LFR_VIDEO_QUEUE_SIZE; ++i) {
+                    features.push_back(feature.slice(0, i,                        i + LFR_VIDEO_QUEUE_SIZE    ));
+                    labels  .push_back(feature.slice(0, i + LFR_VIDEO_QUEUE_SIZE, i + LFR_VIDEO_QUEUE_SIZE + 1).squeeze(0));
+                }
             } else {
                 SPDLOG_DEBUG("丢弃视频片段：{}", batch.size());
             }

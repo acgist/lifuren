@@ -10,6 +10,8 @@
  * 
  * TODO: 补帧、超分辨率
  * 
+ * Conv + BatchNorm + ReLU|Sigmoid + AvgPool|MaxPool + Dropout
+ * 
  * @author acgist
  * 
  * @version 1.0.0
@@ -19,40 +21,76 @@
 
 #include <cmath>
 
+#ifndef LFR_DROPOUT
+#define LFR_DROPOUT 0.3
+#endif
+#ifndef LFR_ACTIVATION
+#define LFR_ACTIVATION Sigmoid
+#endif
+
 #include "lifuren/Model.hpp"
 
 namespace lifuren::image {
 
 /**
- * 编码器
+ * 2D编码器
  */
-class Encoder : public torch::nn::Module {
+class Encoder2d : public torch::nn::Module {
     
 private:
-    torch::nn::Sequential layer{ nullptr };
+    torch::nn::Sequential encoder_2d{ nullptr };
 
 public:
-    Encoder(std::vector<int> layers) {
-        torch::nn::Sequential layer;
-        auto in  = layers.begin();
-        auto out = in + 1;
-        for(; out != layers.end(); ++in, ++out) {
-            layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(*in, *out, 3).stride(1).padding(1)));
-            if(out != layers.end() - 1) {
-                layer->push_back(torch::nn::BatchNorm2d(*out));
-                layer->push_back(torch::nn::ReLU());
-                layer->push_back(torch::nn::Dropout(0.3));
-            }
-        }
-        this->layer = this->register_module("conv", layer);
+    Encoder2d(int in, int out) {
+        torch::nn::Sequential encoder_2d;
+        encoder_2d->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3).stride(1).padding(1)));
+        encoder_2d->push_back(torch::nn::BatchNorm2d(out));
+        encoder_2d->push_back(torch::nn::LFR_ACTIVATION());
+        encoder_2d->push_back(torch::nn::Dropout(LFR_DROPOUT));
+        this->encoder_2d = this->register_module("encoder_2d", encoder_2d);
     }
-    ~Encoder() {
-        this->unregister_module("conv");
+    ~Encoder2d() {
+        this->unregister_module("encoder_2d");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        return this->layer->forward(input);
+        return this->encoder_2d->forward(input);
+    }
+
+};
+
+/**
+ * 3D编码器
+ */
+class Encoder3d : public torch::nn::Module {
+    
+private:
+    torch::nn::Sequential encoder_3d{ nullptr };
+
+public:
+    Encoder3d(int channel, int num_layers = 3) {
+        torch::nn::Sequential encoder_3d;
+        for(int i = 1; i <= num_layers; ++i) {
+            encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, 3).stride(1).padding(1)));
+            encoder_3d->push_back(torch::nn::BatchNorm3d(channel));
+            encoder_3d->push_back(torch::nn::LFR_ACTIVATION());
+            if(i != num_layers) {
+                encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 2, 2, 2 }).stride({1, 2, 2})));
+            } else {
+                encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 1, 2, 2 }).stride({1, 2, 2})));
+            }
+            encoder_3d->push_back(torch::nn::Dropout(LFR_DROPOUT));
+        }
+        this->encoder_3d = this->register_module("encoder_3d", encoder_3d);
+    }
+    ~Encoder3d() {
+        this->unregister_module("encoder_3d");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input) {
+        return this->encoder_3d->forward(input);
     }
 
 };
@@ -63,30 +101,69 @@ public:
 class Decoder : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential layer{ nullptr };
+    int batch;
+    torch::nn::Sequential linear    { nullptr };
+    torch::nn::Sequential decoder_2d{ nullptr };
+    torch::nn::Sequential decoder_3d{ nullptr };
 
 public:
-    Decoder(std::vector<int> layers) {
-        torch::nn::Sequential layer;
-        auto in  = layers.begin();
-        auto out = in + 1;
-        for(; out != layers.end(); ++in, ++out) {
-            layer->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(*in, *out, 3).stride(1).padding(1)));
-            if(out != layers.end() - 1) {
-                layer->push_back(torch::nn::BatchNorm2d(*out));
-                layer->push_back(torch::nn::ReLU());
-                layer->push_back(torch::nn::Dropout(0.3));
-            }
+    Decoder(int scale, int batch, int in, int out, bool brd = true) : batch(batch) {
+        int w = LFR_IMAGE_WIDTH;
+        int h = LFR_IMAGE_HEIGHT;
+        int w_3d = w / scale;
+        int h_3d = h / scale;
+        torch::nn::Sequential linear;
+        linear->push_back(torch::nn::Linear(h_3d * w_3d, h * w));
+        linear->push_back(torch::nn::LFR_ACTIVATION());
+        linear->push_back(torch::nn::Dropout(LFR_DROPOUT));
+        this->linear = this->register_module("linear", linear);
+        torch::nn::Sequential decoder_2d;
+        decoder_2d->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, 3).stride(1).padding(1)));
+        if(brd) {
+            decoder_2d->push_back(torch::nn::BatchNorm2d(out));
+            decoder_2d->push_back(torch::nn::LFR_ACTIVATION());
+            decoder_2d->push_back(torch::nn::Dropout(LFR_DROPOUT));
         }
-        this->layer = this->register_module("conv", layer);
+        this->decoder_2d = this->register_module("decoder_2d", decoder_2d);
+        torch::nn::Sequential decoder_3d;
+        decoder_3d->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(LFR_VIDEO_QUEUE_SIZE, 1, 3).stride(1).padding(1)));
+        decoder_3d->push_back(torch::nn::BatchNorm2d(1));
+        decoder_3d->push_back(torch::nn::LFR_ACTIVATION());
+        decoder_3d->push_back(torch::nn::Dropout(LFR_DROPOUT));
+        this->decoder_3d = this->register_module("decoder_3d", decoder_3d);
     }
     ~Decoder() {
-        this->unregister_module("conv");
+        this->unregister_module("linear");
+        this->unregister_module("decoder_2d");
+        this->unregister_module("decoder_3d");
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input) {
-        return this->layer->forward(input);
+    torch::Tensor forward(torch::Tensor input, torch::Tensor input_3d) {
+        int w = LFR_IMAGE_WIDTH;
+        int h = LFR_IMAGE_HEIGHT;
+        return this->decoder_2d->forward(input.add(
+            this->decoder_3d->forward(
+                this->linear->forward(input_3d).reshape({this->batch, LFR_VIDEO_QUEUE_SIZE, h, w})
+            )
+        ));
+    }
+    torch::Tensor forward(torch::Tensor input, torch::Tensor input_2d, torch::Tensor input_3d) {
+        int w = LFR_IMAGE_WIDTH;
+        int h = LFR_IMAGE_HEIGHT;
+        return this->decoder_2d->forward(
+            torch::concat(
+                {
+                    input.add(
+                        this->decoder_3d->forward(
+                            this->linear->forward(input_3d).reshape({this->batch, LFR_VIDEO_QUEUE_SIZE, h, w})
+                        )
+                    ),
+                    input_2d
+                },
+                1
+            )
+        );
     }
 
 };
@@ -97,63 +174,24 @@ public:
 class Muxer : public torch::nn::Module {
 
 private:
-    int w;
-    int h;
-    int w_scale;
-    int h_scale;
-    int batch;
-    int channel;
-    torch::Tensor     hidden_h{ nullptr };
-    torch::Tensor     hidden_v{ nullptr };
-    torch::nn::GRU    gru_h   { nullptr };
-    torch::nn::GRU    gru_v   { nullptr };
-    torch::nn::Linear linear_h{ nullptr };
-    torch::nn::Linear linear_v{ nullptr };
+    torch::Tensor  hidden{ nullptr };
+    torch::nn::GRU gru   { nullptr };
 
 public:
-    Muxer(
-        int w, int h, int w_scale, int h_scale, int in, int out, int batch, int channel, int num_layers = 1
-    ) : w(w), h(h), w_scale(w_scale), h_scale(h_scale), batch(batch), channel(channel) {
-        this->hidden_h = torch::zeros({ num_layers, batch, out }).to(LFR_DTYPE).to(lifuren::getDevice());
-        this->hidden_v = torch::zeros({ num_layers, batch, out }).to(LFR_DTYPE).to(lifuren::getDevice());
-        this->gru_h    = this->register_module("gru_h", torch::nn::GRU(torch::nn::GRUOptions(in, out).num_layers(num_layers).batch_first(true).dropout(num_layers == 1 ? 0.0 : 0.3)));
-        this->gru_v    = this->register_module("gru_v", torch::nn::GRU(torch::nn::GRUOptions(in, out).num_layers(num_layers).batch_first(true).dropout(num_layers == 1 ? 0.0 : 0.3)));
-        this->linear_h = this->register_module("linear_h", torch::nn::Linear(in, out));
-        this->linear_v = this->register_module("linear_v", torch::nn::Linear(in, out));
+    Muxer(int scale, int batch, int num_layers = 3) {
+        int w_3d = LFR_IMAGE_WIDTH  / scale;
+        int h_3d = LFR_IMAGE_HEIGHT / scale;
+        this->hidden = torch::zeros({ num_layers, batch, h_3d * w_3d }).to(LFR_DTYPE).to(lifuren::getDevice());
+        this->gru    = this->register_module("gru", torch::nn::GRU(torch::nn::GRUOptions(h_3d * w_3d, h_3d * w_3d).num_layers(num_layers).batch_first(true).dropout(num_layers == 1 ? 0.0 : LFR_DROPOUT)));
     }
     ~Muxer() {
-        this->unregister_module("gru_h");
-        this->unregister_module("gru_v");
-        this->unregister_module("linear_h");
-        this->unregister_module("linear_v");
+        this->unregister_module("gru");
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input) {
-        // 横向
-        input = torch::layer_norm(input, {this->channel, this->h, this->w});
-        auto i_h = input
-            .reshape({ this->batch, this->channel * this->h_scale,                 this->h / this->h_scale, this->w                 }).permute({ 0, 1, 3, 2 })
-            .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->w / this->w_scale, this->h / this->h_scale }).permute({ 0, 1, 3, 2 });
-        auto [o_h, h_h] = this->gru_h->forward(torch::relu(this->linear_h->forward(i_h.flatten(2, 3))), this->hidden_h);
-        auto r_h = o_h
-                                    .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->h / this->h_scale, this->w / this->w_scale })
-            .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel * this->h_scale,                 this->w,                 this->h / this->h_scale })
-            .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel,                                 this->h,                 this->w                 });
-        // 竖向
-        auto i_v = input
-            .transpose(2, 3)
-            .reshape({ this->batch, this->channel * this->w_scale,                 this->w / this->w_scale, this->h                 }).permute({ 0, 1, 3, 2 })
-            .reshape({ this->batch, this->channel * this->w_scale * this->h_scale, this->h / this->h_scale, this->w / this->w_scale }).permute({ 0, 1, 3, 2 })
-            .transpose(2, 3);
-        auto [o_v, h_v] = this->gru_v->forward(torch::relu(this->linear_v->forward(i_v.flatten(2, 3))), this->hidden_v);
-        auto r_v = o_v
-                                    .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->h / this->h_scale, this->w / this->w_scale })
-            .transpose(2, 3)
-            .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel * this->w_scale,                 this->h,                 this->w / this->w_scale })
-            .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel,                                 this->w,                 this->h                 })
-            .transpose(2, 3);
-        return r_h + r_v;
+    torch::Tensor forward(torch::Tensor input_3d) {
+        auto [o_h, h_h] = this->gru->forward(input_3d.flatten(2, 4), this->hidden);
+        return o_h;
     }
 
 };
@@ -165,9 +203,14 @@ class WudaoziModuleImpl : public torch::nn::Module {
 
 private:
     lifuren::config::ModelParams params;
-    std::shared_ptr<Muxer>   muxer_1  { nullptr };
-    std::shared_ptr<Encoder> encoder_1{ nullptr };
-    std::shared_ptr<Decoder> decoder_1{ nullptr };
+    std::shared_ptr<Muxer>     muxer_1     { nullptr };
+    std::shared_ptr<Encoder3d> encoder_3d_1{ nullptr };
+    std::shared_ptr<Encoder2d> encoder_2d_1{ nullptr };
+    std::shared_ptr<Encoder2d> encoder_2d_2{ nullptr };
+    std::shared_ptr<Encoder2d> encoder_2d_3{ nullptr };
+    std::shared_ptr<Decoder>   decoder_1   { nullptr };
+    std::shared_ptr<Decoder>   decoder_2   { nullptr };
+    std::shared_ptr<Decoder>   decoder_3   { nullptr };
 
 public:
     WudaoziModuleImpl(lifuren::config::ModelParams params = {});
@@ -175,7 +218,6 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input);
-    void          forward(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss);
 
 };
 

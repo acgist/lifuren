@@ -38,12 +38,21 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
     }
     int index = 0;
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(LFR_DTYPE).to(lifuren::getDevice());
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image).to(LFR_DTYPE).to(lifuren::getDevice());
+    std::vector<torch::Tensor> images;
+    torch::Tensor bos = torch::zeros({ 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH }).to(LFR_DTYPE).to(lifuren::getDevice());
+    torch::Tensor pad = torch::ones ({ 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH }).to(LFR_DTYPE).to(lifuren::getDevice());
+    images.push_back(bos);
+    for(int i = 0; i < LFR_VIDEO_QUEUE_SIZE - 2; ++i) {
+        images.push_back(pad);
+    }
+    images.push_back(tensor);
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->model->pred(tensor);
-        lifuren::dataset::image::tensor_to_mat(image, result.squeeze().to(torch::kFloat32).to(torch::kCPU));
+        auto result = this->model->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
+        lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
-        tensor = result;
+        images.erase(images.begin());
+        images.push_back(result);
     }
     writer.release();
     return { true, output };
@@ -63,12 +72,21 @@ std::tuple<bool, std::string> lifuren::image::ImageClient<lifuren::image::Wudaoz
     }
     int index = 0;
     cv::Mat image;
+    std::vector<torch::Tensor> images;
+    torch::Tensor bos = torch::zeros({ 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH }).to(LFR_DTYPE).to(lifuren::getDevice());
+    torch::Tensor pad = torch::ones ({ 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH }).to(LFR_DTYPE).to(lifuren::getDevice());
+    images.push_back(bos);
+    for(int i = 0; i < LFR_VIDEO_QUEUE_SIZE - 2; ++i) {
+        images.push_back(pad);
+    }
     while(video.read(image)) {
         lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-        auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(LFR_DTYPE).to(lifuren::getDevice());
-        auto result = this->model->pred(tensor);
-        lifuren::dataset::image::tensor_to_mat(image, result.squeeze().to(torch::kFloat32).to(torch::kCPU));
+        auto tensor = lifuren::dataset::image::mat_to_tensor(image).to(LFR_DTYPE).to(lifuren::getDevice());
+        images.push_back(tensor);
+        auto result = this->model->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
+        lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
+        images.erase(images.begin());
     }
     video.release();
     writer.release();
