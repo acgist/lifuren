@@ -100,14 +100,30 @@
     //     .transpose(2, 3).permute({ 0, 1, 3,  2 }).reshape({ 2, 3, 16, 3 }).permute({ 0,  1, 3, 2 }).reshape({ 2, 1, 9, 16 }).transpose(2, 3)
     // );
     // -
-    torch::Tensor a = torch::arange(0, 16 * 2 * 3).reshape({16, 2, 3});
-    std::cout << a.data_ptr() << std::endl;
-    for(int i = 0; i < 16 - 5; ++i) {
-        auto b = a.slice(0, i,     i + 5    );
-        auto c = a.slice(0, i + 5, i + 5 + 1);
-        std::cout << b.data_ptr() << " = " << b << std::endl;
-        std::cout << c.data_ptr() << " = " << c << std::endl;
-    }
+    // torch::Tensor a = torch::arange(0, 16 * 2 * 3).reshape({16, 2, 3});
+    // std::cout << a.data_ptr() << std::endl;
+    // for(int i = 0; i < 16 - 5; ++i) {
+    //     auto b = a.slice(0, i,     i + 5    );
+    //     auto c = a.slice(0, i + 5, i + 5 + 1);
+    //     std::cout << b.data_ptr() << " = " << b << std::endl;
+    //     std::cout << c.data_ptr() << " = " << c << std::endl;
+    // }
+    // -
+    torch::Tensor a = torch::randn({ 100, 4, 3, 320, 176 });
+    std::cout << (a.slice(1, 1, 4) - a.slice(1, 0, 4 - 1)).sizes() << std::endl;
+    int channel = 4;
+    torch::nn::Sequential encoder_3d;
+    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, 3).stride(1).padding(1)));
+    encoder_3d->push_back(torch::nn::BatchNorm3d(channel));
+    encoder_3d->push_back(torch::nn::Sigmoid());
+    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 2, 2, 2 }).stride({ 1, 2, 2 })));
+    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, 3).stride(1).padding(1)));
+    encoder_3d->push_back(torch::nn::BatchNorm3d(channel));
+    encoder_3d->push_back(torch::nn::Sigmoid());
+    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 2, 2, 2 }).stride({ 1, 2, 2 })));
+    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, { 1, 3, 3 }).stride(1).padding({ 0, 1, 1 })));
+    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 1, 2, 2 }).stride({ 1, 2, 2 })));
+    std::cout << encoder_3d->forward(a).sizes() << std::endl;
 }
 
 [[maybe_unused]] static void testReshape() {

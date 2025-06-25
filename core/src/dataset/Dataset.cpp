@@ -31,21 +31,20 @@ std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
 }
 
 lifuren::dataset::Dataset::Dataset(
+    bool time_seq,
     size_t batch_size,
     std::vector<torch::Tensor>& labels,
-    std::vector<torch::Tensor>& features,
-    bool rnn_model
-) : batch_size(batch_size), device(lifuren::getDevice()), labels(std::move(labels)), features(std::move(features)), rnn_model(rnn_model) {
+    std::vector<torch::Tensor>& features
+) : time_seq(time_seq), batch_size(batch_size), device(lifuren::getDevice()), labels(std::move(labels)), features(std::move(features)) {
 }
 
 lifuren::dataset::Dataset::Dataset(
+    bool time_seq,
     size_t batch_size,
     const std::string& path,
     const std::vector<std::string>& suffix,
-    const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
-    const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete,
-    bool rnn_model
-) : batch_size(batch_size), device(lifuren::getDevice()), rnn_model(rnn_model) {
+    const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
+) : time_seq(time_seq), batch_size(batch_size), device(lifuren::getDevice()) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
         SPDLOG_WARN("数据集无效：{}", path);
         return;
@@ -56,9 +55,6 @@ lifuren::dataset::Dataset::Dataset(
         SPDLOG_DEBUG("加载文件：{}", file);
         transform(file, this->labels, this->features, this->device);
     }
-    if(complete) {
-        complete(this->labels, this->features, this->device);
-    }
 }
 
 lifuren::dataset::Dataset::~Dataset() {
@@ -66,11 +62,10 @@ lifuren::dataset::Dataset::~Dataset() {
 
 torch::optional<size_t> lifuren::dataset::Dataset::size() const {
     return this->labels.size();
-    // return this->features.size();
 }
 
 torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
-    if(this->rnn_model) {
+    if(this->time_seq) {
         size_t row_size = this->labels.size() / this->batch_size;
         size_t row = index / this->batch_size;
         size_t col = index % this->batch_size;

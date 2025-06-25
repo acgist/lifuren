@@ -35,21 +35,24 @@ torch::Tensor lifuren::dataset::image::mat_to_tensor(const cv::Mat& image) {
     if(image.empty()) {
         return {};
     }
-    return torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0);
+    // cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+    return torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
 }
 
 void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor) {
     if(image.empty()) {
         return;
     }
-    auto image_tensor = tensor.permute({1, 2, 0}).mul(255.0).to(torch::kByte).contiguous();
+    auto image_tensor = tensor.permute({1, 2, 0}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
     std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
+    // cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
 }
 
 lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {
     size_t frame_count = 0;
     size_t video_count = 0;
     auto dataset = lifuren::dataset::Dataset(
+        true,
         batch_size,
         path,
         { ".mp4" },
@@ -144,9 +147,7 @@ lifuren::dataset::SeqDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             video.release();
             ++video_count;
             frame_count += frame;
-        },
-        nullptr,
-        true
+        }
     ).map(torch::data::transforms::Stack<>());
     SPDLOG_DEBUG("视频数据集加载完成：{} - {}", video_count, frame_count);
     torch::data::DataLoaderOptions options(batch_size);

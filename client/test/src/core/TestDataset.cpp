@@ -10,9 +10,9 @@
 
 [[maybe_unused]] static void testImage() {
     auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "image.jpg" }).string()) };
+    lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     cv::imshow("image", image);
     cv::waitKey();
-    lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image);
     cv::Mat target(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
     lifuren::dataset::image::tensor_to_mat(target, tensor);
@@ -55,11 +55,11 @@
                 cv::waitKey();
             } else {
             }
-            diff = frame - old;
-            source = diff + old;
-            lifuren::dataset::image::resize(diff, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+            diff   = frame - old;
+            source = diff  + old;
+            lifuren::dataset::image::resize(diff,   LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
             lifuren::dataset::image::resize(source, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            cv::imshow("diff", diff);
+            cv::imshow("diff",   diff);
             cv::imshow("source", source);
         }
         old = frame;
@@ -130,7 +130,7 @@
 
 LFR_TEST(
     // testImage();
-    // testVideo();
+    testVideo();
     // testReshape();
-    testLoadWudaoziDatasetLoader();
+    // testLoadWudaoziDatasetLoader();
 );

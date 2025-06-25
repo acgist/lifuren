@@ -35,7 +35,10 @@ public:
 
 TORCH_MODULE(ClassifyModule);
 
-class ClassifyModel : public lifuren::Model<torch::nn::CrossEntropyLoss, torch::optim::Adam, ClassifyModule, lifuren::dataset::RndDatasetLoader> {
+class ClassifyModel : public lifuren::Model<torch::optim::Adam, ClassifyModule, lifuren::dataset::RndDatasetLoader> {
+
+private:
+    torch::nn::CrossEntropyLoss cross_entropy_loss;
 
 public:
     ClassifyModel(lifuren::config::ModelParams params = {
@@ -66,7 +69,7 @@ public:
             labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::getDevice()));
             features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::getDevice()));
         }
-        auto dataset = lifuren::dataset::Dataset(this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
+        auto dataset = lifuren::dataset::Dataset(false, this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
     }
     void defineOptimizer() override {
@@ -74,6 +77,9 @@ public:
         optims.lr (this->params.lr);
         optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
+    }
+    torch::Tensor loss(torch::Tensor& label, torch::Tensor& pred) {
+        return this->cross_entropy_loss->forward(pred, label);
     }
 
 };

@@ -68,7 +68,7 @@
 #define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
-#define LFR_VIDEO_QUEUE_SIZE   3 // 视频帧数序列长度：3/5/7...
+#define LFR_VIDEO_QUEUE_SIZE   5 // 视频帧数序列长度：3/5/7...
 #endif
 
 namespace cv {
@@ -94,11 +94,11 @@ extern std::vector<std::string> allDataset(const std::string& path);
 class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
+    bool time_seq;
     size_t batch_size;
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
     std::vector<torch::Tensor> features; // 特征
-    bool rnn_model;
 
 public:
     Dataset() = default;
@@ -107,36 +107,34 @@ public:
     Dataset& operator=(const Dataset& ) = delete;
     Dataset& operator=(      Dataset&&) = delete;
     /**
+     * @param time_seq   时间序列
      * @param batch_size 批次数量
      * @param labels     标签
      * @param features   特征
-     * @param rnn_model  是否RNN网络
      */
     Dataset(
+        bool time_seq,
         size_t batch_size,
         std::vector<torch::Tensor>& labels,
-        std::vector<torch::Tensor>& features,
-        bool rnn_model = false
+        std::vector<torch::Tensor>& features
     );
     /**
      * /path/file1.suffix
      * /path/file2.suffix
      * ...
      * 
+     * @param time_seq   时间序列
      * @param batch_size 批次数量
      * @param path       数据集目录
      * @param suffix     文件后缀
      * @param transform  文件转换函数：void(文件路径, 标签, 特征, 计算设备)
-     * @param complete   完成回调：void(标签, 特征, 计算设备)
-     * @param rnn_model  是否RNN网络
      */
     Dataset(
+        bool time_seq,
         size_t batch_size,
         const std::string& path,
         const std::vector<std::string>& suffix,
-        const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform,
-        const std::function<void(std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> complete = nullptr,
-        bool rnn_model = false
+        const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
     );
     virtual ~Dataset();
 
