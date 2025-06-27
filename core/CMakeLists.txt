@@ -2,22 +2,32 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 
 add_library(
     ${PROJECT_NAME}
+    src/File.cpp
+    src/Image.cpp
     src/Torch.cpp
-    src/OpenCV.cpp
-    src/image/Image.cpp
-    src/image/ImageModel.cpp
-    src/dataset/Dataset.cpp
-    src/dataset/ImageDataset.cpp
+    src/Config.cpp
+    src/Logger.cpp
+    src/Dataset.cpp
+    src/Message.cpp
+    src/ImageDataset.cpp
 )
 
-target_link_libraries(
-    ${PROJECT_NAME}
-    lifurenboot
-    ${OpenCV_LIBS}
-    ${TORCH_LIBRARIES}
-)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "module")
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        spdlog::spdlog
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+    )
+else()
+    target_link_libraries(
+        ${PROJECT_NAME}
+        fmt
+        spdlog
+        ${OpenCV_LIBS}
+        ${TORCH_LIBRARIES}
+    )
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 
@@ -29,3 +39,13 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
+
+if(CMAKE_HOST_WIN32)
+    set(CONFIG_FILES "config/config-win.yml")
+else()
+    set(CONFIG_FILES "config/config.yml")
+endif()
+
+install(FILES ${CONFIG_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
+
+file(COPY ${CONFIG_FILES} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)

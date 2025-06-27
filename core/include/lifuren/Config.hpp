@@ -12,12 +12,30 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_CONFIG_HPP
-#define LFR_HEADER_BOOT_CONFIG_HPP
+#ifndef LFR_HEADER_CORE_CONFIG_HPP
+#define LFR_HEADER_CORE_CONFIG_HPP
 
 #include <string>
 #include <cstdlib>
 #include <cstdint>
+
+// 删除指针
+#ifndef LFR_DELETE_PTR
+#define LFR_DELETE_PTR(ptr) \
+    if(ptr != nullptr) {    \
+        delete ptr;         \
+        ptr = nullptr;      \
+    }
+#endif
+
+// 删除指针
+#ifndef LFR_DELETE_THIS_PTR
+#define LFR_DELETE_THIS_PTR(ptr) \
+    if(this->ptr != nullptr) {   \
+        delete this->ptr;        \
+        this->ptr = nullptr;     \
+    }
+#endif
 
 namespace lifuren::config {
 
@@ -67,7 +85,7 @@ class Config {
 public:
     std::string tmp;    // 临时目录
     std::string output; // 输出目录
-    std::string model_wudaozi; // 视频风格迁移模型文件
+    std::string model_wudaozi; // 视频生成模型文件
 
 public:
     /**
@@ -104,4 +122,4 @@ extern std::string baseFile(const std::string& path);
 
 } // END OF lifuren::config
 
-#endif // LFR_HEADER_BOOT_CONFIG_HPP
+#endif // LFR_HEADER_CORE_CONFIG_HPP

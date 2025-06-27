@@ -10,7 +10,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Raii.hpp"
 #include "lifuren/Config.hpp"
 
 static std::string last_directory = "";

@@ -5,7 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/ImageModel.hpp"
+#include "lifuren/WudaoziModel.hpp"
 
 namespace lifuren::image {
 

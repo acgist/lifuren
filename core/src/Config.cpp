@@ -9,7 +9,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/String.hpp"
 
 std::string lifuren::config::base_dir = "";
 

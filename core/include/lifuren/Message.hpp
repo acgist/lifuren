@@ -12,8 +12,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_MESSAGE_HPP
-#define LFR_HEADER_BOOT_MESSAGE_HPP
+#ifndef LFR_HEADER_CORE_MESSAGE_HPP
+#define LFR_HEADER_CORE_MESSAGE_HPP
 
 #include <functional>
 
@@ -40,4 +40,4 @@ extern void sendMessage(const char* message);
 
 } // END OF lifuren::message
 
-#endif // END OF LFR_HEADER_BOOT_MESSAGE_HPP
+#endif // END OF LFR_HEADER_CORE_MESSAGE_HPP

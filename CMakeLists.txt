@@ -158,7 +158,6 @@ find_package(Torch  CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(deps)
-add_subdirectory(boot)
 add_subdirectory(core)
 add_subdirectory(client)
 

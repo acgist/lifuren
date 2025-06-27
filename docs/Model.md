@@ -21,11 +21,6 @@ test/...
 
 ## 吴道子
 
-```
-视频特征：动作 + 色彩
-实现原理：图片 + 特征 = 目标
-```
-
 #### 数据集
 
 ```
@@ -35,7 +30,8 @@ val/视频1.mp4
 val/视频2.mp4
 ```
 
-#### 结构
+#### 参考资料
 
-```
-```
+* https://github.com/GlassyWing/TorchDiffusion
+* https://github.com/LinXueyuanStdio/PyTorch-DDPM
+* https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-

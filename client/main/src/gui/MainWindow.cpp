@@ -24,7 +24,7 @@ static void config_callback (const wxCommandEvent&);
 static void about_callback  (const wxCommandEvent&);
 static void message_callback(const char*);
 
-static const auto wudaozi_text = wxT("视频风格迁移");
+static const auto wudaozi_text = wxT("视频生成");
 static const auto config_text  = wxT("配置");
 static const auto about_text   = wxT("关于");
 static const auto message_text = wxT("日志");
@@ -111,7 +111,7 @@ void lifuren::MainWindow::bindEvent() {
 }
 
 static void wudaozi_callback(const wxCommandEvent&) {
-    run("视频风格迁移", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
+    run("视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::image::getImageClient("wudaozi");
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred(file);

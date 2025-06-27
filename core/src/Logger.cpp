@@ -6,6 +6,8 @@
 
 #include "lifuren/Message.hpp"
 
+#include "opencv2/core/utils/logger.hpp"
+
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -65,6 +67,14 @@ void lifuren::logger::init() {
         一顾倾人城，再顾倾人国。
         宁不知倾城与倾国，佳人难再得。
     )");
+}
+
+void lifuren::logger::opencv::init() {
+    #if defined(_DEBUG) || !defined(NDEBUG)
+    cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_DEBUG);
+    #else
+    cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
+    #endif
 }
 
 void lifuren::logger::stop() {

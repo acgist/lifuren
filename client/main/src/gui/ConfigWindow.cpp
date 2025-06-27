@@ -22,8 +22,8 @@ static const auto tmp_input_text            = wxT("临时目录");
 static const auto tmp_button_text           = wxT("选择临时目录");
 static const auto output_input_text         = wxT("输出目录");
 static const auto output_button_text        = wxT("选择输出目录");
-static const auto model_wudaozi_input_text  = wxT("视频风格迁移模型文件");
-static const auto model_wudaozi_button_text = wxT("选择视频风格迁移模型文件");
+static const auto model_wudaozi_input_text  = wxT("视频生成模型文件");
+static const auto model_wudaozi_button_text = wxT("选择视频生成模型文件");
 
 static void chooseFileCallback     (const wxCommandEvent&, wxTextCtrl*);
 static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl*);

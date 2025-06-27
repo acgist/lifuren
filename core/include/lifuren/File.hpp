@@ -12,8 +12,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_FILE_HPP
-#define LFR_HEADER_BOOT_FILE_HPP
+#ifndef LFR_HEADER_CORE_FILE_HPP
+#define LFR_HEADER_CORE_FILE_HPP
 
 #include <string>
 #include <vector>
@@ -223,4 +223,37 @@ extern std::string file_suffix(const std::string& path);
 
 } // END OF lifuren::file
 
-#endif // LFR_HEADER_BOOT_FILE_HPP
+namespace lifuren::string {
+
+static const char* const EMPTY_CHARS = " \t\r\n"; // 空白字符
+
+/**
+ * @param value 字符串
+ */
+inline void toLower(std::string& value) {
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    #else
+    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
+        return std::tolower(v);
+    });
+    #endif
+}
+
+/**
+ * @param value 字符串
+ * 
+ * @return 去掉空格后的字符串
+ */
+inline std::string trim(const std::string& value) {
+    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
+    if(index == std::string::npos) {
+        return {};
+    }
+    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
+    return value.substr(index, jndex + 1 - index);
+}
+    
+} // END OF lifuren::string
+
+#endif // LFR_HEADER_CORE_FILE_HPP

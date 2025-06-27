@@ -20,8 +20,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_BOOT_LOGGER_HPP
-#define LFR_HEADER_BOOT_LOGGER_HPP
+#ifndef LFR_HEADER_CORE_LOGGER_HPP
+#define LFR_HEADER_CORE_LOGGER_HPP
 
 // 日志枚举翻译
 #ifndef LFR_FORMAT_LOG_ENUM
@@ -52,4 +52,4 @@ extern void init(); // 加载OpenCV日志
 
 } // END OF lifuren::logger
 
-#endif // LFR_HEADER_BOOT_LOGGER_HPP
+#endif // LFR_HEADER_CORE_LOGGER_HPP

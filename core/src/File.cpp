@@ -2,8 +2,6 @@
 
 #include "spdlog/spdlog.h"
 
-#include "lifuren/String.hpp"
-
 void lifuren::file::list_file(std::vector<std::string>& vector, const std::string& path) {
     lifuren::file::list_file(vector, path, [](const std::string&) {
         return true;

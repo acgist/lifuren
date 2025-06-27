@@ -5,7 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/Image.hpp"
-#include "lifuren/ImageModel.hpp"
+#include "lifuren/WudaoziModel.hpp"
 
 [[maybe_unused]] static void testTrain() {
     const std::string path = lifuren::config::CONFIG.tmp;
@@ -53,8 +53,27 @@
     }
 }
 
+static void testLayer() {
+    lifuren::image::AttentionBlock a(32, 1, 8);
+    auto input = torch::randn({100, 32, 40, 20});
+    auto output = a->forward(input);
+    std::cout << input.sizes() << std::endl;
+    std::cout << output.sizes() << std::endl;
+    lifuren::image::Upsample upsample(32);
+    output = upsample->forward(input);
+    std::cout << output.sizes() << std::endl;
+    lifuren::image::Downsample downsample(32);
+    output = downsample->forward(input);
+    std::cout << output.sizes() << std::endl;
+    lifuren::image::ResidualBlock residual(32, 10);
+    output = residual->forward(input, torch::randn({100, 8}));
+    std::cout << output.sizes() << std::endl;
+    system("pause");
+}
+
 LFR_TEST(
     // testTrain();
     // testPred();
-    testPlay();
+    // testPlay();
+    testLayer();
 );
