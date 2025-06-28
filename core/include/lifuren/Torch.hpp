@@ -24,19 +24,19 @@ namespace lifuren {
 /**
  * @return 设备类型
  */
-extern torch::DeviceType getDevice();
+extern torch::DeviceType get_device();
 
 /**
  * @param message 日志
  * @param tensor  张量
  */
-extern void logTensor(const std::string& message, const at::Tensor& tensor);
+extern void log_tensor(const std::string& message, const at::Tensor& tensor);
 
 /**
  * @param message 日志
  * @param tensor  张量
  */
-extern void logTensor(const std::string& message, const c10::IntArrayRef& tensor);
+extern void log_tensor(const std::string& message, const c10::IntArrayRef& tensor);
 
 } // END OF lifuren
 

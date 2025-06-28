@@ -40,13 +40,14 @@
 namespace lifuren::config {
 
 /**
- * 模型训练参数
+ * 模型参数
  */
 struct ModelParams {
 
     float       lr         { 0.001F      }; // 学习率
+    float       grad_clip  { 0.0F        }; // 梯度裁剪
     size_t      batch_size { 100         }; // 批量大小
-    size_t      epoch_size { 128         }; // 训练次数
+    size_t      epoch_size { 128         }; // 训练轮次
     size_t      thread_size{ 0           }; // 线程数量
     size_t      class_size { 2           }; // 任务分类数量
     bool        classify   { false       }; // 是否分类任务
@@ -74,8 +75,6 @@ extern lifuren::config::Config CONFIG; // 全局配置
 const std::string DATASET_TRAIN = "train"; // 训练数据集
 const std::string DATASET_VAL   = "val";   // 验证数据集
 const std::string DATASET_TEST  = "test";  // 测试数据集
-
-const std::string LIFUREN_HIDDEN_FILE = ".lifuren";        // 隐藏文件
 
 /**
  * 配置

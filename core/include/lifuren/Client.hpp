@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * 终端
+ * 终端：提供训练、预测接口
  * 
  * @author acgist
  * 
@@ -37,7 +37,7 @@ public:
     virtual bool save(const std::string& path = "./lifuren.pt") = 0;
     virtual bool load(const std::string& path = "./lifuren.pt", C params = {}) = 0;
     virtual void trainValAndTest(C params = {}, const bool val = true, const bool test = true) = 0;
-    virtual std::tuple<bool, O> pred(const I& input) = 0;
+    virtual std::tuple<bool, O> pred(const I& input) = 0; // torch::NoGradGuard no_grad;
 
 };
 
@@ -47,19 +47,19 @@ public:
  * @param C 模型配置
  * @param I 模型输入
  * @param O 模型输出
- * @param M 模型实现
+ * @param M 模型训练器
  */
 template<typename C, typename I, typename O, typename M>
 class ModelClientImpl : public ModelClient<C, I, O> {
 
 protected:
-    std::unique_ptr<M> model{ nullptr }; // 模型实现
+    std::unique_ptr<M> model{ nullptr }; // 模型训练器
 
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") override;
     virtual bool load(const std::string& path = "./lifuren.pt", C params = {}) override;
     virtual void trainValAndTest(C params = {}, const bool val = true, const bool test = true) override;
-    virtual std::tuple<bool, O> pred(const I& input) = 0;
+    virtual std::tuple<bool, O> pred(const I& input) = 0; // torch::NoGradGuard no_grad;
 
 };
 
@@ -87,6 +87,7 @@ template<typename C, typename I, typename O, typename M>
 void lifuren::ModelClientImpl<C, I, O, M>::trainValAndTest(C params, const bool val, const bool test) {
     if(!this->model) {
         this->model = std::make_unique<M>(params);
+        this->model->define();
     }
     this->model->trainValAndTest(val, test);
 }

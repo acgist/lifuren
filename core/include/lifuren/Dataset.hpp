@@ -61,7 +61,7 @@
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
 #define LFR_IMAGE_HEIGHT     320 // 高度：16:9
-#define LFR_IMAGE_WIDTH      176 // 宽度：16:9
+#define LFR_IMAGE_WIDTH      192 // 宽度：16:9
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数

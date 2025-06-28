@@ -9,9 +9,9 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Image.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Message.hpp"
+#include "lifuren/Wudaozi.hpp"
 
 static wxPanel   * panel         { nullptr };
 static wxButton  * wudaozi_button{ nullptr };
@@ -112,7 +112,7 @@ void lifuren::MainWindow::bindEvent() {
 
 static void wudaozi_callback(const wxCommandEvent&) {
     run("视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
-        auto client = lifuren::image::getImageClient("wudaozi");
+        auto client = lifuren::getWudaoziClient();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred(file);
         } else {

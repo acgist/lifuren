@@ -3,10 +3,10 @@
 #include <memory>
 #include <random>
 
-#include "lifuren/Model.hpp"
+#include "lifuren/Trainer.hpp"
 #include "lifuren/Dataset.hpp"
 
-class ClassifyModuleImpl : public torch::nn::Module {
+class ClassifyImpl : public torch::nn::Module {
 
 private:
     lifuren::config::ModelParams params;
@@ -15,7 +15,7 @@ private:
     torch::nn::Linear      linear_2{ nullptr };
 
 public:
-    ClassifyModuleImpl(lifuren::config::ModelParams params = {}) : params(params) {
+    ClassifyImpl(lifuren::config::ModelParams params = {}) : params(params) {
         this->norm     = this->register_module("norm",    torch::nn::BatchNorm1d(2));
         this->linear_1 = this->register_module("linear_1", torch::nn::Linear(torch::nn::LinearOptions( 2, 16)));
         this->linear_2 = this->register_module("linear_2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
@@ -25,7 +25,7 @@ public:
              output = this->linear_2(torch::relu(output));
         return output;
     }
-    virtual ~ClassifyModuleImpl() {
+    virtual ~ClassifyImpl() {
         this->unregister_module("norm");
         this->unregister_module("linear_1");
         this->unregister_module("linear_2");
@@ -33,23 +33,23 @@ public:
 
 };
 
-TORCH_MODULE(ClassifyModule);
+TORCH_MODULE(Classify);
 
-class ClassifyModel : public lifuren::Model<torch::optim::Adam, ClassifyModule, lifuren::dataset::RndDatasetLoader> {
+class ClassifyModelTrainer : public lifuren::ModelTrainer<torch::optim::Adam, Classify, lifuren::dataset::RndDatasetLoader> {
 
 private:
     torch::nn::CrossEntropyLoss cross_entropy_loss;
 
 public:
-    ClassifyModel(lifuren::config::ModelParams params = {
+    ClassifyModelTrainer(lifuren::config::ModelParams params = {
         .lr         = 0.01F,
         .batch_size = 100,
         .epoch_size = 32,
         .class_size = 4,
         .classify   = true
-    }) : Model(params) {
+    }) : ModelTrainer(params) {
     }
-    virtual ~ClassifyModel() {
+    virtual ~ClassifyModelTrainer() {
     }
 
 public:
@@ -66,8 +66,8 @@ public:
             float l[] = { 0, 0, 0, 0 };
             float f[] = { w(rand) * label + b(rand), w(rand) * label + b(rand) };
             l[label]  = 1.0F;
-            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::getDevice()));
-            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::getDevice()));
+            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::get_device()));
+            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::get_device()));
         }
         auto dataset = lifuren::dataset::Dataset(false, this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
@@ -78,27 +78,31 @@ public:
         optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
-    torch::Tensor loss(torch::Tensor& label, torch::Tensor& pred) {
-        return this->cross_entropy_loss->forward(pred, label);
+    void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
+        pred = this->model->forward(feature);
+        loss = this->cross_entropy_loss->forward(pred, label);
+    }
+    torch::Tensor pred(torch::Tensor feature) {
+        return this->model->forward(feature);
     }
 
 };
 
 [[maybe_unused]] static void testTrain() {
-    ClassifyModel classify;
+    ClassifyModelTrainer classify;
     classify.define();
     classify.trainValAndTest(false, false);
     classify.print(true);
     classify.save();
-    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2}).to(LFR_DTYPE).to(lifuren::getDevice())), 1);
-    lifuren::logTensor("预测结果", pred);
+    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2}).to(LFR_DTYPE).to(lifuren::get_device())), 1);
+    lifuren::log_tensor("预测结果", pred);
     auto class_id  = pred.argmax(1);
     auto class_idx = class_id.item<int>();
     SPDLOG_DEBUG("预测结果：{} - {}", class_id.item().toInt(), pred[0][class_idx].item().toFloat());
 }
 
 [[maybe_unused]] static void testPred() {
-    ClassifyModel classify;
+    ClassifyModelTrainer classify;
     classify.define();
     classify.load();
     classify.print();
@@ -110,11 +114,11 @@ public:
         30.0F, 33.0F,
         90.0F, 99.0F,
     };
-    auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32).to(LFR_DTYPE).to(lifuren::getDevice())), 1);
-    lifuren::logTensor("当前预测", pred);
-    lifuren::logTensor("预测类别", pred.argmax(1));
-    lifuren::logTensor("预测类别", std::get<1>(pred.max(1)));
-    lifuren::logTensor("预测概率", std::get<0>(pred.max(1)));
+    auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32).to(LFR_DTYPE).to(lifuren::get_device())), 1);
+    lifuren::log_tensor("当前预测", pred);
+    lifuren::log_tensor("预测类别", pred.argmax(1));
+    lifuren::log_tensor("预测类别", std::get<1>(pred.max(1)));
+    lifuren::log_tensor("预测概率", std::get<0>(pred.max(1)));
 }
 
 LFR_TEST(

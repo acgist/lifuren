@@ -29,9 +29,3 @@ train/视频2.mp4
 val/视频1.mp4
 val/视频2.mp4
 ```
-
-#### 参考资料
-
-* https://github.com/GlassyWing/TorchDiffusion
-* https://github.com/LinXueyuanStdio/PyTorch-DDPM
-* https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-

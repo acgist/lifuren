@@ -109,8 +109,8 @@
     );
     auto iterator = loader->begin();
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
-    lifuren::logTensor("视频特征数量", iterator->data.sizes());
-    lifuren::logTensor("视频标签数量", iterator->target.sizes());
+    lifuren::log_tensor("视频特征数量", iterator->data.sizes());
+    lifuren::log_tensor("视频标签数量", iterator->target.sizes());
     cv::Mat image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {
         const int length = iterator->target.sizes()[0];

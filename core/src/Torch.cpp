@@ -13,7 +13,7 @@ LFR_FORMAT_LOG_STREAM(at::Tensor)
 LFR_FORMAT_LOG_STREAM(c10::IntArrayRef)
 #endif
 
-torch::DeviceType lifuren::getDevice() {
+torch::DeviceType lifuren::get_device() {
     if(torch::cuda::is_available()) {
         return torch::DeviceType::CUDA;
     } else {
@@ -21,7 +21,7 @@ torch::DeviceType lifuren::getDevice() {
     }
 }
 
-void lifuren::logTensor(const std::string& message, const at::Tensor& tensor) {
+void lifuren::log_tensor(const std::string& message, const at::Tensor& tensor) {
     if(tensor.numel() >= 512) {
         SPDLOG_DEBUG("{}\n{}", message, tensor.sizes());
     } else {
@@ -29,6 +29,6 @@ void lifuren::logTensor(const std::string& message, const at::Tensor& tensor) {
     }
 }
 
-void lifuren::logTensor(const std::string& message, const c10::IntArrayRef& tensor) {
+void lifuren::log_tensor(const std::string& message, const c10::IntArrayRef& tensor) {
     SPDLOG_DEBUG("{}\n{}", message, tensor);
 }
