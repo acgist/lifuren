@@ -18,7 +18,6 @@ cmake_minimum_required(VERSION 3.22.0)
 project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
-    # VSCode要和变体保持一致
     set(CMAKE_BUILD_TYPE Debug)
     # set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -58,8 +57,6 @@ elseif(CMAKE_HOST_UNIX)
     # https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
     # set(CMAKE_C_STANDARD   23)
     # set(CMAKE_CXX_STANDARD 23)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CMAKE_COMMAND} -E time")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -std=c17 -Wall -Wextra")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra")
     set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O0 -g")
@@ -70,6 +67,8 @@ elseif(CMAKE_HOST_UNIX)
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fPIC")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CMAKE_COMMAND} -E time")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 else()
     message(FATAL_ERROR "不支持的系统：${CMAKE_HOST_SYSTEM_NAME}")
 endif()
@@ -83,17 +82,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
     message(STATUS "C_FLAGS  : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
     message(STATUS "CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 else()
     add_definitions(-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_INFO)
     message(STATUS "C_FLAGS  : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
     message(STATUS "CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
-endif()
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    # ${CMAKE_SOURCE_DIR}
-    # ${CMAKE_HOME_DIRECTORY}
-    # ${CMAKE_CURRENT_SOURCE_DIR}
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
 endif()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug/lib)
@@ -108,11 +102,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 
-set(
-    CMAKE_PREFIX_PATH
-    ${CMAKE_PREFIX_PATH}
-    deps/libtorch
-)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} deps/libtorch)
 
 if(CMAKE_HOST_WIN32)
     set(
@@ -136,32 +126,28 @@ if(CMAKE_HOST_WIN32)
     file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
 
     find_package(wxWidgets CONFIG REQUIRED gl qa net core)
-    # find_package(wxWidgets CONFIG REQUIRED gl qa net core webview)
 elseif(CMAKE_HOST_UNIX)
     find_package(wxWidgets REQUIRED gl qa net core)
-    # find_package(wxWidgets REQUIRED gl qa net core webview)
 endif()
 
 find_package(CUDA)
 
 if(CUDA_FOUND)
-    message(STATUS "使用CUDA推理")
+    message(STATUS "使用GPU推理")
 else()
     message(STATUS "使用CPU推理")
 endif()
 
 find_package(OpenGL REQUIRED)
 
-# 注意顺序
 find_package(OpenCV CONFIG REQUIRED)
-find_package(Torch  CONFIG REQUIRED)
+find_package(Torch  CONFIG REQUIRED) # Torch需要排在OpenCV后面
 find_package(spdlog CONFIG REQUIRED)
 
-add_subdirectory(deps)
 add_subdirectory(core)
 add_subdirectory(client)
 
-set(INSTALL_DOCUMENT "LICENSE" "README.md" "docs/AI.md" "docs/CLI.md" "docs/Model.md" "docs/Deploy.md")
+set(INSTALL_DOCUMENT "LICENSE" "README.md" "docs/Model.md" "docs/Deploy.md")
 set(INSTALL_RESOURCE "docs/resources/")
 
 install(FILES     ${INSTALL_DOCUMENT} DESTINATION ${CMAKE_INSTALL_PREFIX}/)
@@ -169,4 +155,5 @@ install(DIRECTORY ${INSTALL_RESOURCE} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin  F
 install(DIRECTORY ${INSTALL_RESOURCE} DESTINATION ${CMAKE_INSTALL_PREFIX}/logs FILES_MATCHING PATTERN "*.log")
 
 file(COPY ${INSTALL_DOCUMENT} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/)
-file(COPY ${INSTALL_RESOURCE} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
+file(COPY ${INSTALL_RESOURCE} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin  FILES_MATCHING PATTERN "*.png" PATTERN "*.jpg" PATTERN "*.ico" PATTERN "*.jpeg")
+file(COPY ${INSTALL_RESOURCE} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/logs FILES_MATCHING PATTERN "*.log")

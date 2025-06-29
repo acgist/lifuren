@@ -17,4 +17,3 @@ deps/opencv
 deps/spdlog
 deps/libtorch
 deps/wxWidgets
-deps/diffusion

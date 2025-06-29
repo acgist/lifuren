@@ -39,9 +39,7 @@ make -j
 sudo make install
 ```
 
-* 如果不用`CUDA`编解码器可以不用编译相关参数
-* 编码器和解码器根据需要添加`./configure --list-encoders ./configure --list-decoders`
-* `--enable-libnpp`必须添加`--extra-cflags="-I/usr/local/cuda/include" --extra-ldflags="-L/usr/local/cuda/lib64"`
+* 查看编码器和解码器`./configure --list-encoders ./configure --list-decoders`
 
 ## 常用功能
 
