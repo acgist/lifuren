@@ -434,12 +434,12 @@ TORCH_MODULE(Wudaozi);
 /**
  * 吴道子模型训练器（视频生成）
  */
-class WudaoziModelTrainer : public lifuren::ModelTrainer<torch::optim::Adam, lifuren::Wudaozi, lifuren::dataset::SeqDatasetLoader> {
+class WudaoziTrainer : public lifuren::Trainer<torch::optim::Adam, lifuren::Wudaozi, lifuren::dataset::SeqDatasetLoader> {
 
 public:
-    WudaoziModelTrainer(lifuren::config::ModelParams params = {}) : ModelTrainer(params) {
+    WudaoziTrainer(lifuren::config::ModelParams params = {}) : Trainer(params) {
     }
-    ~WudaoziModelTrainer() {
+    ~WudaoziTrainer() {
     }
     
 public:
@@ -479,11 +479,8 @@ public:
 
 };
 
-template<typename M>
-using WudaoziModelClientImpl = ModelClientImpl<lifuren::config::ModelParams, std::string, std::string, M>;
-
-template<typename M>
-class WudaoziClient : public WudaoziModelClientImpl<M> {
+template<typename T>
+class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, std::string, std::string, T> {
 
 public:
     std::tuple<bool, std::string> pred(const std::string& input) override;
@@ -495,7 +492,7 @@ public:
 };
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTrainer>::predImage(const std::string& input) {
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predImage(const std::string& input) {
     auto image = cv::imread(input);
     if(image.empty()) {
         return { false, {} };
@@ -518,7 +515,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTraine
     }
     images.push_back(tensor);
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->model->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
+        auto result = this->trainer->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
         images.erase(images.begin());
@@ -529,7 +526,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTraine
 }
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTrainer>::predVideo(const std::string& input) {
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predVideo(const std::string& input) {
     cv::VideoCapture video(input);
     if(!video.isOpened()) {
         return { false, {} };
@@ -553,7 +550,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTraine
         lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
         auto tensor = lifuren::dataset::image::mat_to_tensor(image).to(LFR_DTYPE).to(lifuren::get_device());
         images.push_back(tensor);
-        auto result = this->model->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
+        auto result = this->trainer->pred(torch::stack(images, 0).unsqueeze(0)).squeeze(0);
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
         images.erase(images.begin());
@@ -564,8 +561,8 @@ std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTraine
 }
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTrainer>::pred(const std::string& input) {
-    if(!this->model) {
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::pred(const std::string& input) {
+    if(!this->trainer) {
         return { false, {} };
     }
     auto suffix = lifuren::file::file_suffix(input);
@@ -576,6 +573,6 @@ std::tuple<bool, std::string> lifuren::WudaoziClient<lifuren::WudaoziModelTraine
     }
 }
 
-std::unique_ptr<lifuren::WudaoziModelClient> lifuren::getWudaoziClient() {
-    return std::make_unique<lifuren::WudaoziClient<WudaoziModelTrainer>>();
+std::unique_ptr<lifuren::WudaoziClient> lifuren::get_wudaozi_client() {
+    return std::make_unique<lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>>();
 }

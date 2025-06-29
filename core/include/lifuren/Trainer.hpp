@@ -57,7 +57,7 @@ concept M = std::derived_from<T, torch::nn::Module>;
  * @author acgist
  */
 template<typename P, typename M, typename D>
-class ModelTrainer {
+class Trainer {
 
 protected:
     lifuren::config::ModelParams params{}; // 模型参数
@@ -74,8 +74,8 @@ public:
     /**
      * @param params 模型参数
      */
-    ModelTrainer(lifuren::config::ModelParams params = {});
-    virtual ~ModelTrainer();
+    Trainer(lifuren::config::ModelParams params = {});
+    virtual ~Trainer();
 
 public:
     // 保存模型
@@ -162,7 +162,7 @@ inline void classify_evaluate(
 }
 
 template<typename P, typename M, typename D>
-lifuren::ModelTrainer<P, M, D>::ModelTrainer(lifuren::config::ModelParams params) : params(std::move(params)), device(lifuren::get_device()) {
+lifuren::Trainer<P, M, D>::Trainer(lifuren::config::ModelParams params) : params(std::move(params)), device(lifuren::get_device()) {
     this->model = M{ this->params };
     if(this->params.thread_size == 0) {
         this->params.thread_size = std::thread::hardware_concurrency();
@@ -174,12 +174,12 @@ lifuren::ModelTrainer<P, M, D>::ModelTrainer(lifuren::config::ModelParams params
 }
 
 template<typename P, typename M, typename D>
-lifuren::ModelTrainer<P, M, D>::~ModelTrainer() {
+lifuren::Trainer<P, M, D>::~Trainer() {
     SPDLOG_DEBUG("释放模型：{}", this->params.model_name);
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::ModelTrainer<P, M, D>::save(const std::string& path, torch::DeviceType device) {
+bool lifuren::Trainer<P, M, D>::save(const std::string& path, torch::DeviceType device) {
     if(!this->model) {
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
@@ -193,7 +193,7 @@ bool lifuren::ModelTrainer<P, M, D>::save(const std::string& path, torch::Device
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::ModelTrainer<P, M, D>::load(const std::string& path, torch::DeviceType device) {
+bool lifuren::Trainer<P, M, D>::load(const std::string& path, torch::DeviceType device) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
@@ -212,7 +212,7 @@ bool lifuren::ModelTrainer<P, M, D>::load(const std::string& path, torch::Device
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::ModelTrainer<P, M, D>::define(const bool define_weight, const bool define_dataset, const bool define_optimizer) {
+bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool define_dataset, const bool define_optimizer) {
     if(define_weight) {
         this->defineWeight();
     }
@@ -228,7 +228,7 @@ bool lifuren::ModelTrainer<P, M, D>::define(const bool define_weight, const bool
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::ModelTrainer<P, M, D>::print(const bool details) {
+inline void lifuren::Trainer<P, M, D>::print(const bool details) {
     size_t total_numel = 0;
     for(const auto& parameter : this->model->named_parameters()) {
         total_numel += parameter.value().numel();
@@ -241,7 +241,7 @@ inline void lifuren::ModelTrainer<P, M, D>::print(const bool details) {
 }
 
 template<typename P, typename M, typename D>
-void lifuren::ModelTrainer<P, M, D>::trainValAndTest(const bool val, const bool test) {
+void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
@@ -276,7 +276,7 @@ void lifuren::ModelTrainer<P, M, D>::trainValAndTest(const bool val, const bool 
 }
 
 template<typename P, typename M, typename D>
-void lifuren::ModelTrainer<P, M, D>::train(const size_t epoch) {
+void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
@@ -312,7 +312,7 @@ void lifuren::ModelTrainer<P, M, D>::train(const size_t epoch) {
 }
 
 template<typename P, typename M, typename D>
-void lifuren::ModelTrainer<P, M, D>::val(const size_t epoch) {
+void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
     if(!this->valDataset) {
         return;
     }
@@ -341,7 +341,7 @@ void lifuren::ModelTrainer<P, M, D>::val(const size_t epoch) {
 }
 
 template<typename P, typename M, typename D>
-void lifuren::ModelTrainer<P, M, D>::test() {
+void lifuren::Trainer<P, M, D>::test() {
     if(!this->testDataset) {
         return;
     }
@@ -370,16 +370,16 @@ void lifuren::ModelTrainer<P, M, D>::test() {
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::ModelTrainer<P, M, D>::defineWeight() {
+inline void lifuren::Trainer<P, M, D>::defineWeight() {
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::ModelTrainer<P, M, D>::defineOptimizer() {
+inline void lifuren::Trainer<P, M, D>::defineOptimizer() {
     this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::ModelTrainer<P, M, D>::printEvaluation(
+inline void lifuren::Trainer<P, M, D>::printEvaluation(
     const char*  name,
     const size_t epoch,
     const float  loss,

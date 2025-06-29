@@ -7,12 +7,12 @@
 
 static std::function<void(const char*)> message_callback { nullptr };
 
-void lifuren::message::registerMessageCallback(std::function<void(const char*)> callback) {
+void lifuren::message::register_message_callback(std::function<void(const char*)> callback) {
     SPDLOG_DEBUG("注册消息通知回调");
     message_callback = callback;
 }
 
-void lifuren::message::unregisterMessageCallback() {
+void lifuren::message::unregister_message_callback() {
     SPDLOG_DEBUG("取消消息通知回调");
     message_callback = nullptr;
 }

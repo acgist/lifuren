@@ -54,7 +54,7 @@ lifuren::MainWindow::~MainWindow() {
         thread->join();
         thread = nullptr;
     }
-    lifuren::message::unregisterMessageCallback();
+    lifuren::message::unregister_message_callback();
     mainWindow     = nullptr;
     panel          = nullptr;
     wudaozi_button = nullptr;
@@ -107,12 +107,12 @@ void lifuren::MainWindow::bindEvent() {
             case about_id  : about_callback(event);   break;
         }
     });
-    lifuren::message::registerMessageCallback(message_callback);
+    lifuren::message::register_message_callback(message_callback);
 }
 
 static void wudaozi_callback(const wxCommandEvent&) {
     run("视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
-        auto client = lifuren::getWudaoziClient();
+        auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred(file);
         } else {

@@ -24,12 +24,12 @@ namespace lifuren::message {
  * 
  * @param callback 消息通知回调
  */
-extern void registerMessageCallback(std::function<void(const char*)> callback);
+extern void register_message_callback(std::function<void(const char*)> callback);
 
 /**
  * 取消消息通知回调
  */
-extern void unregisterMessageCallback();
+extern void unregister_message_callback();
 
 /**
  * 发送消息通知

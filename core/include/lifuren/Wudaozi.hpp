@@ -21,12 +21,12 @@
 
 namespace lifuren {
 
-using WudaoziModelClient = ModelClient<lifuren::config::ModelParams, std::string, std::string>;
+using WudaoziClient = Client<lifuren::config::ModelParams, std::string, std::string>;
 
 /**
  * @return 模型终端
  */
-extern std::unique_ptr<lifuren::WudaoziModelClient> getWudaoziClient();
+extern std::unique_ptr<lifuren::WudaoziClient> get_wudaozi_client();
 
 }
 

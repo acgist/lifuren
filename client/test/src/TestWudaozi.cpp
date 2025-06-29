@@ -9,7 +9,7 @@
 #include "lifuren/Wudaozi.hpp"
 
 [[maybe_unused]] static void testTrain() {
-    auto client = lifuren::getWudaoziClient();
+    auto client = lifuren::get_wudaozi_client();
     const std::string path = lifuren::config::CONFIG.tmp;
     client->trainValAndTest({
         .lr         = 0.0001F, // 0.01F
@@ -24,7 +24,7 @@
 }
 
 [[maybe_unused]] static void testPred() {
-    auto client = lifuren::getWudaoziClient();
+    auto client = lifuren::get_wudaozi_client();
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string(), {
         .batch_size = 1
     });

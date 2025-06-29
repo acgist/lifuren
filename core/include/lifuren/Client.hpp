@@ -31,7 +31,7 @@ namespace lifuren {
  * @param O 模型输出
  */
 template<typename C, typename I, typename O>
-class ModelClient {
+class Client {
 
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") = 0;
@@ -47,13 +47,13 @@ public:
  * @param C 模型配置
  * @param I 模型输入
  * @param O 模型输出
- * @param M 模型训练器
+ * @param T 模型训练器
  */
-template<typename C, typename I, typename O, typename M>
-class ModelClientImpl : public ModelClient<C, I, O> {
+template<typename C, typename I, typename O, typename T>
+class ClientImpl : public Client<C, I, O> {
 
 protected:
-    std::unique_ptr<M> model{ nullptr }; // 模型训练器
+    std::unique_ptr<T> trainer{ nullptr }; // 模型训练器
 
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") override;
@@ -65,31 +65,31 @@ public:
 
 } // END OF lifuren
 
-template<typename C, typename I, typename O, typename M>
-bool lifuren::ModelClientImpl<C, I, O, M>::save(const std::string& path) {
-    if(!this->model) {
+template<typename C, typename I, typename O, typename T>
+bool lifuren::ClientImpl<C, I, O, T>::save(const std::string& path) {
+    if(!this->trainer) {
         return false;
     }
-    return this->model->save(path);
+    return this->trainer->save(path);
 }
 
-template<typename C, typename I, typename O, typename M>
-bool lifuren::ModelClientImpl<C, I, O, M>::load(const std::string& path, C params) {
-    if(this->model) {
+template<typename C, typename I, typename O, typename T>
+bool lifuren::ClientImpl<C, I, O, T>::load(const std::string& path, C params) {
+    if(this->trainer) {
         return true;
     } else {
-        this->model = std::make_unique<M>(params);
+        this->trainer = std::make_unique<T>(params);
     }
-    return this->model->load(path);
+    return this->trainer->load(path);
 }
 
-template<typename C, typename I, typename O, typename M>
-void lifuren::ModelClientImpl<C, I, O, M>::trainValAndTest(C params, const bool val, const bool test) {
-    if(!this->model) {
-        this->model = std::make_unique<M>(params);
-        this->model->define();
+template<typename C, typename I, typename O, typename T>
+void lifuren::ClientImpl<C, I, O, T>::trainValAndTest(C params, const bool val, const bool test) {
+    if(!this->trainer) {
+        this->trainer = std::make_unique<T>(params);
+        this->trainer->define();
     }
-    this->model->trainValAndTest(val, test);
+    this->trainer->trainValAndTest(val, test);
 }
 
 #endif // END OF LFR_HEADER_CORE_CLIENT_HPP

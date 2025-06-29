@@ -21,7 +21,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
         return false;
     }
-    lifuren::message::registerMessageCallback(messageCallback);
+    lifuren::message::register_message_callback(messageCallback);
     std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{} - {}", i, argv[i]);
@@ -38,7 +38,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     } else {
         ::help();
     }
-    lifuren::message::unregisterMessageCallback();
+    lifuren::message::unregister_message_callback();
     return true;
 }
 
@@ -48,7 +48,7 @@ static void pred(const std::vector<std::string>& args) {
         ::help();
         return;
     }
-    auto client = lifuren::getWudaoziClient();
+    auto client = lifuren::get_wudaozi_client();
     if(!client) {
         SPDLOG_WARN("无效模型");
         return;
@@ -70,7 +70,7 @@ static void train(const std::vector<std::string>& args) {
         ::help();
         return;
     }
-    auto client = lifuren::getWudaoziClient();
+    auto client = lifuren::get_wudaozi_client();
     if(!client) {
         SPDLOG_WARN("无效模型");
         return;

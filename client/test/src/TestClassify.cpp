@@ -35,21 +35,21 @@ public:
 
 TORCH_MODULE(Classify);
 
-class ClassifyModelTrainer : public lifuren::ModelTrainer<torch::optim::Adam, Classify, lifuren::dataset::RndDatasetLoader> {
+class ClassifyTrainer : public lifuren::Trainer<torch::optim::Adam, Classify, lifuren::dataset::RndDatasetLoader> {
 
 private:
     torch::nn::CrossEntropyLoss cross_entropy_loss;
 
 public:
-    ClassifyModelTrainer(lifuren::config::ModelParams params = {
+    ClassifyTrainer(lifuren::config::ModelParams params = {
         .lr         = 0.01F,
         .batch_size = 100,
         .epoch_size = 32,
         .class_size = 4,
         .classify   = true
-    }) : ModelTrainer(params) {
+    }) : Trainer(params) {
     }
-    virtual ~ClassifyModelTrainer() {
+    virtual ~ClassifyTrainer() {
     }
 
 public:
@@ -89,7 +89,7 @@ public:
 };
 
 [[maybe_unused]] static void testTrain() {
-    ClassifyModelTrainer classify;
+    ClassifyTrainer classify;
     classify.define();
     classify.trainValAndTest(false, false);
     classify.print(true);
@@ -102,7 +102,7 @@ public:
 }
 
 [[maybe_unused]] static void testPred() {
-    ClassifyModelTrainer classify;
+    ClassifyTrainer classify;
     classify.define();
     classify.load();
     classify.print();
