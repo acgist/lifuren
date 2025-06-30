@@ -55,7 +55,10 @@ static void pred(const std::vector<std::string>& args) {
     }
     const std::string& model_file = args[0];
     const std::string& image_file = args[1];
-    client->load(model_file);
+    if(!client->load(model_file)) {
+        SPDLOG_WARN("模型加载失败：{}", model_file);
+        return;
+    }
     const auto [success, output_file] = client->pred(image_file);
     if(success) {
         SPDLOG_INFO("生成完成：{}", output_file);
@@ -75,8 +78,8 @@ static void train(const std::vector<std::string>& args) {
         SPDLOG_WARN("无效模型");
         return;
     }
-    const std::string& model_path = args[2];
-    const std::string& dataset    = args[3];
+    const std::string& model_path = args[0];
+    const std::string& dataset    = args[1];
     lifuren::config::ModelParams params{
         .model_name = "wudaozi",
         .model_path = model_path,

@@ -333,15 +333,6 @@ private:
     Encoder2d encoder_2d_1{ nullptr };
     Encoder3d encoder_3d_1{ nullptr };
     Decoder   decoder_1   { nullptr };
-    torch::Tensor betas   { nullptr };
-    torch::Tensor alphas  { nullptr };
-    torch::Tensor alphas_bar  { nullptr };
-    torch::Tensor alphas_bar_prev  { nullptr };
-    torch::Tensor sqrt_alphas_bar  { nullptr };
-    torch::Tensor sqrt_one_minus_alphas_bar  { nullptr };
-    torch::Tensor coeff1  { nullptr };
-    torch::Tensor coeff2  { nullptr };
-    torch::Tensor posterior_var  { nullptr };
     
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
@@ -350,28 +341,6 @@ public:
         // this->encoder_2d_1 = this->register_module("encoder_2d_1", lifuren::Encoder2d(3 * LFR_VIDEO_QUEUE_SIZE, 16));
         // this->encoder_3d_1 = this->register_module("encoder_3d_1", lifuren::Encoder3d(LFR_IMAGE_HEIGHT / scale, LFR_IMAGE_WIDTH / scale, LFR_VIDEO_QUEUE_SIZE));
         // this->decoder_1    = this->register_module("decoder_1",    lifuren::Decoder(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, scale, batch_size, LFR_VIDEO_QUEUE_SIZE));
-        this->betas = this->register_buffer("betas", torch::linspace(0.0001, 0.02, timesteps));
-        this->alphas = 1. - this->betas;
-        this->alphas_bar = torch::cumprod(alphas, 0);
-        std::cout << "betas sizes = " << this->betas.sizes() << std::endl;
-        std::cout << "alphas sizes = " << this->alphas.sizes() << std::endl;
-        std::cout << "alphas_bar sizes = " << this->alphas_bar.sizes() << std::endl;
-        // 训练
-        this->sqrt_alphas_bar = this->register_buffer("sqrt_alphas_bar", torch::sqrt(this->alphas_bar));
-        this->sqrt_one_minus_alphas_bar = this->register_buffer("sqrt_one_minus_alphas_bar", torch::sqrt(1. - this->alphas_bar));
-        std::cout << "sqrt_alphas_bar sizes = " << this->sqrt_alphas_bar.sizes() << std::endl;
-        std::cout << "sqrt_one_minus_alphas_bar sizes = " << this->sqrt_one_minus_alphas_bar.sizes() << std::endl;
-        // 预测
-        this->alphas_bar_prev = torch::pad(this->alphas_bar, { 1, 0 }, "constant", 1).slice(0, 0, timesteps);
-        this->coeff1 = this->register_buffer("coeff1", torch::sqrt(1. / this->alphas));
-        this->coeff2 = this->register_buffer("coeff2", this->coeff1 * (1. - this->alphas) / torch::sqrt(1. - this->alphas_bar));
-        std::cout << "alphas_bar_prev sizes = " << this->alphas_bar_prev.sizes() << std::endl;
-        std::cout << "coeff1 sizes = " << this->coeff1.sizes() << std::endl;
-        std::cout << "coeff2 sizes = " << this->coeff2.sizes() << std::endl;
-        std::cout << "alphas_bar_prev sizes = " << this->alphas_bar << std::endl;
-        std::cout << "alphas_bar_prev sizes = " << this->alphas_bar_prev << std::endl;
-        this->posterior_var = this->register_buffer("posterior_var", this->betas * (1. - this->alphas_bar_prev) / (1. - this->alphas_bar));
-        std::cout << "posterior_var sizes = " << this->posterior_var.sizes() << std::endl;
         this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 20, 64));
     }
     ~WudaoziImpl() {
@@ -380,51 +349,9 @@ public:
         // this->unregister_module("decoder_1");
     }
 
-private:
-    torch::Tensor extract(torch::Tensor v, torch::Tensor t, c10::IntArrayRef x_shape) {
-        auto out = torch::gather(v, 0, t).to(lifuren::get_device());
-        std::vector<int64_t> sp(x_shape.size(), 1);
-        sp[0] = t.sizes()[0];
-        return out.view(sp);
-    }
-    torch::Tensor predict_xt_prev_mean_from_eps(torch::Tensor x_t, torch::Tensor t, torch::Tensor eps) {
-        return 
-            extract(this->coeff1, t, x_t.sizes()) * x_t -
-            extract(this->coeff2, t, x_t.sizes()) * eps;
-    }
-    std::tuple<torch::Tensor, torch::Tensor> p_mean_variance(torch::Tensor x_t, torch::Tensor t) {
-        auto var = torch::cat({ this->posterior_var.slice(0, 1, 2), this->betas.slice(0, 1) });
-        var = extract(var, t, x_t.sizes());
-        auto eps = this->unet->forward(x_t, t.to(LFR_DTYPE));
-        auto xt_prev_mean = this->predict_xt_prev_mean_from_eps(x_t, t, eps);
-        return { xt_prev_mean, var };
-    }
-
 public:
-    torch::Tensor forward(torch::Tensor noise, torch::Tensor feature) {
-        auto t = torch::randint(0, timesteps, { feature.size(0) }).to(lifuren::get_device());
-        auto x_t = 
-            extract(this->sqrt_alphas_bar, t, feature.sizes()) * feature +
-            extract(this->sqrt_one_minus_alphas_bar, t, feature.sizes()) * noise
-        ;
-        return this->unet->forward(x_t, t.to(LFR_DTYPE));
-    }
-    torch::Tensor forward(torch::Tensor feature, int T = 1000) {
-        torch::NoGradGuard no_grad;
-        auto x_t = feature;
-        for(int time_step = T - 1; time_step >= 0; --time_step) {
-            auto t = (x_t.new_ones(feature.sizes()[0]) * time_step).to(torch::kLong).to(lifuren::get_device());
-            auto [ mean, var ] = this->p_mean_variance(x_t, t);
-            torch::Tensor noise;
-            if(time_step > 0) {
-                noise = torch::randn_like(x_t).to(LFR_DTYPE).to(lifuren::get_device());
-            } else {
-                noise = torch::zeros_like(x_t).to(LFR_DTYPE).to(lifuren::get_device());
-            }
-            x_t = mean + torch::sqrt(var) * noise;
-        }
-        auto x_0 = x_t;
-        return torch::clip(x_0, -1, 1);
+    torch::Tensor forward(torch::Tensor feature) {
+        return this->unet->forward(feature, torch::ones({20}));
     }
 
 };
@@ -457,7 +384,7 @@ public:
     void defineOptimizer() override {
         torch::optim::AdamOptions optims;
         optims.lr(this->params.lr);
-        optims.eps(0.0001);
+        // optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
@@ -468,13 +395,13 @@ public:
         // CrossEntropyLoss
         // auto noise = torch::randn_like(feature).to(lifuren::get_device());
         // auto d_noise = this->model->forward(noise, feature);
-        auto noise = torch::randn_like(label).to(lifuren::get_device());
-        auto d_noise = this->model->forward(noise, label);
-        loss = torch::mse_loss(d_noise, noise);
+        auto pred = this->model->forward(label);
+        loss = torch::mse_loss(pred, label);
     }
     torch::Tensor pred(torch::Tensor feature) {
+        torch::NoGradGuard no_grad;
         // return this->model->forward(feature, 1000);
-        return this->model->forward(torch::randn({20, 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH}).to(LFR_DTYPE).to(lifuren::get_device()), 1000);
+        return this->model->forward(feature);
     }
 
 };

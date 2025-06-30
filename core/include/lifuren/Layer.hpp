@@ -30,11 +30,13 @@ private:
 public:
     DownsampleImpl(int channels, int num_groups = 32) {
         this->downsample = this->register_module("downsample", torch::nn::Sequential(
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, { 3, 3 }).padding(1).bias(false)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 3).padding(1)),
             torch::nn::SiLU(),
             torch::nn::GroupNorm(num_groups, channels),
-            torch::nn::AvgPool2d(torch::nn::AvgPool2dOptions({ 2, 2 }).stride({ 2, 2 }))
+            torch::nn::AvgPool2d(torch::nn::AvgPool2dOptions(2).stride(2))
         ));
+        // torch::nn::init::xavier_uniform_(this->downsample->parameters());
+        // torch::nn::init::zeros_(this->downsample->parameters());
     }
     ~DownsampleImpl() {
         this->unregister_module("downsample");
@@ -62,7 +64,7 @@ public:
         this->upsample = this->register_module("upsample", torch::nn::Sequential(
             // torch::nn::ConvTranspose2d
             torch::nn::Upsample(torch::nn::UpsampleOptions().scale_factor(std::vector<double>({ 2, 2 })).mode(torch::kBilinear).align_corners(false)),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, { 3, 3 }).padding(1).bias(false)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 3).padding(1)),
             torch::nn::SiLU(),
             torch::nn::GroupNorm(num_groups, channels)
         ));
@@ -126,7 +128,6 @@ public:
         const int C = input.size(1);
         const int H = input.size(2);
         const int W = input.size(3);
-        // [ B C H W ] -> [ B 3*C H W ]
         auto qkv = this->qkv->forward(this->norm->forward(input)).reshape({ B * this->num_heads, -1, H * W }).chunk(3, 1);
         auto q   = qkv[0];
         auto k   = qkv[1];
@@ -157,14 +158,14 @@ private:
 
 public:
     ResidualBlockImpl(int channels, int out_c, int embedding_channels, int num_groups = 32) : out_c(out_c) {
-        this->conv  = this->register_module("conv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, out_c, { 1, 1 }).bias(false)));
-        this->dense = this->register_module("dense", torch::nn::Linear(torch::nn::LinearOptions(embedding_channels, out_c).bias(false)));
+        this->conv  = this->register_module("conv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, out_c, { 1, 1 })));
+        this->dense = this->register_module("dense", torch::nn::Linear(torch::nn::LinearOptions(embedding_channels, out_c)));
         torch::nn::Sequential fn_1;
         torch::nn::Sequential fn_2;
-        fn_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out_c, out_c, { 3, 3 }).padding(1).bias(false)));
+        fn_1->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out_c, out_c, { 3, 3 }).padding(1)));
         fn_1->push_back(torch::nn::SiLU());
         this->fn_1 = this->register_module("fn_1", fn_1);
-        fn_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out_c, out_c, { 3, 3 }).padding(1).bias(false)));
+        fn_2->push_back(torch::nn::Conv2d(torch::nn::Conv2dOptions(out_c, out_c, { 3, 3 }).padding(1)));
         fn_2->push_back(torch::nn::SiLU());
         this->fn_2 = this->register_module("fn_2", fn_2);
         this->pre_norm  = this->register_module("pre_norm",  torch::nn::GroupNorm(num_groups, out_c));
