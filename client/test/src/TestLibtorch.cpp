@@ -6,6 +6,7 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
+#include "lifuren/Layer.hpp"
 #include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
 
@@ -21,25 +22,40 @@
 }
 
 [[maybe_unused]] static void testLayer() {
-    const size_t size = 24;
-    float data[size] { 0.0F };
-    std::for_each(data, data + size, [i = 0.0F](auto& v) mutable {
-        // v = ++i;
-        i += 0.001F;
-        v = i;
-    });
-    // N C H W
-    torch::Tensor a = torch::from_blob(data, {2, 2, 2, 3}, torch::kFloat32).clone();
-    lifuren::log_tensor("a", a);
-    // N C L
-    torch::Tensor b = torch::from_blob(data, {4, 2, 3}, torch::kFloat32).clone();
-    lifuren::log_tensor("b", b);
-    torch::nn::LayerNorm ln(torch::nn::LayerNormOptions({ 2, 2, 3 }));
-    lifuren::log_tensor("ln", ln->forward(a));
-    torch::nn::BatchNorm1d bn1d(torch::nn::BatchNorm1dOptions(2));
-    lifuren::log_tensor("bn1d", bn1d->forward(b));
-    torch::nn::BatchNorm2d bn2d(torch::nn::BatchNorm2dOptions(2));
-    lifuren::log_tensor("bn2d", bn2d->forward(a));
+    // auto input = torch::randn({100, 32, 10, 20});
+    // lifuren::nn::Downsample layer(32, 32, false);
+    // auto output = layer->forward(input);
+    // lifuren::nn::Upsample layer(32, 32, false);
+    // auto output = layer->forward(input);
+    // lifuren::log_tensor("size", output.sizes());
+    // lifuren::nn::TimeEmbedding layer(10, 4, 100);
+    // auto input = torch::arange(0, 10);
+    // // auto input = torch::randint(10, { 4 });
+    // auto output = layer->forward(input);
+    // lifuren::log_tensor("input", input);
+    // lifuren::log_tensor("output", output);
+    lifuren::nn::AttentionBlock attention(32, 4);
+    auto input  = torch::randn({100, 32, 10, 20});
+    auto output = attention->forward(input);
+    std::cout << input.sizes() << std::endl;
+    std::cout << output.sizes() << std::endl;
+    torch::nn::MultiheadAttention attn(200, 10);
+    std::cout << "====" << std::endl;
+    output = torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 32 * 3, 1))->forward(input);
+    std::cout << output.sizes() << std::endl;
+    output = output.reshape({ 100 , -1, 10 * 20 });
+    std::cout << output.sizes() << std::endl;
+    auto qkv = output.permute({1, 0, 2}).chunk(3, 0);
+    auto q   = qkv[0];
+    auto k   = qkv[1];
+    auto v   = qkv[2];
+    std::cout << q.sizes() << std::endl;
+    std::cout << k.sizes() << std::endl;
+    std::cout << v.sizes() << std::endl;
+    auto [ o1, o2 ] = attn->forward(q, k, v);
+    std::cout << o1.sizes() << std::endl;
+    std::cout << o1.permute({1, 0, 2}).reshape({ 100, -1, 10, 20 }).sizes() << std::endl;
+    std::cout << o2.sizes() << std::endl;
 }
 
 [[maybe_unused]] static void testTensor() {
@@ -109,21 +125,11 @@
     //     std::cout << c.data_ptr() << " = " << c << std::endl;
     // }
     // -
-    torch::Tensor a = torch::randn({ 100, 4, 3, 320, 176 });
-    std::cout << (a.slice(1, 1, 4) - a.slice(1, 0, 4 - 1)).sizes() << std::endl;
-    int channel = 4;
-    torch::nn::Sequential encoder_3d;
-    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, 3).stride(1).padding(1)));
-    encoder_3d->push_back(torch::nn::BatchNorm3d(channel));
-    encoder_3d->push_back(torch::nn::Sigmoid());
-    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 2, 2, 2 }).stride({ 1, 2, 2 })));
-    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, 3).stride(1).padding(1)));
-    encoder_3d->push_back(torch::nn::BatchNorm3d(channel));
-    encoder_3d->push_back(torch::nn::Sigmoid());
-    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 2, 2, 2 }).stride({ 1, 2, 2 })));
-    encoder_3d->push_back(torch::nn::Conv3d(torch::nn::Conv3dOptions(channel, channel, { 1, 3, 3 }).stride(1).padding({ 0, 1, 1 })));
-    encoder_3d->push_back(torch::nn::MaxPool3d(torch::nn::MaxPool3dOptions({ 1, 2, 2 }).stride({ 1, 2, 2 })));
-    std::cout << encoder_3d->forward(a).sizes() << std::endl;
+    torch::Tensor a = torch::arange(0, 64).reshape({ 4, 4, 4 });
+    std::cout << a << std::endl;
+    std::cout << a.index_select(0, torch::tensor({0, 1})) << std::endl;
+    std::cout << a.index_select(0, torch::tensor({0, 2})) << std::endl;
+    std::cout << a.index_select(0, torch::tensor({1, 2})) << std::endl;
 }
 
 [[maybe_unused]] static void testReshape() {
@@ -186,7 +192,7 @@
 
 LFR_TEST(
     // testJit();
-    // testLayer();
-    testTensor();
+    testLayer();
+    // testTensor();
     // testReshape();
 );

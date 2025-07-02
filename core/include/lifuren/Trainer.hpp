@@ -249,7 +249,7 @@ void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test)
     SPDLOG_INFO("开始训练：{}", this->params.model_name);
     const auto a = std::chrono::system_clock::now();
     try {
-        auto scheduler = torch::optim::StepLR(*this->optimizer, 3, 0.999);
+        auto scheduler = torch::optim::StepLR(*this->optimizer, 10, 0.999);
         for (size_t epoch = 0; epoch < this->params.epoch_size; ++epoch) {
             this->train(epoch);
             scheduler.step();

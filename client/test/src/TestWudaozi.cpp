@@ -28,9 +28,14 @@
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string(), {
         .batch_size = 1
     });
-    auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string());
-    // auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.mp4"}).string());
-    SPDLOG_INFO("输出结果：{} - {}", success, output);
+    {
+        auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "lyf.jpg"}).string());
+        SPDLOG_INFO("输出结果：{} - {}", success, output);
+    }
+    {
+        auto [success, output] = client->pred(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string());
+        SPDLOG_INFO("输出结果：{} - {}", success, output);
+    }
 }
 
 [[maybe_unused]] static void testPlay() {
@@ -55,6 +60,6 @@
 
 LFR_TEST(
     // testTrain();
-    testPred();
-    // testPlay();
+    // testPred();
+    testPlay();
 );

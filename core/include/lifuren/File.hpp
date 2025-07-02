@@ -214,13 +214,6 @@ extern void list_file(std::vector<std::string>& vector, const std::string& path,
  */
 extern void list_file(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate);
 
-/**
- * @param path 文件路径
- * 
- * @return 文件后缀：.cpp/.hpp/.zip
- */
-extern std::string file_suffix(const std::string& path);
-
 } // END OF lifuren::file
 
 namespace lifuren::string {

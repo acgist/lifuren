@@ -45,16 +45,3 @@ void lifuren::file::list_file(std::vector<std::string>& vector, const std::strin
         }
     }
 }
-
-std::string lifuren::file::file_suffix(const std::string& path) {
-    if(path.empty()) {
-        return {};
-    }
-    const auto pos = path.find_last_of('.');
-    if(pos == path.npos) {
-        return {};
-    }
-    auto suffix = path.substr(pos);
-    lifuren::string::toLower(suffix);
-    return suffix;
-}

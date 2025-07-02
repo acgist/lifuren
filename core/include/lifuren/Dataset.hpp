@@ -29,11 +29,6 @@
 /**
  * 图片配置
  * 
- * 316 * 188 - 2 - 2 / 2 = 156 * 92
- * 156 *  92 - 2 - 2 / 2 =  76 * 44
- *  76 *  44 - 2 - 2 / 2 =  36 * 20
- *  36 *  20 - 2 - 2 / 2 =  16 *  8
- * 
  * 模型大小
  * 
  *              params size * kFloat16 / KB   / MB   / GB   = 0.37GB
@@ -44,31 +39,30 @@
  * 
  * 一批训练数据大小
  * 
- *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 3.78 GB/Batch
- * dataset size = 176    * 320   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 3.78 GB/Batch
+ *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 3.43 GB/Batch
+ * dataset size = 160    * 320   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 3.43 GB/Batch
  * 
- *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 7.55 GB/Batch
- * dataset size = 176    * 320   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 7.55 GB/Batch
+ *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 6.86 GB/Batch
+ * dataset size = 160    * 320   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 6.86 GB/Batch
  * 
  * 一小时数据集大小
  * 
- *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 27.19 GB/Hour
- * dataset size = 176    * 320   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 27.19 GB/Hour
+ *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 24.71 GB/Hour
+ * dataset size = 160    * 320   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 24.71 GB/Hour
  * 
- *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 54.38 GB/Hour
- * dataset size = 176    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 54.38 GB/Hour
+ *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 49.43 GB/Hour
+ * dataset size = 160    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 49.43 GB/Hour
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_HEIGHT     320 // 高度：16:9
-#define LFR_IMAGE_WIDTH      192 // 宽度：16:9
+#define LFR_IMAGE_HEIGHT     320 // 高度
+#define LFR_IMAGE_WIDTH      160 // 宽度
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
 #define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
-#define LFR_VIDEO_QUEUE_SIZE   5 // 视频帧数序列长度：3/5/7...
 #endif
 
 namespace cv {
@@ -94,7 +88,6 @@ extern std::vector<std::string> allDataset(const std::string& path);
 class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
-    bool time_seq;
     size_t batch_size;
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
@@ -107,13 +100,11 @@ public:
     Dataset& operator=(const Dataset& ) = delete;
     Dataset& operator=(      Dataset&&) = delete;
     /**
-     * @param time_seq   时间序列
      * @param batch_size 批次数量
      * @param labels     标签
      * @param features   特征
      */
     Dataset(
-        bool time_seq,
         size_t batch_size,
         std::vector<torch::Tensor>& labels,
         std::vector<torch::Tensor>& features
@@ -123,14 +114,12 @@ public:
      * /path/file2.suffix
      * ...
      * 
-     * @param time_seq   时间序列
      * @param batch_size 批次数量
      * @param path       数据集目录
      * @param suffix     文件后缀
      * @param transform  文件转换函数：void(文件路径, 标签, 特征, 计算设备)
      */
     Dataset(
-        bool time_seq,
         size_t batch_size,
         const std::string& path,
         const std::vector<std::string>& suffix,
@@ -184,7 +173,7 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * 
  * @return 图片数据集
  */
-extern lifuren::dataset::SeqDatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
+extern lifuren::dataset::RndDatasetLoader loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path);
 
 } // END OF image
 
