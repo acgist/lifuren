@@ -39,24 +39,24 @@
  * 
  * 一批训练数据大小
  * 
- *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 3.43 GB/Batch
- * dataset size = 160    * 320   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 3.43 GB/Batch
+ *                height * width * channel * kFloat16 * batch_frames * batch / KB   / MB   / GB   = 2.20 GB/Batch
+ * dataset size = 128    * 256   * 3       * 2        * 120          * 100   / 1024 / 1024 / 1024 = 2.20 GB/Batch
  * 
- *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 6.86 GB/Batch
- * dataset size = 160    * 320   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 6.86 GB/Batch
+ *                height * width * channel * kFloat32 * batch_frames * batch / KB   / MB   / GB   = 4.39 GB/Batch
+ * dataset size = 128    * 256   * 3       * 4        * 120          * 100   / 1024 / 1024 / 1024 = 4.39 GB/Batch
  * 
  * 一小时数据集大小
  * 
- *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 24.71 GB/Hour
- * dataset size = 160    * 320   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 24.71 GB/Hour
+ *                height * width * channel * kFloat16 * fps * second * minute / step / KB   / MB   / GB   = 15.82 GB/Hour
+ * dataset size = 128    * 256   * 3       * 2        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 15.82 GB/Hour
  * 
  *                height * width * channel * kFloat32 * fps * second * minute / step / KB   / MB   / GB   = 49.43 GB/Hour
- * dataset size = 160    * 320   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 49.43 GB/Hour
+ * dataset size = 128    * 256   * 3       * 4        * 24  * 60     * 60     / 1    / 1024 / 1024 / 1024 = 31.64 GB/Hour
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_HEIGHT     320 // 高度
-#define LFR_IMAGE_WIDTH      160 // 宽度
+#define LFR_IMAGE_HEIGHT     256 // 高度
+#define LFR_IMAGE_WIDTH      128 // 宽度
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数

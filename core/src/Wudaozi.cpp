@@ -1,6 +1,7 @@
 #include "lifuren/Wudaozi.hpp"
 
 #include <cmath>
+#include <random>
 
 #include "spdlog/spdlog.h"
 
@@ -21,13 +22,15 @@ private:
     torch::nn::Conv2d head{ nullptr };
     lifuren::nn::TimeEmbedding time_embed{ nullptr };
     torch::nn::ModuleDict encoder_blocks{nullptr};
+    torch::nn::ModuleDict middle_blocks{nullptr};
     torch::nn::ModuleDict decoder_blocks{nullptr};
+    torch::nn::Sequential tail{ nullptr };
 
 public:
     UNetImpl(int img_height, int img_width, int channels, int model_channels, int embedding_channels,  int min_pixel = 4,
-        int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 2, 2, 2, 4, 4 }) {
+        int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 2, 2, 4, 4 }) {
         this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_channels, { 3, 3 }).padding(1)));
-        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
+        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
         int min_img_size = std::min(img_height, img_width);
         torch::OrderedDict<std::string, std::shared_ptr<Module>> encoder_blocks;
         std::vector<std::tuple<int, int>> encoder_channels;
@@ -35,36 +38,33 @@ public:
         auto skip_pooling = 0;
         for (size_t i = 0; i < scales.size(); i++) {
             auto scale = scales[i];
-            // sevaral residual blocks
             for (size_t j = 0; j < n_block; j++) {
                 encoder_channels.emplace_back(cur_c, scale * embedding_channels);
                 auto block = lifuren::nn::ResidualBlock(cur_c, scale * embedding_channels, embedding_channels, n_groups);
                 cur_c = scale * embedding_channels;
-                encoder_blocks.insert((std::stringstream() << "enc_block_" << i * n_block + j).str(), block.ptr());
+                encoder_blocks.insert((std::stringstream() << "res" << i * n_block + j).str(), block.ptr());
             }
-    
             if (min_img_size <= attn_resolution) {
-                encoder_blocks.insert((std::stringstream() << "attn_enc_block_" << i * n_block).str(),
+                encoder_blocks.insert((std::stringstream() << "attn" << i * n_block).str(),
                 lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
             }
-    
-            // downsample block if not reach to `min_pixel`.
             if (min_img_size > min_pixel) {
-                encoder_blocks.insert((std::stringstream() << "down_block_" << i).str(), lifuren::nn::Downsample(cur_c).ptr());
+                encoder_blocks.insert((std::stringstream() << "down" << i).str(), lifuren::nn::Downsample(cur_c).ptr());
                 min_img_size = min_img_size / 2;
             } else {
-                skip_pooling += 1; // log how many times skip pooling.
+                skip_pooling += 1;
             }
         }
-        // mid
-        encoder_blocks.insert((std::stringstream() << "enc_block_" << scales.size() * n_block).str(),
-        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
-            // ?
-            // lifuren::nn::ResidualBlock(ch, ch, time_embed_dim, dropout),
-            // lifuren::nn::AttentionBlock(ch, num_heads=num_heads),
-            // lifuren::nn::ResidualBlock(ch, ch, time_embed_dim, dropout)
+        this->encoder_blocks = this->register_module("encoder", torch::nn::ModuleDict(encoder_blocks));
 
-        this->encoder_blocks = this->register_module("encoder_blocks", torch::nn::ModuleDict(encoder_blocks));
+        torch::OrderedDict<std::string, std::shared_ptr<Module>> middle_blocks;
+        middle_blocks.insert((std::stringstream() << "res" << 0).str(),
+        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
+        middle_blocks.insert((std::stringstream() << "attn" << 0).str(),
+                lifuren::nn::AttentionBlock(cur_c, 2, img_height * img_width / std::pow(2, 2 * scales.size()), cur_c / 8).ptr());
+        middle_blocks.insert((std::stringstream() << "res" << 1).str(),
+        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
+        this->middle_blocks = this->register_module("muxer", torch::nn::ModuleDict(middle_blocks));
 
         std::reverse(encoder_channels.begin(), encoder_channels.end());
 
@@ -73,37 +73,40 @@ public:
         for (int i = scales.size() - 1; i > -1; i--) {
             auto rev_scale = scales[i];
             if (m >= skip_pooling) {
-                decoder_blocks.insert((std::stringstream() << "up_block_" << m).str(), lifuren::nn::Upsample(cur_c).ptr());
+                decoder_blocks.insert((std::stringstream() << "up" << m).str(), lifuren::nn::Upsample(cur_c).ptr());
                 min_img_size *= 2;
             }
 
             for (size_t j = 0; j < n_block; j++) {
-                int out_channels;
-                int in_channels;
-                std::tie(out_channels, in_channels) = encoder_channels[m * n_block + j];
-                decoder_blocks.insert((std::stringstream() << "dec_block_" << m * n_block + j).str(),
+                auto [out_channels, in_channels] = encoder_channels[m * n_block + j];
+                in_channels *= 2;
+                decoder_blocks.insert((std::stringstream() << "res" << m * n_block + j).str(),
                 lifuren::nn::ResidualBlock(in_channels, out_channels, embedding_channels, n_groups).ptr());
                 cur_c = out_channels;
             }
 
             if (min_img_size <= attn_resolution) {
-                decoder_blocks.insert((std::stringstream() << "attn_dec_block_" << m * n_block).str(),
+                decoder_blocks.insert((std::stringstream() << "attn" << m * n_block).str(),
                 lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
             }
 
             m++;
         }
-        torch::nn::Sequential out(
+        this->decoder_blocks = this->register_module("decoder", torch::nn::ModuleDict(decoder_blocks));
+        torch::nn::Sequential tail(
             torch::nn::GroupNorm(n_groups, cur_c),
                 torch::nn::SiLU(),
                 torch::nn::Conv2d(torch::nn::Conv2dOptions(cur_c, channels, {3, 3}).padding(1).bias(false))
         );
-        decoder_blocks.insert(std::string("out"), out.ptr());
-        this->decoder_blocks = this->register_module("decoder_blocks", torch::nn::ModuleDict(decoder_blocks));
+        this->tail = this->register_module("tail", tail);
     }
     ~UNetImpl() {
         this->unregister_module("head");
+        this->unregister_module("tail");
         this->unregister_module("time_embed");
+        this->unregister_module("muxer");
+        this->unregister_module("encoder");
+        this->unregister_module("decoder");
     }
 
 public:
@@ -117,49 +120,53 @@ public:
         for (const auto &item: encoder_blocks->items()) {
             auto name = item.first;
             auto module = item.second;
-            // resudial block
-            if (name.starts_with("enc")) {
+            if (name.starts_with("res")) {
                 x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
                 inners.push_back(x);
             } else if (name.starts_with("attn")) {
                 x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
-            }
-                // downsample block
-            else {
+            } else if (name.starts_with("down")) {
                 x = module->as<lifuren::nn::Downsample>()->forward(x);
-                inners.push_back(x);
+            } else {
+                // -
             }
         }
     
-        // drop last two (contains middle block output)
-        auto inners_ = std::vector<torch::Tensor>(inners.begin(), inners.end() - 2);
+        for (const auto &item: middle_blocks->items()) {
+            auto name = item.first;
+            auto module = item.second;
+            if (name.starts_with("res")) {
+                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+            } else if (name.starts_with("attn")) {
+                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
+            } else {
+                // -
+            }
+        }
+
+        auto inners_ = std::vector<torch::Tensor>(inners.begin(), inners.end());
     
         for (const auto &item: decoder_blocks->items()) {
             auto name = item.first;
             auto module = item.second;
     
-            // upsample block
             if (name.starts_with("up")) {
                 x = module->as<lifuren::nn::Upsample>()->forward(x);
                 torch::Tensor xi = inners_.back();
-                inners_.pop_back(); // pop()
-                x = x + xi;
-            }
-                // resudial block
-            else if (name.starts_with("dec")) {
+            } else if (name.starts_with("res")) {
                 torch::Tensor xi = inners_.back();
-                inners_.pop_back(); // pop()
+                inners_.pop_back();
+                // x = x + xi;
+                x = torch::concat({ x, xi }, 1);
                 x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-                x = x + xi;
             } else if (name.starts_with("attn")) {
-    
                 x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
             } else {
-                x = module->as<torch::nn::Sequential>()->forward(x);
+                // -
             }
         }
-    
-        return x;
+        
+        return this->tail->forward(x);
     }
 
 };
@@ -174,20 +181,105 @@ class WudaoziImpl : public torch::nn::Module {
 private:
     lifuren::config::ModelParams params;
     UNet unet { nullptr };
+
+    torch::Tensor alpha;
+    torch::Tensor beta;
+    torch::Tensor sigma;
+    torch::Tensor bar_alpha;
+    torch::Tensor bar_beta;
+
+    torch::Tensor bar_alpha_;
+    torch::Tensor bar_alpha_pre_;
+    torch::Tensor bar_beta_;
+    torch::Tensor bar_beta_pre_;
+    torch::Tensor alpha_;
+    torch::Tensor sigma_;
+    torch::Tensor epsilon_;
+
+    int stride = 4;
+    float eta = 1.0;
+    int T = 1000;
     
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
-        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 8, 64));
+        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 8, 32));
+
+        alpha = register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, T + 1) / (double) T));
+        beta = register_buffer("beta", torch::sqrt(1.0 - torch::pow(alpha, 2)));
+        bar_alpha = register_buffer("bar_alpha", torch::cumprod(alpha, 0));
+        bar_beta = register_buffer("bar_beta", torch::sqrt(1.0 - bar_alpha.pow(2)));
+        sigma = register_buffer("sigma", beta.clone());
+
+        bar_alpha_ = bar_alpha.index({torch::indexing::Slice({torch::indexing::None, torch::indexing::None, stride})});
+        bar_alpha_pre_ = torch::pad(bar_alpha_.index({torch::indexing::Slice(torch::indexing::None, -1)}), {1, 0}, "constant", 1);
+        bar_beta_ = torch::sqrt(1.0 - torch::pow(bar_alpha_, 2));
+        bar_beta_pre_ = torch::sqrt(1.0 - torch::pow(bar_alpha_pre_, 2));
+        alpha_ = bar_alpha_ / bar_alpha_pre_;
+        sigma_ = bar_beta_pre_ / bar_beta_ * torch::sqrt(1.0 - torch::pow(alpha_, 2)) * eta;
+        epsilon_ = bar_beta_ - alpha_ * torch::sqrt(torch::pow(bar_beta_pre_, 2) - torch::pow(sigma_, 2));
+    
+        register_buffer("bar_alpha_", bar_alpha_);
+        register_buffer("bar_alpha_pre_", bar_alpha_pre_);
+        register_buffer("bar_beta_", bar_beta_);
+        register_buffer("bar_beta_pre_", bar_beta_pre_);
+        register_buffer("alpha_", alpha_);
+        register_buffer("sigma_", sigma_);
+        register_buffer("epsilon_", epsilon_);
     }
     ~WudaoziImpl() {
         this->unregister_module("unet");
     }
 
 public:
+    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> make_noise(const torch::Tensor& image) {
+        const auto& batch_images = image;
+        auto batch_size = batch_images.size(0);
+        std::vector<int> steps(T);
+        std::iota(steps.begin(), steps.end(), 0);
+        std::shuffle(steps.begin(), steps.end(), std::mt19937(std::random_device()()));
+        steps.resize(batch_size);
+        auto batch_steps = torch::tensor(steps, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
+        auto batch_bar_alpha = (bar_alpha).index({batch_steps}).reshape({-1, 1, 1, 1});
+        auto batch_bar_beta = (bar_beta).index({batch_steps}).reshape({-1, 1, 1, 1});
+        auto batch_noise = torch::randn_like(batch_images);
+        auto batch_noise_images = batch_images * batch_bar_alpha + batch_noise * batch_bar_beta;
+        return std::make_tuple(batch_noise_images, batch_steps, batch_noise);
+    }
     torch::Tensor forward(torch::Tensor feature, torch::Tensor t) {
         return this->unet->forward(feature, t);
     }
-
+    torch::Tensor forward(int img_height, int img_width, int t0, torch::Tensor feature) {
+        torch::NoGradGuard no_grad_guard;
+        auto T_ = bar_alpha_.size(0);
+        auto noise = torch::randn_like(feature);
+        auto batch_steps = torch::tensor({ t0 }, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
+        auto batch_bar_alpha = (bar_alpha).index({batch_steps}).reshape({-1, 1, 1, 1});
+        auto batch_bar_beta = (bar_beta).index({batch_steps}).reshape({-1, 1, 1, 1});
+        torch::Tensor z = feature * batch_bar_alpha + noise * batch_bar_beta;
+        for (int i = t0; i < T_; i++) {
+            auto t = T_ - i - 1;
+            auto bt = torch::tensor({t * stride}, torch::TensorOptions().device(lifuren::get_device())).repeat(z.size(0));
+            z = z - epsilon_.index({t}) * forward(z, bt);
+            z = z / alpha_.index({t});
+            z = z + torch::randn_like(z) * sigma_.index({t});
+        }
+        auto x_samples = torch::clip(z, -1, 1); // (n * n, 3, h, w)
+        return x_samples;
+    }
+    torch::Tensor forward(int img_height, int img_width, int n, int t0) {
+        torch::NoGradGuard no_grad_guard;
+        auto T_ = bar_alpha_.size(0);
+        torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device()));
+        for (int i = t0; i < T_; i++) {
+            auto t = T_ - i - 1;
+            auto bt = torch::tensor({t * stride}, torch::TensorOptions().device(lifuren::get_device())).repeat(z.size(0));
+            z = z - epsilon_.index({t}) * forward(z, bt);
+            z = z / alpha_.index({t});
+            z = z + torch::randn_like(z) * sigma_.index({t});
+        }
+        auto x_samples = torch::clip(z, -1, 1); // (n * n, 3, h, w)
+        return x_samples;
+    }
 };
 
 TORCH_MODULE(Wudaozi);
@@ -218,15 +310,17 @@ public:
     void defineOptimizer() override {
         torch::optim::AdamOptions optims;
         optims.lr(this->params.lr);
-        optims.eps(1e-5);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
-    void defineWeight() override {
-        auto params = this->model->parameters();
-        for(auto iter = params.begin(); iter != params.end(); ++iter) {
-            if(iter->sizes().size() == 2) {
-                torch::nn::init::xavier_uniform_(*iter);
-            }
+    void val(const size_t epoch) override {
+        if(epoch % this->params.check_epoch == 1) {
+            torch::NoGradGuard no_grad_guard;
+            auto result = this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 8, 0);
+            cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
+            lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
+            auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
+            cv::imwrite(path, image);
+            SPDLOG_INFO("保存图片：{}", path);
         }
     }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
@@ -235,13 +329,17 @@ public:
         // HuberLoss
         // SmoothL1Loss
         // CrossEntropyLoss
-        pred = this->model->forward(feature.slice(1, 0, 1).squeeze(1), label.squeeze(1));
-        // loss = torch::mse_loss(pred, feature.slice(1, 1, 2).squeeze(1));
-        loss = torch::smooth_l1_loss(pred, feature.slice(1, 1, 2).squeeze(1));
+        auto source_image = feature.slice(1, 0, 1).squeeze(1);
+        auto target_image = feature.slice(1, 1, 2).squeeze(1);
+        auto [noise_images, steps, noise] = this->model->make_noise(target_image);
+        auto denoise = this->model->forward(noise_images, steps);
+        loss = torch::mse_loss(denoise, noise);
+        // loss = torch::sum((denoise - noise).pow(2), {1, 2, 3}, true).mean();
+        // loss = torch::smooth_l1_loss(denoise, feature.slice(1, 1, 2).squeeze(1));
     }
     torch::Tensor pred(torch::Tensor feature, torch::Tensor t) {
-        torch::NoGradGuard no_grad;
-        return this->model->forward(feature, t);
+        torch::NoGradGuard no_grad_guard;
+        return this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 100, feature);
     }
 
 };
@@ -273,9 +371,9 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
         return { false, output };
     }
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(LFR_DTYPE).to(lifuren::get_device());
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->trainer->pred(tensor, torch::tensor({ i }).to(lifuren::get_device())).squeeze(0);
+        auto result = this->trainer->pred(tensor, torch::tensor({ i }).to(lifuren::get_device()));
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
     }

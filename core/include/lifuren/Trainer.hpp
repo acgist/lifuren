@@ -29,6 +29,8 @@
 #include "torch/optim.h"
 #include "torch/serialize.h"
 
+#include "ATen/autocast_mode.h"
+
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
@@ -79,9 +81,9 @@ public:
 
 public:
     // 保存模型
-    virtual bool save(const std::string& path = "./lifuren.pt", torch::DeviceType device = torch::DeviceType::CPU);
+    virtual bool save(const std::string& path = "./lifuren.pt");
     // 加载模型
-    virtual bool load(const std::string& path = "./lifuren.pt", torch::DeviceType device = torch::DeviceType::CPU);
+    virtual bool load(const std::string& path = "./lifuren.pt");
     // 定义模型
     virtual bool define(const bool define_weight = true, const bool define_dataset = true, const bool define_optimizer = true);
     // 打印模型
@@ -167,7 +169,6 @@ lifuren::Trainer<P, M, D>::Trainer(lifuren::config::ModelParams params) : params
     if(this->params.thread_size == 0) {
         this->params.thread_size = std::thread::hardware_concurrency();
     }
-    this->model->to(LFR_DTYPE);
     torch::set_num_threads(this->params.thread_size);
     SPDLOG_DEBUG("定义模型：{}", this->params.model_name);
     SPDLOG_DEBUG("计算设备：{}", torch::DeviceTypeName(this->device));
@@ -179,28 +180,29 @@ lifuren::Trainer<P, M, D>::~Trainer() {
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::Trainer<P, M, D>::save(const std::string& path, torch::DeviceType device) {
+bool lifuren::Trainer<P, M, D>::save(const std::string& path) {
     if(!this->model) {
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
     }
     lifuren::file::createParent(path);
     this->model->eval();
-    this->model->to(device);
-    torch::save(this->model, path);
+    this->model->to(torch::DeviceType::CPU);
+    torch::save(model, path);
+    this->model->to(this->device);
     SPDLOG_INFO("保存模型：{}", path);
     return true;
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::Trainer<P, M, D>::load(const std::string& path, torch::DeviceType device) {
+bool lifuren::Trainer<P, M, D>::load(const std::string& path) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
     }
     SPDLOG_INFO("加载模型：{}", path);
     try {
-        torch::load(this->model, path, device);
+        torch::load(this->model, path, torch::DeviceType::CPU);
     } catch(const std::exception& e) {
         SPDLOG_ERROR("加载模型异常：{} - {}", path, e.what());
         return false;
@@ -250,13 +252,13 @@ void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test)
     const auto a = std::chrono::system_clock::now();
     try {
         auto scheduler = torch::optim::StepLR(*this->optimizer, 10, 0.999);
-        for (size_t epoch = 0; epoch < this->params.epoch_size; ++epoch) {
+        for (size_t epoch = 1; epoch <= this->params.epoch_size; ++epoch) {
             this->train(epoch);
             scheduler.step();
             if(val) {
                 this->val(epoch);
             }
-            if(this->params.check_point) {
+            if(this->params.check_point && epoch % this->params.check_epoch == 1) {
                 this->save(lifuren::file::join({
                     this->params.model_path,
                     this->params.model_name + ".checkpoint." + std::to_string(epoch) + ".ckpt"
@@ -294,21 +296,37 @@ void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
         torch::Tensor data   = batch.data;
         torch::Tensor target = batch.target;
         this->optimizer->zero_grad();
+        if(this->params.amp) {
+            at::autocast::set_autocast_enabled(torch::kCUDA, true);
+        }
         this->loss(data, target, pred, loss);
+        if(this->params.amp) {
+            at::autocast::clear_cache();
+            at::autocast::set_autocast_enabled(torch::kCUDA, false);
+        }
         loss.backward();
         if(this->params.grad_clip > 0.0F) {
             torch::nn::utils::clip_grad_norm_(this->model->parameters(), this->params.grad_clip);
         }
         this->optimizer->step();
+        // 小批量累计梯度
         if(this->params.classify) {
             classify_evaluate(target, pred, confusion_matrix, accu_val, data_val);
         }
-        loss_val += loss.template item<float>();
+        auto loss_val_batch = loss.template item<float>();
+        loss_val += loss_val_batch;
         ++batch_count;
+        std::printf(
+            "\r轮次/批次 [ %6zd / %6zd ] 损失：%.6f",
+            epoch,
+            batch_count,
+            loss_val_batch
+        );
     }
+    std::printf("\n");
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    this->printEvaluation("训练", epoch + 1, loss_val / batch_count, accu_val, data_val, duration, confusion_matrix);
+    this->printEvaluation("训练", epoch, loss_val / batch_count, accu_val, data_val, duration, confusion_matrix);
 }
 
 template<typename P, typename M, typename D>
@@ -316,6 +334,7 @@ void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
     if(!this->valDataset) {
         return;
     }
+    torch::NoGradGuard no_grad_guard;
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
@@ -337,7 +356,7 @@ void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
     }
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    this->printEvaluation("验证", epoch + 1, loss_val / batch_count, accu_val, data_val, duration, confusion_matrix);
+    this->printEvaluation("验证", epoch, loss_val / batch_count, accu_val, data_val, duration, confusion_matrix);
 }
 
 template<typename P, typename M, typename D>
@@ -345,6 +364,7 @@ void lifuren::Trainer<P, M, D>::test() {
     if(!this->testDataset) {
         return;
     }
+    torch::NoGradGuard no_grad_guard;
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;

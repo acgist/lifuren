@@ -72,7 +72,7 @@ torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
 }
 
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
-    #ifdef LFR_VIDEO_FILL
+    #ifdef LFR_VIDEO_FILL_FRAME
     const int cols = image.cols;
     const int rows = image.rows;
     const double ws = 1.0 * cols / width;
@@ -82,7 +82,11 @@ void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int 
     const int h = std::max(static_cast<int>(height * scale), rows);
     cv::Mat result = cv::Mat::zeros(h, w, CV_8UC3);
     image.copyTo(result(cv::Rect(0, 0, cols, rows)));
-    cv::resize(result, image, cv::Size(width, height));
+    if(scale < 1.0) {
+        cv::resize(result, image, cv::Size(width, height), 0, 0, cv::INTER_LINEAR);
+    } else {
+        cv::resize(result, image, cv::Size(width, height), 0, 0, cv::INTER_AREA);
+    }
     #else
     const int cols = image.cols;
     const int rows = image.rows;
@@ -92,7 +96,11 @@ void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int 
     const int w = std::min(static_cast<int>(width  * scale), cols);
     const int h = std::min(static_cast<int>(height * scale), rows);
     image = image(cv::Rect((cols - w) / 2, (rows - h) / 2, w, h));
-    cv::resize(image, image, cv::Size(width, height));
+    if(scale < 1.0) {
+        cv::resize(image, image, cv::Size(width, height), 0, 0, cv::INTER_LINEAR);
+    } else {
+        cv::resize(image, image, cv::Size(width, height), 0, 0, cv::INTER_AREA);
+    }
     #endif
 }
 
@@ -108,8 +116,22 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
     if(image.empty()) {
         return;
     }
-    auto image_tensor = tensor.permute({1, 2, 0}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
-    std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
+    if(tensor.dim() == 3) {
+        auto image_tensor = tensor.permute({1, 2, 0}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
+        std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
+    } else {
+        int i = 0;
+        auto image_tensor  = tensor.permute({0, 2, 3, 1}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
+        auto images_tensor = image_tensor.chunk(image_tensor.size(0), 0);
+        for(auto iter = images_tensor.begin(); iter != images_tensor.end(); ++iter) {
+            cv::Mat copy(image_tensor.size(1), image_tensor.size(2), CV_8UC3);
+            std::memcpy(copy.data, reinterpret_cast<char*>(iter->data_ptr()), copy.total() * copy.elemSize());
+            int x = i % (image.cols / copy.cols) * copy.cols;
+            int y = i / (image.cols / copy.cols) * copy.rows;
+            copy.copyTo(image(cv::Rect(x, y, copy.cols, copy.rows)));
+            ++i;
+        }
+    }
     cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
 }
 
@@ -172,8 +194,10 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                         if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
                             SPDLOG_DEBUG("加载视频片段：{}", batch.size());
                             frame += batch.size();
-                            auto feature = torch::stack(batch, 0).clone().to(LFR_DTYPE).to(device);
+                            // auto feature = torch::stack(batch, 0).clone();
+                            auto feature = torch::stack(batch, 0).clone().to(device);
                             for(size_t i = 0; i < batch.size() - 1; ++i) {
+                                // features.push_back(feature.index_select(0, torch::tensor({ 0, static_cast<int>(i + 1) })));
                                 features.push_back(feature.index_select(0, torch::tensor({ 0, static_cast<int>(i + 1) }).to(lifuren::get_device())));
                                 labels  .push_back(time_step[i]);
                             }
@@ -190,8 +214,10 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             if(batch.size() >= LFR_VIDEO_FRAME_MIN) {
                 SPDLOG_DEBUG("加载视频片段：{}", batch.size());
                 frame += batch.size();
-                auto feature = torch::stack(batch, 0).clone().to(LFR_DTYPE).to(device);
+                // auto feature = torch::stack(batch, 0).clone();
+                auto feature = torch::stack(batch, 0).clone().to(device);
                 for(size_t i = 0; i < batch.size() - 1; ++i) {
+                    // features.push_back(feature.index_select(0, torch::tensor({ 0, static_cast<int>(i + 1) })));
                     features.push_back(feature.index_select(0, torch::tensor({ 0, static_cast<int>(i + 1) }).to(lifuren::get_device())));
                     labels  .push_back(time_step[i]);
                 }

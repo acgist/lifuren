@@ -48,9 +48,7 @@
 ## 文档
 
 * [学习资料](./docs/AI.md)
-* [命令文档](./docs/CLI.md)
 * [计划文档](./docs/TODO.md)
-* [模型文档](./docs/Model.md)
 * [部署文档](./docs/Deploy.md)
 
 ## 主要功能
@@ -75,3 +73,7 @@
 ## GUI
 
 ![主界面](./docs/main.png)
+
+## 说明
+
+* 训练一小时左右可以看到效果

@@ -5,6 +5,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "opencv2/opencv.hpp"
+
 #include "lifuren/File.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Torch.hpp"
@@ -21,6 +23,28 @@
     lifuren::log_tensor("result", result);
 }
 
+[[maybe_unused]] static void testImage() {
+    cv::Mat image(256 * 2, 128 * 4, CV_8UC3);
+    auto tensor = torch::randn({ 8, 3, 256, 128 });
+    auto image_tensor = tensor.permute({0, 2, 3, 1}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
+    auto images_tensor = image_tensor.chunk(image_tensor.size(0), 0);
+    auto iter = images_tensor.begin();
+    auto end  = images_tensor.end();
+    int i = 0;
+    for(; iter != end; ++iter) {
+        cv::Mat copy(256, 128, CV_8UC3);
+        std::memcpy(copy.data, reinterpret_cast<char*>(iter->data_ptr()), copy.total() * copy.elemSize());
+        int c = image.cols / copy.cols;
+        int r = image.rows / copy.rows;
+        int x = i % c * copy.cols;
+        int y = i / c * copy.rows;
+	    copy.copyTo(image(cv::Rect(x, y, copy.cols, copy.rows)));
+        ++i;
+    }
+    cv::imshow("image", image);
+    cv::waitKey();
+}
+
 [[maybe_unused]] static void testLayer() {
     // auto input = torch::randn({100, 32, 10, 20});
     // lifuren::nn::Downsample layer(32, 32, false);
@@ -34,7 +58,7 @@
     // auto output = layer->forward(input);
     // lifuren::log_tensor("input", input);
     // lifuren::log_tensor("output", output);
-    lifuren::nn::AttentionBlock attention(32, 4);
+    lifuren::nn::AttentionBlock attention(32, 4, 200);
     auto input  = torch::randn({100, 32, 10, 20});
     auto output = attention->forward(input);
     std::cout << input.sizes() << std::endl;
@@ -43,7 +67,7 @@
     std::cout << "====" << std::endl;
     output = torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 32 * 3, 1))->forward(input);
     std::cout << output.sizes() << std::endl;
-    output = output.reshape({ 100 , -1, 10 * 20 });
+    output = output.reshape({ 100, -1, 10 * 20 });
     std::cout << output.sizes() << std::endl;
     auto qkv = output.permute({1, 0, 2}).chunk(3, 0);
     auto q   = qkv[0];
@@ -192,7 +216,8 @@
 
 LFR_TEST(
     // testJit();
-    testLayer();
+    testImage();
+    // testLayer();
     // testTensor();
     // testReshape();
 );

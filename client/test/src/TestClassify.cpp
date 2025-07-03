@@ -66,8 +66,8 @@ public:
             float l[] = { 0, 0, 0, 0 };
             float f[] = { w(rand) * label + b(rand), w(rand) * label + b(rand) };
             l[label]  = 1.0F;
-            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::get_device()));
-            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone().to(LFR_DTYPE).to(lifuren::get_device()));
+            labels  .push_back(torch::from_blob(l, { 4 }, torch::kFloat32).clone().to(lifuren::get_device()));
+            features.push_back(torch::from_blob(f, { 2 }, torch::kFloat32).clone().to(lifuren::get_device()));
         }
         auto dataset = lifuren::dataset::Dataset(this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
@@ -94,7 +94,7 @@ public:
     classify.trainValAndTest(false, false);
     classify.print(true);
     classify.save();
-    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2}).to(LFR_DTYPE).to(lifuren::get_device())), 1);
+    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2}).to(lifuren::get_device())), 1);
     lifuren::log_tensor("预测结果", pred);
     auto class_id  = pred.argmax(1);
     auto class_idx = class_id.item<int>();
@@ -114,7 +114,7 @@ public:
         30.0F, 33.0F,
         90.0F, 99.0F,
     };
-    auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32).to(LFR_DTYPE).to(lifuren::get_device())), 1);
+    auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32).to(lifuren::get_device())), 1);
     lifuren::log_tensor("当前预测", pred);
     lifuren::log_tensor("预测类别", pred.argmax(1));
     lifuren::log_tensor("预测类别", std::get<1>(pred.max(1)));

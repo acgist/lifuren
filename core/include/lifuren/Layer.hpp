@@ -100,15 +100,15 @@ public:
 TORCH_MODULE(Upsample);
 
 /**
- * 时间嵌入
+ * 位置嵌入
  */
-class TimeEmbeddingImpl : public torch::nn::Module {
+class PosEmbeddingImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential time_embedding{ nullptr };
+    torch::nn::Sequential pos_embedding{ nullptr };
 
 public:
-    TimeEmbeddingImpl(int T, int in_dim, int out_dim) {
+    PosEmbeddingImpl(int T, int in_dim, int out_dim) {
         assert(in_dim % 2 == 0);
         auto pos = torch::arange(T).to(torch::kFloat32);
         auto emb = torch::arange(0, in_dim, 2).to(torch::kFloat32) / in_dim * std::log(10000);
@@ -116,25 +116,31 @@ public:
         emb = pos.unsqueeze(1) * emb.unsqueeze(0);
         emb = torch::stack({ torch::sin(emb), torch::cos(emb) }, -1);
         emb = emb.view({ T, in_dim });
-        this->time_embedding = this->register_module("time_embedding", torch::nn::Sequential(
+        this->pos_embedding = this->register_module("pos_embedding", torch::nn::Sequential(
             torch::nn::Embedding::from_pretrained(emb),
             torch::nn::Linear(in_dim, out_dim),
             torch::nn::SiLU(),
             torch::nn::Linear(out_dim, out_dim)
         ));
     }
-    ~TimeEmbeddingImpl() {
-        this->unregister_module("time_embedding");
+    ~PosEmbeddingImpl() {
+        this->unregister_module("pos_embedding");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        return this->time_embedding->forward(input);
+        return this->pos_embedding->forward(input);
     }
 
 };
 
-TORCH_MODULE(TimeEmbedding);
+TORCH_MODULE(PosEmbedding);
+
+using StepEmbedding = PosEmbedding;
+using TimeEmbedding = PosEmbedding;
+
+// 步数嵌入
+// 时间嵌入
 
 /**
  * 自注意力
@@ -142,44 +148,41 @@ TORCH_MODULE(TimeEmbedding);
 class AttentionBlockImpl : public torch::nn::Module {
 
 private:
-    int num_heads;
     torch::nn::GroupNorm norm{ nullptr };
     torch::nn::Conv2d    qkv { nullptr };
     torch::nn::Conv2d    proj{ nullptr };
     torch::nn::MultiheadAttention attn{ nullptr };
 
 public:
-    AttentionBlockImpl(int channels, int num_heads, int embedding_channels, int num_groups = 32) : num_heads(num_heads) {
+    AttentionBlockImpl(int channels, int num_heads, int embedding_channels, int num_groups = 32) {
         assert(channels % num_heads  == 0);
         assert(channels % num_groups == 0);
-        auto norm = torch::nn::GroupNorm(num_groups, channels);
-        auto qkv  = torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels * 3, 1));
-        auto proj = torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels,     1));
-        this->norm = this->register_module("norm", norm);
-        this->qkv  = this->register_module("qkv",  qkv);
+        this->norm = this->register_module("norm", torch::nn::GroupNorm(num_groups, channels));
+        this->qkv  = this->register_module("qkv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels * 3, 1)));
         this->attn = this->register_module("attn", torch::nn::MultiheadAttention(embedding_channels, num_heads));
-        this->proj = this->register_module("proj", proj);
+        this->proj = this->register_module("proj", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 1)));
     }
     ~AttentionBlockImpl() {
         this->unregister_module("norm");
         this->unregister_module("qkv");
+        this->unregister_module("attn");
         this->unregister_module("proj");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        const int B = input.size(0);
+        const int N = input.size(0);
         const int C = input.size(1);
         const int H = input.size(2);
         const int W = input.size(3);
-        // B C H W -> B C H*W -> C B H*W
-        auto qkv = this->qkv->forward(this->norm->forward(input)).reshape({ B, -1, H * W }).permute({1, 0, 2}).chunk(3, 0);
+        // N C H W -> N C H*W -> C N H*W
+        auto qkv = this->qkv->forward(this->norm->forward(input)).reshape({ N, -1, H * W }).permute({1, 0, 2}).chunk(3, 0);
         auto q   = qkv[0];
         auto k   = qkv[1];
         auto v   = qkv[2];
         auto [ h, w ] = attn->forward(q, k, v);
-        // C B H*W -> B C H*W -> B C H W
-        h = h.permute({1, 0, 2}).reshape({ B, -1, H, W });
+        // C N H*W -> N C H*W -> N C H W
+        h = h.permute({1, 0, 2}).reshape({ N, -1, H, W });
         h = this->proj->forward(h);
         return h + input;
     }

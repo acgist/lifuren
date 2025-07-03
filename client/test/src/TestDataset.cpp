@@ -15,6 +15,8 @@
     cv::waitKey();
     auto tensor = lifuren::dataset::image::mat_to_tensor(image);
     cv::Mat target(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
+    // tensor = tensor + torch::randn_like(tensor);
+    // tensor = tensor - torch::randn_like(tensor);
     lifuren::dataset::image::tensor_to_mat(target, tensor);
     cv::imshow("target", target);
     cv::waitKey();
