@@ -73,13 +73,14 @@ torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
 
 void lifuren::dataset::image::mask(cv::Mat& mask, const cv::Mat& prev, const cv::Mat& next) {
     cv::Mat diff = next - prev;
-    cv::threshold(diff, diff, 128, 255, cv::THRESH_BINARY);
-    cv::imshow("diff", diff);
+    cv::resize(diff, diff, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_AREA);
+    cv::threshold(diff, diff, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
     std::vector<cv::Mat> channels;
     cv::split(diff, channels);
     mask = channels[0] + channels[1] + channels[2];
-    cv::resize(mask, mask, cv::Size(4, 8), 0, 0, cv::INTER_LINEAR);
-    cv::threshold(mask, mask, 128, 255, cv::THRESH_BINARY);
+    cv::resize(mask, mask, cv::Size(LFR_VIDEO_MAT_WIDTH, LFR_VIDEO_MAT_HEIGHT), 0, 0, cv::INTER_AREA);
+    // 不二值化更加丰富
+    // cv::threshold(mask, mask, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
 }
 
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
@@ -191,7 +192,7 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 #endif
                 lifuren::dataset::image::resize(src_frame, width, height);
                 mean = cv::mean(src_frame)[0];
-                if(mean <= 10.0) {
+                if(mean <= LFR_VIDEO_BLACK_MEAN) {
                     // 跳过黑屏或者暗屏
                     continue;
                 }

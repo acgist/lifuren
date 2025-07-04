@@ -35,12 +35,11 @@
     cv::Mat frame;
     cv::Mat source;
     int count = 0;
+    cv::Mat show(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2 * 3, CV_8UC3);
     while(video.read(frame)) {
         mean = cv::mean(frame)[0];
-        if(mean < 10.0) {
-            // SPDLOG_INFO("黑屏：{}", mean);
-            // cv::imshow("black", frame);
-            // cv::waitKey();
+        if(mean < LFR_VIDEO_BLACK_MEAN) {
+            SPDLOG_INFO("黑屏：{}", mean);
             continue;
         }
         if(!old.empty()) {
@@ -61,20 +60,20 @@
             source = diff  + old;
             cv::Mat mask(8, 4, CV_8UC1);
             lifuren::dataset::image::mask(mask, old, frame);
-            cv::resize(mask, mask, cv::Size(40, 80), 0, 0, cv::INTER_NEAREST);
-            cv::imshow("mask", mask);
-            cv::waitKey();
+            cv::resize(mask, mask, cv::Size(LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2), 0, 0, cv::INTER_NEAREST);
+            cv::cvtColor(mask, mask, cv::COLOR_GRAY2RGB);
             lifuren::dataset::image::resize(diff,   LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
             lifuren::dataset::image::resize(source, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            // cv::imshow("diff",   diff);
-            // cv::imshow("source", source);
+            mask  .copyTo(show(cv::Rect(0 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            diff  .copyTo(show(cv::Rect(1 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            source.copyTo(show(cv::Rect(2 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            cv::imshow("frame", show);
+            if(cv::waitKey(20) == 27) {
+                break;
+            }
         }
         old = frame;
         lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        // cv::imshow("frame", frame);
-        if(cv::waitKey(20) == 27) {
-            break;
-        }
     }
     cv::waitKey();
     cv::destroyAllWindows();
