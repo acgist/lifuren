@@ -144,7 +144,7 @@ find_package(spdlog CONFIG REQUIRED)
 add_subdirectory(core)
 add_subdirectory(client)
 
-set(INSTALL_DOCUMENT "LICENSE" "README.md" "docs/Model.md" "docs/Deploy.md")
+set(INSTALL_DOCUMENT "LICENSE" "README.md")
 set(INSTALL_RESOURCE "docs/resources/")
 
 install(FILES     ${INSTALL_DOCUMENT} DESTINATION ${CMAKE_INSTALL_PREFIX}/)

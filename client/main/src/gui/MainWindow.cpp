@@ -13,26 +13,30 @@
 #include "lifuren/Message.hpp"
 #include "lifuren/Wudaozi.hpp"
 
-static wxPanel   * panel         { nullptr };
-static wxButton  * wudaozi_button{ nullptr };
-static wxButton  * config_button { nullptr };
-static wxButton  * about_button  { nullptr };
-static wxTextCtrl* message_ctrl  { nullptr };
+static wxPanel   * panel        { nullptr };
+static wxButton  * image_button { nullptr };
+static wxButton  * video_button { nullptr };
+static wxButton  * config_button{ nullptr };
+static wxButton  * about_button { nullptr };
+static wxTextCtrl* message_ctrl { nullptr };
 
-static void wudaozi_callback(const wxCommandEvent&);
+static void image_callback  (const wxCommandEvent&);
+static void video_callback  (const wxCommandEvent&);
 static void config_callback (const wxCommandEvent&);
 static void about_callback  (const wxCommandEvent&);
 static void message_callback(const char*);
 
-static const auto wudaozi_text = wxT("视频生成");
+static const auto image_text   = wxT("图片生成");
+static const auto video_text   = wxT("视频生成");
 static const auto config_text  = wxT("配置");
 static const auto about_text   = wxT("关于");
 static const auto message_text = wxT("日志");
 
-static const auto wudaozi_id = 1000;
-static const auto config_id  = 1001;
-static const auto about_id   = 1002;
-static const auto message_id = 1003;
+static const auto image_id   = 1000;
+static const auto video_id   = 1001;
+static const auto config_id  = 1002;
+static const auto about_id   = 1003;
+static const auto message_id = 1004;
 
 static const int thread_event_thread  = 100;
 static const int thread_event_message = 101;
@@ -43,7 +47,7 @@ static lifuren::MainWindow* mainWindow{ nullptr };
 
 static std::shared_ptr<std::thread> thread{ nullptr };
 
-static bool run(const char*, const wxString&, const wxString&, std::function<std::tuple<bool, std::string>(std::string)>);
+static bool run(bool file_choose, const char*, const wxString&, const wxString&, std::function<std::tuple<bool, std::string>(std::string)>);
 
 lifuren::MainWindow::MainWindow(int width, int height, const wxString& title) : Window(width, height, title) {
     mainWindow = this;
@@ -55,22 +59,24 @@ lifuren::MainWindow::~MainWindow() {
         thread = nullptr;
     }
     lifuren::message::unregister_message_callback();
-    mainWindow     = nullptr;
-    panel          = nullptr;
-    wudaozi_button = nullptr;
-    config_button  = nullptr;
-    about_button   = nullptr;
-    message_ctrl   = nullptr;
+    mainWindow    = nullptr;
+    panel         = nullptr;
+    image_button  = nullptr;
+    video_button  = nullptr;
+    config_button = nullptr;
+    about_button  = nullptr;
+    message_ctrl  = nullptr;
 }
 
 void lifuren::MainWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
     const int h = this->GetClientSize().GetHeight();
-    panel          = new wxPanel(this);
-    wudaozi_button = new wxButton  (panel, wudaozi_id, wudaozi_text, wxPoint(          10,  10), wxSize((w - 20),          80));
-    config_button  = new wxButton  (panel, config_id,  config_text,  wxPoint(          10, 100), wxSize((w - 30) / 2,      80));
-    about_button   = new wxButton  (panel, about_id,   about_text,   wxPoint((w / 2) +  5, 100), wxSize((w - 30) / 2,      80));
-    message_ctrl   = new wxTextCtrl(panel, message_id, message_text, wxPoint(          10, 190), wxSize((w - 20),     h - 200), wxTE_MULTILINE);
+    panel         = new wxPanel(this);
+    image_button  = new wxButton  (panel, image_id,   image_text,   wxPoint(          10,  10), wxSize((w - 20),          80));
+    video_button  = new wxButton  (panel, video_id,   video_text,   wxPoint(          10, 100), wxSize((w - 20),          80));
+    config_button = new wxButton  (panel, config_id,  config_text,  wxPoint(          10, 190), wxSize((w - 30) / 2,      80));
+    about_button  = new wxButton  (panel, about_id,   about_text,   wxPoint((w / 2) +  5, 190), wxSize((w - 30) / 2,      80));
+    message_ctrl  = new wxTextCtrl(panel, message_id, message_text, wxPoint(          10, 270), wxSize((w - 20),     h - 280), wxTE_MULTILINE);
     message_ctrl->Disable();
     message_ctrl->SetBackgroundColour(panel->GetBackgroundColour());
 }
@@ -102,16 +108,28 @@ void lifuren::MainWindow::bindEvent() {
     this->Bind(wxEVT_BUTTON, [](const wxCommandEvent& event) {
         const auto id = event.GetId();
         switch(id) {
-            case wudaozi_id: wudaozi_callback(event); break;
-            case config_id : config_callback(event);  break;
-            case about_id  : about_callback(event);   break;
+            case image_id  : image_callback(event);  break;
+            case video_id  : video_callback(event);  break;
+            case config_id : config_callback(event); break;
+            case about_id  : about_callback(event);  break;
         }
     });
     lifuren::message::register_message_callback(message_callback);
 }
 
-static void wudaozi_callback(const wxCommandEvent&) {
-    run("视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
+static void image_callback(const wxCommandEvent&) {
+    run(false, "图片生成", wxT("保存目录"), wxT(""), [](std::string file) -> std::tuple<bool, std::string> {
+        auto client = lifuren::get_wudaozi_client();
+        if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
+            return client->pred(file);
+        } else {
+            return { false, {} };
+        }
+    });
+}
+
+static void video_callback(const wxCommandEvent&) {
+    run(true, "视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred(file);
@@ -142,7 +160,7 @@ static void message_callback(const char* message) {
     wxQueueEvent(mainWindow, event);
 }
 
-static bool run(const char* name, const wxString& title, const wxString& filter, std::function<std::tuple<bool, std::string>(std::string)> fun) {
+static bool run(bool file_choose, const char* name, const wxString& title, const wxString& filter, std::function<std::tuple<bool, std::string>(std::string)> fun) {
     if(running) {
         wxMessageDialog dialog(
             nullptr,
@@ -158,16 +176,31 @@ static bool run(const char* name, const wxString& title, const wxString& filter,
         thread = nullptr;
     }
     message_ctrl->Clear();
-    auto file = lifuren::file_chooser(title, filter);
-    if(file.empty()) {
-        wxMessageDialog dialog(
-            nullptr,
-            wxT("需要选择一个文件"),
-            wxT("失败提示"),
-            wxOK | wxCENTRE | wxICON_WARNING
-        );
-        dialog.ShowModal();
-        return false;
+    std::string file;
+    if(file_choose) {
+        file = lifuren::file_chooser(title, filter);
+        if(file.empty()) {
+            wxMessageDialog dialog(
+                nullptr,
+                wxT("需要选择一个文件"),
+                wxT("失败提示"),
+                wxOK | wxCENTRE | wxICON_WARNING
+            );
+            dialog.ShowModal();
+            return false;
+        }
+    } else {
+        file = lifuren::directory_chooser(title);
+        if(file.empty()) {
+            wxMessageDialog dialog(
+                nullptr,
+                wxT("需要选择一个目录"),
+                wxT("失败提示"),
+                wxOK | wxCENTRE | wxICON_WARNING
+            );
+            dialog.ShowModal();
+            return false;
+        }
     }
     running = true;
     thread = std::make_shared<std::thread>(([fun, name, file, title] {

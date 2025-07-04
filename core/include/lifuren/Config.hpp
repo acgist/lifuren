@@ -45,7 +45,6 @@ namespace lifuren::config {
 struct ModelParams {
 
     float       lr         { 0.001F      }; // 学习率
-    bool        amp        { true        }; // 自动混合精度
     float       grad_clip  { 0.0F        }; // 梯度裁剪
     size_t      batch_size { 100         }; // 批量大小
     size_t      epoch_size { 128         }; // 训练轮次

@@ -29,8 +29,6 @@
 #include "torch/optim.h"
 #include "torch/serialize.h"
 
-#include "ATen/autocast_mode.h"
-
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
@@ -225,6 +223,7 @@ bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool defi
         this->defineOptimizer();
     }
     this->model->to(this->device);
+    this->model->eval();
     this->print();
     return true;
 }
@@ -251,7 +250,7 @@ void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test)
     SPDLOG_INFO("开始训练：{}", this->params.model_name);
     const auto a = std::chrono::system_clock::now();
     try {
-        auto scheduler = torch::optim::StepLR(*this->optimizer, 10, 0.999);
+        auto scheduler = torch::optim::StepLR(*this->optimizer, 3, 0.999);
         for (size_t epoch = 1; epoch <= this->params.epoch_size; ++epoch) {
             this->train(epoch);
             scheduler.step();
@@ -283,11 +282,11 @@ void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
         SPDLOG_WARN("无效的训练数据集");
         return;
     }
+    this->model->train();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
-    this->model->train();
     auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
@@ -296,34 +295,18 @@ void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
         torch::Tensor data   = batch.data;
         torch::Tensor target = batch.target;
         this->optimizer->zero_grad();
-        if(this->params.amp) {
-            at::autocast::set_autocast_enabled(torch::kCUDA, true);
-        }
         this->loss(data, target, pred, loss);
-        if(this->params.amp) {
-            at::autocast::clear_cache();
-            at::autocast::set_autocast_enabled(torch::kCUDA, false);
-        }
         loss.backward();
         if(this->params.grad_clip > 0.0F) {
             torch::nn::utils::clip_grad_norm_(this->model->parameters(), this->params.grad_clip);
         }
         this->optimizer->step();
-        // 小批量累计梯度
         if(this->params.classify) {
             classify_evaluate(target, pred, confusion_matrix, accu_val, data_val);
         }
-        auto loss_val_batch = loss.template item<float>();
-        loss_val += loss_val_batch;
+        loss_val += loss.template item<float>();
         ++batch_count;
-        std::printf(
-            "\r轮次/批次 [ %6zd / %6zd ] 损失：%.6f",
-            epoch,
-            batch_count,
-            loss_val_batch
-        );
     }
-    std::printf("\n");
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
     this->printEvaluation("训练", epoch, loss_val / batch_count, accu_val, data_val, duration, confusion_matrix);
@@ -335,11 +318,11 @@ void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
         return;
     }
     torch::NoGradGuard no_grad_guard;
+    this->model->eval();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
-    this->model->eval();
     auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->valDataset) {
@@ -365,11 +348,11 @@ void lifuren::Trainer<P, M, D>::test() {
         return;
     }
     torch::NoGradGuard no_grad_guard;
+    this->model->eval();
     size_t accu_val = 0;
     size_t data_val = 0;
     double loss_val = 0.0;
     size_t batch_count = 0;
-    this->model->eval();
     auto confusion_matrix = torch::zeros({ static_cast<int>(this->params.class_size), static_cast<int>(this->params.class_size) }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->testDataset) {

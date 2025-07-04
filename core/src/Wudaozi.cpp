@@ -7,6 +7,8 @@
 
 #include "opencv2/opencv.hpp"
 
+#include "ATen/autocast_mode.h"
+
 #include "lifuren/File.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Trainer.hpp"
@@ -28,7 +30,7 @@ private:
 
 public:
     UNetImpl(int img_height, int img_width, int channels, int model_channels, int embedding_channels,  int min_pixel = 4,
-        int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 2, 2, 4, 4 }) {
+        int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 1, 2, 2, 4, 4 }) {
         this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_channels, { 3, 3 }).padding(1)));
         this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
         int min_img_size = std::min(img_height, img_width);
@@ -61,7 +63,7 @@ public:
         middle_blocks.insert((std::stringstream() << "res" << 0).str(),
         lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
         middle_blocks.insert((std::stringstream() << "attn" << 0).str(),
-                lifuren::nn::AttentionBlock(cur_c, 2, img_height * img_width / std::pow(2, 2 * scales.size()), cur_c / 8).ptr());
+                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * scales.size()), cur_c / 8).ptr());
         middle_blocks.insert((std::stringstream() << "res" << 1).str(),
         lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
         this->middle_blocks = this->register_module("muxer", torch::nn::ModuleDict(middle_blocks));
@@ -202,7 +204,7 @@ private:
     
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
-        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 8, 32));
+        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 8, 64));
 
         alpha = register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, T + 1) / (double) T));
         beta = register_buffer("beta", torch::sqrt(1.0 - torch::pow(alpha, 2)));
@@ -231,6 +233,9 @@ public:
     }
 
 public:
+    /**
+     * 对图片加噪
+     */
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> make_noise(const torch::Tensor& image) {
         const auto& batch_images = image;
         auto batch_size = batch_images.size(0);
@@ -248,6 +253,9 @@ public:
     torch::Tensor forward(torch::Tensor feature, torch::Tensor t) {
         return this->unet->forward(feature, t);
     }
+    /**
+     * 对指定噪点图片降噪
+     */
     torch::Tensor forward(int img_height, int img_width, int t0, torch::Tensor feature) {
         torch::NoGradGuard no_grad_guard;
         auto T_ = bar_alpha_.size(0);
@@ -266,10 +274,13 @@ public:
         auto x_samples = torch::clip(z, -1, 1); // (n * n, 3, h, w)
         return x_samples;
     }
+    /**
+     * 对随机噪点图片降噪
+     */
     torch::Tensor forward(int img_height, int img_width, int n, int t0) {
         torch::NoGradGuard no_grad_guard;
         auto T_ = bar_alpha_.size(0);
-        torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device()));
+        torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device())).repeat({ 2, 1, 1, 1 });
         for (int i = t0; i < T_; i++) {
             auto t = T_ - i - 1;
             auto bt = torch::tensor({t * stride}, torch::TensorOptions().device(lifuren::get_device())).repeat(z.size(0));
@@ -287,7 +298,7 @@ TORCH_MODULE(Wudaozi);
 /**
  * 吴道子模型训练器（视频生成）
  */
-class WudaoziTrainer : public lifuren::Trainer<torch::optim::Adam, lifuren::Wudaozi, lifuren::dataset::RndDatasetLoader> {
+class WudaoziTrainer : public lifuren::Trainer<torch::optim::AdamW, lifuren::Wudaozi, lifuren::dataset::RndDatasetLoader> {
 
 public:
     WudaoziTrainer(lifuren::config::ModelParams params = {}) : Trainer(params) {
@@ -308,14 +319,15 @@ public:
         }
     }
     void defineOptimizer() override {
-        torch::optim::AdamOptions optims;
-        optims.lr(this->params.lr);
-        this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
+        torch::optim::AdamWOptions options;
+        options.lr(this->params.lr);
+        options.weight_decay(0.0001);
+        this->optimizer = std::make_unique<torch::optim::AdamW>(this->model->parameters(), options);
     }
     void val(const size_t epoch) override {
         if(epoch % this->params.check_epoch == 1) {
             torch::NoGradGuard no_grad_guard;
-            auto result = this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 8, 0);
+            auto result = this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 4, 0);
             cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
             lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
             auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
@@ -329,13 +341,14 @@ public:
         // HuberLoss
         // SmoothL1Loss
         // CrossEntropyLoss
-        auto source_image = feature.slice(1, 0, 1).squeeze(1);
-        auto target_image = feature.slice(1, 1, 2).squeeze(1);
+        auto device_feature = feature.to(lifuren::get_device());
+        auto source_image = device_feature.slice(1, 0, 1).squeeze(1);
+        auto target_image = device_feature.slice(1, 1, 2).squeeze(1);
         auto [noise_images, steps, noise] = this->model->make_noise(target_image);
         auto denoise = this->model->forward(noise_images, steps);
         loss = torch::mse_loss(denoise, noise);
         // loss = torch::sum((denoise - noise).pow(2), {1, 2, 3}, true).mean();
-        // loss = torch::smooth_l1_loss(denoise, feature.slice(1, 1, 2).squeeze(1));
+        // loss = torch::smooth_l1_loss(denoise, noise);
     }
     torch::Tensor pred(torch::Tensor feature, torch::Tensor t) {
         torch::NoGradGuard no_grad_guard;
@@ -349,16 +362,21 @@ class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, std::s
 
 public:
     std::tuple<bool, std::string> pred(const std::string& input) override;
+    std::tuple<bool, std::string> predImage(const std::string& input);
+    std::tuple<bool, std::string> predVideo(const std::string& input);
 
 };
 
 }; // END OF lifuren
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::pred(const std::string& input) {
-    if(!this->trainer) {
-        return { false, {} };
-    }
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predImage(const std::string& input) {
+    // TODO
+    return {};
+}
+
+template<>
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predVideo(const std::string& input) {
     auto image = cv::imread(input);
     if(image.empty()) {
         SPDLOG_INFO("打开文件失败：{}", input);
@@ -379,6 +397,20 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     }
     writer.release();
     return { true, output };
+}
+
+template<>
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::pred(const std::string& input) {
+    if(!this->trainer) {
+        return { false, {} };
+    }
+    if(lifuren::file::is_file(input)) {
+        return this->predVideo(input);
+    } else if(lifuren::file::is_folder(input)) {
+        return this->predImage(input);
+    } else {
+        return { false, {} };
+    }
 }
 
 std::unique_ptr<lifuren::WudaoziClient> lifuren::get_wudaozi_client() {

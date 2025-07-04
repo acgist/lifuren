@@ -38,9 +38,9 @@
     while(video.read(frame)) {
         mean = cv::mean(frame)[0];
         if(mean < 10.0) {
-            SPDLOG_INFO("黑屏：{}", mean);
-            cv::imshow("black", frame);
-            cv::waitKey();
+            // SPDLOG_INFO("黑屏：{}", mean);
+            // cv::imshow("black", frame);
+            // cv::waitKey();
             continue;
         }
         if(!old.empty()) {
@@ -59,14 +59,19 @@
             }
             diff   = frame - old;
             source = diff  + old;
+            cv::Mat mask(8, 4, CV_8UC1);
+            lifuren::dataset::image::mask(mask, old, frame);
+            cv::resize(mask, mask, cv::Size(40, 80), 0, 0, cv::INTER_NEAREST);
+            cv::imshow("mask", mask);
+            cv::waitKey();
             lifuren::dataset::image::resize(diff,   LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
             lifuren::dataset::image::resize(source, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            cv::imshow("diff",   diff);
-            cv::imshow("source", source);
+            // cv::imshow("diff",   diff);
+            // cv::imshow("source", source);
         }
         old = frame;
         lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        cv::imshow("frame", frame);
+        // cv::imshow("frame", frame);
         if(cv::waitKey(20) == 27) {
             break;
         }
@@ -132,7 +137,7 @@
 
 LFR_TEST(
     // testImage();
-    // testVideo();
+    testVideo();
     // testReshape();
-    testLoadWudaoziDatasetLoader();
+    // testLoadWudaoziDatasetLoader();
 );

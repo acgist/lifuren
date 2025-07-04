@@ -146,6 +146,13 @@ using SeqDatasetLoader = decltype(torch::data::make_data_loader<LFT_SEQ_SAMPLER>
 namespace image {
 
 /**
+ * @param mask 变化矩阵
+ * @param prev 上一帧
+ * @param next 下一帧
+ */
+extern void mask(cv::Mat& mask, const cv::Mat& prev, const cv::Mat& next);
+
+/**
  * @param image  图片
  * @param width  目标图片宽度
  * @param height 目标图片高度

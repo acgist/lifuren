@@ -14,7 +14,8 @@
     auto client = lifuren::get_wudaozi_client();
     const std::string path = lifuren::config::CONFIG.tmp;
     client->trainValAndTest({
-        .lr          = 0.0001F, // 0.01F
+        .lr          = 0.0002F, // 0.01F
+        .grad_clip   = 10.0,
         .batch_size  = 32,
         .epoch_size  = 256,
         .check_point = true,
@@ -135,8 +136,8 @@
 }
 
 LFR_TEST(
-    // testTrain();
+    testTrain();
     // testPred();
     // testPlay();
-    testNoise();
+    // testNoise();
 );

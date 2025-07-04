@@ -31,7 +31,7 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         args.push_back(argv[i]);
     }
     const char* const command = argv[1];
-    if(std::strcmp(command, "pred") == 0) {
+    if(std::strcmp(command, "image") == 0 || std::strcmp(command, "video") == 0) {
         ::pred(args);
     } else if(std::strcmp(command, "train") == 0) {
         ::train(args);
@@ -94,7 +94,9 @@ static void train(const std::vector<std::string>& args) {
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] [pred|train] [model_file|model_path] [image_file|dataset]
+./lifuren[.exe] train model_path dataset
+./lifuren[.exe] image model_file image_path
+./lifuren[.exe] video model_file image_file
 ./lifuren[.exe] [?|help]
 )" << std::endl;
 }

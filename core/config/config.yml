@@ -1,4 +1,3 @@
 lifuren:
   tmp: /tmp
-  output: /data/lifuren/output
   wudaozi: /data/lifuren/wudaozi.pt

@@ -17,6 +17,8 @@
 
 #include "torch/nn.h"
 
+#include "spdlog/spdlog.h"
+
 namespace lifuren::nn {
 
 /**
@@ -29,6 +31,7 @@ private:
 
 public:
     DownsampleImpl(int channels, int num_groups = 32, bool use_pool = false) {
+        SPDLOG_INFO("Downsample channels = {} num_groups = {}", channels, num_groups);
         assert(channels % num_groups == 0);
         if(use_pool) {
             this->downsample = this->register_module("downsample", torch::nn::Sequential(
@@ -69,6 +72,7 @@ private:
 
 public:
     UpsampleImpl(int channels, int num_groups = 32, bool use_upsample = false) {
+        SPDLOG_INFO("上采样：{} - {}", channels, num_groups);
         assert(channels % num_groups == 0);
         if(use_upsample) {
             this->upsample = this->register_module("upsample", torch::nn::Sequential(
@@ -109,6 +113,7 @@ private:
 
 public:
     PosEmbeddingImpl(int T, int in_dim, int out_dim) {
+        SPDLOG_INFO("位置嵌入：{} - {} - {}", T, in_dim, out_dim);
         assert(in_dim % 2 == 0);
         auto pos = torch::arange(T).to(torch::kFloat32);
         auto emb = torch::arange(0, in_dim, 2).to(torch::kFloat32) / in_dim * std::log(10000);
@@ -155,11 +160,12 @@ private:
 
 public:
     AttentionBlockImpl(int channels, int num_heads, int embedding_channels, int num_groups = 32) {
+        SPDLOG_INFO("自注意力：{} - {} - {} - {}", channels, num_heads, embedding_channels, num_groups);
         assert(channels % num_heads  == 0);
         assert(channels % num_groups == 0);
         this->norm = this->register_module("norm", torch::nn::GroupNorm(num_groups, channels));
         this->qkv  = this->register_module("qkv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels * 3, 1)));
-        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(embedding_channels, num_heads));
+        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(torch::nn::MultiheadAttentionOptions(embedding_channels, num_heads).dropout(0.1)));
         this->proj = this->register_module("proj", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 1)));
     }
     ~AttentionBlockImpl() {
@@ -206,6 +212,7 @@ private:
 
 public:
     ResidualBlockImpl(int channels, int out_c, int embedding_channels, int num_groups = 32) {
+        SPDLOG_INFO("残差网络：{} - {} - {} - {}", channels, out_c, embedding_channels, num_groups);
         if(channels == out_c) {
             this->align = this->register_module("align", torch::nn::Sequential(torch::nn::Identity()));
         } else {
