@@ -106,13 +106,13 @@ TORCH_MODULE(Upsample);
 /**
  * 位置嵌入
  */
-class PosEmbeddingImpl : public torch::nn::Module {
+class TimeEmbeddingImpl : public torch::nn::Module {
 
 private:
     torch::nn::Sequential pos_embedding{ nullptr };
 
 public:
-    PosEmbeddingImpl(int T, int in_dim, int out_dim) {
+    TimeEmbeddingImpl(int T, int in_dim, int out_dim) {
         SPDLOG_INFO("位置嵌入：{} - {} - {}", T, in_dim, out_dim);
         assert(in_dim % 2 == 0);
         auto pos = torch::arange(T).to(torch::kFloat32);
@@ -128,7 +128,7 @@ public:
             torch::nn::Linear(out_dim, out_dim)
         ));
     }
-    ~PosEmbeddingImpl() {
+    ~TimeEmbeddingImpl() {
         this->unregister_module("pos_embedding");
     }
 
@@ -139,10 +139,9 @@ public:
 
 };
 
-TORCH_MODULE(PosEmbedding);
+TORCH_MODULE(TimeEmbedding);
 
-using StepEmbedding = PosEmbedding;
-using TimeEmbedding = PosEmbedding;
+using StepEmbedding = TimeEmbedding;
 
 // 步数嵌入
 // 时间嵌入

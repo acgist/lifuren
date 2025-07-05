@@ -26,7 +26,7 @@
 [[maybe_unused]] static void testVideo() {
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "w.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "h.mp4" }).string());
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1CtSKYQEKt.mp4" }).string());
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1D1V7zQEV4.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1RYowY7EkK.mp4" }).string());
     double mean;
@@ -77,6 +77,34 @@
     }
     cv::waitKey();
     cv::destroyAllWindows();
+}
+
+[[maybe_unused]] static void testNoise() {
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
+    cv::Mat src;
+    cv::Mat dst;
+    cv::Mat diff_1(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
+    cv::Mat diff_2(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
+    while(video.read(src) && video.read(dst)) {
+        diff_1 = dst - src;
+        lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        lifuren::dataset::image::resize(diff_1, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        auto src_tensor = lifuren::dataset::image::mat_to_tensor(src);
+        auto dst_tensor = lifuren::dataset::image::mat_to_tensor(dst);
+        auto noise = torch::rand_like(src_tensor);
+        float ratio = 0.1;
+        src_tensor = src_tensor * ratio + noise * (1 - ratio);
+        dst_tensor = dst_tensor * ratio + noise * (1 - ratio);
+        lifuren::dataset::image::tensor_to_mat(src, src_tensor);
+        lifuren::dataset::image::tensor_to_mat(dst, dst_tensor);
+        lifuren::dataset::image::tensor_to_mat(diff_2, src_tensor - dst_tensor);
+        cv::imshow("src", src);
+        cv::imshow("dst", dst);
+        cv::imshow("diff_1", diff_1);
+        cv::imshow("diff_2", diff_2);
+        cv::waitKey();
+    }
 }
 
 [[maybe_unused]] static void testReshape() {
@@ -136,7 +164,8 @@
 
 LFR_TEST(
     // testImage();
-    testVideo();
+    // testVideo();
+    testNoise();
     // testReshape();
     // testLoadWudaoziDatasetLoader();
 );

@@ -176,6 +176,21 @@ public:
 TORCH_MODULE(UNet);
 
 /**
+ * 动作模型
+ * 
+ * TODO: 时间步骤
+ * 
+ * 根据图片生成动作向量
+ */
+class PoseImpl : public torch::nn::Module {
+
+
+
+};
+
+TORCH_MODULE(Pose);
+
+/**
  * 吴道子模型（视频生成）
  */
 class WudaoziImpl : public torch::nn::Module {
@@ -234,7 +249,7 @@ public:
 
 public:
     /**
-     * 对图片加噪
+     * 对图片添加随机噪声
      */
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> make_noise(const torch::Tensor& image) {
         const auto& batch_images = image;
@@ -252,6 +267,12 @@ public:
     }
     torch::Tensor forward(torch::Tensor feature, torch::Tensor t) {
         return this->unet->forward(feature, t);
+    }
+    /**
+     * 对图片添加指定噪声
+     */
+    torch::Tensor mask_noise(torch::Tensor& images, const torch::Tensor& noises, const torch::Tensor& steps) {
+        return {};
     }
     /**
      * 对指定噪点图片降噪
@@ -336,11 +357,6 @@ public:
         }
     }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
-        // L1Loss
-        // MSELoss
-        // HuberLoss
-        // SmoothL1Loss
-        // CrossEntropyLoss
         auto device_feature = feature.to(lifuren::get_device());
         auto source_image = device_feature.slice(1, 0, 1).squeeze(1);
         auto target_image = device_feature.slice(1, 1, 2).squeeze(1);
@@ -348,7 +364,6 @@ public:
         auto denoise = this->model->forward(noise_images, steps);
         loss = torch::mse_loss(denoise, noise);
         // loss = torch::sum((denoise - noise).pow(2), {1, 2, 3}, true).mean();
-        // loss = torch::smooth_l1_loss(denoise, noise);
     }
     torch::Tensor pred(torch::Tensor feature, torch::Tensor t) {
         torch::NoGradGuard no_grad_guard;

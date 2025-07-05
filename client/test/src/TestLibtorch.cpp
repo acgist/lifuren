@@ -134,67 +134,8 @@
     std::cout << a.index_select(0, torch::tensor({1, 2})) << std::endl;
 }
 
-[[maybe_unused]] static void testReshape() {
-    int w = 6;
-    int h = 8;
-    int w_scale = 2;
-    int h_scale = 2;
-    int batch   = 2;
-    int channel = 1;
-    // 横向
-    torch::Tensor input = torch::arange(0, 2 * 1 * 8 * 6).reshape({ 2, 1, 8, 6 });
-    auto i_h = input
-        .reshape({ batch, channel * h_scale,           h / h_scale, w           }).permute({ 0, 1, 3, 2 })
-        .reshape({ batch, channel * h_scale * w_scale, w / w_scale, h / h_scale }).permute({ 0, 1, 3, 2 });
-    auto r_h = i_h
-                                .reshape({ batch, channel * h_scale * w_scale, h / h_scale, w / w_scale })
-        .permute({ 0, 1, 3, 2 }).reshape({ batch, channel * h_scale,           w,           h / h_scale })
-        .permute({ 0, 1, 3, 2 }).reshape({ batch, channel,                     h,           w           });
-    // 竖向
-    auto i_v = input
-        .transpose(2, 3)
-        .reshape({ batch, channel * w_scale,           w / w_scale, h           }).permute({ 0, 1, 3, 2 })
-        .reshape({ batch, channel * w_scale * h_scale, h / h_scale, w / w_scale }).permute({ 0, 1, 3, 2 })
-        .transpose(2, 3);
-    auto r_v = i_v
-                                .reshape({ batch, channel * h_scale * w_scale, h / h_scale, w / w_scale })
-        .transpose(2, 3)
-        .permute({ 0, 1, 3, 2 }).reshape({ batch, channel * w_scale,           h,           w / w_scale })
-        .permute({ 0, 1, 3, 2 }).reshape({ batch, channel,                     w,           h           })
-        .transpose(2, 3);
-    lifuren::log_tensor("input", input);
-    lifuren::log_tensor("i_h", i_h);
-    lifuren::log_tensor("r_h", r_h);
-    lifuren::log_tensor("i_v", i_v);
-    lifuren::log_tensor("r_v", r_v);
-    // // 横向
-    // input = torch::layer_norm(input, {this->channel, this->h, this->w});
-    // auto i_h = input
-    //     .reshape({ this->batch, this->channel * this->h_scale,                 this->h / this->h_scale, this->w                 }).permute({ 0, 1, 3, 2 })
-    //     .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->w / this->w_scale, this->h / this->h_scale }).permute({ 0, 1, 3, 2 });
-    // auto [o_h, h_h] = this->gru_h->forward(torch::relu(this->linear_h->forward(i_h.flatten(2, 3))), this->hidden_h);
-    // auto r_h = o_h
-    //                             .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->h / this->h_scale, this->w / this->w_scale })
-    //     .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel * this->h_scale,                 this->w,                 this->h / this->h_scale })
-    //     .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel,                                 this->h,                 this->w                 });
-    // // 竖向
-    // auto i_v = input
-    //     .transpose(2, 3)
-    //     .reshape({ this->batch, this->channel * this->w_scale,                 this->w / this->w_scale, this->h                 }).permute({ 0, 1, 3, 2 })
-    //     .reshape({ this->batch, this->channel * this->w_scale * this->h_scale, this->h / this->h_scale, this->w / this->w_scale }).permute({ 0, 1, 3, 2 })
-    //     .transpose(2, 3);
-    // auto [o_v, h_v] = this->gru_v->forward(torch::relu(this->linear_v->forward(i_v.flatten(2, 3))), this->hidden_v);
-    // auto r_v = o_v
-    //                             .reshape({ this->batch, this->channel * this->h_scale * this->w_scale, this->h / this->h_scale, this->w / this->w_scale })
-    //     .transpose(2, 3)
-    //     .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel * this->w_scale,                 this->h,                 this->w / this->w_scale })
-    //     .permute({ 0, 1, 3, 2 }).reshape({ this->batch, this->channel,                                 this->w,                 this->h                 })
-    //     .transpose(2, 3);
-}
-
 LFR_TEST(
     // testJit();
     // testLayer();
     testTensor();
-    // testReshape();
 );
