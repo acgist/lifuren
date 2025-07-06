@@ -15,6 +15,62 @@
 
 namespace lifuren {
 
+    
+/**
+ * 动作模型
+ * 
+ * 根据图片生成动作向量
+ */
+class PoseImpl : public torch::nn::Module {
+
+private:
+    lifuren::nn::ResidualBlock  res_1 { nullptr };
+    lifuren::nn::ResidualBlock  res_2 { nullptr };
+    torch::nn::Sequential     down_1{ nullptr };
+    torch::nn::Sequential     down_2{ nullptr };
+    lifuren::nn::AttentionBlock attn{ nullptr };
+    torch::nn::Sequential pose{ nullptr };
+
+public:
+    PoseImpl(int channels, int embedding_channels, int num_groups = 8) {
+        this->res_1 = this->register_module("res_1", lifuren::nn::ResidualBlock(channels,  8, embedding_channels, num_groups));
+        this->res_2 = this->register_module("res_2", lifuren::nn::ResidualBlock(8,        16, embedding_channels, num_groups));
+        this->down_1 = this->register_module("down_1", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3).padding(1)),
+            torch::nn::SiLU(),
+            torch::nn::GroupNorm(num_groups, 8),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 4).stride(4))
+        ));
+        this->down_2 = this->register_module("down_2", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 3).padding(1)),
+            torch::nn::SiLU(),
+            torch::nn::GroupNorm(num_groups, 16),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 8).stride(8))
+        ));
+        this->attn = this->register_module("attn", lifuren::nn::AttentionBlock(16, 8, 4 * 8, num_groups));
+        this->pose = this->register_module("pose", torch::nn::Sequential(
+            torch::nn::GroupNorm(num_groups, 16),
+            torch::nn::SiLU(),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 1, {3, 3}).padding(1).bias(false))
+        ));
+    }
+    ~PoseImpl() {
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input, torch::Tensor time) {
+        input = this->res_1->forward(input, time);
+        input = this->down_1->forward(input);
+        input = this->res_2->forward(input, time);
+        input = this->down_2->forward(input);
+        input = this->attn->forward(input);
+        return this->pose->forward(input);
+    }
+
+};
+
+TORCH_MODULE(Pose);
+
 /**
  * UNet
  */
@@ -22,17 +78,15 @@ class UNetImpl : public torch::nn::Module {
 
 private:
     torch::nn::Conv2d head{ nullptr };
-    lifuren::nn::TimeEmbedding time_embed{ nullptr };
     torch::nn::ModuleDict encoder_blocks{nullptr};
     torch::nn::ModuleDict middle_blocks{nullptr};
     torch::nn::ModuleDict decoder_blocks{nullptr};
     torch::nn::Sequential tail{ nullptr };
 
 public:
-    UNetImpl(int img_height, int img_width, int channels, int model_channels, int embedding_channels,  int min_pixel = 4,
+    UNetImpl(int img_height, int img_width, int channels, int embedding_channels,  int min_pixel = 4,
         int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 1, 2, 2, 4, 4 }) {
         this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_channels, { 3, 3 }).padding(1)));
-        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
         int min_img_size = std::min(img_height, img_width);
         torch::OrderedDict<std::string, std::shared_ptr<Module>> encoder_blocks;
         std::vector<std::tuple<int, int>> encoder_channels;
@@ -105,7 +159,6 @@ public:
     ~UNetImpl() {
         this->unregister_module("head");
         this->unregister_module("tail");
-        this->unregister_module("time_embed");
         this->unregister_module("muxer");
         this->unregister_module("encoder");
         this->unregister_module("decoder");
@@ -114,7 +167,6 @@ public:
 public:
     torch::Tensor forward(torch::Tensor x, torch::Tensor t) {
         x = head(x);
-        t = this->time_embed->forward(t);
 
         std::vector<torch::Tensor> inners;
     
@@ -176,28 +228,23 @@ public:
 TORCH_MODULE(UNet);
 
 /**
- * 动作模型
- * 
- * TODO: 时间步骤
- * 
- * 根据图片生成动作向量
- */
-class PoseImpl : public torch::nn::Module {
-
-
-
-};
-
-TORCH_MODULE(Pose);
-
-/**
  * 吴道子模型（视频生成）
+ * 
+ * step_embed + unet = 图片生成
+ * time_embed + pose = 动作向量
+ * time_embed + pose + pose_embed + vnet = 下一帧变化
+ * time_embed + pose + pose_embed + vnet + step_embed + unet = 下一帧图片
  */
 class WudaoziImpl : public torch::nn::Module {
 
 private:
     lifuren::config::ModelParams params;
-    UNet unet { nullptr };
+    lifuren::nn::TimeEmbedding time_embed{ nullptr }; // 姿势时间嵌入
+    lifuren::nn::StepEmbedding step_embed{ nullptr }; // 步数嵌入
+    lifuren::nn::PoseEmbedding pose_embed{ nullptr }; // 姿势嵌入
+    Pose pose { nullptr }; // 姿势模型
+    UNet unet { nullptr }; // 图片生成模型
+    UNet vnet { nullptr }; // 视频预测模型
 
     torch::Tensor alpha;
     torch::Tensor beta;
@@ -219,7 +266,14 @@ private:
     
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
-        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, 8, 64));
+        int model_channels = 8; // 嵌入输入维度
+        int embedding_channels = 64; // 嵌入输出维度
+        this->pose = this->register_module("pose", Pose(3, model_channels, embedding_channels));
+        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->vnet = this->register_module("vnet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->step_embed = this->register_module("step_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
+        this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
+        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
 
         alpha = register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, T + 1) / (double) T));
         beta = register_buffer("beta", torch::sqrt(1.0 - torch::pow(alpha, 2)));
@@ -248,6 +302,27 @@ public:
     }
 
 public:
+    torch::Tensor forward_pose(torch::Tensor image, torch::Tensor t) {
+        t = this->time_embed->forward(t);
+        return this->pose->forward(image, t);
+    }
+    torch::Tensor forward_vnet(torch::Tensor image, torch::Tensor pose) {
+        pose = this->pose_embed->forward(pose);
+        return this->vnet->forward(image, pose);
+    }
+    torch::Tensor forward_unet(torch::Tensor feature, torch::Tensor t) {
+        t = this->step_embed->forward(t);
+        return this->unet->forward(feature, t);
+    }
+    /**
+     * 对图片添加指定噪声
+     */
+    torch::Tensor mask_noise(const torch::Tensor& batch_images, const torch::Tensor& batch_noise, const torch::Tensor& batch_steps) {
+        auto batch_bar_alpha = (bar_alpha).index({batch_steps}).reshape({-1, 1, 1, 1});
+        auto batch_bar_beta = (bar_beta).index({batch_steps}).reshape({-1, 1, 1, 1});
+        auto batch_noise_images = batch_images * batch_bar_alpha + batch_noise * batch_bar_beta;
+        return batch_noise_images;
+    }
     /**
      * 对图片添加随机噪声
      */
@@ -259,36 +334,16 @@ public:
         std::shuffle(steps.begin(), steps.end(), std::mt19937(std::random_device()()));
         steps.resize(batch_size);
         auto batch_steps = torch::tensor(steps, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
-        auto batch_bar_alpha = (bar_alpha).index({batch_steps}).reshape({-1, 1, 1, 1});
-        auto batch_bar_beta = (bar_beta).index({batch_steps}).reshape({-1, 1, 1, 1});
         auto batch_noise = torch::randn_like(batch_images);
-        auto batch_noise_images = batch_images * batch_bar_alpha + batch_noise * batch_bar_beta;
+        auto batch_noise_images = this->mask_noise(batch_images, batch_noise, batch_steps);
         return std::make_tuple(batch_noise_images, batch_steps, batch_noise);
     }
-    torch::Tensor forward(torch::Tensor feature, torch::Tensor t) {
-        return this->unet->forward(feature, t);
-    }
-    /**
-     * 对图片添加指定噪声
-     */
-    torch::Tensor mask_noise(torch::Tensor& images, const torch::Tensor& noises, const torch::Tensor& steps) {
-        return {};
-    }
-    /**
-     * 对指定噪点图片降噪
-     */
-    torch::Tensor forward(int img_height, int img_width, int t0, torch::Tensor feature) {
-        torch::NoGradGuard no_grad_guard;
+    inline torch::Tensor pred_image(torch::Tensor z, int t0) {
         auto T_ = bar_alpha_.size(0);
-        auto noise = torch::randn_like(feature);
-        auto batch_steps = torch::tensor({ t0 }, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
-        auto batch_bar_alpha = (bar_alpha).index({batch_steps}).reshape({-1, 1, 1, 1});
-        auto batch_bar_beta = (bar_beta).index({batch_steps}).reshape({-1, 1, 1, 1});
-        torch::Tensor z = feature * batch_bar_alpha + noise * batch_bar_beta;
         for (int i = t0; i < T_; i++) {
             auto t = T_ - i - 1;
             auto bt = torch::tensor({t * stride}, torch::TensorOptions().device(lifuren::get_device())).repeat(z.size(0));
-            z = z - epsilon_.index({t}) * forward(z, bt);
+            z = z - epsilon_.index({t}) * this->forward_unet(z, bt);
             z = z / alpha_.index({t});
             z = z + torch::randn_like(z) * sigma_.index({t});
         }
@@ -298,19 +353,34 @@ public:
     /**
      * 对随机噪点图片降噪
      */
-    torch::Tensor forward(int img_height, int img_width, int n, int t0) {
+    torch::Tensor pred_image(int img_height, int img_width, int n, int t0) {
         torch::NoGradGuard no_grad_guard;
-        auto T_ = bar_alpha_.size(0);
         torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device())).repeat({ 2, 1, 1, 1 });
-        for (int i = t0; i < T_; i++) {
-            auto t = T_ - i - 1;
-            auto bt = torch::tensor({t * stride}, torch::TensorOptions().device(lifuren::get_device())).repeat(z.size(0));
-            z = z - epsilon_.index({t}) * forward(z, bt);
-            z = z / alpha_.index({t});
-            z = z + torch::randn_like(z) * sigma_.index({t});
-        }
-        auto x_samples = torch::clip(z, -1, 1); // (n * n, 3, h, w)
-        return x_samples;
+        return this->pred_image(z, t0);
+    }
+    /**
+     * 对指定噪点图片降噪
+     */
+    torch::Tensor pred_image(int img_height, int img_width, int t0, torch::Tensor feature) {
+        torch::NoGradGuard no_grad_guard;
+        auto batch_noise = torch::randn_like(feature);
+        auto batch_steps = torch::tensor({ t0 }, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
+        auto z = this->mask_noise(feature, batch_noise, batch_steps);
+        return this->pred_image(z, t0);
+    }
+    /**
+     * 对指定噪点图片降噪
+     */
+    torch::Tensor pred_image(int img_height, int img_width, int t, int t0, torch::Tensor feature) {
+        torch::NoGradGuard no_grad_guard;
+        auto batch_noise = torch::randn_like(feature);
+        auto batch_times = torch::tensor({ t  }, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
+        auto batch_steps = torch::tensor({ t0 }, torch::TensorOptions().device(lifuren::get_device()).dtype(torch::kLong));
+        auto z = this->mask_noise(feature, batch_noise, batch_steps);
+        auto pose = this->forward_pose(z, batch_times);
+        pose = this->forward_vnet(z, pose);
+        z = z + pose;
+        return this->pred_image(z, t0);
     }
 };
 
@@ -348,7 +418,7 @@ public:
     void val(const size_t epoch) override {
         if(epoch % this->params.check_epoch == 1) {
             torch::NoGradGuard no_grad_guard;
-            auto result = this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 4, 0);
+            auto result = this->model->pred_image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 4, 0);
             cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
             lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
             auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
@@ -361,13 +431,21 @@ public:
         auto source_image = device_feature.slice(1, 0, 1).squeeze(1);
         auto target_image = device_feature.slice(1, 1, 2).squeeze(1);
         auto [noise_images, steps, noise] = this->model->make_noise(target_image);
-        auto denoise = this->model->forward(noise_images, steps);
+        auto denoise = this->model->forward_unet(noise_images, steps);
         loss = torch::mse_loss(denoise, noise);
+        
+        // auto noise_loss = torch::mse_loss(denoise, noise);
+        // auto pose = this->model->forward_pose(source_image, {}); // TODO: 步数
+        // auto pose_loss = torch::mse_loss(pose, label);
+        // auto next = this->model->forward_vnet(source_image, pose);
+        // auto next_loss = torch::mse_loss(next, target_image);
+        // loss = noise_loss + pose_loss + next_loss;
+
         // loss = torch::sum((denoise - noise).pow(2), {1, 2, 3}, true).mean();
     }
     torch::Tensor pred(torch::Tensor feature, torch::Tensor t) {
         torch::NoGradGuard no_grad_guard;
-        return this->model->forward(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 100, feature);
+        return this->model->pred_image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 100, feature);
     }
 
 };
@@ -406,6 +484,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
+        // LFR_VIDEO_FRAME_MAX 取余
         auto result = this->trainer->pred(tensor, torch::tensor({ i }).to(lifuren::get_device()));
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);

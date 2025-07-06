@@ -109,7 +109,7 @@ TORCH_MODULE(Upsample);
 class TimeEmbeddingImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential pos_embedding{ nullptr };
+    torch::nn::Sequential time_embedding{ nullptr };
 
 public:
     TimeEmbeddingImpl(int T, int in_dim, int out_dim) {
@@ -121,7 +121,7 @@ public:
         emb = pos.unsqueeze(1) * emb.unsqueeze(0);
         emb = torch::stack({ torch::sin(emb), torch::cos(emb) }, -1);
         emb = emb.view({ T, in_dim });
-        this->pos_embedding = this->register_module("pos_embedding", torch::nn::Sequential(
+        this->time_embedding = this->register_module("time_embedding", torch::nn::Sequential(
             torch::nn::Embedding::from_pretrained(emb),
             torch::nn::Linear(in_dim, out_dim),
             torch::nn::SiLU(),
@@ -129,12 +129,12 @@ public:
         ));
     }
     ~TimeEmbeddingImpl() {
-        this->unregister_module("pos_embedding");
+        this->unregister_module("time_embedding");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        return this->pos_embedding->forward(input);
+        return this->time_embedding->forward(input);
     }
 
 };
@@ -143,8 +143,34 @@ TORCH_MODULE(TimeEmbedding);
 
 using StepEmbedding = TimeEmbedding;
 
-// 步数嵌入
-// 时间嵌入
+/**
+ * 姿势嵌入
+ */
+class PoseEmbeddingImpl : public torch::nn::Module {
+
+private:
+    torch::nn::Sequential pose_embedding{ nullptr };
+
+public:
+    PoseEmbeddingImpl(int in_dim, int out_dim) {
+        this->pose_embedding = this->register_module("pose_embedding", torch::nn::Sequential(
+            torch::nn::Linear(in_dim, out_dim),
+            torch::nn::SiLU(),
+            torch::nn::Linear(out_dim, out_dim)
+        ));
+    }
+    ~PoseEmbeddingImpl() {
+        this->unregister_module("pose_embedding");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input) {
+        return this->pose_embedding->forward(input);
+    }
+    
+};
+
+TORCH_MODULE(PoseEmbedding);
 
 /**
  * 自注意力
