@@ -28,10 +28,10 @@ ALL
 /**
  * 吴道子模型（视频生成）
  * 
- * 上一帧图片 + 加噪 = 上一帧噪声图片 + 动作向量 = 下一帧噪声图片 -> 降噪 = 下一帧图片
+ * 上一帧图片 + 加噪 = 上一帧噪声图片 + 姿势矩阵 = 下一帧噪声图片 -> 降噪 = 下一帧图片
  * 
  * step_embed + unet = 图片生成
- * time_embed + pose = 动作向量
+ * time_embed + pose = 姿势矩阵
  * time_embed + pose + pose_embed + vnet = 下一帧变化
  * time_embed + pose + pose_embed + vnet + step_embed + unet = 下一帧图片
  */
@@ -47,8 +47,6 @@ private:
     lifuren::nn::UNet vnet { nullptr }; // 视频预测模型
 
     torch::Tensor alpha;
-    torch::Tensor beta;
-    torch::Tensor sigma;
     torch::Tensor bar_alpha;
     torch::Tensor bar_beta;
 
@@ -66,20 +64,9 @@ private:
     
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
-        int model_channels = 8; // 嵌入输入维度
-        int embedding_channels = 64; // 嵌入输出维度
-        this->pose = this->register_module("pose", lifuren::nn::Pose(3, embedding_channels, 8));
-        this->unet = this->register_module("unet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_channels));
-        this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
-        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
-
         alpha = register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, T + 1) / (double) T));
-        beta = register_buffer("beta", torch::sqrt(1.0 - torch::pow(alpha, 2)));
         bar_alpha = register_buffer("bar_alpha", torch::cumprod(alpha, 0));
         bar_beta = register_buffer("bar_beta", torch::sqrt(1.0 - bar_alpha.pow(2)));
-        sigma = register_buffer("sigma", beta.clone());
 
         bar_alpha_ = bar_alpha.index({torch::indexing::Slice({torch::indexing::None, torch::indexing::None, stride})});
         bar_alpha_pre_ = torch::pad(bar_alpha_.index({torch::indexing::Slice(torch::indexing::None, -1)}), {1, 0}, "constant", 1);
@@ -96,6 +83,15 @@ public:
         register_buffer("alpha_", alpha_);
         register_buffer("sigma_", sigma_);
         register_buffer("epsilon_", epsilon_);
+
+        int model_channels = 8; // 嵌入输入维度
+        int embedding_channels = 64; // 嵌入输出维度
+        this->pose = this->register_module("pose", lifuren::nn::Pose(3, embedding_channels, 8));
+        this->unet = this->register_module("unet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_channels));
+        this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
+        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
     }
     ~WudaoziImpl() {
         this->unregister_module("unet");
@@ -225,7 +221,7 @@ public:
     void val(const size_t epoch) override {
         if(this->count != 0) {
             SPDLOG_INFO(
-                "动作损失：{:.6f}，视频损失：{:.6f}，图片损失：{:.6f}。",
+                "姿势损失：{:.6f}，视频损失：{:.6f}，图片损失：{:.6f}。",
                 this->pose_loss / this->count,
                 this->vnet_loss / this->count,
                 this->unet_loss / this->count

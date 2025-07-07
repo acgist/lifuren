@@ -64,8 +64,8 @@
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
 #define LFR_VIDEO_BLACK_MEAN  10 // 黑色二值化阈值
-#define LFR_VIDEO_POSE_WIDTH   4 // 视频动作矩阵宽度
-#define LFR_VIDEO_POSE_HEIGHT  8 // 视频动作矩阵高度
+#define LFR_VIDEO_POSE_WIDTH   4 // 视频姿势矩阵宽度
+#define LFR_VIDEO_POSE_HEIGHT  8 // 视频姿势矩阵高度
 #endif
 
 namespace cv {
