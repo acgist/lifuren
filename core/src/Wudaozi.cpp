@@ -257,7 +257,7 @@ class WudaoziImpl : public torch::nn::Module {
 
 private:
     lifuren::config::ModelParams params;
-    lifuren::nn::TimeEmbedding time_embed{ nullptr }; // 姿势时间嵌入
+    lifuren::nn::TimeEmbedding time_embed{ nullptr }; // 时间嵌入
     lifuren::nn::StepEmbedding step_embed{ nullptr }; // 步数嵌入
     lifuren::nn::PoseEmbedding pose_embed{ nullptr }; // 姿势嵌入
     Pose pose { nullptr }; // 姿势模型
@@ -289,7 +289,7 @@ public:
         this->pose = this->register_module("pose", Pose(3, model_channels, 8));
         this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
         this->vnet = this->register_module("vnet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->step_embed = this->register_module("step_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
+        this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_channels));
         this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
         this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
 

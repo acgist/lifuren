@@ -30,20 +30,20 @@
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1D1V7zQEV4.mp4" }).string());
     // cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "train", "BV1RYowY7EkK.mp4" }).string());
     double mean;
-    cv::Mat old;
     cv::Mat diff;
-    cv::Mat frame;
-    cv::Mat source;
+    cv::Mat prev;
+    cv::Mat next;
+    cv::Mat orig;
     int count = 0;
     cv::Mat show(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2 * 3, CV_8UC3);
-    while(video.read(frame)) {
-        mean = cv::mean(frame)[0];
+    while(video.read(next)) {
+        mean = cv::mean(next)[0];
         if(mean < LFR_VIDEO_BLACK_MEAN) {
             SPDLOG_INFO("黑屏：{}", mean);
             continue;
         }
-        if(!old.empty()) {
-            cv::absdiff(frame, old, diff);
+        if(!prev.empty()) {
+            cv::absdiff(next, prev, diff);
             ++count;
             mean = cv::mean(diff)[0];
             SPDLOG_INFO("差异：{}", mean);
@@ -56,24 +56,24 @@
                 cv::waitKey();
             } else {
             }
-            diff   = frame - old;
-            source = diff  + old;
-            cv::Mat mask(8, 4, CV_8UC1);
-            lifuren::dataset::image::mask(mask, old, frame);
+            diff = next - prev;
+            orig = diff + prev;
+            cv::Mat mask(LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH, CV_8UC1);
+            lifuren::dataset::image::mask(mask, prev, next);
             cv::resize(mask, mask, cv::Size(LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2), 0, 0, cv::INTER_NEAREST);
             cv::cvtColor(mask, mask, cv::COLOR_GRAY2RGB);
-            lifuren::dataset::image::resize(diff,   LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            lifuren::dataset::image::resize(source, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            mask  .copyTo(show(cv::Rect(0 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
-            diff  .copyTo(show(cv::Rect(1 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
-            source.copyTo(show(cv::Rect(2 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            lifuren::dataset::image::resize(diff, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+            lifuren::dataset::image::resize(orig, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+            mask.copyTo(show(cv::Rect(0 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            diff.copyTo(show(cv::Rect(1 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            orig.copyTo(show(cv::Rect(2 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
             cv::imshow("frame", show);
             if(cv::waitKey(20) == 27) {
                 break;
             }
         }
-        old = frame;
-        lifuren::dataset::image::resize(frame, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        prev = next;
+        lifuren::dataset::image::resize(next, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
     }
     cv::waitKey();
     cv::destroyAllWindows();
@@ -145,17 +145,21 @@
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
     lifuren::log_tensor("视频特征数量", iterator->data.sizes());
     lifuren::log_tensor("视频标签数量", iterator->target.sizes());
-    cv::Mat image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
+    cv::Mat mask (LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH * 2, CV_8UC1);
+    cv::Mat frame(LFR_IMAGE_HEIGHT,      LFR_IMAGE_WIDTH      * 2, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {
-        const int length = iterator->target.sizes()[0];
+        const int length = iterator->data.sizes()[0];
         for(int i = 0; i < length; ++i) {
-            auto tensor = iterator->target[i];
-            if(tensor.count_nonzero().item<int>() == 0) {
+            auto data   = iterator->data[i];
+            auto target = iterator->target[i];
+            if(data.count_nonzero().item<int>() == 0 || target.count_nonzero().item<int>() == 0) {
                 cv::waitKey();
             }
-            lifuren::dataset::image::tensor_to_mat(image, tensor);
-            cv::imshow("image", image);
-            cv::waitKey(20);
+            lifuren::dataset::image::tensor_to_mat(mask,  target);
+            lifuren::dataset::image::tensor_to_mat(frame, data);
+            cv::imshow("mask",  mask);
+            cv::imshow("frame", frame);
+            cv::waitKey(1000);
         }
     }
     cv::waitKey();
@@ -165,7 +169,7 @@
 LFR_TEST(
     // testImage();
     // testVideo();
-    testNoise();
+    // testNoise();
     // testReshape();
-    // testLoadWudaoziDatasetLoader();
+    testLoadWudaoziDatasetLoader();
 );

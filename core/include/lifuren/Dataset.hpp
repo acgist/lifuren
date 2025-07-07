@@ -55,8 +55,8 @@
  */
 #ifndef LFR_IMAGE_CONFIG
 #define LFR_IMAGE_CONFIG
-#define LFR_IMAGE_HEIGHT     256 // 高度
 #define LFR_IMAGE_WIDTH      128 // 宽度
+#define LFR_IMAGE_HEIGHT     256 // 高度
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 差异：上下文切换
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
@@ -64,8 +64,8 @@
 #define LFR_VIDEO_FRAME_SIZE 120 // 帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
 #define LFR_VIDEO_BLACK_MEAN  10 // 黑色二值化阈值
-#define LFR_VIDEO_MAT_WIDTH    4 // 视频动作矩阵宽度
-#define LFR_VIDEO_MAT_HEIGHT   8 // 视频动作矩阵高度
+#define LFR_VIDEO_MASK_WIDTH   4 // 视频动作矩阵宽度
+#define LFR_VIDEO_MASK_HEIGHT  8 // 视频动作矩阵高度
 #endif
 
 namespace cv {
@@ -155,8 +155,10 @@ namespace image {
  * @param mask 变化矩阵
  * @param prev 上一帧
  * @param next 下一帧
+ * 
+ * @return 张量
  */
-extern void mask(cv::Mat& mask, const cv::Mat& prev, const cv::Mat& next);
+extern torch::Tensor mask(cv::Mat& mask, const cv::Mat& prev, const cv::Mat& next);
 
 /**
  * @param image  图片
@@ -183,6 +185,9 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * @param height     目标图片高度
  * @param batch_size 批量大小
  * @param path       数据集路径
+ * 
+ * feature = [ prev_frame, next_frame ]
+ * label   = [ time, mask ]
  * 
  * @return 图片数据集
  */
