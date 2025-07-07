@@ -7,8 +7,6 @@
 
 #include "opencv2/opencv.hpp"
 
-#include "ATen/autocast_mode.h"
-
 #include "lifuren/File.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Trainer.hpp"
@@ -28,222 +26,6 @@ ALL
 };
     
 /**
- * 动作向量模型
- * 
- * 这里使用图片生成比较简单，通过已有视频生成可以实现视频动作风格迁移。
- * 
- * 动作向量生成方式：
- * 1. 通过已有视频
- * 2. 通过图片生成
- * 3. 通过音频生成
- */
-class PoseImpl : public torch::nn::Module {
-
-private:
-    lifuren::nn::ResidualBlock  res_1 { nullptr };
-    lifuren::nn::ResidualBlock  res_2 { nullptr };
-    torch::nn::Sequential     down_1{ nullptr };
-    torch::nn::Sequential     down_2{ nullptr };
-    lifuren::nn::AttentionBlock attn{ nullptr };
-    torch::nn::Sequential pose{ nullptr };
-
-public:
-    PoseImpl(int channels, int embedding_channels, int num_groups = 8) {
-        this->res_1 = this->register_module("res_1", lifuren::nn::ResidualBlock(channels,  8, embedding_channels, num_groups));
-        this->res_2 = this->register_module("res_2", lifuren::nn::ResidualBlock(8,        16, embedding_channels, num_groups));
-        this->down_1 = this->register_module("down_1", torch::nn::Sequential(
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 3).padding(1)),
-            torch::nn::SiLU(),
-            torch::nn::GroupNorm(num_groups, 8),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(8, 8, 4).stride(4))
-        ));
-        this->down_2 = this->register_module("down_2", torch::nn::Sequential(
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 3).padding(1)),
-            torch::nn::SiLU(),
-            torch::nn::GroupNorm(num_groups, 16),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 16, 8).stride(8))
-        ));
-        this->attn = this->register_module("attn", lifuren::nn::AttentionBlock(16, 8, 4 * 8, num_groups));
-        this->pose = this->register_module("pose", torch::nn::Sequential(
-            torch::nn::GroupNorm(num_groups, 16),
-            torch::nn::SiLU(),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 1, {3, 3}).padding(1).bias(false))
-        ));
-    }
-    ~PoseImpl() {
-    }
-
-public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor time) {
-        input = this->res_1->forward(input, time);
-        input = this->down_1->forward(input);
-        input = this->res_2->forward(input, time);
-        input = this->down_2->forward(input);
-        input = this->attn->forward(input);
-        return this->pose->forward(input);
-    }
-
-};
-
-TORCH_MODULE(Pose);
-
-/**
- * UNet
- */
-class UNetImpl : public torch::nn::Module {
-
-private:
-    torch::nn::Conv2d head{ nullptr };
-    torch::nn::ModuleDict encoder_blocks{nullptr};
-    torch::nn::ModuleDict middle_blocks{nullptr};
-    torch::nn::ModuleDict decoder_blocks{nullptr};
-    torch::nn::Sequential tail{ nullptr };
-
-public:
-    UNetImpl(int img_height, int img_width, int channels, int embedding_channels,  int min_pixel = 4,
-        int n_block = 2, int n_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 1, 2, 2, 4, 4 }) {
-        this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_channels, { 3, 3 }).padding(1)));
-        int min_img_size = std::min(img_height, img_width);
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> encoder_blocks;
-        std::vector<std::tuple<int, int>> encoder_channels;
-        int cur_c = embedding_channels;
-        auto skip_pooling = 0;
-        for (size_t i = 0; i < scales.size(); i++) {
-            auto scale = scales[i];
-            for (size_t j = 0; j < n_block; j++) {
-                encoder_channels.emplace_back(cur_c, scale * embedding_channels);
-                auto block = lifuren::nn::ResidualBlock(cur_c, scale * embedding_channels, embedding_channels, n_groups);
-                cur_c = scale * embedding_channels;
-                encoder_blocks.insert((std::stringstream() << "res" << i * n_block + j).str(), block.ptr());
-            }
-            if (min_img_size <= attn_resolution) {
-                encoder_blocks.insert((std::stringstream() << "attn" << i * n_block).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
-            }
-            if (min_img_size > min_pixel) {
-                encoder_blocks.insert((std::stringstream() << "down" << i).str(), lifuren::nn::Downsample(cur_c).ptr());
-                min_img_size = min_img_size / 2;
-            } else {
-                skip_pooling += 1;
-            }
-        }
-        this->encoder_blocks = this->register_module("encoder", torch::nn::ModuleDict(encoder_blocks));
-
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> middle_blocks;
-        middle_blocks.insert((std::stringstream() << "res" << 0).str(),
-        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
-        middle_blocks.insert((std::stringstream() << "attn" << 0).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * scales.size()), cur_c / 8).ptr());
-        middle_blocks.insert((std::stringstream() << "res" << 1).str(),
-        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, n_groups).ptr());
-        this->middle_blocks = this->register_module("muxer", torch::nn::ModuleDict(middle_blocks));
-
-        std::reverse(encoder_channels.begin(), encoder_channels.end());
-
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> decoder_blocks;
-        size_t m = 0;
-        for (int i = scales.size() - 1; i > -1; i--) {
-            auto rev_scale = scales[i];
-            if (m >= skip_pooling) {
-                decoder_blocks.insert((std::stringstream() << "up" << m).str(), lifuren::nn::Upsample(cur_c).ptr());
-                min_img_size *= 2;
-            }
-
-            for (size_t j = 0; j < n_block; j++) {
-                auto [out_channels, in_channels] = encoder_channels[m * n_block + j];
-                in_channels *= 2;
-                decoder_blocks.insert((std::stringstream() << "res" << m * n_block + j).str(),
-                lifuren::nn::ResidualBlock(in_channels, out_channels, embedding_channels, n_groups).ptr());
-                cur_c = out_channels;
-            }
-
-            if (min_img_size <= attn_resolution) {
-                decoder_blocks.insert((std::stringstream() << "attn" << m * n_block).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
-            }
-
-            m++;
-        }
-        this->decoder_blocks = this->register_module("decoder", torch::nn::ModuleDict(decoder_blocks));
-        torch::nn::Sequential tail(
-            torch::nn::GroupNorm(n_groups, cur_c),
-                torch::nn::SiLU(),
-                torch::nn::Conv2d(torch::nn::Conv2dOptions(cur_c, channels, {3, 3}).padding(1).bias(false))
-        );
-        this->tail = this->register_module("tail", tail);
-    }
-    ~UNetImpl() {
-        this->unregister_module("head");
-        this->unregister_module("tail");
-        this->unregister_module("muxer");
-        this->unregister_module("encoder");
-        this->unregister_module("decoder");
-    }
-
-public:
-    torch::Tensor forward(torch::Tensor x, torch::Tensor t) {
-        x = head(x);
-
-        std::vector<torch::Tensor> inners;
-    
-        inners.push_back(x);
-        for (const auto &item: encoder_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-            if (name.starts_with("res")) {
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-                inners.push_back(x);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
-            } else if (name.starts_with("down")) {
-                x = module->as<lifuren::nn::Downsample>()->forward(x);
-            } else {
-                // -
-            }
-        }
-    
-        for (const auto &item: middle_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-            if (name.starts_with("res")) {
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
-            } else {
-                // -
-            }
-        }
-
-        auto inners_ = std::vector<torch::Tensor>(inners.begin(), inners.end());
-    
-        for (const auto &item: decoder_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-    
-            if (name.starts_with("up")) {
-                x = module->as<lifuren::nn::Upsample>()->forward(x);
-                torch::Tensor xi = inners_.back();
-            } else if (name.starts_with("res")) {
-                torch::Tensor xi = inners_.back();
-                inners_.pop_back();
-                // x = x + xi;
-                x = torch::concat({ x, xi }, 1);
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
-            } else {
-                // -
-            }
-        }
-        
-        return this->tail->forward(x);
-    }
-
-};
-
-TORCH_MODULE(UNet);
-
-/**
  * 吴道子模型（视频生成）
  * 
  * 上一帧图片 + 加噪 = 上一帧噪声图片 + 动作向量 = 下一帧噪声图片 -> 降噪 = 下一帧图片
@@ -260,9 +42,9 @@ private:
     lifuren::nn::TimeEmbedding time_embed{ nullptr }; // 时间嵌入
     lifuren::nn::StepEmbedding step_embed{ nullptr }; // 步数嵌入
     lifuren::nn::PoseEmbedding pose_embed{ nullptr }; // 姿势嵌入
-    Pose pose { nullptr }; // 姿势模型
-    UNet unet { nullptr }; // 图片生成模型
-    UNet vnet { nullptr }; // 视频预测模型
+    lifuren::nn::Pose pose { nullptr }; // 姿势模型
+    lifuren::nn::UNet unet { nullptr }; // 图片生成模型
+    lifuren::nn::UNet vnet { nullptr }; // 视频预测模型
 
     torch::Tensor alpha;
     torch::Tensor beta;
@@ -286,9 +68,9 @@ public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
         int model_channels = 8; // 嵌入输入维度
         int embedding_channels = 64; // 嵌入输出维度
-        this->pose = this->register_module("pose", Pose(3, model_channels, 8));
-        this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->vnet = this->register_module("vnet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->pose = this->register_module("pose", lifuren::nn::Pose(3, embedding_channels, 8));
+        this->unet = this->register_module("unet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
+        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
         this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_channels));
         this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
         this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
@@ -325,7 +107,7 @@ public:
         return this->pose->forward(image, t);
     }
     torch::Tensor forward_vnet(torch::Tensor image, torch::Tensor pose) {
-        pose = this->pose_embed->forward(pose);
+        pose = this->pose_embed->forward(pose.flatten(1, 2));
         return this->vnet->forward(image, pose);
     }
     torch::Tensor forward_unet(torch::Tensor feature, torch::Tensor t) {
@@ -373,7 +155,7 @@ public:
      */
     torch::Tensor pred_image(int img_height, int img_width, int t0, int n) {
         torch::NoGradGuard no_grad_guard;
-        torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device())).repeat({ 2, 1, 1, 1 });
+        torch::Tensor z = torch::randn({n, 3, img_height, img_width}, torch::TensorOptions().device(lifuren::get_device()));
         return this->pred_image(z, t0);
     }
     /**
@@ -441,44 +223,69 @@ public:
         this->optimizer = std::make_unique<torch::optim::AdamW>(this->model->parameters(), options);
     }
     void val(const size_t epoch) override {
+        if(this->count != 0) {
+            SPDLOG_INFO(
+                "动作损失：{:.6f}，视频损失：{:.6f}，图片损失：{:.6f}。",
+                this->pose_loss / this->count,
+                this->vnet_loss / this->count,
+                this->unet_loss / this->count
+            );
+            this->count = 0;
+            this->pose_loss = 0.0;
+            this->vnet_loss = 0.0;
+            this->unet_loss = 0.0;
+        }
         if(epoch % this->params.check_epoch == 1) {
             torch::NoGradGuard no_grad_guard;
-            auto result = this->model->pred_image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0, 4);
-            cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
-            lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
-            auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
-            cv::imwrite(path, image);
-            SPDLOG_INFO("保存图片：{}", path);
+            if(this->train_type == TrainType::UNET || this->train_type == TrainType::ALL) {
+                auto result = this->model->pred_image(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0, 2 * 4);
+                cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
+                lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
+                auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
+                cv::imwrite(path, image);
+                SPDLOG_INFO("保存图片：{}", path);
+            }
         }
-        SPDLOG_INFO("动作损失：{:.6f}，视频损失：{:.6f}，图片损失：{:.6f}。", this->pose_loss / this->count, this->vnet_loss / this->count, this->unet_loss / this->count);
-        this->count = 0;
-        this->pose_loss = 0.0;
-        this->vnet_loss = 0.0;
-        this->unet_loss = 0.0;
     }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
-        auto device_feature = feature.to(lifuren::get_device());
-        auto source_image = device_feature.slice(1, 0, 1).squeeze(1);
-        auto target_image = device_feature.slice(1, 1, 2).squeeze(1);
-        auto [noise_images, steps, noise] = this->model->make_noise(target_image);
-        auto denoise = this->model->forward_unet(noise_images, steps);
-        loss = torch::mse_loss(denoise, noise);
-        
-        // if(train_type == TrainType::UNET) {
-        // }
-        // auto source_noise = this->model->mask_noise(source_image, noise, steps);
-        // auto noise_loss = torch::mse_loss(denoise, noise);
-        // auto pose = this->model->forward_pose(source_noise, {}); // TODO: 步数
-        // auto pose_loss = torch::mse_loss(pose, label);
-        // auto next = this->model->forward_vnet(source_noise, pose);
-        // auto next_loss = torch::mse_loss(next, target_image);
-        // loss = noise_loss + pose_loss + next_loss;
-        // ++this->count;
-        // this->pose_loss += pose_loss.template item<float>();
-        // this->unet_loss += noise_loss.template item<float>();
-        // this->vnet_loss += next_loss.template item<float>();
-
+        torch::Tensor time, pose, source_image, target_image, target_noise, step, noise, source_noise;
+        {
+            torch::NoGradGuard no_grad_guard;
+            auto device = lifuren::get_device();
+            time = label.slice(1, 0, 1).squeeze(1).select(1, 0).select(1, 0).to(torch::kLong).to(device);
+            pose = label.slice(1, 1, 2).squeeze(1).to(device);
+            source_image = feature.slice(1, 0, 1).squeeze(1).to(device);
+            target_image = feature.slice(1, 1, 2).squeeze(1).to(device);
+            std::tie(target_noise, step, noise) = this->model->make_noise(target_image);
+            source_noise = this->model->mask_noise(source_image, noise, step);
+        }
         // loss = torch::sum((denoise - noise).pow(2), {1, 2, 3}, true).mean();
+        torch::Tensor noise_loss, pose_loss, next_loss;
+        if(train_type == TrainType::UNET || train_type == TrainType::ALL) {
+            auto denoise = this->model->forward_unet(target_noise, step);
+            noise_loss = torch::mse_loss(denoise, noise);
+            this->unet_loss += noise_loss.template item<float>();
+        }
+        if(train_type == TrainType::POSE || train_type == TrainType::ALL) {
+            auto pred_pose = this->model->forward_pose(source_noise, time);
+            pose_loss = torch::mse_loss(pred_pose, pose.unsqueeze(1));
+            this->pose_loss += pose_loss.template item<float>();
+        }
+        if(train_type == TrainType::VNET || train_type == TrainType::ALL) {
+            auto next = this->model->forward_vnet(source_noise, pose);
+            next_loss = torch::mse_loss(next, target_noise);
+            this->vnet_loss += next_loss.template item<float>();
+        }
+        if(train_type == TrainType::UNET) {
+            loss = noise_loss;
+        } else if(train_type == TrainType::POSE) {
+            loss = pose_loss;
+        } else if(train_type == TrainType::VNET) {
+            loss = next_loss;
+        } else {
+            loss = noise_loss + pose_loss + next_loss;
+        }
+        ++this->count;
     }
     torch::Tensor pred(int n) {
         torch::NoGradGuard no_grad_guard;

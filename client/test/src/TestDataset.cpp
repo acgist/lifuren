@@ -58,13 +58,13 @@
             }
             diff = next - prev;
             orig = diff + prev;
-            cv::Mat mask(LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH, CV_8UC1);
-            lifuren::dataset::image::mask(mask, prev, next);
-            cv::resize(mask, mask, cv::Size(LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2), 0, 0, cv::INTER_NEAREST);
-            cv::cvtColor(mask, mask, cv::COLOR_GRAY2RGB);
+            cv::Mat pose(LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH, CV_8UC1);
+            lifuren::dataset::image::pose(pose, prev, next);
+            cv::resize(pose, pose, cv::Size(LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2), 0, 0, cv::INTER_NEAREST);
+            cv::cvtColor(pose, pose, cv::COLOR_GRAY2RGB);
             lifuren::dataset::image::resize(diff, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
             lifuren::dataset::image::resize(orig, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-            mask.copyTo(show(cv::Rect(0 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+            pose.copyTo(show(cv::Rect(0 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
             diff.copyTo(show(cv::Rect(1 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
             orig.copyTo(show(cv::Rect(2 * LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
             cv::imshow("frame", show);
@@ -145,7 +145,7 @@
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
     lifuren::log_tensor("视频特征数量", iterator->data.sizes());
     lifuren::log_tensor("视频标签数量", iterator->target.sizes());
-    cv::Mat mask (LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH * 2, CV_8UC1);
+    cv::Mat pose (LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH * 2, CV_8UC1);
     cv::Mat frame(LFR_IMAGE_HEIGHT,      LFR_IMAGE_WIDTH      * 2, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {
         const int length = iterator->data.sizes()[0];
@@ -155,9 +155,9 @@
             if(data.count_nonzero().item<int>() == 0 || target.count_nonzero().item<int>() == 0) {
                 cv::waitKey();
             }
-            lifuren::dataset::image::tensor_to_mat(mask,  target);
+            lifuren::dataset::image::tensor_to_mat(pose,  target);
             lifuren::dataset::image::tensor_to_mat(frame, data);
-            cv::imshow("mask",  mask);
+            cv::imshow("pose",  pose);
             cv::imshow("frame", frame);
             cv::waitKey(1000);
         }

@@ -127,11 +127,16 @@
     //     std::cout << c.data_ptr() << " = " << c << std::endl;
     // }
     // -
-    torch::Tensor a = torch::arange(0, 64).reshape({ 4, 4, 4 });
-    std::cout << a << std::endl;
-    std::cout << a.index_select(0, torch::tensor({0, 1})) << std::endl;
-    std::cout << a.index_select(0, torch::tensor({0, 2})) << std::endl;
-    std::cout << a.index_select(0, torch::tensor({1, 2})) << std::endl;
+    // torch::Tensor a = torch::arange(0, 64).reshape({ 4, 4, 4 });
+    // std::cout << a << std::endl;
+    // std::cout << a.index_select(0, torch::tensor({0, 1})) << std::endl;
+    // std::cout << a.index_select(0, torch::tensor({0, 2})) << std::endl;
+    // std::cout << a.index_select(0, torch::tensor({1, 2})) << std::endl;
+    // -
+    auto tensor = torch::arange(0, 10 * 8 * 4).reshape({ 10, 8, 4 });
+    std::cout << tensor.sizes() << std::endl;
+    tensor = tensor.select(1, 0).select(1, 0);
+    std::cout << tensor << std::endl;
 }
 
 LFR_TEST(

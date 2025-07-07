@@ -71,17 +71,17 @@ torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
     };
 }
 
-torch::Tensor lifuren::dataset::image::mask(cv::Mat& mask, const cv::Mat& prev, const cv::Mat& next) {
+torch::Tensor lifuren::dataset::image::pose(cv::Mat& pose, const cv::Mat& prev, const cv::Mat& next) {
     cv::Mat diff = next - prev;
     cv::resize(diff, diff, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_AREA);
     cv::threshold(diff, diff, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
     std::vector<cv::Mat> channels;
     cv::split(diff, channels);
-    mask = channels[0] + channels[1] + channels[2]; // ? / 3 ?
-    cv::resize(mask, mask, cv::Size(LFR_VIDEO_MASK_WIDTH, LFR_VIDEO_MASK_HEIGHT), 0, 0, cv::INTER_AREA);
+    pose = channels[0] + channels[1] + channels[2]; // ? / 3 ?
+    cv::resize(pose, pose, cv::Size(LFR_VIDEO_POSE_WIDTH, LFR_VIDEO_POSE_HEIGHT), 0, 0, cv::INTER_AREA);
     // 不二值化更加丰富
-    // cv::threshold(mask, mask, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
-    return torch::from_blob(mask.data, { mask.rows, mask.cols }, torch::kByte).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
+    // cv::threshold(pose, pose, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
+    return torch::from_blob(pose.data, { pose.rows, pose.cols }, torch::kByte).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
 }
 
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
@@ -178,8 +178,8 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             cv::Mat diff;
             cv::Mat prev_frame;
             cv::Mat next_frame;
-            cv::Mat mask(LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH, CV_8UC1);
-            std::vector<torch::Tensor> mask_tensor;
+            cv::Mat pose(LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH, CV_8UC1);
+            std::vector<torch::Tensor> pose_tensor;
             std::vector<torch::Tensor> frame_tensor;
             while(video.read(next_frame)) {
                 #if LFR_VIDEO_FRAME_STEP > 0
@@ -209,17 +209,17 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                             for(size_t i = 0; i < frame_tensor.size() - 1; ++i) {
                                 features.push_back(feature.slice(0, i, i + 2));
                                 labels  .push_back(torch::stack({
-                                    torch::ones({ LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH }).mul(i + 1),
-                                    mask_tensor[i]
+                                    torch::ones({ LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH }).mul(i + 1),
+                                    pose_tensor[i]
                                 }, 0));
                             }
                         } else {
                             SPDLOG_DEBUG("丢弃视频片段：{}", frame_tensor.size());
                         }
-                        mask_tensor .clear();
+                        pose_tensor .clear();
                         frame_tensor.clear();
                     } else {
-                        mask_tensor .push_back(lifuren::dataset::image::mask(mask, prev_frame, next_frame));
+                        pose_tensor .push_back(lifuren::dataset::image::pose(pose, prev_frame, next_frame));
                         frame_tensor.push_back(lifuren::dataset::image::mat_to_tensor(prev_frame));
                     }
                 }
@@ -232,14 +232,14 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 for(size_t i = 0; i < frame_tensor.size() - 1; ++i) {
                     features.push_back(feature.slice(0, i, i + 2));
                     labels  .push_back(torch::stack({
-                        torch::ones({ LFR_VIDEO_MASK_HEIGHT, LFR_VIDEO_MASK_WIDTH }).mul(i + 1),
-                        mask_tensor[i]
+                        torch::ones({ LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH }).mul(i + 1),
+                        pose_tensor[i]
                     }, 0));
                 }
             } else {
                 SPDLOG_DEBUG("丢弃视频片段：{}", frame_tensor.size());
             }
-            mask_tensor .clear();
+            pose_tensor .clear();
             frame_tensor.clear();
             SPDLOG_DEBUG("加载视频文件完成：{} -> {} - {} / {}", video_count, file, frame, index);
             video.release();
