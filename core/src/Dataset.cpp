@@ -43,7 +43,7 @@ lifuren::dataset::Dataset::Dataset(
     size_t batch_size,
     const std::string& path,
     const std::vector<std::string>& suffix,
-    const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
+    const Transform transform
 ) : batch_size(batch_size), device(lifuren::get_device()) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
         SPDLOG_WARN("数据集无效：{}", path);
@@ -77,7 +77,7 @@ void lifuren::dataset::image::mask(cv::Mat& mask, const cv::Mat& prev, const cv:
     cv::threshold(diff, diff, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
     std::vector<cv::Mat> channels;
     cv::split(diff, channels);
-    mask = channels[0] + channels[1] + channels[2];
+    mask = channels[0] + channels[1] + channels[2]; // ? / 3 ?
     cv::resize(mask, mask, cv::Size(LFR_VIDEO_MAT_WIDTH, LFR_VIDEO_MAT_HEIGHT), 0, 0, cv::INTER_AREA);
     // 不二值化更加丰富
     // cv::threshold(mask, mask, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
@@ -210,7 +210,7 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                             // auto feature = torch::stack(batch, 0).clone().to(device);
                             for(size_t i = 0; i < batch.size() - 1; ++i) {
                                 features.push_back(feature.slice(0, i, i + 2));
-                                // features.push_back(feature.slice(0, i, i + 2).to(lifuren::get_device()));
+                                // features.push_back(feature.slice(0, i, i + 2).to(device));
                                 labels  .push_back(time_step[i]); // TODO: 方向
                             }
                         } else {
@@ -230,7 +230,7 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 // auto feature = torch::stack(batch, 0).clone().to(device);
                 for(size_t i = 0; i < batch.size() - 1; ++i) {
                     features.push_back(feature.slice(0, i, i + 2));
-                    // features.push_back(feature.slice(0, i, i + 2).to(lifuren::get_device()));
+                    // features.push_back(feature.slice(0, i, i + 2).to(device));
                     labels  .push_back(time_step[i]); // 方向
                 }
             } else {

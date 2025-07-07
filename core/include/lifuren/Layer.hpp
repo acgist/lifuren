@@ -30,7 +30,7 @@ private:
     torch::nn::Sequential downsample{ nullptr };
 
 public:
-    DownsampleImpl(int channels, int num_groups = 32, bool use_pool = false) {
+    DownsampleImpl(int channels, int num_groups = 32, bool use_pool = true) {
         SPDLOG_INFO("Downsample channels = {} num_groups = {}", channels, num_groups);
         assert(channels % num_groups == 0);
         if(use_pool) {
@@ -71,7 +71,7 @@ private:
     torch::nn::Sequential upsample{ nullptr };
 
 public:
-    UpsampleImpl(int channels, int num_groups = 32, bool use_upsample = false) {
+    UpsampleImpl(int channels, int num_groups = 32, bool use_upsample = true) {
         SPDLOG_INFO("上采样：{} - {}", channels, num_groups);
         assert(channels % num_groups == 0);
         if(use_upsample) {

@@ -38,21 +38,53 @@ TORCH_MODULE(Classify);
 class ClassifyTrainer : public lifuren::Trainer<torch::optim::Adam, Classify, lifuren::dataset::RndDatasetLoader> {
 
 private:
+    size_t accu_val = 0;
+    size_t data_val = 0;
+    torch::Tensor confusion_matrix;
     torch::nn::CrossEntropyLoss cross_entropy_loss;
 
 public:
     ClassifyTrainer(lifuren::config::ModelParams params = {
         .lr         = 0.01F,
         .batch_size = 100,
-        .epoch_size = 32,
-        .class_size = 4,
-        .classify   = true
+        .epoch_size = 32
     }) : Trainer(params) {
+        // 混淆矩阵 4 * 4
+        this->confusion_matrix = torch::zeros({ 4, 4 }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     }
     virtual ~ClassifyTrainer() {
     }
 
 public:
+    /**
+     * 混淆矩阵
+     * 
+     * @param target 目标
+     * @param pred   预测
+     * @param confusion_matrix 混淆矩阵
+     * @param accu_val 正确数量
+     * @param data_val 正反总量
+     */
+    inline void classify_evaluate(
+        const torch::Tensor& target,
+        const torch::Tensor& pred,
+            torch::Tensor& confusion_matrix,
+            size_t& accu_val,
+            size_t& data_val
+    ) {
+        torch::NoGradGuard no_grad_guard;
+        auto target_index = target.argmax(1).to(torch::kCPU);
+        auto pred_index   = torch::softmax(pred, 1).argmax(1).to(torch::kCPU);
+        auto batch_size   = pred_index.numel();
+        auto accu = pred_index.eq(target_index).sum();
+        accu_val += accu.template item<int>();
+        data_val += batch_size;
+        int64_t* target_index_iter = target_index.data_ptr<int64_t>();
+        int64_t* pred_index_iter   = pred_index.data_ptr<int64_t>();
+        for (int64_t i = 0; i < batch_size; ++i, ++target_index_iter, ++pred_index_iter) {
+            confusion_matrix[*target_index_iter][*pred_index_iter].add_(1);
+        }
+    }
     void defineDataset() override {
         std::mt19937 rand(std::random_device{}());
         std::normal_distribution<float> w(10.0, 1.0); // 标准差越大越难拟合
@@ -78,9 +110,32 @@ public:
         optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
+    void printEvaluation(
+        const char*  name,
+        const size_t epoch,
+        const float  loss,
+        const size_t duration
+    ) override {
+        SPDLOG_INFO(
+            "当前{}第 {} 轮，损失值为：{:.6f}，耗时：{}，正确率为：{} / {} = {:.6f}。",
+            name,
+            epoch,
+            loss,
+            duration,
+            this->accu_val,
+            this->data_val,
+            1.0F * this->accu_val / this->data_val
+        );
+        lifuren::log_tensor("混淆矩阵", this->confusion_matrix);
+        this->accu_val = 0;
+        this->data_val = 0;
+        this->confusion_matrix.fill_(0);
+    }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
         pred = this->model->forward(feature);
         loss = this->cross_entropy_loss->forward(pred, label);
+        // 计算混淆矩阵
+        this->classify_evaluate(label, pred, this->confusion_matrix, this->accu_val, this->data_val);
     }
     torch::Tensor pred(torch::Tensor feature) {
         return this->model->forward(feature);

@@ -31,11 +31,11 @@
  * 
  * 模型大小
  * 
- *              params size * kFloat16 / KB   / MB   / GB   = 0.37GB
- * model size = 200000000   * 2        / 1024 / 1024 / 1024 = 0.37GB
+ *              params size * kFloat16 / KB   / MB   / GB   = 0.18GB
+ * model size = 100000000   * 2        / 1024 / 1024 / 1024 = 0.18GB
  * 
- *              params size * kFloat32 / KB   / MB   / GB   = 0.75GB
- * model size = 200000000   * 4        / 1024 / 1024 / 1024 = 0.75GB
+ *              params size * kFloat32 / KB   / MB   / GB   = 0.37GB
+ * model size = 100000000   * 4        / 1024 / 1024 / 1024 = 0.37GB
  * 
  * 一批训练数据大小
  * 
@@ -75,6 +75,9 @@ namespace cv {
 } // END OF cv
 
 namespace lifuren::dataset {
+
+// void(文件路径, 标签, 特征, 计算设备)
+using Transform = std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)>;
 
 /**
  * /dataset => [ /dataset/train, /dataset/val, /dataset/test ]
@@ -120,13 +123,13 @@ public:
      * @param batch_size 批次数量
      * @param path       数据集目录
      * @param suffix     文件后缀
-     * @param transform  文件转换函数：void(文件路径, 标签, 特征, 计算设备)
+     * @param transform  文件转换函数
      */
     Dataset(
         size_t batch_size,
         const std::string& path,
         const std::vector<std::string>& suffix,
-        const std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)> transform
+        const Transform transform
     );
     virtual ~Dataset();
 

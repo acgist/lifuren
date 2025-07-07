@@ -136,8 +136,8 @@
 }
 
 LFR_TEST(
-    // testTrain();
+    testTrain();
     // testPred();
     // testPlay();
-    testNoise();
+    // testNoise();
 );

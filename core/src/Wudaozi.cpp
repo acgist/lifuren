@@ -15,11 +15,27 @@
 
 namespace lifuren {
 
+/**
+ * 训练模式
+ */
+enum class TrainType {
+
+POSE,
+UNET,
+VNET,
+ALL
+
+};
     
 /**
- * 动作模型
+ * 动作向量模型
  * 
- * 根据图片生成动作向量，可以使用其他模型替换，例如通过音频生成，或者直接通过现有视频生成。
+ * 这里使用图片生成比较简单，通过已有视频生成可以实现视频动作风格迁移。
+ * 
+ * 动作向量生成方式：
+ * 1. 通过已有视频
+ * 2. 通过图片生成
+ * 3. 通过音频生成
  */
 class PoseImpl : public torch::nn::Module {
 
@@ -230,6 +246,8 @@ TORCH_MODULE(UNet);
 /**
  * 吴道子模型（视频生成）
  * 
+ * 上一帧图片 + 加噪 = 上一帧噪声图片 + 动作向量 = 下一帧噪声图片 -> 降噪 = 下一帧图片
+ * 
  * step_embed + unet = 图片生成
  * time_embed + pose = 动作向量
  * time_embed + pose + pose_embed + vnet = 下一帧变化
@@ -268,7 +286,7 @@ public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
         int model_channels = 8; // 嵌入输入维度
         int embedding_channels = 64; // 嵌入输出维度
-        this->pose = this->register_module("pose", Pose(3, model_channels, embedding_channels));
+        this->pose = this->register_module("pose", Pose(3, model_channels, 8));
         this->unet = this->register_module("unet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
         this->vnet = this->register_module("vnet", UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
         this->step_embed = this->register_module("step_embed", lifuren::nn::TimeEmbedding(1000, model_channels, embedding_channels));
@@ -396,6 +414,7 @@ private:
     double pose_loss = 0.0;
     double unet_loss = 0.0;
     double vnet_loss = 0.0;
+    TrainType train_type = TrainType::ALL;
 
 public:
     WudaoziTrainer(lifuren::config::ModelParams params = {}) : Trainer(params) {
@@ -445,10 +464,13 @@ public:
         auto denoise = this->model->forward_unet(noise_images, steps);
         loss = torch::mse_loss(denoise, noise);
         
+        // if(train_type == TrainType::UNET) {
+        // }
+        // auto source_noise = this->model->mask_noise(source_image, noise, steps);
         // auto noise_loss = torch::mse_loss(denoise, noise);
-        // auto pose = this->model->forward_pose(source_image, {}); // TODO: 步数
+        // auto pose = this->model->forward_pose(source_noise, {}); // TODO: 步数
         // auto pose_loss = torch::mse_loss(pose, label);
-        // auto next = this->model->forward_vnet(source_image, pose);
+        // auto next = this->model->forward_vnet(source_noise, pose);
         // auto next_loss = torch::mse_loss(next, target_image);
         // loss = noise_loss + pose_loss + next_loss;
         // ++this->count;
