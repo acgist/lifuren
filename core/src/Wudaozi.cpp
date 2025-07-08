@@ -24,6 +24,65 @@ VNET,
 ALL
 
 };
+
+namespace nn {
+
+/**
+ * 姿势矩阵模型
+ * 
+ * 姿势矩阵生成方式：
+ * 1. 通过已有视频（视频姿势风格迁移）
+ * 2. 通过图片生成
+ * 3. 通过音频生成
+ */
+class PoseImpl : public torch::nn::Module {
+
+private:
+    lifuren::nn::ResidualBlock  res_1 { nullptr };
+    lifuren::nn::ResidualBlock  res_2 { nullptr };
+    lifuren::nn::Downsample     down_1{ nullptr };
+    lifuren::nn::Downsample     down_2{ nullptr };
+    lifuren::nn::AttentionBlock attn  { nullptr };
+    torch::nn::Sequential       pose  { nullptr };
+
+public:
+    PoseImpl(int channels, int res_embedding_dims, int num_groups = 8, int attn_embedding_dims = LFR_VIDEO_POSE_WIDTH * LFR_VIDEO_POSE_HEIGHT) {
+        SPDLOG_INFO("pos channels = {} res_embedding_dims = {} num_groups = {} attn_embedding_dims = {}", channels, res_embedding_dims, num_groups, attn_embedding_dims);
+        this->res_1  = this->register_module("res_1",  lifuren::nn::ResidualBlock(channels,  8, res_embedding_dims, num_groups));
+        this->res_2  = this->register_module("res_2",  lifuren::nn::ResidualBlock(8,        16, res_embedding_dims, num_groups));
+        this->down_1 = this->register_module("down_1", lifuren::nn::Downsample( 8, num_groups, 4));
+        this->down_2 = this->register_module("down_2", lifuren::nn::Downsample(16, num_groups, 8));
+        this->attn   = this->register_module("attn",   lifuren::nn::AttentionBlock(16, 8, attn_embedding_dims, num_groups));
+        this->pose   = this->register_module("pose",   torch::nn::Sequential(
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, 16)),
+            torch::nn::SiLU(),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 1, 3).padding(1).bias(false))
+        ));
+    }
+    ~PoseImpl() {
+        this->unregister_module("res_1");
+        this->unregister_module("res_2");
+        this->unregister_module("down_1");
+        this->unregister_module("down_2");
+        this->unregister_module("attn");
+        this->unregister_module("pose");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input, torch::Tensor time) {
+        input = this->res_1->forward(input, time);
+        input = this->down_1->forward(input);
+        input = this->res_2->forward(input, time);
+        input = this->down_2->forward(input);
+        input = this->attn->forward(input);
+        return this->pose->forward(input);
+    }
+
+};
+
+TORCH_MODULE(Pose);
+
+} // END OF lifuren::nn
     
 /**
  * 吴道子模型（视频生成）
@@ -85,13 +144,13 @@ public:
         register_buffer("epsilon_", epsilon_);
 
         int model_channels = 8; // 嵌入输入维度
-        int embedding_channels = 64; // 嵌入输出维度
-        this->pose = this->register_module("pose", lifuren::nn::Pose(3, embedding_channels, 8));
-        this->unet = this->register_module("unet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 3, embedding_channels));
-        this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_channels));
-        this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_channels));;
-        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_channels));
+        int embedding_dims = 64; // 嵌入输出维度
+        this->pose = this->register_module("pose", lifuren::nn::Pose(3, embedding_dims, 8));
+        this->unet = this->register_module("unet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, 3, embedding_dims));
+        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, 3, embedding_dims));
+        this->step_embed = this->register_module("step_embed", lifuren::nn::StepEmbedding(T, model_channels, embedding_dims));
+        this->pose_embed = this->register_module("pose_embed", lifuren::nn::PoseEmbedding(      4 * 8, embedding_dims));;
+        this->time_embed = this->register_module("time_embed", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, model_channels, embedding_dims));
     }
     ~WudaoziImpl() {
         this->unregister_module("unet");

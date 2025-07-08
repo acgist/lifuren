@@ -15,6 +15,8 @@
 #ifndef LFR_HEADER_CORE_LAYER_HPP
 #define LFR_HEADER_CORE_LAYER_HPP
 
+#include <string>
+
 #include "torch/nn.h"
 
 #include "spdlog/spdlog.h"
@@ -33,8 +35,7 @@ private:
 
 public:
     DownsampleImpl(int channels, int num_groups = 32, int ratio_kernel_size = 2) {
-        SPDLOG_INFO("downsample channels = {} num_groups = {}", channels, num_groups);
-        assert(channels % num_groups == 0);
+        SPDLOG_INFO("downsample channels = {} num_groups = {} ratio_kernel_size = {}", channels, num_groups, ratio_kernel_size);
         this->downsample = this->register_module("downsample", torch::nn::Sequential(
             torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 3).padding(1)),
             torch::nn::SiLU(),
@@ -67,7 +68,7 @@ private:
 
 public:
     UpsampleImpl(int channels, int num_groups = 32, int ratio_kernel_size = 2) {
-        SPDLOG_INFO("upsample channels = {} num_groups = {}", channels, num_groups);
+        SPDLOG_INFO("upsample channels = {} num_groups = {} ratio_kernel_size = {}", channels, num_groups, ratio_kernel_size);
         assert(channels % num_groups == 0);
         this->upsample = this->register_module("upsample", torch::nn::Sequential(
             torch::nn::ConvTranspose2d(torch::nn::ConvTranspose2dOptions(channels, channels, ratio_kernel_size).stride(ratio_kernel_size)),
@@ -174,13 +175,13 @@ private:
     torch::nn::MultiheadAttention attn{ nullptr };
 
 public:
-    AttentionBlockImpl(int channels, int num_heads, int embedding_channels, int num_groups = 32, float dropout = 0.3) {
-        SPDLOG_INFO("attention block channels = {} num_heads = {} embedding_channels = {} num_groups = {} dropout = {:.1f}", channels, num_heads, embedding_channels, num_groups, dropout);
+    AttentionBlockImpl(int channels, int num_heads, int embedding_dims, int num_groups = 32, float dropout = 0.3) {
+        SPDLOG_INFO("attention block channels = {} num_heads = {} embedding_dims = {} num_groups = {} dropout = {:.1f}", channels, num_heads, embedding_dims, num_groups, dropout);
         assert(channels % num_heads  == 0);
         assert(channels % num_groups == 0);
         this->norm = this->register_module("norm", torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, channels)));
         this->qkv  = this->register_module("qkv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels * 3, 1)));
-        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(torch::nn::MultiheadAttentionOptions(embedding_channels, num_heads).dropout(dropout)));
+        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(torch::nn::MultiheadAttentionOptions(embedding_dims, num_heads).dropout(dropout)));
         this->proj = this->register_module("proj", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 1)));
     }
     ~AttentionBlockImpl() {
@@ -222,8 +223,8 @@ private:
     torch::nn::Sequential conv_2   { nullptr };
 
 public:
-    ResidualBlockImpl(int in_channels, int out_channels, int embedding_channels, int num_groups = 32) {
-        SPDLOG_INFO("residual block in_channels = {} out_channels = {} embedding_channels = {} num_groups = {}", in_channels, out_channels, embedding_channels, num_groups);
+    ResidualBlockImpl(int in_channels, int out_channels, int embedding_dims, int num_groups = 32) {
+        SPDLOG_INFO("residual block in_channels = {} out_channels = {} embedding_dims = {} num_groups = {}", in_channels, out_channels, embedding_dims, num_groups);
         if(in_channels == out_channels) {
             this->align = this->register_module("align", torch::nn::Sequential(
                 torch::nn::Identity()
@@ -233,15 +234,15 @@ public:
                 torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channels, out_channels, { 1, 1 }))
             ));
         }
-        this->embedding = this->register_module("embedding", torch::nn::Linear(torch::nn::LinearOptions(embedding_channels, out_channels)));
+        this->embedding = this->register_module("embedding", torch::nn::Linear(torch::nn::LinearOptions(embedding_dims, out_channels)));
         this->conv_1 = this->register_module("conv_1", torch::nn::Sequential(
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, out_channels)),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(out_channels, out_channels, { 3, 3 }).padding(1)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(out_channels, out_channels, 3).padding(1)),
             torch::nn::SiLU()
         ));
         this->conv_2 = this->register_module("conv_2", torch::nn::Sequential(
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, out_channels)),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(out_channels, out_channels, { 3, 3 }).padding(1)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(out_channels, out_channels, 3).padding(1)),
             torch::nn::SiLU()
         ));
     }
@@ -254,8 +255,8 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input, torch::Tensor embedding) {
-        auto output = this->align->forward(input);
-        output = this->conv_1->forward(output);
+        input = this->align->forward(input);
+        auto output = this->conv_1->forward(input);
         output = output + this->embedding->forward(embedding).unsqueeze(-1).unsqueeze(-1);
         output = this->conv_2->forward(output);
         return output + input;
@@ -266,204 +267,162 @@ public:
 TORCH_MODULE(ResidualBlock);
 
 /**
- * 姿势矩阵模型
- * 
- * 这里使用图片生成比较简单，通过已有视频生成可以实现视频姿势风格迁移。
- * 
- * 姿势矩阵生成方式：
- * 1. 通过已有视频
- * 2. 通过图片生成
- * 3. 通过音频生成
- */
-class PoseImpl : public torch::nn::Module {
-
-private:
-    lifuren::nn::ResidualBlock  res_1 { nullptr };
-    lifuren::nn::ResidualBlock  res_2 { nullptr };
-    lifuren::nn::Downsample     down_1{ nullptr };
-    lifuren::nn::Downsample     down_2{ nullptr };
-    lifuren::nn::AttentionBlock attn{ nullptr };
-    torch::nn::Sequential pose{ nullptr };
-
-public:
-    PoseImpl(int channels, int embedding_channels, int num_groups = 8) {
-        this->res_1 = this->register_module("res_1", lifuren::nn::ResidualBlock(channels,  8, embedding_channels, num_groups));
-        this->res_2 = this->register_module("res_2", lifuren::nn::ResidualBlock(8,        16, embedding_channels, num_groups));
-        this->down_1 = this->register_module("down_1", lifuren::nn::Downsample( 8, num_groups, 4));
-        this->down_2 = this->register_module("down_2", lifuren::nn::Downsample(16, num_groups, 8));
-        this->attn = this->register_module("attn", lifuren::nn::AttentionBlock(16, 8, 4 * 8, num_groups));
-        this->pose = this->register_module("pose", torch::nn::Sequential(
-            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, 16)),
-            torch::nn::SiLU(),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 1, {3, 3}).padding(1).bias(false))
-        ));
-    }
-    ~PoseImpl() {
-    }
-
-public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor time) {
-        input = this->res_1->forward(input, time);
-        input = this->down_1->forward(input);
-        input = this->res_2->forward(input, time);
-        input = this->down_2->forward(input);
-        input = this->attn->forward(input);
-        return this->pose->forward(input);
-    }
-
-};
-
-TORCH_MODULE(Pose);
-
-/**
  * UNet
  */
 class UNetImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Conv2d head{ nullptr };
-    torch::nn::ModuleDict encoder_blocks{nullptr};
-    torch::nn::ModuleDict middle_blocks{nullptr};
-    torch::nn::ModuleDict decoder_blocks{nullptr};
-    torch::nn::Sequential tail{ nullptr };
+    torch::nn::Conv2d     head          { nullptr };
+    torch::nn::ModuleDict encoder_blocks{ nullptr };
+    torch::nn::ModuleDict mixture_blocks{ nullptr };
+    torch::nn::ModuleDict decoder_blocks{ nullptr };
+    torch::nn::Sequential tail          { nullptr };
 
 public:
-    UNetImpl(int img_height, int img_width, int channels, int embedding_channels,  int min_pixel = 4,
-        size_t n_block = 2, int num_groups = 32, int attn_resolution = 32, const std::vector<int>& scales = { 1, 2, 2, 4, 4 }) {
-        this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_channels, { 3, 3 }).padding(1)));
-        int min_img_size = std::min(img_height, img_width);
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> encoder_blocks;
+    UNetImpl(
+        int width, int height, int channels, int embedding_dims,
+        size_t num_res = 2, int num_groups = 32, int num_heads = 8, int min_down_pixel = 4, int max_attn_pixel = 32,
+        const std::vector<int>& scales = { 1, 2, 2, 4, 4 }
+    ) {
+        SPDLOG_INFO(
+            "unet width = {} height = {} channels = {} embedding_dims = {} num_res = {} num_groups = {} num_heads = {} min_down_pixel = {} max_attn_pixel = {}",
+            width, height, channels, embedding_dims, num_res, num_groups, num_heads, min_down_pixel, max_attn_pixel
+        );
+        int index = 0;
+        int min_pixel = std::min(width, height);
+        int num_skip_down = 0;
+        int current_channels = embedding_dims;
         std::vector<std::tuple<int, int>> encoder_channels;
-        int cur_c = embedding_channels;
-        size_t skip_pooling = 0;
-        for (size_t i = 0; i < scales.size(); i++) {
+        torch::OrderedDict<std::string, std::shared_ptr<Module>> encoder_blocks;
+        torch::OrderedDict<std::string, std::shared_ptr<Module>> mixture_blocks;
+        torch::OrderedDict<std::string, std::shared_ptr<Module>> decoder_blocks;
+        this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, embedding_dims, 3).padding(1)));
+        for (size_t i = 0; i < scales.size(); ++i) {
             auto scale = scales[i];
-            for (size_t j = 0; j < n_block; j++) {
-                encoder_channels.emplace_back(cur_c, scale * embedding_channels);
-                auto block = lifuren::nn::ResidualBlock(cur_c, scale * embedding_channels, embedding_channels, num_groups);
-                cur_c = scale * embedding_channels;
-                encoder_blocks.insert((std::stringstream() << "res" << i * n_block + j).str(), block.ptr());
+            for (size_t j = 0; j < num_res; ++j) {
+                encoder_channels.emplace_back(current_channels, scale * embedding_dims);
+                encoder_blocks.insert(
+                    "res_" + std::to_string(i) + "_" + std::to_string(j),
+                    lifuren::nn::ResidualBlock(current_channels, scale * embedding_dims, embedding_dims, num_groups).ptr()
+                );
+                current_channels = scale * embedding_dims;
             }
-            if (min_img_size <= attn_resolution) {
-                encoder_blocks.insert((std::stringstream() << "attn" << i * n_block).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
+            if (min_pixel <= max_attn_pixel) {
+                encoder_blocks.insert(
+                    "attn_" + std::to_string(i),
+                    lifuren::nn::AttentionBlock(current_channels, num_heads, width * height / std::pow(2, 2 * i), current_channels / num_heads).ptr()
+                );
             }
-            if (min_img_size > min_pixel) {
-                encoder_blocks.insert((std::stringstream() << "down" << i).str(), lifuren::nn::Downsample(cur_c).ptr());
-                min_img_size = min_img_size / 2;
+            if (min_pixel > min_down_pixel) {
+                encoder_blocks.insert(
+                    "down_" + std::to_string(i),
+                    lifuren::nn::Downsample(current_channels).ptr()
+                );
+                min_pixel = min_pixel / 2;
             } else {
-                skip_pooling += 1;
+                num_skip_down += 1;
             }
         }
         this->encoder_blocks = this->register_module("encoder", torch::nn::ModuleDict(encoder_blocks));
-
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> middle_blocks;
-        middle_blocks.insert((std::stringstream() << "res" << 0).str(),
-        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, num_groups).ptr());
-        middle_blocks.insert((std::stringstream() << "attn" << 0).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * scales.size()), cur_c / 8).ptr());
-        middle_blocks.insert((std::stringstream() << "res" << 1).str(),
-        lifuren::nn::ResidualBlock(cur_c, cur_c, embedding_channels, num_groups).ptr());
-        this->middle_blocks = this->register_module("muxer", torch::nn::ModuleDict(middle_blocks));
-
+        {
+            mixture_blocks.insert(
+                "res_0",
+                lifuren::nn::ResidualBlock(current_channels, current_channels, embedding_dims, num_groups).ptr()
+            );
+            mixture_blocks.insert(
+                "attn_0",
+                lifuren::nn::AttentionBlock(current_channels, num_heads, width * height / std::pow(2, 2 * scales.size()), current_channels / num_heads).ptr()
+            );
+            mixture_blocks.insert(
+                "res_1",
+                lifuren::nn::ResidualBlock(current_channels, current_channels, embedding_dims, num_groups).ptr()
+            );
+        }
+        this->mixture_blocks = this->register_module("mixture", torch::nn::ModuleDict(mixture_blocks));
         std::reverse(encoder_channels.begin(), encoder_channels.end());
-
-        torch::OrderedDict<std::string, std::shared_ptr<Module>> decoder_blocks;
-        size_t m = 0;
-        for (int i = scales.size() - 1; i > -1; i--) {
-            auto rev_scale = scales[i];
-            if (m >= skip_pooling) {
-                decoder_blocks.insert((std::stringstream() << "up" << m).str(), lifuren::nn::Upsample(cur_c).ptr());
-                min_img_size *= 2;
+        for (size_t i = scales.size() - 1; i >= 0; --i) {
+            if (index >= num_skip_down) {
+                decoder_blocks.insert(
+                    "up_" + std::to_string(index),
+                    lifuren::nn::Upsample(current_channels).ptr()
+                );
+                min_pixel *= 2;
             }
-
-            for (size_t j = 0; j < n_block; j++) {
-                auto [out_channels, in_channels] = encoder_channels[m * n_block + j];
-                in_channels *= 2;
-                decoder_blocks.insert((std::stringstream() << "res" << m * n_block + j).str(),
-                lifuren::nn::ResidualBlock(in_channels, out_channels, embedding_channels, num_groups).ptr());
-                cur_c = out_channels;
+            for (size_t j = 0; j < num_res; ++j) {
+                auto [out_channels, in_channels] = encoder_channels[index * num_res + j];
+                in_channels *= 2; // concat
+                decoder_blocks.insert(
+                    "res_" + std::to_string(index) + "_" + std::to_string(j),
+                    lifuren::nn::ResidualBlock(in_channels, out_channels, embedding_dims, num_groups).ptr()
+                );
+                current_channels = out_channels;
             }
-
-            if (min_img_size <= attn_resolution) {
-                decoder_blocks.insert((std::stringstream() << "attn" << m * n_block).str(),
-                lifuren::nn::AttentionBlock(cur_c, 8, img_height * img_width / std::pow(2, 2 * i), cur_c / 8).ptr());
+            if (min_pixel <= max_attn_pixel) {
+                decoder_blocks.insert(
+                    "attn_" + std::to_string(index),
+                    lifuren::nn::AttentionBlock(current_channels, num_heads, width * height / std::pow(2, 2 * i), current_channels / num_heads).ptr()
+                );
             }
-
-            m++;
+            ++index;
         }
         this->decoder_blocks = this->register_module("decoder", torch::nn::ModuleDict(decoder_blocks));
-        torch::nn::Sequential tail(
-            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, cur_c)),
+        this->tail = this->register_module("tail", torch::nn::Sequential(
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, current_channels)),
             torch::nn::SiLU(),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(cur_c, channels, {3, 3}).padding(1).bias(false))
-        );
-        this->tail = this->register_module("tail", tail);
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(current_channels, channels, 3).padding(1).bias(false))
+        ));
     }
     ~UNetImpl() {
         this->unregister_module("head");
-        this->unregister_module("tail");
-        this->unregister_module("muxer");
         this->unregister_module("encoder");
+        this->unregister_module("mixture");
         this->unregister_module("decoder");
+        this->unregister_module("tail");
     }
 
 public:
     torch::Tensor forward(torch::Tensor x, torch::Tensor t) {
-        x = head(x);
-
         std::vector<torch::Tensor> inners;
-    
+        x = this->head(x);
         inners.push_back(x);
-        for (const auto &item: encoder_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-            if (name.starts_with("res")) {
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+        for (const auto& item: encoder_blocks->items()) {
+            auto layer = item.second;
+            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
                 inners.push_back(x);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
-            } else if (name.starts_with("down")) {
-                x = module->as<lifuren::nn::Downsample>()->forward(x);
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
+            } else if (typeid(*layer) == typeid(lifuren::nn::Downsample)) {
+                x = layer->as<lifuren::nn::Downsample>()->forward(x);
             } else {
                 // -
             }
         }
-    
-        for (const auto &item: middle_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-            if (name.starts_with("res")) {
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
+        for (const auto& item: mixture_blocks->items()) {
+            auto layer = item.second;
+            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
             } else {
                 // -
             }
         }
-
-        auto inners_ = std::vector<torch::Tensor>(inners.begin(), inners.end());
-    
         for (const auto &item: decoder_blocks->items()) {
-            auto name = item.first;
-            auto module = item.second;
-    
-            if (name.starts_with("up")) {
-                x = module->as<lifuren::nn::Upsample>()->forward(x);
-                torch::Tensor xi = inners_.back();
-            } else if (name.starts_with("res")) {
-                torch::Tensor xi = inners_.back();
-                inners_.pop_back();
-                // x = x + xi;
-                x = torch::concat({ x, xi }, 1);
-                x = module->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (name.starts_with("attn")) {
-                x = module->as<lifuren::nn::AttentionBlock>()->forward(x);
+            auto layer = item.second;
+            if (typeid(*layer) == typeid(lifuren::nn::Upsample)) {
+                x = layer->as<lifuren::nn::Upsample>()->forward(x);
+            } else if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+                torch::Tensor o = inners.back();
+                inners.pop_back();
+                x = torch::concat({ x, o }, 1); // x = x + o;
+                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
             } else {
                 // -
             }
         }
-        
         return this->tail->forward(x);
     }
 
