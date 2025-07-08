@@ -340,7 +340,7 @@ public:
         }
         this->mixture_blocks = this->register_module("mixture", torch::nn::ModuleDict(mixture_blocks));
         std::reverse(encoder_channels.begin(), encoder_channels.end());
-        for (size_t i = scales.size() - 1; i >= 0; --i) {
+        for (int i = scales.size() - 1; i >= 0; --i) {
             if (index >= num_skip_down) {
                 decoder_blocks.insert(
                     "up_" + std::to_string(index),
@@ -385,39 +385,39 @@ public:
         std::vector<torch::Tensor> inners;
         x = this->head(x);
         inners.push_back(x);
-        for (const auto& item: encoder_blocks->items()) {
+        for (const auto& item: this->encoder_blocks->items()) {
             auto layer = item.second;
-            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
                 x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
                 inners.push_back(x);
-            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
                 x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
-            } else if (typeid(*layer) == typeid(lifuren::nn::Downsample)) {
+            } else if (typeid(*layer) == typeid(lifuren::nn::DownsampleImpl)) {
                 x = layer->as<lifuren::nn::Downsample>()->forward(x);
             } else {
                 // -
             }
         }
-        for (const auto& item: mixture_blocks->items()) {
+        for (const auto& item: this->mixture_blocks->items()) {
             auto layer = item.second;
-            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+            if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
                 x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
                 x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
             } else {
                 // -
             }
         }
-        for (const auto &item: decoder_blocks->items()) {
+        for (const auto& item: this->decoder_blocks->items()) {
             auto layer = item.second;
-            if (typeid(*layer) == typeid(lifuren::nn::Upsample)) {
+            if (typeid(*layer) == typeid(lifuren::nn::UpsampleImpl)) {
                 x = layer->as<lifuren::nn::Upsample>()->forward(x);
-            } else if (typeid(*layer) == typeid(lifuren::nn::ResidualBlock)) {
+            } else if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
                 torch::Tensor o = inners.back();
                 inners.pop_back();
                 x = torch::concat({ x, o }, 1); // x = x + o;
                 x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlock)) {
+            } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
                 x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
             } else {
                 // -
