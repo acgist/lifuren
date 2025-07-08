@@ -67,7 +67,7 @@ void lifuren::config::init(const int argc, const char* const argv[]) {
 }
 
 std::string lifuren::config::baseFile(const std::string& path) {
-    return lifuren::file::join({lifuren::config::base_dir, path}).string();
+    return lifuren::file::join({ lifuren::config::base_dir, path }).string();
 }
 
 size_t lifuren::config::uuid() noexcept(true) {

@@ -149,7 +149,7 @@ public:
     classify.trainValAndTest(false, false);
     classify.print(true);
     classify.save();
-    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({1, 2}).to(lifuren::get_device())), 1);
+    auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({ 1, 2 }).to(lifuren::get_device())), 1);
     lifuren::log_tensor("预测结果", pred);
     auto class_id  = pred.argmax(1);
     auto class_idx = class_id.item<int>();

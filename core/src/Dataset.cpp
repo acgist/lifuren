@@ -122,7 +122,7 @@ torch::Tensor lifuren::dataset::image::mat_to_tensor(const cv::Mat& image) {
         return {};
     }
     cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
-    return torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({2, 0, 1}).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
+    return torch::from_blob(image.data, { image.rows, image.cols, 3 }, torch::kByte).permute({ 2, 0, 1 }).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
 }
 
 void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor) {
@@ -130,20 +130,22 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
         return;
     }
     if(tensor.dim() == 3) {
-        auto image_tensor = tensor.permute({1, 2, 0}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
+        auto image_tensor = tensor.permute({ 1, 2, 0 }).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
         std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
     } else {
-        int i = 0;
-        auto image_tensor  = tensor.permute({0, 2, 3, 1}).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
-        auto images_tensor = image_tensor.chunk(image_tensor.size(0), 0);
-        for(auto iter = images_tensor.begin(); iter != images_tensor.end(); ++iter) {
-            cv::Mat copy(image_tensor.size(1), image_tensor.size(2), CV_8UC3);
-            std::memcpy(copy.data, reinterpret_cast<char*>(iter->data_ptr()), copy.total() * copy.elemSize());
-            int x = i % (image.cols / copy.cols) * copy.cols;
-            int y = i / (image.cols / copy.cols) * copy.rows;
-            copy.copyTo(image(cv::Rect(x, y, copy.cols, copy.rows)));
-            ++i;
-        }
+        int N  = tensor.size(0);
+        int C  = tensor.size(1);
+        int H  = tensor.size(2);
+        int W  = tensor.size(3);
+        int HN = image.rows / H;
+        int WN = image.cols / W;
+        auto image_tensor = tensor
+            .reshape({ HN, WN, C, H, W   }) // N C H W     -> HN WN C H W
+            .permute({ 2, 0, 3, 1, 4     }) // HN WN C H W -> C HN H WN W
+            .reshape({ C, HN * H, WN * W }) // C HN H WN W -> C H W
+            .permute({ 1, 2, 0           }) // C H W       -> H W C
+            .add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
+        std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
     }
     cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
 }

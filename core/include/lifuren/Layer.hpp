@@ -254,10 +254,10 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor embedding) {
+    torch::Tensor forward(torch::Tensor input, torch::Tensor step) {
         input = this->align->forward(input);
         auto output = this->conv_1->forward(input);
-        output = output + this->embedding->forward(embedding).unsqueeze(-1).unsqueeze(-1);
+        output = output + this->embedding->forward(step).unsqueeze(-1).unsqueeze(-1);
         output = this->conv_2->forward(output);
         return output + input;
     }
@@ -381,19 +381,19 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor x, torch::Tensor t) {
-        std::vector<torch::Tensor> inners;
-        x = this->head(x);
-        inners.push_back(x);
+    torch::Tensor forward(torch::Tensor input, torch::Tensor step) {
+        std::vector<torch::Tensor> mix;
+        input = this->head(input);
+        mix.push_back(input);
         for (const auto& item: this->encoder_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
-                inners.push_back(x);
+                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
+                mix.push_back(input);
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
+                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
             } else if (typeid(*layer) == typeid(lifuren::nn::DownsampleImpl)) {
-                x = layer->as<lifuren::nn::Downsample>()->forward(x);
+                input = layer->as<lifuren::nn::Downsample>()->forward(input);
             } else {
                 // -
             }
@@ -401,9 +401,9 @@ public:
         for (const auto& item: this->mixture_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
+                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
             } else {
                 // -
             }
@@ -411,19 +411,18 @@ public:
         for (const auto& item: this->decoder_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::UpsampleImpl)) {
-                x = layer->as<lifuren::nn::Upsample>()->forward(x);
+                input = layer->as<lifuren::nn::Upsample>()->forward(input);
             } else if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                torch::Tensor o = inners.back();
-                inners.pop_back();
-                x = torch::concat({ x, o }, 1); // x = x + o;
-                x = layer->as<lifuren::nn::ResidualBlock>()->forward(x, t);
+                input = torch::concat({ input, mix.back() }, 1); // input = input + mix.back();
+                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
+                mix.pop_back();
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                x = layer->as<lifuren::nn::AttentionBlock>()->forward(x);
+                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
             } else {
                 // -
             }
         }
-        return this->tail->forward(x);
+        return this->tail->forward(input);
     }
 
 };

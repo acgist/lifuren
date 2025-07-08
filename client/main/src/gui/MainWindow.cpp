@@ -121,7 +121,11 @@ static void image_callback(const wxCommandEvent&) {
     run(false, "图片生成", wxT("保存目录"), wxT(""), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
-            return client->pred(file);
+            return client->pred({
+                .size = 1,
+                .path = file,
+                .type = lifuren::WudaoziType::IMAGE
+            });
         } else {
             return { false, {} };
         }
@@ -132,7 +136,10 @@ static void video_callback(const wxCommandEvent&) {
     run(true, "视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
-            return client->pred(file);
+            return client->pred({
+                .file = file,
+                .type = lifuren::WudaoziType::VIDEO
+            });
         } else {
             return { false, {} };
         }

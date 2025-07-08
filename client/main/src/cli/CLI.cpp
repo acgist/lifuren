@@ -11,7 +11,8 @@
 #include "lifuren/Message.hpp"
 #include "lifuren/Wudaozi.hpp"
 
-static void pred (const std::vector<std::string>&); // 预测
+static void pred_image(const std::vector<std::string>&); // 预测图片
+static void pred_video(const std::vector<std::string>&); // 预测视频
 static void train(const std::vector<std::string>&); // 训练
 static void help (); // 帮助
 
@@ -31,8 +32,10 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
         args.push_back(argv[i]);
     }
     const char* const command = argv[1];
-    if(std::strcmp(command, "image") == 0 || std::strcmp(command, "video") == 0) {
-        ::pred(args);
+    if(std::strcmp(command, "image") == 0) {
+        ::pred_image(args);
+    } else if(std::strcmp(command, "video") == 0) {
+        ::pred_video(args);
     } else if(std::strcmp(command, "train") == 0) {
         ::train(args);
     } else {
@@ -42,7 +45,36 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     return true;
 }
 
-static void pred(const std::vector<std::string>& args) {
+static void pred_image(const std::vector<std::string>& args) {
+    if(args.size() < 2) {
+        SPDLOG_WARN("缺少参数");
+        ::help();
+        return;
+    }
+    auto client = lifuren::get_wudaozi_client();
+    if(!client) {
+        SPDLOG_WARN("无效模型");
+        return;
+    }
+    const std::string& model_file = args[0];
+    const std::string& image_path = args[1];
+    if(!client->load(model_file)) {
+        SPDLOG_WARN("模型加载失败：{}", model_file);
+        return;
+    }
+    const auto [success, output_file] = client->pred({
+        .size = 1,
+        .path = image_path,
+        .type = lifuren::WudaoziType::IMAGE
+    });
+    if(success) {
+        SPDLOG_INFO("生成完成：{}", output_file);
+    } else {
+        SPDLOG_WARN("生成失败：{}", output_file);
+    }
+}
+
+static void pred_video(const std::vector<std::string>& args) {
     if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
         ::help();
@@ -59,7 +91,10 @@ static void pred(const std::vector<std::string>& args) {
         SPDLOG_WARN("模型加载失败：{}", model_file);
         return;
     }
-    const auto [success, output_file] = client->pred(image_file);
+    const auto [success, output_file] = client->pred({
+        .file = image_file,
+        .type = lifuren::WudaoziType::VIDEO
+    });
     if(success) {
         SPDLOG_INFO("生成完成：{}", output_file);
     } else {
@@ -83,12 +118,12 @@ static void train(const std::vector<std::string>& args) {
     lifuren::config::ModelParams params{
         .model_name = "wudaozi",
         .model_path = model_path,
-        .train_path = lifuren::file::join({dataset, lifuren::config::DATASET_TRAIN}).string(),
-        .val_path   = lifuren::file::join({dataset, lifuren::config::DATASET_VAL  }).string(),
-        .test_path  = lifuren::file::join({dataset, lifuren::config::DATASET_TEST }).string(),
+        .train_path = lifuren::file::join({ dataset, lifuren::config::DATASET_TRAIN }).string(),
+        .val_path   = lifuren::file::join({ dataset, lifuren::config::DATASET_VAL   }).string(),
+        .test_path  = lifuren::file::join({ dataset, lifuren::config::DATASET_TEST  }).string(),
     };
     client->trainValAndTest(params);
-    client->save(lifuren::file::join({model_path, "wudaozi.pt"}).string());
+    client->save(lifuren::file::join({ model_path, "wudaozi.pt" }).string());
 }
 
 static void help() {

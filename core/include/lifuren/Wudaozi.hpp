@@ -21,7 +21,24 @@
 
 namespace lifuren {
 
-using WudaoziClient = Client<lifuren::config::ModelParams, std::string, std::string>;
+enum class WudaoziType {
+
+    RESET,
+    IMAGE,
+    VIDEO,
+
+};
+
+struct WudaoziParams {
+
+    int size = 1;
+    std::string file;
+    std::string path;
+    WudaoziType type;
+
+};
+
+using WudaoziClient = Client<lifuren::config::ModelParams, WudaoziParams, std::string>;
 
 /**
  * @return 模型终端
