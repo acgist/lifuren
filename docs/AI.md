@@ -202,6 +202,12 @@
 * https://image-net.org
 * https://www.openslr.org
 
+## 参考项目
+
+* https://github.com/GlassyWing/TorchDiffusion
+* https://github.com/LinXueyuanStdio/PyTorch-DDPM
+* https://github.com/zoubohao/DenoisingDiffusionProbabilityModel-ddpm-
+
 ## 学习资料
 
 * https://zh.d2l.ai
