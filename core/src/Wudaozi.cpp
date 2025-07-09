@@ -179,9 +179,6 @@ public:
         auto device = lifuren::get_device();
         for (int i = t0; i < T_; ++i) {
             auto t = T_ - i - 1;
-            if(t % 50 == 0) {
-                SPDLOG_DEBUG("当前步骤：{}", t);
-            }
             auto x = torch::tensor({ t * this->stride }).to(device).repeat(z.size(0));
             z = z - this->epsilon_.index({ t }) * this->forward_inet(z, x);
             z = z / this->alpha_.index({ t });
@@ -380,6 +377,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     writer.write(image);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
+        SPDLOG_DEBUG("当前帧数：{}", i);
         auto result = this->trainer->pred(tensor, i % LFR_VIDEO_FRAME_MAX, t0);
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
@@ -391,6 +389,9 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
 template<>
 std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::pred(const lifuren::WudaoziParams& params) {
     if(!this->trainer) {
+        return { false, {} };
+    }
+    if(params.t0 > 250) {
         return { false, {} };
     }
     if(params.type == WudaoziType::RESET) {
