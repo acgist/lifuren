@@ -31,7 +31,8 @@ enum class WudaoziType {
 
 struct WudaoziParams {
 
-    int size = 1;
+    int n  = 1;
+    int t0 = 150;
     std::string file;
     std::string path;
     WudaoziType type;

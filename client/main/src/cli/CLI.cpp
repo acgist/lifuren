@@ -63,7 +63,7 @@ static void pred_image(const std::vector<std::string>& args) {
         return;
     }
     const auto [success, output_file] = client->pred({
-        .size = 1,
+        .n    = 1,
         .path = image_path,
         .type = lifuren::WudaoziType::IMAGE
     });

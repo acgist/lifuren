@@ -122,7 +122,7 @@ static void image_callback(const wxCommandEvent&) {
         auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred({
-                .size = 1,
+                .n    = 1,
                 .path = file,
                 .type = lifuren::WudaoziType::IMAGE
             });

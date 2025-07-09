@@ -48,18 +48,18 @@
 
 [[maybe_unused]] static void testPred() {
     auto client = lifuren::get_wudaozi_client();
-    client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string(), {
-        .batch_size = 1
-    });
+    client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string());
     {
         auto [success, output] = client->pred({
-            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "lyf.jpg"}).string(),
+            .t0   = 150,
+            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "train.jpg"}).string(),
             .type = lifuren::WudaoziType::RESET
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
     {
         auto [success, output] = client->pred({
+            .t0   = 150,
             .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
             .type = lifuren::WudaoziType::RESET
         });
@@ -67,14 +67,23 @@
     }
     {
         auto [success, output] = client->pred({
-            .size = 4,
-            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi"}).string(),
+            .n    = 4,
+            .path = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi"}).string(),
             .type = lifuren::WudaoziType::IMAGE
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
     {
         auto [success, output] = client->pred({
+            .t0   = 150,
+            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "train.jpg"}).string(),
+            .type = lifuren::WudaoziType::VIDEO
+        });
+        SPDLOG_INFO("输出结果：{} - {}", success, output);
+    }
+    {
+        auto [success, output] = client->pred({
+            .t0   = 150,
             .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
             .type = lifuren::WudaoziType::VIDEO
         });
@@ -140,7 +149,7 @@
 
 LFR_TEST(
     // testTrain();
-    // testPred();
+    testPred();
     // testPlay();
-    testNoise();
+    // testNoise();
 );

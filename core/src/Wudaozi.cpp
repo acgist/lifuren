@@ -179,6 +179,9 @@ public:
         auto device = lifuren::get_device();
         for (int i = t0; i < T_; ++i) {
             auto t = T_ - i - 1;
+            if(t % 50 == 0) {
+                SPDLOG_DEBUG("当前步骤：{}", t);
+            }
             auto x = torch::tensor({ t * this->stride }).to(device).repeat(z.size(0));
             z = z - this->epsilon_.index({ t }) * this->forward_inet(z, x);
             z = z / this->alpha_.index({ t });
@@ -202,7 +205,7 @@ public:
         auto batch_steps  = torch::tensor({ t0 }).to(lifuren::get_device()).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         auto noise_images = this->mask_noise(images, batch_steps, batch_noises);
-        return this->denoise(this->forward_vnet(noise_images, this->forward_pose(noise_images, batch_times)), t0);
+        return this->denoise(this->forward_vnet(noise_images, this->forward_pose(noise_images, batch_times).squeeze(1)), t0);
     }
 };
 
@@ -281,7 +284,7 @@ public:
             std::tie(batch_next_noise_images, batch_steps, batch_noises) = this->model->make_noise(batch_next_images);
             batch_prev_noise_images = this->model->mask_noise(batch_prev_images, batch_steps, batch_noises);
         }
-        // loss = torch::sum((denoise - noise).pow(2), { 1, 2, 3 }, true).mean();
+        // loss = torch::sum((src - dst).pow(2), { 1, 2, 3 }, true).mean();
         torch::Tensor pose_loss, vnet_loss, inet_loss;
         if(train_type == TrainType::POSE || train_type == TrainType::ALL) {
             auto pred_pose = this->model->forward_pose(batch_prev_noise_images, time);
@@ -326,16 +329,16 @@ class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, lifure
 
 public:
     std::tuple<bool, std::string> pred(const lifuren::WudaoziParams& input) override;
-    std::tuple<bool, std::string> predImage(const std::string& file);
-    std::tuple<bool, std::string> predImage(const std::string& path, int n);
-    std::tuple<bool, std::string> predVideo(const std::string& file);
+    std::tuple<bool, std::string> predReset(const std::string& file, int t0 = 100);
+    std::tuple<bool, std::string> predImage(const std::string& path, int n  = 1);
+    std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 100);
 
 };
 
 }; // END OF lifuren
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predImage(const std::string& file) {
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predReset(const std::string& file, int t0) {
     auto image = cv::imread(file);
     if(image.empty()) {
         SPDLOG_INFO("打开文件失败：{}", file);
@@ -343,7 +346,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     }
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
-    auto result = this->trainer->pred(tensor, 100);
+    auto result = this->trainer->pred(tensor, t0);
     lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
     const auto output = lifuren::file::modify_filename(file, ".jpg", "gen");
     cv::imwrite(output, image);
@@ -361,7 +364,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
 }
 
 template<>
-std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predVideo(const std::string& input) {
+std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predVideo(const std::string& input, int t0) {
     auto image = cv::imread(input);
     if(image.empty()) {
         SPDLOG_INFO("打开文件失败：{}", input);
@@ -377,7 +380,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     writer.write(image);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
-        auto result = this->trainer->pred(tensor, i % LFR_VIDEO_FRAME_MAX, 100);
+        auto result = this->trainer->pred(tensor, i % LFR_VIDEO_FRAME_MAX, t0);
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
     }
@@ -391,11 +394,11 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
         return { false, {} };
     }
     if(params.type == WudaoziType::RESET) {
-        return this->predImage(params.file);
+        return this->predReset(params.file, params.t0);
     } else if(params.type == WudaoziType::IMAGE) {
-        return this->predImage(params.path, params.size);
+        return this->predImage(params.path, params.n);
     } else if(params.type == WudaoziType::VIDEO) {
-        return this->predVideo(params.file);
+        return this->predVideo(params.file, params.t0);
     } else {
         return { false, {} };
     }
