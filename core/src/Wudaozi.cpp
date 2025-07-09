@@ -97,8 +97,10 @@ private:
     int   T      = 1000; // DDPM步数
     int   stride = 4;    // DDIM步幅
     float eta    = 1.0;  // DDIM随机
-
+    
     lifuren::config::ModelParams params;
+
+    torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     
     lifuren::nn::Pose pose{ nullptr }; // 姿势模型
     lifuren::nn::UNet vnet{ nullptr }; // 视频模型
@@ -119,7 +121,7 @@ private:
     torch::Tensor epsilon_;
 
 public:
-    WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params) {
+    WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params), device(lifuren::get_device()) {
         this->alpha          = this->register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, this->T + 1) / (double) this->T));
         this->bar_alpha      = this->register_buffer("bar_alpha",      torch::cumprod(this->alpha, 0));
         this->bar_alpha_     = this->register_buffer("bar_alpha_",     this->bar_alpha.index({ torch::indexing::Slice({ torch::indexing::None, torch::indexing::None, this->stride }) }));
@@ -169,17 +171,16 @@ public:
         std::iota(steps.begin(), steps.end(), 0);
         std::shuffle(steps.begin(), steps.end(), std::mt19937(std::random_device()()));
         steps.resize(batch_images.size(0));
-        auto batch_steps  = torch::tensor(steps).to(lifuren::get_device()).to(torch::kLong);
+        auto batch_steps  = torch::tensor(steps).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(batch_images);
         auto batch_noise_images = this->mask_noise(batch_images, batch_steps, batch_noises);
         return std::make_tuple(batch_noise_images, batch_steps, batch_noises);
     }
     inline torch::Tensor denoise(torch::Tensor z, int t0) {
         auto T_ = this->bar_alpha_.size(0);
-        auto device = lifuren::get_device();
         for (int i = t0; i < T_; ++i) {
             auto t = T_ - i - 1;
-            auto x = torch::tensor({ t * this->stride }).to(device).repeat(z.size(0));
+            auto x = torch::tensor({ t * this->stride }).to(this->device).repeat(z.size(0));
             z = z - this->epsilon_.index({ t }) * this->forward_inet(z, x);
             z = z / this->alpha_.index({ t });
             z = z + torch::randn_like(z) * this->sigma_.index({ t });
@@ -188,18 +189,18 @@ public:
     }
     torch::Tensor pred_image(int n, int height, int width, int t0) {
         torch::NoGradGuard no_grad_guard;
-        return this->denoise(torch::randn({ n, 3, height, width }).to(lifuren::get_device()), t0);
+        return this->denoise(torch::randn({ n, 3, height, width }).to(this->device), t0);
     }
     torch::Tensor pred_image(torch::Tensor images, int t0) {
         torch::NoGradGuard no_grad_guard;
-        auto batch_steps  = torch::tensor({ t0 }).to(lifuren::get_device()).to(torch::kLong);
+        auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         return this->denoise(this->mask_noise(images, batch_steps, batch_noises), t0);
     }
     torch::Tensor pred_image(torch::Tensor images, int t, int t0) {
         torch::NoGradGuard no_grad_guard;
-        auto batch_times  = torch::tensor({ t  }).to(lifuren::get_device()).to(torch::kLong);
-        auto batch_steps  = torch::tensor({ t0 }).to(lifuren::get_device()).to(torch::kLong);
+        auto batch_times  = torch::tensor({ t  }).to(this->device).to(torch::kLong);
+        auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         auto noise_images = this->mask_noise(images, batch_steps, batch_noises);
         return this->denoise(this->forward_vnet(noise_images, this->forward_pose(noise_images, batch_times).squeeze(1)), t0);
@@ -269,15 +270,14 @@ public:
             }
         }
     }
-    void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) override {
+    void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& /*pred*/, torch::Tensor& loss) override {
         torch::Tensor time, pose, batch_steps, batch_noises, batch_prev_images, batch_next_images, batch_next_noise_images, batch_prev_noise_images;
         {
             torch::NoGradGuard no_grad_guard;
-            auto device = lifuren::get_device();
-            time = label.slice(1, 0, 1).squeeze(1).select(1, 0).select(1, 0).to(torch::kLong).to(device);
-            pose = label.slice(1, 1, 2).squeeze(1).to(device);
-            batch_prev_images = feature.slice(1, 0, 1).squeeze(1).to(device);
-            batch_next_images = feature.slice(1, 1, 2).squeeze(1).to(device);
+            time = label.slice(1, 0, 1).squeeze(1).select(1, 0).select(1, 0).to(torch::kLong).to(this->device);
+            pose = label.slice(1, 1, 2).squeeze(1).to(this->device);
+            batch_prev_images = feature.slice(1, 0, 1).squeeze(1).to(this->device);
+            batch_next_images = feature.slice(1, 1, 2).squeeze(1).to(this->device);
             std::tie(batch_next_noise_images, batch_steps, batch_noises) = this->model->make_noise(batch_next_images);
             batch_prev_noise_images = this->model->mask_noise(batch_prev_images, batch_steps, batch_noises);
         }
@@ -342,7 +342,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
         return { false, {} };
     }
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(this->trainer->device);
     auto result = this->trainer->pred(tensor, t0);
     lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
     const auto output = lifuren::file::modify_filename(file, ".jpg", "gen");
@@ -375,7 +375,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     }
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     writer.write(image);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(lifuren::get_device());
+    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(this->trainer->device);
     for(int i = 0; i < LFR_VIDEO_FRAME_SIZE; ++i) {
         SPDLOG_DEBUG("当前帧数：{}", i);
         auto result = this->trainer->pred(tensor, i % LFR_VIDEO_FRAME_MAX, t0);

@@ -74,6 +74,15 @@ namespace cv {
 
 } // END OF cv
 
+namespace lifuren {
+
+/**
+ * @return 设备类型
+ */
+extern torch::DeviceType get_device();
+
+}
+
 namespace lifuren::dataset {
 
 // void(文件路径, 标签, 特征, 计算设备)

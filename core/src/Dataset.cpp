@@ -4,9 +4,19 @@
 
 #include "opencv2/opencv.hpp"
 
+#include "torch/cuda.h"
+#include "torch/data.h"
+
 #include "lifuren/File.hpp"
-#include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
+
+torch::DeviceType lifuren::get_device() {
+    if(torch::cuda::is_available()) {
+        return torch::DeviceType::CUDA;
+    } else {
+        return torch::DeviceType::CPU;
+    }
+}
 
 std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
     std::vector<std::string> ret;
@@ -133,7 +143,7 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
         auto image_tensor = tensor.permute({ 1, 2, 0 }).add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
         std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
     } else {
-        int N  = tensor.size(0);
+        // int N  = tensor.size(0);
         int C  = tensor.size(1);
         int H  = tensor.size(2);
         int W  = tensor.size(3);
@@ -161,7 +171,7 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             const std::string         & file,
             std::vector<torch::Tensor>& labels,
             std::vector<torch::Tensor>& features,
-            const torch::DeviceType   & device
+            const torch::DeviceType   & /*device*/
         ) {
             cv::VideoCapture video;
             video.open(file);
@@ -169,11 +179,13 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                 SPDLOG_WARN("加载视频文件失败：{}", file);
                 return;
             }
-            const auto video_fps          = video.get(cv::CAP_PROP_FPS);
-            const auto video_frame_count  = video.get(cv::CAP_PROP_FRAME_COUNT);
-            const auto video_frame_width  = video.get(cv::CAP_PROP_FRAME_WIDTH);
-            const auto video_frame_height = video.get(cv::CAP_PROP_FRAME_HEIGHT);
-            SPDLOG_DEBUG("加载视频文件开始：{} - {} - {} - {}", video_fps, video_frame_count, video_frame_width, video_frame_height);
+            SPDLOG_DEBUG(
+                "加载视频文件开始：{} - {} - {} - {}",
+                video.get(cv::CAP_PROP_FPS),
+                video.get(cv::CAP_PROP_FRAME_COUNT),
+                video.get(cv::CAP_PROP_FRAME_WIDTH),
+                video.get(cv::CAP_PROP_FRAME_HEIGHT)
+            );
             size_t index = 0;
             size_t frame = 0;
             double mean;

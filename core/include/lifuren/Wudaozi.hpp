@@ -33,9 +33,9 @@ struct WudaoziParams {
 
     int n  = 1;
     int t0 = 150;
-    std::string file;
-    std::string path;
-    WudaoziType type;
+    std::string file = "";
+    std::string path = "";
+    WudaoziType type = WudaoziType::VIDEO;
 
 };
 

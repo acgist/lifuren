@@ -5,7 +5,6 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Torch.hpp"
 #include "lifuren/Dataset.hpp"
 
 [[maybe_unused]] static void testImage() {
@@ -143,8 +142,8 @@
     );
     auto iterator = loader->begin();
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
-    lifuren::log_tensor("视频特征数量", iterator->data.sizes());
-    lifuren::log_tensor("视频标签数量", iterator->target.sizes());
+    std::cout << "视频特征数量：" << iterator->data.sizes() << std::endl;
+    std::cout << "视频标签数量：" << iterator->target.sizes() << std::endl;
     cv::Mat pose (LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH * 2, CV_8UC1);
     cv::Mat frame(LFR_IMAGE_HEIGHT,      LFR_IMAGE_WIDTH      * 2, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {

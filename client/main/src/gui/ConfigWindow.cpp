@@ -37,7 +37,7 @@ lifuren::ConfigWindow::~ConfigWindow() {
 
 void lifuren::ConfigWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
-    const int h = this->GetClientSize().GetHeight();
+    // const int h = this->GetClientSize().GetHeight();
     panel                = new wxPanel(this);
     tmp_input            = new wxTextCtrl(panel, wxID_ANY,                tmp_input_text,            wxPoint((w - 640) / 2,        10), wxSize(400, 30));
     tmp_button           = new wxButton  (panel, tmp_button_id,           tmp_button_text,           wxPoint((w - 640) / 2 + 410,  10), wxSize(240, 30));

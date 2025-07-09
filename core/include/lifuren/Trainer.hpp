@@ -32,7 +32,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Torch.hpp"
 #include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 #include "lifuren/Dataset.hpp"
@@ -85,7 +84,7 @@ public:
     // 定义模型
     virtual bool define(const bool define_weight = true, const bool define_dataset = true, const bool define_optimizer = true);
     // 打印模型
-    virtual void print(const bool details = false);
+    virtual void print();
     // 训练模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);
     
@@ -193,14 +192,11 @@ bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool defi
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::Trainer<P, M, D>::print(const bool details) {
+inline void lifuren::Trainer<P, M, D>::print() {
     size_t total_numel = 0;
     for(const auto& parameter : this->model->named_parameters()) {
         total_numel += parameter.value().numel();
         SPDLOG_DEBUG("模型参数数量: {} = {}", parameter.key(), parameter.value().numel());
-        if(details) {
-            lifuren::log_tensor(parameter.key(), parameter.value());
-        }
     }
     SPDLOG_DEBUG("模型参数总量: {}", total_numel);
 }

@@ -3,7 +3,6 @@ project(lifurencore VERSION 1.0.0 LANGUAGES C CXX)
 add_library(
     ${PROJECT_NAME}
     src/File.cpp
-    src/Torch.cpp
     src/Config.cpp
     src/Logger.cpp
     src/Dataset.cpp

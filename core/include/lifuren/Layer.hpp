@@ -194,7 +194,7 @@ public:
 public:
     torch::Tensor forward(torch::Tensor input) {
         const int N = input.size(0);
-        const int C = input.size(1);
+        // const int C = input.size(1);
         const int H = input.size(2);
         const int W = input.size(3);
         auto qkv = this->qkv->forward(this->norm->forward(input)).reshape({ N, -1, H * W }).permute({ 1, 0, 2 }).chunk(3, 0);
