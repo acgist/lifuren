@@ -76,7 +76,7 @@ void lifuren::MainWindow::drawWidget() {
     video_button  = new wxButton  (panel, video_id,   video_text,   wxPoint(          10, 100), wxSize((w - 20),          80));
     config_button = new wxButton  (panel, config_id,  config_text,  wxPoint(          10, 190), wxSize((w - 30) / 2,      80));
     about_button  = new wxButton  (panel, about_id,   about_text,   wxPoint((w / 2) +  5, 190), wxSize((w - 30) / 2,      80));
-    message_ctrl  = new wxTextCtrl(panel, message_id, message_text, wxPoint(          10, 270), wxSize((w - 20),     h - 280), wxTE_MULTILINE);
+    message_ctrl  = new wxTextCtrl(panel, message_id, message_text, wxPoint(          10, 280), wxSize((w - 20),     h - 290), wxTE_MULTILINE);
     message_ctrl->Disable();
     message_ctrl->SetBackgroundColour(panel->GetBackgroundColour());
 }

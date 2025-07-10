@@ -126,7 +126,7 @@ public:
             this->data_val,
             1.0F * this->accu_val / this->data_val
         );
-        std::cout << "混淆矩阵：" << this->confusion_matrix << std::endl;
+        std::cout << "混淆矩阵\n" << this->confusion_matrix << std::endl;
         this->accu_val = 0;
         this->data_val = 0;
         this->confusion_matrix.fill_(0);
@@ -150,7 +150,7 @@ public:
     classify.print();
     classify.save();
     auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({ 1, 2 }).to(lifuren::get_device())), 1);
-    std::cout << "预测结果：" << pred << std::endl;
+    std::cout << "预测结果\n" << pred << std::endl;
     auto class_id  = pred.argmax(1);
     auto class_idx = class_id.item<int>();
     SPDLOG_INFO("预测结果：{} - {}", class_id.item().toInt(), pred[0][class_idx].item().toFloat());
@@ -170,10 +170,10 @@ public:
         90.0F, 99.0F,
     };
     auto pred = torch::softmax(classify.pred(torch::from_blob(data.data(), { static_cast<int>(data.size()) / 2, 2 }, torch::kFloat32).to(lifuren::get_device())), 1);
-    std::cout << "当前预测：" << pred << std::endl;
-    std::cout << "预测类别：" << pred.argmax(1) << std::endl;
-    std::cout << "预测类别：" << std::get<1>(pred.max(1)) << std::endl;
-    std::cout << "预测概率：" << std::get<0>(pred.max(1)) << std::endl;
+    std::cout << "当前预测\n" << pred << std::endl;
+    std::cout << "预测类别\n" << pred.argmax(1) << std::endl;
+    std::cout << "预测类别\n" << std::get<1>(pred.max(1)) << std::endl;
+    std::cout << "预测概率\n" << std::get<0>(pred.max(1)) << std::endl;
 }
 
 LFR_TEST(

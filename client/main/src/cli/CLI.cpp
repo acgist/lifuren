@@ -13,16 +13,16 @@
 
 static void pred_image(const std::vector<std::string>&); // 预测图片
 static void pred_video(const std::vector<std::string>&); // 预测视频
-static void train(const std::vector<std::string>&); // 训练
-static void help (); // 帮助
+static void train     (const std::vector<std::string>&); // 训练
+static void help(); // 帮助
 
-static void messageCallback(const char*); // 消息回调
+static void message_callback(const char*); // 消息回调
 
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
         return false;
     }
-    lifuren::message::register_message_callback(messageCallback);
+    lifuren::message::register_message_callback(message_callback);
     std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{} - {}", i, argv[i]);
@@ -52,10 +52,6 @@ static void pred_image(const std::vector<std::string>& args) {
         return;
     }
     auto client = lifuren::get_wudaozi_client();
-    if(!client) {
-        SPDLOG_WARN("无效模型");
-        return;
-    }
     const std::string& model_file = args[0];
     const std::string& image_path = args[1];
     if(!client->load(model_file)) {
@@ -81,10 +77,6 @@ static void pred_video(const std::vector<std::string>& args) {
         return;
     }
     auto client = lifuren::get_wudaozi_client();
-    if(!client) {
-        SPDLOG_WARN("无效模型");
-        return;
-    }
     const std::string& model_file = args[0];
     const std::string& image_file = args[1];
     if(!client->load(model_file)) {
@@ -109,12 +101,9 @@ static void train(const std::vector<std::string>& args) {
         return;
     }
     auto client = lifuren::get_wudaozi_client();
-    if(!client) {
-        SPDLOG_WARN("无效模型");
-        return;
-    }
     const std::string& model_path = args[0];
     const std::string& dataset    = args[1];
+    const std::string& model_file = args.size() < 3 ? "" : args[2];
     lifuren::config::ModelParams params{
         .model_name = "wudaozi",
         .model_path = model_path,
@@ -122,6 +111,9 @@ static void train(const std::vector<std::string>& args) {
         .val_path   = lifuren::file::join({ dataset, lifuren::config::DATASET_VAL   }).string(),
         .test_path  = lifuren::file::join({ dataset, lifuren::config::DATASET_TEST  }).string(),
     };
+    if(lifuren::file::exists(model_file) && lifuren::file::is_file(model_file)) {
+        client->load(model_file, params);
+    }
     client->trainValAndTest(params);
     client->save(lifuren::file::join({ model_path, "wudaozi.pt" }).string());
 }
@@ -129,14 +121,14 @@ static void train(const std::vector<std::string>& args) {
 static void help() {
     std::cout << R"(
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] train model_path dataset
+./lifuren[.exe] train model_path dataset [ model_file ]
 ./lifuren[.exe] image model_file image_path
 ./lifuren[.exe] video model_file image_file
 ./lifuren[.exe] [?|help]
 )" << std::endl;
 }
 
-static void messageCallback(const char* message) {
+static void message_callback(const char* message) {
     #if defined(_DEBUG) || !defined(NDEBUG)
     // 测试时控制台日志已经打开
     #else

@@ -63,7 +63,7 @@ cmake --build . --parallel 8
 cmake --install .
 ```
 
-## 连接文件
+#### 连接文件
 
 ```
 vim /etc/ld.so.conf
@@ -122,6 +122,7 @@ cmake --install .
 ## 开发环境
 
 * https://code.visualstudio.com/
+* https://visualstudio.microsoft.com/zh-hans/vs/
 
 ## 资源下载
 

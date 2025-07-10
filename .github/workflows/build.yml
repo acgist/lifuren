@@ -42,7 +42,7 @@ jobs:
           g++ -v
           cmake -version
           mkdir build ; cd $_
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DCMAKE_BUILD_TYPE=Release -Wno-dev -DUSE_SYSTEM_NVTX=ON
           make
           sudo make install
           make clean

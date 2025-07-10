@@ -142,8 +142,8 @@
     );
     auto iterator = loader->begin();
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
-    std::cout << "视频特征数量：" << iterator->data.sizes() << std::endl;
-    std::cout << "视频标签数量：" << iterator->target.sizes() << std::endl;
+    std::cout << "视频特征数量\n" << iterator->data.sizes() << std::endl;
+    std::cout << "视频标签数量\n" << iterator->target.sizes() << std::endl;
     cv::Mat pose (LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH * 2, CV_8UC1);
     cv::Mat frame(LFR_IMAGE_HEIGHT,      LFR_IMAGE_WIDTH      * 2, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {

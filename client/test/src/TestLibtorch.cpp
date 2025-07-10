@@ -29,7 +29,6 @@
     std::cout << input.sizes() << std::endl;
     std::cout << output.sizes() << std::endl;
     torch::nn::MultiheadAttention attn(200, 10);
-    std::cout << "====" << std::endl;
     output = torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 32 * 3, 1))->forward(input);
     std::cout << output.sizes() << std::endl;
     output = output.reshape({ 100, -1, 10 * 20 });
@@ -49,13 +48,13 @@
 
 [[maybe_unused]] static void testTensor() {
     auto tensor = torch::arange(0, 18).reshape({ 2, 3, 3 });
-    std::cout << "tensor: " << tensor << std::endl;
-    std::cout << "tensor: " << tensor.index({ 0 }) << std::endl;
-    std::cout << "tensor: " << tensor.index({ 1 }) << std::endl;
-    std::cout << "tensor: " << tensor.index({ "...", 0 }) << std::endl;
-    std::cout << "tensor: " << tensor.index({ "...", 1 }) << std::endl;
-    std::cout << "tensor: " << tensor.select(0, 0) << std::endl;
-    std::cout << "tensor: " << tensor.select(0, 1) << std::endl;
+    std::cout << "tensor\n" << tensor << std::endl;
+    std::cout << "tensor\n" << tensor.index({ 0 }) << std::endl;
+    std::cout << "tensor\n" << tensor.index({ 1 }) << std::endl;
+    std::cout << "tensor\n" << tensor.index({ "...", 0 }) << std::endl;
+    std::cout << "tensor\n" << tensor.index({ "...", 1 }) << std::endl;
+    std::cout << "tensor\n" << tensor.select(0, 0) << std::endl;
+    std::cout << "tensor\n" << tensor.select(0, 1) << std::endl;
 }
 
 LFR_TEST(

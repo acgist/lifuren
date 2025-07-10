@@ -17,23 +17,20 @@
 #ifndef LFR_HEADER_CLIENT_GUI_HPP
 #define LFR_HEADER_CLIENT_GUI_HPP
 
-// 去掉冲突
 #ifdef  _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #endif
 
-// 窗口大小
-#ifndef LFR_WINDOW_DEFAULT
-#define LFR_WINDOW_DEFAULT
+#ifndef LFR_WINDOW_CONFIG
+#define LFR_WINDOW_CONFIG
 #define LFR_WINDOW_WIDTH  1280
 #define LFR_WINDOW_HEIGHT 720
 #define LFR_DIALOG_WIDTH  780
 #define LFR_DIALOG_HEIGHT 520
 #endif
 
-#include <set>
 #include <string>
 
 #include "wx/app.h"
@@ -41,7 +38,7 @@
 
 namespace lifuren {
 
-extern void initGUI(); // 加载GUI
+extern void initGUI();
 
 /**
  * 应用
@@ -68,13 +65,13 @@ public:
     virtual ~Window();
 
 public:
-    virtual void init(); // 初始化窗口
+    virtual void init();
 
 protected:
     virtual void loadIcon  (); // 设置图标
     virtual void drawWidget(); // 绘制组件
     virtual void bindEvent (); // 绑定事件
-    virtual void fillData  (); // 数据填充
+    virtual void fillData  (); // 填充数据
 
 };
 
