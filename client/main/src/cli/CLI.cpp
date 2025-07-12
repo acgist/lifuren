@@ -58,7 +58,7 @@ static void pred_image(const std::vector<std::string>& args) {
         SPDLOG_WARN("模型加载失败：{}", model_file);
         return;
     }
-    const auto [success, output_file] = client->pred({
+    const auto [ success, output_file ] = client->pred({
         .n    = 1,
         .path = image_path,
         .type = lifuren::WudaoziType::IMAGE
@@ -83,7 +83,7 @@ static void pred_video(const std::vector<std::string>& args) {
         SPDLOG_WARN("模型加载失败：{}", model_file);
         return;
     }
-    const auto [success, output_file] = client->pred({
+    const auto [ success, output_file ] = client->pred({
         .file = image_file,
         .type = lifuren::WudaoziType::VIDEO
     });

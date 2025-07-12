@@ -3,10 +3,6 @@
 #include "torch/torch.h"
 #include "torch/script.h"
 
-#include "spdlog/spdlog.h"
-
-#include "opencv2/opencv.hpp"
-
 #include "lifuren/File.hpp"
 #include "lifuren/Layer.hpp"
 #include "lifuren/Config.hpp"
@@ -59,6 +55,6 @@
 
 LFR_TEST(
     // testJit();
-    // testLayer();
+    testLayer();
     testTensor();
 );

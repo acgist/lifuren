@@ -157,7 +157,9 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
             .add(1.0).mul(255.0).div(2.0).to(torch::kByte).contiguous();
         std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
     }
-    cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
+    if(image.channels() == 3) {
+        cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
+    }
 }
 
 lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLoader(const int width, const int height, const size_t batch_size, const std::string& path) {

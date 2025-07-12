@@ -53,9 +53,8 @@ void lifuren::AboutWindow::bindEvent() {
 }
 
 void lifuren::AboutWindow::fillData() {
-    about->Clear();
     about->AppendText(wxT(R"(李夫人
-    
+
 北方有佳人，绝世而独立。
 一顾倾人城，再顾倾人国。
 宁不知倾城与倾国，佳人难再得。

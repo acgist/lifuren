@@ -47,7 +47,7 @@ static lifuren::MainWindow* mainWindow{ nullptr };
 
 static std::shared_ptr<std::thread> thread{ nullptr };
 
-static bool run(bool file_choose, const char*, const wxString&, const wxString&, std::function<std::tuple<bool, std::string>(std::string)>);
+static bool run(bool, const char*, const wxString&, const wxString&, std::function<std::tuple<bool, std::string>(std::string)>);
 
 lifuren::MainWindow::MainWindow(int width, int height, const wxString& title) : Window(width, height, title) {
     mainWindow = this;
@@ -90,9 +90,10 @@ void lifuren::MainWindow::bindEvent() {
                 auto path = event.GetString();
                 wxExecute(pref + path, wxEXEC_ASYNC, nullptr);
             } else {
+                auto message = event.GetString();
                 wxMessageDialog dialog(
                     nullptr,
-                    wxT("任务执行失败"),
+                    message,
                     wxT("失败提示"),
                     wxOK | wxCENTRE | wxICON_ERROR
                 );
@@ -118,12 +119,12 @@ void lifuren::MainWindow::bindEvent() {
 }
 
 static void image_callback(const wxCommandEvent&) {
-    run(false, "图片生成", wxT("保存目录"), wxT(""), [](std::string file) -> std::tuple<bool, std::string> {
+    run(false, "图片生成", wxT("保存目录"), "", [](std::string path) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
         if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
             return client->pred({
                 .n    = 1,
-                .path = file,
+                .path = path,
                 .type = lifuren::WudaoziType::IMAGE
             });
         } else {
@@ -215,21 +216,24 @@ static bool run(bool file_choose, const char* name, const wxString& title, const
         auto event = new wxThreadEvent();
         event->SetInt(thread_event_thread);
         try {
-            auto [success, path] = fun(file);
+            auto [ success, output ] = fun(file);
             if(success) {
                 SPDLOG_DEBUG("任务完成：{}", name);
-                event->SetString(wxString::FromUTF8(lifuren::file::parent(path)));
                 event->SetPayload<bool>(true);
+                event->SetString(wxString::FromUTF8(lifuren::file::parent(output)));
             } else {
                 SPDLOG_WARN("任务失败：{}", name);
                 event->SetPayload<bool>(false);
+                event->SetString(wxString::FromUTF8(output));
             }
         } catch(const std::exception& e) {
-            SPDLOG_ERROR("任务异常：{}", name);
+            SPDLOG_ERROR("任务异常：{} - {}", name, e.what());
             event->SetPayload<bool>(false);
+            event->SetString(wxString::FromUTF8(e.what()));
         } catch(...) {
             SPDLOG_ERROR("任务异常：{}", name);
             event->SetPayload<bool>(false);
+            event->SetString(wxT("系统异常"));
         }
         wxQueueEvent(mainWindow, event);
         running = false;

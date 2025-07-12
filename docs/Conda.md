@@ -59,14 +59,14 @@ conda update  xxxx
 
 # 创建虚拟环境
 conda create --name 环境名称 python=3.12
-# 复制某个环境
-conda create --name 环境名称 --clone 环境名称
+# 删除某个环境
+conda remove --name 环境名称 --all
+# 修改环境名称
+conda rename -n 旧的名字 新的名字
 # 激活某个环境
 conda activate 环境名称
 # 退出当前环境
 conda deactivate
-# 删除某个环境
-conda remove --name 环境名称 --all
 # 列出所有环境
 conda env list
 # 清除索引缓存

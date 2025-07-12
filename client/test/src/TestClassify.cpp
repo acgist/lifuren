@@ -3,8 +3,8 @@
 #include <memory>
 #include <random>
 
-#include "lifuren/Trainer.hpp"
 #include "lifuren/Dataset.hpp"
+#include "lifuren/Trainer.hpp"
 
 class ClassifyImpl : public torch::nn::Module {
 
@@ -16,7 +16,7 @@ private:
 
 public:
     ClassifyImpl(lifuren::config::ModelParams params = {}) : params(params) {
-        this->norm     = this->register_module("norm",    torch::nn::BatchNorm1d(2));
+        this->norm     = this->register_module("norm",     torch::nn::BatchNorm1d(2));
         this->linear_1 = this->register_module("linear_1", torch::nn::Linear(torch::nn::LinearOptions( 2, 16)));
         this->linear_2 = this->register_module("linear_2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
     }
@@ -49,7 +49,7 @@ public:
         .batch_size = 100,
         .epoch_size = 32
     }) : Trainer(params) {
-        // 混淆矩阵 4 * 4
+        // 混淆矩阵
         this->confusion_matrix = torch::zeros({ 4, 4 }, torch::kInt).requires_grad_(false).to(torch::kCPU);
     }
     virtual ~ClassifyTrainer() {
@@ -57,8 +57,6 @@ public:
 
 public:
     /**
-     * 混淆矩阵
-     * 
      * @param target 目标
      * @param pred   预测
      * @param confusion_matrix 混淆矩阵
@@ -106,7 +104,7 @@ public:
     }
     void defineOptimizer() override {
         torch::optim::AdamOptions optims;
-        optims.lr (this->params.lr);
+        optims.lr(this->params.lr);
         optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
@@ -178,5 +176,5 @@ public:
 
 LFR_TEST(
     testTrain();
-    // testPred();
+    testPred();
 );

@@ -37,11 +37,10 @@ lifuren::ConfigWindow::~ConfigWindow() {
 
 void lifuren::ConfigWindow::drawWidget() {
     const int w = this->GetClientSize().GetWidth();
-    // const int h = this->GetClientSize().GetHeight();
     panel                = new wxPanel(this);
-    tmp_input            = new wxTextCtrl(panel, wxID_ANY,                tmp_input_text,            wxPoint((w - 640) / 2,        10), wxSize(400, 30));
+    tmp_input            = new wxTextCtrl(panel, wxID_ANY,                "",                        wxPoint((w - 640) / 2,        10), wxSize(400, 30));
     tmp_button           = new wxButton  (panel, tmp_button_id,           tmp_button_text,           wxPoint((w - 640) / 2 + 410,  10), wxSize(240, 30));
-    model_wudaozi_input  = new wxTextCtrl(panel, wxID_ANY,                model_wudaozi_input_text,  wxPoint((w - 640) / 2,        50), wxSize(400, 30));
+    model_wudaozi_input  = new wxTextCtrl(panel, wxID_ANY,                "",                        wxPoint((w - 640) / 2,        50), wxSize(400, 30));
     model_wudaozi_button = new wxButton  (panel, model_wudaozi_button_id, model_wudaozi_button_text, wxPoint((w - 640) / 2 + 410,  50), wxSize(240, 30));
 }
 
@@ -57,10 +56,8 @@ void lifuren::ConfigWindow::bindEvent() {
 
 void lifuren::ConfigWindow::fillData() {
     const auto& config = lifuren::config::CONFIG;
-    tmp_input          ->Clear();
-    model_wudaozi_input->Clear();
-    tmp_input          ->AppendText(wxString::FromUTF8(config.tmp.c_str()           ));
-    model_wudaozi_input->AppendText(wxString::FromUTF8(config.model_wudaozi.c_str() ));
+    tmp_input          ->AppendText(wxString::FromUTF8(config.tmp));
+    model_wudaozi_input->AppendText(wxString::FromUTF8(config.model_wudaozi));
 }
 
 static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
@@ -79,15 +76,15 @@ static void chooseFileCallback(const wxCommandEvent&, wxTextCtrl* input) {
 }
 
 static void chooseDirectoryCallback(const wxCommandEvent&, wxTextCtrl* input) {
-    auto file = lifuren::directory_chooser(wxT("选择目录"));
-    if(file.empty()) {
+    auto path = lifuren::directory_chooser(wxT("选择目录"));
+    if(path.empty()) {
         return;
     }
     input->Clear();
-    input->AppendText(wxString::FromUTF8(file));
+    input->AppendText(wxString::FromUTF8(path));
     auto& config = lifuren::config::CONFIG;
     if(input == tmp_input) {
-        config.tmp = file;
+        config.tmp = path;
     } else {
         SPDLOG_DEBUG("没有匹配元素");
     }

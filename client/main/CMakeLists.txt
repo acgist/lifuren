@@ -5,13 +5,7 @@ aux_source_directory(src/cli/ CLI_FILES)
 if(ENABLE_GUI)
     message(STATUS "编译界面")
     add_definitions(-DLFR_ENABLE_GUI=true)
-    set(
-        GUI_FILES
-        src/gui/GUI.cpp
-        src/gui/MainWindow.cpp
-        src/gui/AboutWindow.cpp
-        src/gui/ConfigWindow.cpp
-    )
+    aux_source_directory(src/gui/ GUI_FILES)
 endif()
     
 if(CMAKE_HOST_WIN32)
@@ -44,13 +38,7 @@ else()
     )
 endif()
 
-if(CMAKE_HOST_WIN32)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurencore
-        ${wxWidgets_LIBRARIES}
-    )
-else()
+if(CMAKE_HOST_UNIX)
     # wx-config --cxxflags
     message(STATUS "配置Linux GUI环境")
     target_compile_definitions(${PROJECT_NAME} PUBLIC __WXGTK__)
@@ -58,12 +46,13 @@ else()
     target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64)
     target_include_directories(${PROJECT_NAME} PUBLIC /usr/include/wx-3.2)
     target_include_directories(${PROJECT_NAME} PUBLIC /usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        lifurencore
-        ${wxWidgets_LIBRARIES}
-    )
 endif()
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    lifurencore
+    ${wxWidgets_LIBRARIES}
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
 

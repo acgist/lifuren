@@ -1,8 +1,5 @@
 #include "lifuren/GUI.hpp"
 
-#include <cmath>
-#include <algorithm>
-
 #include "wx/wx.h"
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
@@ -10,7 +7,6 @@
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Config.hpp"
 
 static std::string last_directory = "";
 
@@ -47,10 +43,10 @@ std::string lifuren::file_chooser(const wxString& title, const wxString& filter,
         SPDLOG_DEBUG("取消选择文件：{}", title.mb_str(wxConvUTF8).data());
         return {};
     }
-    std::string filename = chooser.GetPath().mb_str(wxConvUTF8).data();
-    last_directory = lifuren::file::parent(filename);
-    SPDLOG_DEBUG("选择文件：{}", filename);
-    return filename;
+    std::string file = chooser.GetPath().mb_str(wxConvUTF8).data();
+    last_directory = lifuren::file::parent(file);
+    SPDLOG_DEBUG("选择文件：{}", file);
+    return file;
 }
 
 std::string lifuren::directory_chooser(const wxString& title, const wxString& directory) {
@@ -63,10 +59,10 @@ std::string lifuren::directory_chooser(const wxString& title, const wxString& di
         SPDLOG_DEBUG("取消选择目录：{}", title.mb_str(wxConvUTF8).data());
         return {};
     }
-    std::string filename = chooser.GetPath().mb_str(wxConvUTF8).data();
-    last_directory = filename;
-    SPDLOG_DEBUG("选择目录：{}", filename);
-    return filename;
+    std::string path = chooser.GetPath().mb_str(wxConvUTF8).data();
+    last_directory = path;
+    SPDLOG_DEBUG("选择目录：{}", path);
+    return path;
 }
 
 wxString lifuren::app_base_dir(const wxString& path) {
@@ -83,7 +79,7 @@ lifuren::Window::~Window() {
 }
 
 void lifuren::Window::init() {
-    this->Centre();
+    this->Center();
     this->loadIcon();
     this->drawWidget();
     this->bindEvent();
