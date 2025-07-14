@@ -46,17 +46,21 @@ inline bool is_file(const std::string& path) {
  * 
  * @return 是否是目录
  */
-inline bool is_folder(const std::string& path) {
+inline bool is_directory(const std::string& path) {
     return std::filesystem::is_directory(std::filesystem::path(path));
 }
 
 /**
- * @param path 文件路径
+ * @param path 目录路径
  * 
- * @return 是否是目录
+ * @return 是否成功
  */
-inline bool is_directory(const std::string& path) {
-    return lifuren::file::is_folder(path);
+inline bool create_directory(const std::string& path) {
+    std::filesystem::path file_path(path);
+    if(std::filesystem::exists(file_path)) {
+        return true;
+    }
+    return std::filesystem::create_directories(file_path);
 }
 
 /**
@@ -73,47 +77,8 @@ inline std::string parent(const std::string& path) {
  * 
  * @return 是否成功
  */
-inline bool createFolder(const std::filesystem::path& path) {
-    if(std::filesystem::exists(path)) {
-        return true;
-    }
-    return std::filesystem::create_directories(path);
-}
-
-/**
- * @param path 目录路径
- * 
- * @return 是否成功
- */
-inline bool createFolder(const std::string& path) {
-    return lifuren::file::createFolder(std::filesystem::path(path));
-}
-
-/**
- * @param path 目录路径
- * 
- * @return 是否成功
- */
-inline bool createDirectory(const std::filesystem::path& path) {
-    return lifuren::file::createFolder(path);
-}
-
-/**
- * @param path 目录路径
- * 
- * @return 是否成功
- */
-inline bool createDirectory(const std::string& path) {
-    return lifuren::file::createFolder(path);
-}
-
-/**
- * @param path 目录路径
- * 
- * @return 是否成功
- */
-inline bool createParent(const std::filesystem::path& path) {
-    auto parent = path.parent_path();
+inline bool create_parent(const std::string& path) {
+    auto parent = std::filesystem::path(path).parent_path();
     if(std::filesystem::exists(parent)) {
         return true;
     }
@@ -123,28 +88,10 @@ inline bool createParent(const std::filesystem::path& path) {
 /**
  * @param path 文件路径
  * 
- * @return 是否成功
- */
-inline bool createParent(const std::string& path) {
-    return lifuren::file::createParent(std::filesystem::path(path));
-}
-
-/**
- * @param path 文件路径
- * 
- * @return 文件大小
- */
-inline size_t file_size(const std::filesystem::path& path) {
-    return std::filesystem::file_size(path);
-}
-
-/**
- * @param path 文件路径
- * 
  * @return 文件大小
  */
 inline size_t file_size(const std::string& path) {
-    return lifuren::file::file_size(std::filesystem::path(path));
+    return std::filesystem::file_size(std::filesystem::path(path));
 }
 
 /**
@@ -175,11 +122,11 @@ inline std::filesystem::path join(std::initializer_list<std::string> list) {
  */
 inline std::string modify_filename(const std::string& file, const std::string& suffix, const std::string& prefix = "") {
     if(file.empty()) {
-        return {};
+        return file + "_";
     }
     const auto pos = file.find_last_of('.');
     if(pos == std::string::npos) {
-        return {};
+        return file + "_";
     }
     if(prefix.empty()) {
         return file.substr(0, pos) + suffix;
@@ -212,41 +159,8 @@ extern void list_file(std::vector<std::string>& vector, const std::string& path,
  * @param path      文件路径
  * @param predicate 文件匹配：是否匹配成功(文件路径)
  */
-extern void list_file(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string& path)>& predicate);
+extern void list_file(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string&)>& predicate);
 
 } // END OF lifuren::file
-
-namespace lifuren::string {
-
-static const char* const EMPTY_CHARS = " \t\r\n"; // 空白字符
-
-/**
- * @param value 字符串
- */
-inline void toLower(std::string& value) {
-    #if _WIN32
-    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
-    #else
-    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
-        return std::tolower(v);
-    });
-    #endif
-}
-
-/**
- * @param value 字符串
- * 
- * @return 去掉空格后的字符串
- */
-inline std::string trim(const std::string& value) {
-    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
-    if(index == std::string::npos) {
-        return {};
-    }
-    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
-    return value.substr(index, jndex + 1 - index);
-}
-    
-} // END OF lifuren::string
 
 #endif // LFR_HEADER_CORE_FILE_HPP

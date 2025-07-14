@@ -121,7 +121,7 @@ void lifuren::MainWindow::bindEvent() {
 static void image_callback(const wxCommandEvent&) {
     run(false, "图片生成", wxT("保存目录"), "", [](std::string path) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
-        if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
+        if(client->load(lifuren::config::CONFIG.wudaozi)) {
             return client->pred({
                 .n    = 1,
                 .path = path,
@@ -136,7 +136,7 @@ static void image_callback(const wxCommandEvent&) {
 static void video_callback(const wxCommandEvent&) {
     run(true, "视频生成", wxT("选择媒体"), wxT("媒体文件|*.png;*.jpg;*.jpeg;*.mp4"), [](std::string file) -> std::tuple<bool, std::string> {
         auto client = lifuren::get_wudaozi_client();
-        if(client->load(lifuren::config::CONFIG.model_wudaozi)) {
+        if(client->load(lifuren::config::CONFIG.wudaozi)) {
             return client->pred({
                 .file = file,
                 .type = lifuren::WudaoziType::VIDEO

@@ -18,30 +18,6 @@ torch::DeviceType lifuren::get_device() {
     }
 }
 
-std::vector<std::string> lifuren::dataset::allDataset(const std::string& path) {
-    std::vector<std::string> ret;
-    ret.reserve(3);
-    const auto train_path = lifuren::file::join({ path, lifuren::config::DATASET_TRAIN });
-    const auto val_path   = lifuren::file::join({ path, lifuren::config::DATASET_VAL   });
-    const auto test_path  = lifuren::file::join({ path, lifuren::config::DATASET_TEST  });
-    if(std::filesystem::exists(train_path)) {
-        ret.push_back(train_path.string());
-    } else {
-        SPDLOG_DEBUG("无效的训练数据集：{}", train_path.string());
-    }
-    if(std::filesystem::exists(val_path)) {
-        ret.push_back(val_path.string());
-    } else {
-        SPDLOG_DEBUG("无效的验证训练集：{}", val_path.string());
-    }
-    if(std::filesystem::exists(test_path)) {
-        ret.push_back(test_path.string());
-    } else {
-        SPDLOG_DEBUG("无效的测试训练集：{}", test_path.string());
-    }
-    return ret;
-}
-
 lifuren::dataset::Dataset::Dataset(
     size_t batch_size,
     std::vector<torch::Tensor>& labels,

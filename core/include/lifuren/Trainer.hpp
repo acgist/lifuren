@@ -8,8 +8,6 @@
  * 
  * 模型
  * 
- * 模型输出向量不要使用任何逻辑判断语句
- * 
  * https://pytorch.org/cppdocs/
  * 
  * @author acgist
@@ -19,7 +17,6 @@
 #ifndef LFR_HEADER_CORE_MODEL_HPP
 #define LFR_HEADER_CORE_MODEL_HPP
 
-#include <array>
 #include <memory>
 #include <string>
 #include <thread>
@@ -33,7 +30,6 @@
 
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Logger.hpp"
 #include "lifuren/Dataset.hpp"
 
 namespace lifuren {
@@ -80,15 +76,21 @@ public:
     // 保存模型
     virtual bool save(const std::string& path = "./lifuren.pt");
     // 加载模型
-    virtual bool load(const std::string& path = "./lifuren.pt");
+    virtual bool load(const std::string& path = "./lifuren.pt", const bool print_model = true);
     // 定义模型
-    virtual bool define(const bool define_weight = true, const bool define_dataset = true, const bool define_optimizer = true);
+    virtual bool define(const bool define_weight = true, const bool define_dataset = true, const bool define_optimizer = true, const bool print_model = true);
     // 打印模型
     virtual void print();
     // 训练模型
     virtual void trainValAndTest(const bool val = true, const bool test = true);
     
 protected:
+    // 初始化权重
+    virtual void defineWeight();
+    // 定义数据集
+    virtual void defineDataset() = 0;
+    // 定义优化函数
+    virtual void defineOptimizer();
     // 计算损失
     virtual void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& pred, torch::Tensor& loss) = 0;
     // 训练模型
@@ -105,20 +107,12 @@ protected:
      * @param loss  损失
      * @param duration 时间消耗
      */
-    virtual void printEvaluation(
+    virtual void evaluation(
         const char*  name,
         const size_t epoch,
         const float  loss,
         const size_t duration
     );
-
-protected:
-    // 初始化权重
-    virtual void defineWeight();
-    // 定义数据集
-    virtual void defineDataset() = 0;
-    // 定义优化函数
-    virtual void defineOptimizer();
 
 };
 
@@ -146,7 +140,7 @@ bool lifuren::Trainer<P, M, D>::save(const std::string& path) {
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
     }
-    lifuren::file::createParent(path);
+    lifuren::file::create_parent(path);
     this->model->eval();
     this->model->to(torch::DeviceType::CPU);
     torch::save(model, path);
@@ -156,7 +150,7 @@ bool lifuren::Trainer<P, M, D>::save(const std::string& path) {
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::Trainer<P, M, D>::load(const std::string& path) {
+bool lifuren::Trainer<P, M, D>::load(const std::string& path, const bool print_model) {
     if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
@@ -170,12 +164,14 @@ bool lifuren::Trainer<P, M, D>::load(const std::string& path) {
     }
     this->model->to(this->device);
     this->model->eval();
-    this->print();
+    if(print_model) {
+        this->print();
+    }
     return true;
 }
 
 template<typename P, typename M, typename D>
-bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool define_dataset, const bool define_optimizer) {
+bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool define_dataset, const bool define_optimizer, const bool print_model) {
     if(define_weight) {
         this->defineWeight();
     }
@@ -187,7 +183,9 @@ bool lifuren::Trainer<P, M, D>::define(const bool define_weight, const bool defi
     }
     this->model->to(this->device);
     this->model->eval();
-    this->print();
+    if(print_model) {
+        this->print();
+    }
     return true;
 }
 
@@ -220,7 +218,7 @@ void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test)
             if(this->params.check_point && epoch % this->params.check_epoch == 1) {
                 this->save(lifuren::file::join({
                     this->params.model_path,
-                    this->params.model_name + ".checkpoint." + std::to_string(epoch) + ".ckpt"
+                    this->params.model_name + "." + std::to_string(epoch) + ".ckpt"
                 }).string());
             }
         }
@@ -237,13 +235,22 @@ void lifuren::Trainer<P, M, D>::trainValAndTest(const bool val, const bool test)
 }
 
 template<typename P, typename M, typename D>
+inline void lifuren::Trainer<P, M, D>::defineWeight() {
+}
+
+template<typename P, typename M, typename D>
+inline void lifuren::Trainer<P, M, D>::defineOptimizer() {
+    this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
+}
+
+template<typename P, typename M, typename D>
 void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
     if(!this->trainDataset) {
         SPDLOG_WARN("无效的训练数据集");
         return;
     }
     this->model->train();
-    double loss_val = 0.0;
+    double loss_val    = 0.0;
     size_t batch_count = 0;
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->trainDataset) {
@@ -263,7 +270,7 @@ void lifuren::Trainer<P, M, D>::train(const size_t epoch) {
     }
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    this->printEvaluation("训练", epoch, loss_val / batch_count, duration);
+    this->evaluation("训练", epoch, loss_val / batch_count, duration);
 }
 
 template<typename P, typename M, typename D>
@@ -273,7 +280,7 @@ void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
     }
     torch::NoGradGuard no_grad_guard;
     this->model->eval();
-    double loss_val = 0.0;
+    double loss_val    = 0.0;
     size_t batch_count = 0;
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->valDataset) {
@@ -287,7 +294,7 @@ void lifuren::Trainer<P, M, D>::val(const size_t epoch) {
     }
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    this->printEvaluation("验证", epoch, loss_val / batch_count, duration);
+    this->evaluation("验证", epoch, loss_val / batch_count, duration);
 }
 
 template<typename P, typename M, typename D>
@@ -297,7 +304,7 @@ void lifuren::Trainer<P, M, D>::test() {
     }
     torch::NoGradGuard no_grad_guard;
     this->model->eval();
-    double loss_val = 0.0;
+    double loss_val    = 0.0;
     size_t batch_count = 0;
     const auto a = std::chrono::system_clock::now();
     for (const auto& batch : *this->testDataset) {
@@ -311,20 +318,11 @@ void lifuren::Trainer<P, M, D>::test() {
     }
     const auto z = std::chrono::system_clock::now();
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(z - a).count();
-    this->printEvaluation("测试", 0, loss_val / batch_count, duration);
+    this->evaluation("测试", 0, loss_val / batch_count, duration);
 }
 
 template<typename P, typename M, typename D>
-inline void lifuren::Trainer<P, M, D>::defineWeight() {
-}
-
-template<typename P, typename M, typename D>
-inline void lifuren::Trainer<P, M, D>::defineOptimizer() {
-    this->optimizer = std::make_unique<P>(this->model->parameters(), this->params.lr);
-}
-
-template<typename P, typename M, typename D>
-inline void lifuren::Trainer<P, M, D>::printEvaluation(
+inline void lifuren::Trainer<P, M, D>::evaluation(
     const char*  name,
     const size_t epoch,
     const float  loss,

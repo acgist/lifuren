@@ -2,6 +2,19 @@
 
 #include "spdlog/spdlog.h"
 
+/**
+ * @param value 字符串
+ */
+inline void toLower(std::string& value) {
+    #if _WIN32
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    #else
+    std::transform(value.begin(), value.end(), value.begin(), [](const char& v) -> char {
+        return std::tolower(v);
+    });
+    #endif
+}
+
 void lifuren::file::list_file(std::vector<std::string>& vector, const std::string& path) {
     lifuren::file::list_file(vector, path, [](const std::string&) {
         return true;
@@ -18,7 +31,7 @@ void lifuren::file::list_file(std::vector<std::string>& vector, const std::strin
                 return false;
             }
             std::string file_suffix = filename.substr(pos);
-            lifuren::string::toLower(file_suffix);
+            ::toLower(file_suffix);
             const auto ret = std::find(suffix.begin(), suffix.end(), file_suffix);
             return ret != suffix.end();
         }

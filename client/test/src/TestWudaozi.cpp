@@ -16,7 +16,7 @@
     client->trainValAndTest({
         .lr          = 0.0002F, // 0.01F
         .grad_clip   = 10.0,
-        .batch_size  = 32,
+        .batch_size  = 20,
         .epoch_size  = 256,
         .check_point = true,
         .model_name  = "wudaozi",
@@ -33,6 +33,7 @@
     const std::string path = lifuren::config::CONFIG.tmp;
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "checkpoint", "wudaozi.checkpoint.31.ckpt"}).string(), {
         .lr          = 0.0001F, // 0.01F
+        .grad_clip   = 10.0,
         .batch_size  = 20,
         .epoch_size  = 256,
         .check_point = true,
@@ -41,7 +42,7 @@
         .train_path  = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_TRAIN}).string(),
         .val_path    = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_VAL  }).string(),
         .test_path   = lifuren::file::join({path, "wudaozi", lifuren::config::DATASET_TEST }).string(),
-    });
+    }, true);
     client->trainValAndTest();
     client->save(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.pt"}).string());
 }

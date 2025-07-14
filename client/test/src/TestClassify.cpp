@@ -108,7 +108,7 @@ public:
         optims.eps(0.0001);
         this->optimizer = std::make_unique<torch::optim::Adam>(this->model->parameters(), optims);
     }
-    void printEvaluation(
+    void evaluation(
         const char*  name,
         const size_t epoch,
         const float  loss,
@@ -145,7 +145,6 @@ public:
     ClassifyTrainer classify;
     classify.define();
     classify.trainValAndTest(false, false);
-    classify.print();
     classify.save();
     auto pred = torch::softmax(classify.pred(torch::tensor({ 4.0F, 4.0F }, torch::kFloat32).reshape({ 1, 2 }).to(lifuren::get_device())), 1);
     std::cout << "预测结果\n" << pred << std::endl;
@@ -158,7 +157,6 @@ public:
     ClassifyTrainer classify;
     classify.define();
     classify.load();
-    classify.print();
     std::vector<float> data = {
         0.1F,   0.2F,
         2.0F,   1.0F,

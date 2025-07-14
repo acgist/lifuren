@@ -82,7 +82,7 @@ public:
 
 TORCH_MODULE(Pose);
 
-} // END OF lifuren::nn
+} // END OF nn
     
 /**
  * 吴道子模型（视频生成）

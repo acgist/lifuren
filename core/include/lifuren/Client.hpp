@@ -19,8 +19,6 @@
 #include <memory>
 #include <string>
 
-#include "lifuren/Config.hpp"
-
 namespace lifuren {
 
 /**
@@ -35,7 +33,7 @@ class Client {
 
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") = 0;
-    virtual bool load(const std::string& path = "./lifuren.pt", C params = {}) = 0;
+    virtual bool load(const std::string& path = "./lifuren.pt", C params = {}, bool train = false) = 0;
     virtual void trainValAndTest(C params = {}, const bool val = true, const bool test = true) = 0;
     virtual std::tuple<bool, O> pred(const I& input) = 0;
 
@@ -57,7 +55,7 @@ protected:
 
 public:
     virtual bool save(const std::string& path = "./lifuren.pt") override;
-    virtual bool load(const std::string& path = "./lifuren.pt", C params = {}) override;
+    virtual bool load(const std::string& path = "./lifuren.pt", C params = {}, bool train = false) override;
     virtual void trainValAndTest(C params = {}, const bool val = true, const bool test = true) override;
     virtual std::tuple<bool, O> pred(const I& input) = 0;
 
@@ -74,13 +72,18 @@ bool lifuren::ClientImpl<C, I, O, T>::save(const std::string& path) {
 }
 
 template<typename C, typename I, typename O, typename T>
-bool lifuren::ClientImpl<C, I, O, T>::load(const std::string& path, C params) {
+bool lifuren::ClientImpl<C, I, O, T>::load(const std::string& path, C params, bool train) {
     if(this->trainer) {
         return true;
     } else {
         this->trainer = std::make_unique<T>(params);
     }
-    return this->trainer->load(path);
+    const auto ret = this->trainer->load(path);
+    if(ret && train) {
+        return this->trainer->define(false, true, true);
+    } else {
+        return ret;
+    }
 }
 
 template<typename C, typename I, typename O, typename T>

@@ -58,10 +58,10 @@
 #define LFR_IMAGE_WIDTH      128 // 宽度
 #define LFR_IMAGE_HEIGHT     256 // 高度
 #define LFR_VIDEO_FPS         24 // 帧率
-#define LFR_VIDEO_DIFF        30 // 差异：上下文切换
+#define LFR_VIDEO_DIFF        30 // 上下文切换差异
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
 #define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
-#define LFR_VIDEO_FRAME_SIZE 120 // 帧数
+#define LFR_VIDEO_FRAME_SIZE 120 // 推理帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
 #define LFR_VIDEO_BLACK_MEAN  10 // 黑色二值化阈值
 #define LFR_VIDEO_POSE_WIDTH   4 // 视频姿势矩阵宽度
@@ -89,21 +89,12 @@ namespace lifuren::dataset {
 using Transform = std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)>;
 
 /**
- * /dataset => [ /dataset/train, /dataset/val, /dataset/test ]
- * 
- * @param path 数据集上级目录
- * 
- * @return 训练集、验证集、测试集
- */
-extern std::vector<std::string> allDataset(const std::string& path);
-
-/**
  * 数据集
  */
 class Dataset : public torch::data::Dataset<Dataset> {
 
 private:
-    size_t batch_size;
+    size_t batch_size; // 批次数量
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
     std::vector<torch::Tensor> labels;   // 标签
     std::vector<torch::Tensor> features; // 特征
@@ -165,7 +156,7 @@ namespace image {
  * @param prev 上一帧
  * @param next 下一帧
  * 
- * @return 张量
+ * @return 变化矩阵张量
  */
 extern torch::Tensor pose(cv::Mat& pose, const cv::Mat& prev, const cv::Mat& next);
 
@@ -192,7 +183,7 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
 /**
  * @param width      目标图片宽度
  * @param height     目标图片高度
- * @param batch_size 批量大小
+ * @param batch_size 批次数量
  * @param path       数据集路径
  * 
  * feature = [ prev_frame, next_frame ]

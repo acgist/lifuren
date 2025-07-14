@@ -14,6 +14,22 @@ std::string lifuren::config::base_dir = "";
 
 lifuren::config::Config lifuren::config::CONFIG{};
 
+static const char* const EMPTY_CHARS = " \t\r\n"; // 空白字符
+
+/**
+ * @param value 字符串
+ * 
+ * @return 去掉空格后的字符串
+ */
+inline std::string trim(const std::string& value) {
+    std::size_t index = value.find_first_not_of(EMPTY_CHARS);
+    if(index == std::string::npos) {
+        return {};
+    }
+    std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
+    return value.substr(index, jndex + 1 - index);
+}
+
 lifuren::config::Config lifuren::config::Config::loadFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
     SPDLOG_DEBUG("加载配置文件：{}", path);
@@ -27,14 +43,12 @@ lifuren::config::Config lifuren::config::Config::loadFile() {
             if(index == std::string::npos) {
                 continue;
             }
-            auto label = lifuren::string::trim(line.substr(0, index));
-            auto value = lifuren::string::trim(line.substr(index + 1));
+            auto label = ::trim(line.substr(0, index));
+            auto value = ::trim(line.substr(index + 1));
             if(label == "tmp") {
                 config.tmp = value;
-            } else if(label == "output") {
-                config.output = value;
             } else if(label == "wudaozi") {
-                config.model_wudaozi = value;
+                config.wudaozi = value;
             }
         }
     }
@@ -51,9 +65,8 @@ bool lifuren::config::Config::saveFile() {
         return false;
     }
     stream << "lifuren: " << '\n';
-    stream << "  tmp: "     << lifuren::config::CONFIG.tmp           << '\n';
-    stream << "  output: "  << lifuren::config::CONFIG.output        << '\n';
-    stream << "  wudaozi: " << lifuren::config::CONFIG.model_wudaozi << '\n';
+    stream << "  tmp: "     << lifuren::config::CONFIG.tmp     << '\n';
+    stream << "  wudaozi: " << lifuren::config::CONFIG.wudaozi << '\n';
     stream.close();
     return true;
 }

@@ -18,14 +18,15 @@
 #define LFR_HEADER_CORE_WUDAOZI_HPP
 
 #include "lifuren/Client.hpp"
+#include "lifuren/Config.hpp"
 
 namespace lifuren {
 
 enum class WudaoziType {
 
-    RESET,
-    IMAGE,
-    VIDEO,
+    RESET, // 图片生成：图片加噪降噪
+    IMAGE, // 图片生成：图片随机降噪
+    VIDEO, // 视频生成
 
 };
 
@@ -39,7 +40,7 @@ struct WudaoziParams {
 
 };
 
-using WudaoziClient = Client<lifuren::config::ModelParams, WudaoziParams, std::string>;
+using WudaoziClient = Client<lifuren::config::ModelParams, lifuren::WudaoziParams, std::string>;
 
 /**
  * @return 模型终端

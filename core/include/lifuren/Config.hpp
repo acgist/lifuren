@@ -46,7 +46,7 @@ struct ModelParams {
 
     float       lr         { 0.001F      }; // 学习率
     float       grad_clip  { 0.0F        }; // 梯度裁剪
-    size_t      batch_size { 100         }; // 批量大小
+    size_t      batch_size { 100         }; // 批次数量
     size_t      epoch_size { 128         }; // 训练轮次
     size_t      thread_size{ 0           }; // 线程数量
     size_t      check_epoch{ 10          }; // 保存快照轮次
@@ -59,13 +59,13 @@ struct ModelParams {
 
 };
 
-class Config;
-
 #ifdef _WIN32
 const char* const CONFIG_PATH = "../config/config-win.yml";
 #else
 const char* const CONFIG_PATH = "../config/config.yml";
 #endif
+
+class Config;
 
 extern std::string base_dir; // 项目启动绝对路径
 
@@ -81,9 +81,8 @@ const std::string DATASET_TEST  = "test";  // 测试数据集
 class Config {
 
 public:
-    std::string tmp;    // 临时目录
-    std::string output; // 输出目录
-    std::string model_wudaozi; // 视频生成模型文件
+    std::string tmp;     // 临时目录
+    std::string wudaozi; // 视频生成模型文件
 
 public:
     /**
