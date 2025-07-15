@@ -17,7 +17,7 @@ void lifuren::message::unregister_message_callback() {
     message_callback = nullptr;
 }
 
-void lifuren::message::sendMessage(const char* message) {
+void lifuren::message::send_message(const char* message) {
     if(message_callback) {
         message_callback(message);
     }

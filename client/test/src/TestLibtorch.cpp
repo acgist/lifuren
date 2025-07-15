@@ -55,6 +55,6 @@
 
 LFR_TEST(
     // testJit();
-    testLayer();
+    // testLayer();
     testTensor();
 );

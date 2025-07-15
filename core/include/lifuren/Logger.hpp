@@ -6,7 +6,7 @@
  * gitee : https://gitee.com/acgist/lifuren
  * github: https://github.com/acgist/lifuren
  * 
- * 日期
+ * 日志
  * 
  * st：单线程版本（效率更高）
  * mt：多线程版本（线程安全）

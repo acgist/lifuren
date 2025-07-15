@@ -27,29 +27,32 @@ inline std::string trim(const std::string& value) {
         return {};
     }
     std::size_t jndex = value.find_last_not_of(EMPTY_CHARS);
-    return value.substr(index, jndex + 1 - index);
+    return value.substr(index, jndex - index + 1);
 }
 
 lifuren::config::Config lifuren::config::Config::loadFile() {
     const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
     SPDLOG_DEBUG("加载配置文件：{}", path);
-    lifuren::config::Config config{};
+    lifuren::config::Config config;
     std::ifstream stream;
     stream.open(path);
-    if(stream.is_open()) {
-        std::string line;
-        while(std::getline(stream, line)) {
-            auto index = line.find(':');
-            if(index == std::string::npos) {
-                continue;
-            }
-            auto label = ::trim(line.substr(0, index));
-            auto value = ::trim(line.substr(index + 1));
-            if(label == "tmp") {
-                config.tmp = value;
-            } else if(label == "wudaozi") {
-                config.wudaozi = value;
-            }
+    if(!stream.is_open()) {
+        return config;
+    }
+    std::string line;
+    while(std::getline(stream, line)) {
+        auto index = line.find(':');
+        if(index == std::string::npos) {
+            continue;
+        }
+        auto label = ::trim(line.substr(0, index));
+        auto value = ::trim(line.substr(index + 1));
+        if(label == "tmp") {
+            config.tmp = value;
+        } else if(label == "wudaozi") {
+            config.wudaozi = value;
+        } else {
+            // -
         }
     }
     stream.close();
@@ -64,7 +67,7 @@ bool lifuren::config::Config::saveFile() {
     if(!stream.is_open()) {
         return false;
     }
-    stream << "lifuren: " << '\n';
+    stream << "lifuren: "   << '\n';
     stream << "  tmp: "     << lifuren::config::CONFIG.tmp     << '\n';
     stream << "  wudaozi: " << lifuren::config::CONFIG.wudaozi << '\n';
     stream.close();

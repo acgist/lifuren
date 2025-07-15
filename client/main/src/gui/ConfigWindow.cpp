@@ -27,6 +27,8 @@ lifuren::ConfigWindow::ConfigWindow(int width, int height, const wxString& title
 }
 
 lifuren::ConfigWindow::~ConfigWindow() {
+    lifuren::config::CONFIG.tmp     = tmp_input    ->GetValue();
+    lifuren::config::CONFIG.wudaozi = wudaozi_input->GetValue();
     lifuren::config::CONFIG.saveFile();
     panel          = nullptr;
     tmp_input      = nullptr;

@@ -296,7 +296,7 @@ public:
         // encoder
         for (size_t i = 0; i < scales.size(); ++i) {
             auto scale = scales[i];
-            for (size_t j = 0; j < num_res; ++j) {
+            for (int j = 0; j < num_res; ++j) {
                 encoder_channels.emplace_back(current_channels, scale * embedding_dims);
                 encoder_blocks.insert(
                     "res_" + std::to_string(i) + "_" + std::to_string(j),
@@ -345,7 +345,7 @@ public:
                 );
                 min_pixel *= 2;
             }
-            for (size_t j = 0; j < num_res; ++j) {
+            for (int j = 0; j < num_res; ++j) {
                 auto [out_channels, in_channels] = encoder_channels[index * num_res + j];
                 in_channels *= 2; // concat
                 decoder_blocks.insert(

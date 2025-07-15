@@ -36,7 +36,7 @@ extern void unregister_message_callback();
  * 
  * @param message 消息通知内容
  */
-extern void sendMessage(const char* message);
+extern void send_message(const char* message);
 
 } // END OF lifuren::message
 

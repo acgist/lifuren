@@ -21,12 +21,33 @@
     cv::destroyAllWindows();
 }
 
-[[maybe_unused]] static void testNoise() {
+[[maybe_unused]] static void testVideo() {
+    cv::Mat src;
+    cv::Mat dst;
+    cv::Mat pose(LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH, CV_8UC1);
     cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
+    std::cout << lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string() << std::endl;
+    while(video.read(src) && video.read(dst)) {
+        lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
+        auto tensor = lifuren::dataset::image::pose(pose, src, dst);
+        lifuren::dataset::image::tensor_to_mat(pose, tensor);
+        cv::Mat copy(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC1);
+        cv::resize(pose, copy, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_NEAREST);
+        cv::cvtColor(copy, copy, cv::COLOR_GRAY2RGB);
+        cv::imshow("src",  src);
+        cv::imshow("dst",  dst);
+        cv::imshow("copy", copy);
+        cv::waitKey(10000);
+    }
+}
+
+[[maybe_unused]] static void testNoise() {
     cv::Mat src;
     cv::Mat dst;
     cv::Mat diff_1(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
     cv::Mat diff_2(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
+    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
     while(video.read(src) && video.read(dst)) {
         diff_1 = dst - src;
         lifuren::dataset::image::resize(src,    LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
@@ -94,6 +115,7 @@
 
 LFR_TEST(
     // testImage();
+    // testVideo();
     // testNoise();
     testLoadWudaoziDatasetLoader();
 );

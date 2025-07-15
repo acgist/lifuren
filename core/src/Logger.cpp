@@ -24,7 +24,7 @@ protected:
         std::string message;
         message.resize(buf.size());
         std::copy_n(buf.data(), buf.size(), message.data());
-        lifuren::message::sendMessage(message.data());
+        lifuren::message::send_message(message.data());
     }
 
     void flush_() override {
@@ -33,7 +33,6 @@ protected:
 };
 
 using message_sink_mt = MessageLogger<std::mutex>;
-using message_sink_st = MessageLogger<spdlog::details::null_mutex>;
 
 void lifuren::logger::init() {
     ::duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -71,7 +70,8 @@ void lifuren::logger::init() {
 
 void lifuren::logger::opencv::init() {
     #if defined(_DEBUG) || !defined(NDEBUG)
-    cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_DEBUG);
+    cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
+    // cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_DEBUG);
     #else
     cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
     #endif
