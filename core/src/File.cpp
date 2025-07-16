@@ -5,7 +5,7 @@
 /**
  * @param value 字符串
  */
-inline void toLower(std::string& value) {
+inline void to_lower(std::string& value) {
     #if _WIN32
     std::transform(value.begin(), value.end(), value.begin(), ::tolower);
     #else
@@ -22,8 +22,8 @@ void lifuren::file::list_file(std::vector<std::string>& vector, const std::strin
 }
 
 void lifuren::file::list_file(std::vector<std::string>& vector, const std::string& path, const std::vector<std::string>& suffix) {
-    lifuren::file::list_file(vector, path, [&vector, &suffix](const std::string& filename) -> bool {
-        if(suffix.size() == 0) {
+    lifuren::file::list_file(vector, path, [&suffix](const std::string& filename) -> bool {
+        if(suffix.empty()) {
             return true;
         } else {
             const size_t pos = filename.find_last_of('.');
@@ -31,9 +31,8 @@ void lifuren::file::list_file(std::vector<std::string>& vector, const std::strin
                 return false;
             }
             std::string file_suffix = filename.substr(pos);
-            ::toLower(file_suffix);
-            const auto ret = std::find(suffix.begin(), suffix.end(), file_suffix);
-            return ret != suffix.end();
+            ::to_lower(file_suffix);
+            return std::find(suffix.begin(), suffix.end(), file_suffix) != suffix.end();
         }
     });
 }

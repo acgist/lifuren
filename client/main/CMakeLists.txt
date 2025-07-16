@@ -1,5 +1,7 @@
 project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
+# include(CPack)
+
 aux_source_directory(src/cli/ CLI_FILES)
 
 if(ENABLE_GUI)

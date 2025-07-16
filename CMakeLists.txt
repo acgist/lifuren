@@ -19,7 +19,6 @@ project(lifuren-project VERSION 1.0.0 LANGUAGES C CXX)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
-    # set(CMAKE_BUILD_TYPE Release)
 endif()
 
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
@@ -112,7 +111,7 @@ if(CMAKE_HOST_WIN32)
         file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/bin/*.dll")
     endif()
 
-    file(GLOB TORCH_DLLS  "deps/libtorch/lib/*.dll")
+    file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
 
     find_package(wxWidgets CONFIG REQUIRED gl qa net core)
 elseif(CMAKE_HOST_UNIX)

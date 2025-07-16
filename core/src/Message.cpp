@@ -1,8 +1,5 @@
 #include "lifuren/Message.hpp"
 
-#include <map>
-#include <thread>
-
 #include "spdlog/spdlog.h"
 
 static std::function<void(const char*)> message_callback { nullptr };

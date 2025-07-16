@@ -2,12 +2,11 @@
 
 #include <chrono>
 
-#include "spdlog/spdlog.h"
-
 #include "lifuren/Message.hpp"
 
 #include "opencv2/core/utils/logger.hpp"
 
+#include "spdlog/spdlog.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -44,13 +43,10 @@ void lifuren::logger::init() {
     #else
     sinks.reserve(2);
     #endif
-    // 文件日志
     auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/lifuren.log", 0, 0, false, 7);
     sinks.push_back(dailyFileSinkSPtr);
-    // 消息日志
     auto messageSinkSPtr = std::make_shared<message_sink_mt>();
     sinks.push_back(messageSinkSPtr);
-    // 默认日志
     auto logger = std::make_shared<spdlog::logger>("lifuren-logger", sinks.begin(), sinks.end());
     #if defined(_DEBUG) || !defined(NDEBUG)
     logger->set_level(spdlog::level::debug);
@@ -71,7 +67,6 @@ void lifuren::logger::init() {
 void lifuren::logger::opencv::init() {
     #if defined(_DEBUG) || !defined(NDEBUG)
     cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
-    // cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_DEBUG);
     #else
     cv::utils::logging::setLogLevel(::cv::utils::logging::LOG_LEVEL_INFO);
     #endif
