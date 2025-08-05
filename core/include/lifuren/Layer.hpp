@@ -90,36 +90,6 @@ public:
 TORCH_MODULE(Upsample);
 
 /**
- * 姿势嵌入
- */
-class PoseEmbeddingImpl : public torch::nn::Module {
-
-private:
-    torch::nn::Sequential pose_embedding{ nullptr };
-
-public:
-    PoseEmbeddingImpl(const int in, const int out) {
-        SPDLOG_INFO("pose embedding in = {} out = {}", in, out);
-        this->pose_embedding = this->register_module("pose_embedding", torch::nn::Sequential(
-            torch::nn::Linear(in, out),
-            torch::nn::SiLU(),
-            torch::nn::Linear(out, out)
-        ));
-    }
-    ~PoseEmbeddingImpl() {
-        this->unregister_module("pose_embedding");
-    }
-
-public:
-    torch::Tensor forward(torch::Tensor input) {
-        return this->pose_embedding->forward(input);
-    }
-    
-};
-
-TORCH_MODULE(PoseEmbedding);
-
-/**
  * 时间嵌入
  */
 class TimeEmbeddingImpl : public torch::nn::Module {

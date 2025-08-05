@@ -16,8 +16,8 @@
     client->trainValAndTest({
         .lr          = 0.0002F, // 0.01F
         .grad_clip   = 10.0,
-        .batch_size  = 20,
-        .epoch_size  = 256,
+        .batch_size  = 10,
+        .epoch_size  = 16,
         .check_point = true,
         .model_name  = "wudaozi",
         .model_path  = lifuren::file::join({path, "wudaozi", "checkpoint"                  }).string(),
@@ -34,8 +34,8 @@
     client->load(lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "checkpoint", "wudaozi.checkpoint.31.ckpt"}).string(), {
         .lr          = 0.0001F, // 0.01F
         .grad_clip   = 10.0,
-        .batch_size  = 20,
-        .epoch_size  = 256,
+        .batch_size  = 10,
+        .epoch_size  = 128,
         .check_point = true,
         .model_name  = "wudaozi",
         .model_path  = lifuren::file::join({path, "wudaozi", "checkpoint"                  }).string(),
@@ -58,38 +58,40 @@
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
+    // {
+    //     auto [success, output] = client->pred({
+    //         .t0   = 150,
+    //         .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
+    //         .type = lifuren::WudaoziType::RESET
+    //     });
+    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
+    // }
+    // {
+    //     auto [success, output] = client->pred({
+    //         .n    = 4,
+    //         .path = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi"}).string(),
+    //         .type = lifuren::WudaoziType::IMAGE
+    //     });
+    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
+    // }
     {
         auto [success, output] = client->pred({
-            .t0   = 150,
-            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
-            .type = lifuren::WudaoziType::RESET
-        });
-        SPDLOG_INFO("输出结果：{} - {}", success, output);
-    }
-    {
-        auto [success, output] = client->pred({
-            .n    = 4,
-            .path = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi"}).string(),
-            .type = lifuren::WudaoziType::IMAGE
-        });
-        SPDLOG_INFO("输出结果：{} - {}", success, output);
-    }
-    {
-        auto [success, output] = client->pred({
-            .t0   = 150,
+            .n    = 24,
+            .t0   = 100,
             .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "train.jpg"}).string(),
             .type = lifuren::WudaoziType::VIDEO
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
-    {
-        auto [success, output] = client->pred({
-            .t0   = 150,
-            .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
-            .type = lifuren::WudaoziType::VIDEO
-        });
-        SPDLOG_INFO("输出结果：{} - {}", success, output);
-    }
+    // {
+    //     auto [success, output] = client->pred({
+    //         .n    = 24,
+    //         .t0   = 100,
+    //         .file = lifuren::file::join({lifuren::config::CONFIG.tmp, "wudaozi", "wudaozi.jpg"}).string(),
+    //         .type = lifuren::WudaoziType::VIDEO
+    //     });
+    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
+    // }
 }
 
 [[maybe_unused]] static void testPlay() {

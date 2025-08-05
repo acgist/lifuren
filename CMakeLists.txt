@@ -134,6 +134,14 @@ find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(core)
 add_subdirectory(client)
+if(ENABLE_TEST)
+    enable_testing()
+    message(STATUS "编译测试")
+    add_subdirectory(test)
+else()
+    message(STATUS "忽略测试")
+endif()
+
 
 set(INSTALL_DOCUMENT "LICENSE" "README.md")
 set(INSTALL_RESOURCE "docs/resources/")

@@ -61,11 +61,8 @@
 #define LFR_VIDEO_DIFF        30 // 上下文切换差异
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
 #define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
-#define LFR_VIDEO_FRAME_SIZE 120 // 推理帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）
 #define LFR_VIDEO_BLACK_MEAN  10 // 黑色二值化阈值
-#define LFR_VIDEO_POSE_WIDTH   4 // 视频姿势矩阵宽度
-#define LFR_VIDEO_POSE_HEIGHT  8 // 视频姿势矩阵高度
 #endif
 
 namespace cv {
@@ -152,15 +149,6 @@ using SeqDatasetLoader = decltype(torch::data::make_data_loader<LFT_SEQ_SAMPLER>
 namespace image {
 
 /**
- * @param pose 变化矩阵
- * @param prev 上一帧
- * @param next 下一帧
- * 
- * @return 变化矩阵张量
- */
-extern torch::Tensor pose(cv::Mat& pose, const cv::Mat& prev, const cv::Mat& next);
-
-/**
  * @param image  图片
  * @param width  目标图片宽度
  * @param height 目标图片高度
@@ -187,7 +175,7 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * @param path       数据集路径
  * 
  * feature = [ prev_frame, next_frame ]
- * label   = [ time, pose ]
+ * label   = [ time ]
  * 
  * @return 图片数据集
  */

@@ -24,20 +24,13 @@
 [[maybe_unused]] static void testVideo() {
     cv::Mat src;
     cv::Mat dst;
-    cv::Mat pose(LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH, CV_8UC1);
     cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
     std::cout << lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string() << std::endl;
     while(video.read(src) && video.read(dst)) {
         lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        auto tensor = lifuren::dataset::image::pose(pose, src, dst);
-        lifuren::dataset::image::tensor_to_mat(pose, tensor);
-        cv::Mat copy(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC1);
-        cv::resize(pose, copy, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_NEAREST);
-        cv::cvtColor(copy, copy, cv::COLOR_GRAY2RGB);
-        cv::imshow("src",  src);
-        cv::imshow("dst",  dst);
-        cv::imshow("copy", copy);
+        cv::imshow("src", src);
+        cv::imshow("dst", dst);
         cv::waitKey(10000);
     }
 }
@@ -84,9 +77,7 @@
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
     std::cout << "视频特征数量\n" << iterator->data.sizes() << std::endl;
     std::cout << "视频标签数量\n" << iterator->target.sizes() << std::endl;
-    cv::Mat pose (LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH * 2, CV_8UC1);
-    cv::Mat frame(LFR_IMAGE_HEIGHT,      LFR_IMAGE_WIDTH      * 2, CV_8UC3);
-    cv::Mat show (LFR_IMAGE_HEIGHT * 2,  LFR_IMAGE_WIDTH      * 2, CV_8UC3);
+    cv::Mat frame(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {
         const int length = iterator->data.sizes()[0];
         for(int i = 0; i < length; ++i) {
@@ -96,14 +87,8 @@
                 cv::waitKey();
             }
             std::cout << target.slice(0, 0, 1).squeeze(0).select(0, 0).select(0, 0).to(torch::kLong) << std::endl;
-            lifuren::dataset::image::tensor_to_mat(pose,  target.unsqueeze(1));
             lifuren::dataset::image::tensor_to_mat(frame, data);
-            cv::Mat copy(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, CV_8UC1);
-            cv::resize(pose, copy, cv::Size(LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_NEAREST);
-            cv::cvtColor(copy, copy, cv::COLOR_GRAY2RGB);
-            frame.copyTo(show(cv::Rect(0, 0 * LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT)));
-            copy .copyTo(show(cv::Rect(0, 1 * LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT)));
-            cv::imshow("show", show);
+            cv::imshow("frame", frame);
             if(cv::waitKey(10000) == 27) {
                 break;
             }

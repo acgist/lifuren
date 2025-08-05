@@ -57,17 +57,6 @@ torch::data::Example<> lifuren::dataset::Dataset::get(size_t index) {
     };
 }
 
-torch::Tensor lifuren::dataset::image::pose(cv::Mat& pose, const cv::Mat& prev, const cv::Mat& next) {
-    cv::Mat diff = next - prev;
-    cv::resize(diff, diff, cv::Size(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT), 0, 0, cv::INTER_AREA);
-    cv::threshold(diff, diff, LFR_VIDEO_BLACK_MEAN, 255, cv::THRESH_BINARY);
-    std::vector<cv::Mat> channels;
-    cv::split(diff, channels);
-    pose = channels[0] + channels[1] + channels[2] / 3;
-    cv::resize(pose, pose, cv::Size(LFR_VIDEO_POSE_WIDTH, LFR_VIDEO_POSE_HEIGHT), 0, 0, cv::INTER_AREA);
-    return torch::from_blob(pose.data, { pose.rows, pose.cols }, torch::kByte).to(torch::kFloat32).div(255.0).mul(2.0).sub(1.0).contiguous();
-}
-
 void lifuren::dataset::image::resize(cv::Mat& image, const int width, const int height) {
     const int cols = image.cols;
     const int rows = image.rows;
@@ -146,7 +135,6 @@ inline void data_to_dataset(
     size_t& frame,
     std::vector<torch::Tensor>& labels,
     std::vector<torch::Tensor>& features,
-    std::vector<torch::Tensor>& pose_tensor,
     std::vector<torch::Tensor>& frame_tensor
 ) {
     if(frame_tensor.size() >= LFR_VIDEO_FRAME_MIN) {
@@ -154,16 +142,12 @@ inline void data_to_dataset(
         frame += frame_tensor.size();
         auto feature = torch::stack(frame_tensor, 0).clone();
         for(size_t i = 0; i < frame_tensor.size() - 1; ++i) {
+            labels  .push_back(torch::tensor(static_cast<float>(i + 1)));
             features.push_back(feature.slice(0, i, i + 2));
-            labels  .push_back(torch::stack({
-                torch::ones({ LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH }).mul(i + 1),
-                pose_tensor[i]
-            }, 0));
         }
     } else {
         SPDLOG_DEBUG("丢弃视频片段：{}", frame_tensor.size());
     }
-    pose_tensor .clear();
     frame_tensor.clear();
 }
 
@@ -204,8 +188,6 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
             cv::Mat diff;
             cv::Mat prev_frame;
             cv::Mat next_frame;
-            cv::Mat pose(LFR_VIDEO_POSE_HEIGHT, LFR_VIDEO_POSE_WIDTH, CV_8UC1);
-            std::vector<torch::Tensor> pose_tensor;
             std::vector<torch::Tensor> frame_tensor;
             while(video.read(next_frame)) {
                 #if LFR_VIDEO_FRAME_STEP > 0
@@ -228,15 +210,14 @@ lifuren::dataset::RndDatasetLoader lifuren::dataset::image::loadWudaoziDatasetLo
                         // 没有变化
                         continue;
                     } else if(mean > LFR_VIDEO_DIFF || frame_tensor.size() >= LFR_VIDEO_FRAME_MAX) {
-                        data_to_dataset(frame, labels, features, pose_tensor, frame_tensor);
+                        data_to_dataset(frame, labels, features, frame_tensor);
                     } else {
-                        pose_tensor .push_back(lifuren::dataset::image::pose(pose, prev_frame, next_frame));
                         frame_tensor.push_back(lifuren::dataset::image::mat_to_tensor(prev_frame));
                     }
                 }
                 prev_frame = next_frame;
             }
-            data_to_dataset(frame, labels, features, pose_tensor, frame_tensor);
+            data_to_dataset(frame, labels, features, frame_tensor);
             SPDLOG_DEBUG("加载视频文件完成：{} -> {} - {} / {}", video_count, file, frame, index);
             video.release();
             ++video_count;
