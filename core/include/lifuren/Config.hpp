@@ -75,6 +75,15 @@ const std::string DATASET_TRAIN = "train"; // 训练数据集
 const std::string DATASET_VAL   = "val";   // 验证数据集
 const std::string DATASET_TEST  = "test";  // 测试数据集
 
+namespace wudaozi {
+
+    const int   T      = 1000; // DDPM步数
+    const int   stride = 4;    // DDIM步幅
+    const float eta    = 1.0;  // DDIM随机
+
+}; // END OF wudaozi
+
+
 /**
  * 配置
  */

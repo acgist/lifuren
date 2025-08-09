@@ -13,8 +13,6 @@
     cv::imshow("image", image);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image);
     cv::Mat target(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, CV_8UC3);
-    // tensor = tensor + torch::randn_like(tensor);
-    // tensor = tensor - torch::randn_like(tensor);
     lifuren::dataset::image::tensor_to_mat(target, tensor);
     cv::imshow("target", target);
     cv::waitKey();
@@ -25,41 +23,12 @@
     cv::Mat src;
     cv::Mat dst;
     cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
-    std::cout << lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string() << std::endl;
     while(video.read(src) && video.read(dst)) {
         lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         cv::imshow("src", src);
         cv::imshow("dst", dst);
         cv::waitKey(10000);
-    }
-}
-
-[[maybe_unused]] static void testNoise() {
-    cv::Mat src;
-    cv::Mat dst;
-    cv::Mat diff_1(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
-    cv::Mat diff_2(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 2, CV_8UC3);
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
-    while(video.read(src) && video.read(dst)) {
-        diff_1 = dst - src;
-        lifuren::dataset::image::resize(src,    LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        lifuren::dataset::image::resize(dst,    LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        lifuren::dataset::image::resize(diff_1, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        auto src_tensor = lifuren::dataset::image::mat_to_tensor(src);
-        auto dst_tensor = lifuren::dataset::image::mat_to_tensor(dst);
-        auto noise = torch::rand_like(src_tensor);
-        float ratio = 0.1;
-        src_tensor = src_tensor * ratio + noise * (1 - ratio);
-        dst_tensor = dst_tensor * ratio + noise * (1 - ratio);
-        lifuren::dataset::image::tensor_to_mat(src, src_tensor);
-        lifuren::dataset::image::tensor_to_mat(dst, dst_tensor);
-        lifuren::dataset::image::tensor_to_mat(diff_2, src_tensor - dst_tensor);
-        cv::imshow("src", src);
-        cv::imshow("dst", dst);
-        cv::imshow("diff_1", diff_1);
-        cv::imshow("diff_2", diff_2);
-        cv::waitKey();
     }
 }
 
@@ -75,9 +44,10 @@
     );
     auto iterator = loader->begin();
     // SPDLOG_INFO("批次数量：{}", std::distance(iterator, loader->end()));
-    std::cout << "视频特征数量\n" << iterator->data.sizes() << std::endl;
+    std::cout << "视频特征数量\n" << iterator->data.sizes()   << std::endl;
     std::cout << "视频标签数量\n" << iterator->target.sizes() << std::endl;
-    cv::Mat frame(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, CV_8UC3);
+    cv::Mat clone(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 2, CV_8UC3);
+    cv::Mat frame(LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH * 3, CV_8UC3);
     for(; iterator != loader->end(); ++iterator) {
         const int length = iterator->data.sizes()[0];
         for(int i = 0; i < length; ++i) {
@@ -86,8 +56,10 @@
             if(data.count_nonzero().item<int>() == 0 || target.count_nonzero().item<int>() == 0) {
                 cv::waitKey();
             }
-            std::cout << target.slice(0, 0, 1).squeeze(0).select(0, 0).select(0, 0).to(torch::kLong) << std::endl;
-            lifuren::dataset::image::tensor_to_mat(frame, data);
+            lifuren::dataset::image::tensor_to_mat(clone, data);
+            // 注意：等于复制共享数据
+            clone.copyTo(frame(cv::Rect(0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT)));
+            frame(cv::Rect(LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT)) = clone(cv::Rect(0, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT)) - clone(cv::Rect(LFR_IMAGE_WIDTH, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
             cv::imshow("frame", frame);
             if(cv::waitKey(10000) == 27) {
                 break;
@@ -101,6 +73,5 @@
 LFR_TEST(
     // testImage();
     // testVideo();
-    // testNoise();
     testLoadWudaoziDatasetLoader();
 );

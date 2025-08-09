@@ -8,7 +8,7 @@
  * 
  * https://learn.microsoft.com/zh-cn/windows/win32/menurc/versioninfo-resource
  * 
- * win.rc
+ * Windows资源文件
  * 
  * @author acgist
  * 
@@ -16,8 +16,8 @@
  */
 #pragma code_page(65001)
 
-#ifndef LFR_RC
-#define LFR_RC
+#ifndef LFR_CLI_RC
+#define LFR_CLI_RC
 
 #include <verrsrc.h>
 
@@ -30,10 +30,10 @@ FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 #ifndef _DEBUG
 FILEFLAGS       VS_FF_DEBUG
 #else
-FILEFLAGS       VS_FF_DEBUG | VS_FF_PRERELEASE
+FILEFLAGS       VS_FF_PRERELEASE
 #endif
 FILEOS          VOS_NT_WINDOWS32
-FILETYPE        VFT_APP | VFT_DLL | VFT_STATIC_LIB
+FILETYPE        VFT_APP
 FILESUBTYPE     VFT2_UNKNOWN
 BEGIN
     BLOCK "StringFileInfo"
@@ -57,4 +57,4 @@ BEGIN
     END
 END
 
-#endif // LFR_RC
+#endif // LFR_CLI_RC

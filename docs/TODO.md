@@ -13,7 +13,6 @@
 * 类名及其方法使用驼峰命名规则
 * 全局变量和方法使用下划线命名规则
 * 在可能出现溢出的地方使用`LL/ULL`后缀
-* 头文件宏定义`LFR_HEADER_MODULE_PATH_FILENAME_HPP`
 
 ## GIT日志前缀
 

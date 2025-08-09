@@ -7,7 +7,7 @@
 
 int main(const int argc, const char* const argv[]) {
     std::set_terminate([]() {
-        std::exit(-9999);
+        std::exit(-1);
     });
     #if _WIN32
     system("chcp 65001");

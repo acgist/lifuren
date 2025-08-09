@@ -21,9 +21,7 @@ public:
         this->linear_2 = this->register_module("linear_2", torch::nn::Linear(torch::nn::LinearOptions(16,  4)));
     }
     torch::Tensor forward(torch::Tensor input) {
-        auto output = this->linear_1(this->norm(input));
-             output = this->linear_2(torch::relu(output));
-        return output;
+        return this->linear_2(torch::relu(this->linear_1(this->norm(input))));
     }
     virtual ~ClassifyImpl() {
         this->unregister_module("norm");

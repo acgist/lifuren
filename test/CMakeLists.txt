@@ -16,18 +16,18 @@ target_link_libraries(
     lifurencore
 )
 
-add_executable(testLibtorch src/TestLibtorch.cpp)
-add_test(NAME testLibtorch COMMAND testLibtorch)
-set_target_properties(testLibtorch PROPERTIES FOLDER "test")
-target_link_libraries(
-    testLibtorch
-    lifurencore
-)
-
 add_executable(testClassify src/TestClassify.cpp)
 add_test(NAME testClassify COMMAND testClassify)
 set_target_properties(testClassify PROPERTIES FOLDER "test")
 target_link_libraries(
     testClassify
+    lifurencore
+)
+
+add_executable(testLibtorch src/TestLibtorch.cpp)
+add_test(NAME testLibtorch COMMAND testLibtorch)
+set_target_properties(testLibtorch PROPERTIES FOLDER "test")
+target_link_libraries(
+    testLibtorch
     lifurencore
 )

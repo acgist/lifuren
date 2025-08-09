@@ -13,6 +13,21 @@
 
 namespace lifuren {
 
+namespace nn::wudaozi {
+
+    torch::Tensor alpha          = torch::sqrt(1.0 - 0.02 * torch::arange(1, lifuren::config::wudaozi::T + 1) / (double) lifuren::config::wudaozi::T);
+    torch::Tensor bar_alpha      = torch::cumprod(alpha, 0);
+    torch::Tensor bar_alpha_     = bar_alpha.index({ torch::indexing::Slice({ torch::indexing::None, torch::indexing::None, lifuren::config::wudaozi::stride }) });
+    torch::Tensor bar_alpha_pre_ = torch::pad(bar_alpha_.index({ torch::indexing::Slice(torch::indexing::None, -1) }), { 1, 0 }, "constant", 1);
+    torch::Tensor bar_beta       = torch::sqrt(1.0 - torch::pow(bar_alpha,      2));
+    torch::Tensor bar_beta_      = torch::sqrt(1.0 - torch::pow(bar_alpha_,     2));
+    torch::Tensor bar_beta_pre_  = torch::sqrt(1.0 - torch::pow(bar_alpha_pre_, 2));
+    torch::Tensor alpha_         = bar_alpha_ / bar_alpha_pre_;
+    torch::Tensor sigma_         = bar_beta_pre_ / bar_beta_ * torch::sqrt(1.0 - torch::pow(alpha_, 2)) * lifuren::config::wudaozi::eta;
+    torch::Tensor epsilon_       = bar_beta_ - alpha_ * torch::sqrt(torch::pow(bar_beta_pre_, 2) - torch::pow(sigma_, 2));
+
+};
+
 /**
  * 训练模式
  */
@@ -33,18 +48,9 @@ enum class TrainType {
 class WudaoziImpl : public torch::nn::Module {
 
 private:
-    int   T      = 1000; // DDPM步数
-    int   stride = 4;    // DDIM步幅
-    float eta    = 1.0;  // DDIM随机
-    
     lifuren::config::ModelParams params;
 
     torch::DeviceType device{ torch::DeviceType::CPU }; // 计算设备
-    
-    lifuren::nn::UNet vnet{ nullptr }; // 视频模型
-    lifuren::nn::UNet inet{ nullptr }; // 图片模型
-    lifuren::nn::TimeEmbedding vnet_time_embedding{ nullptr }; // 视频嵌入
-    lifuren::nn::StepEmbedding inet_step_embedding{ nullptr }; // 图片嵌入
 
     torch::Tensor alpha;
     torch::Tensor bar_alpha;
@@ -56,26 +62,31 @@ private:
     torch::Tensor alpha_;
     torch::Tensor sigma_;
     torch::Tensor epsilon_;
+    
+    lifuren::nn::UNet vnet{ nullptr }; // 视频模型
+    lifuren::nn::UNet inet{ nullptr }; // 图片模型
+    lifuren::nn::TimeEmbedding vnet_time_embedding{ nullptr }; // 视频嵌入
+    lifuren::nn::StepEmbedding inet_step_embedding{ nullptr }; // 图片嵌入
 
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params), device(lifuren::get_device()) {
-        this->alpha          = this->register_buffer("alpha", torch::sqrt(1.0 - 0.02 * torch::arange(1, this->T + 1) / (double) this->T));
-        this->bar_alpha      = this->register_buffer("bar_alpha",      torch::cumprod(this->alpha, 0));
-        this->bar_alpha_     = this->register_buffer("bar_alpha_",     this->bar_alpha.index({ torch::indexing::Slice({ torch::indexing::None, torch::indexing::None, this->stride }) }));
-        this->bar_alpha_pre_ = this->register_buffer("bar_alpha_pre_", torch::pad(this->bar_alpha_.index({ torch::indexing::Slice(torch::indexing::None, -1) }), { 1, 0 }, "constant", 1));
-        this->bar_beta       = this->register_buffer("bar_beta",      torch::sqrt(1.0 - torch::pow(this->bar_alpha,      2)));
-        this->bar_beta_      = this->register_buffer("bar_beta_",     torch::sqrt(1.0 - torch::pow(this->bar_alpha_,     2)));
-        this->bar_beta_pre_  = this->register_buffer("bar_beta_pre_", torch::sqrt(1.0 - torch::pow(this->bar_alpha_pre_, 2)));
-        this->alpha_   = this->register_buffer("alpha_",   this->bar_alpha_ / this->bar_alpha_pre_);
-        this->sigma_   = this->register_buffer("sigma_",   this->bar_beta_pre_ / this->bar_beta_ * torch::sqrt(1.0 - torch::pow(this->alpha_, 2)) * this->eta);
-        this->epsilon_ = this->register_buffer("epsilon_", this->bar_beta_ - this->alpha_ * torch::sqrt(torch::pow(this->bar_beta_pre_, 2) - torch::pow(this->sigma_, 2)));
+        this->alpha          = this->register_buffer("alpha",          lifuren::nn::wudaozi::alpha         );
+        this->bar_alpha      = this->register_buffer("bar_alpha",      lifuren::nn::wudaozi::bar_alpha     );
+        this->bar_alpha_     = this->register_buffer("bar_alpha_",     lifuren::nn::wudaozi::bar_alpha_    );
+        this->bar_alpha_pre_ = this->register_buffer("bar_alpha_pre_", lifuren::nn::wudaozi::bar_alpha_pre_);
+        this->bar_beta       = this->register_buffer("bar_beta",       lifuren::nn::wudaozi::bar_beta      );
+        this->bar_beta_      = this->register_buffer("bar_beta_",      lifuren::nn::wudaozi::bar_beta_     );
+        this->bar_beta_pre_  = this->register_buffer("bar_beta_pre_",  lifuren::nn::wudaozi::bar_beta_pre_ );
+        this->alpha_         = this->register_buffer("alpha_",         lifuren::nn::wudaozi::alpha_        );
+        this->sigma_         = this->register_buffer("sigma_",         lifuren::nn::wudaozi::sigma_        );
+        this->epsilon_       = this->register_buffer("epsilon_",       lifuren::nn::wudaozi::epsilon_      );
         int image_channels     =  3; // 图片输入维度
         int embedding_in_dims  =  8; // 嵌入输入维度
         int embedding_out_dims = 64; // 嵌入输出维度
         this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
         this->inet = this->register_module("inet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
-        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX, embedding_in_dims, embedding_out_dims));
-        this->inet_step_embedding = this->register_module("inet_step_embedding", lifuren::nn::StepEmbedding(this->T,             embedding_in_dims, embedding_out_dims));
+        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX,         embedding_in_dims, embedding_out_dims));
+        this->inet_step_embedding = this->register_module("inet_step_embedding", lifuren::nn::StepEmbedding(lifuren::config::wudaozi::T, embedding_in_dims, embedding_out_dims));
     }
     ~WudaoziImpl() {
         this->unregister_module("vnet");
@@ -97,7 +108,7 @@ public:
         return batch_images * batch_bar_alpha + batch_noises * batch_bar_beta;
     }
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> make_noise(const torch::Tensor& batch_images) {
-        std::vector<int> steps(this->T);
+        std::vector<int> steps(lifuren::config::wudaozi::T);
         std::iota(steps.begin(), steps.end(), 0);
         std::shuffle(steps.begin(), steps.end(), std::mt19937(std::random_device()()));
         steps.resize(batch_images.size(0));
@@ -110,7 +121,7 @@ public:
         auto T_ = this->bar_alpha_.size(0);
         for (int i = t0; i < T_; ++i) {
             auto t = T_ - i - 1;
-            auto x = torch::tensor({ t * this->stride }).to(this->device).repeat(z.size(0));
+            auto x = torch::tensor({ t * lifuren::config::wudaozi::stride }).to(this->device).repeat(z.size(0));
             z = z - this->epsilon_.index({ t }) * this->forward_inet(z, x);
             z = z / this->alpha_.index({ t });
             z = z + torch::randn_like(z) * this->sigma_.index({ t });
@@ -312,7 +323,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     if(!this->trainer) {
         return { false, {} };
     }
-    if(params.n < 0 || params.n > 16 || params.t0 < 0 || params.t0 > 1000) {
+    if(params.n < 0 || params.n > 16 || params.t0 < 0 || params.t0 > lifuren::config::wudaozi::T / lifuren::config::wudaozi::stride) {
         return { false, {} };
     }
     if(params.type == WudaoziType::RESET) {

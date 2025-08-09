@@ -53,7 +53,7 @@
 
 ```
 ./lifuren[.exe] 命令 [参数...]
-./lifuren[.exe] train model_path dataset
+./lifuren[.exe] train model_path dataset [ model_file ]
 ./lifuren[.exe] image model_file image_path
 ./lifuren[.exe] video model_file image_file
 ./lifuren[.exe] [?|help]

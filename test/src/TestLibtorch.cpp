@@ -22,7 +22,7 @@
     lifuren::nn::AttentionBlock attention(32, 4, 200);
     auto input  = torch::randn({100, 32, 10, 20});
     auto output = attention->forward(input);
-    std::cout << input.sizes() << std::endl;
+    std::cout << input.sizes()  << std::endl;
     std::cout << output.sizes() << std::endl;
     torch::nn::MultiheadAttention attn(200, 10);
     output = torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 32 * 3, 1))->forward(input);

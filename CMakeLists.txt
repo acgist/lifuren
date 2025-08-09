@@ -54,8 +54,7 @@ elseif(CMAKE_HOST_UNIX)
     # set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall -Wextra")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-    # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wunused-variable -Wunused-parameter -Wmissing-field-initializers -O3")
+    # -Wunused-variable -Wno-unused-variable
     if(BUILD_SHARED_LIBS)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     endif()
@@ -118,11 +117,9 @@ else()
     message(STATUS "使用CPU推理")
 endif()
 
-find_package(OpenGL REQUIRED)
-
 find_package(OpenCV CONFIG REQUIRED)
-find_package(Torch  CONFIG REQUIRED) # Torch需要排在OpenCV后面
 find_package(spdlog CONFIG REQUIRED)
+find_package(Torch  CONFIG REQUIRED) # Torch需要排在OpenCV后面
 
 add_subdirectory(core)
 add_subdirectory(cli)

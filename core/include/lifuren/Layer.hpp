@@ -23,6 +23,21 @@
 
 namespace lifuren::nn {
 
+namespace wudaozi {
+
+    extern torch::Tensor alpha;
+    extern torch::Tensor bar_alpha;
+    extern torch::Tensor bar_alpha_;
+    extern torch::Tensor bar_alpha_pre_;
+    extern torch::Tensor bar_beta;
+    extern torch::Tensor bar_beta_;
+    extern torch::Tensor bar_beta_pre_;
+    extern torch::Tensor alpha_;
+    extern torch::Tensor sigma_;
+    extern torch::Tensor epsilon_;
+
+}; // END OF wudaozi
+
 /**
  * 下采样
  * 
