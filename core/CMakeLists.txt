@@ -6,7 +6,6 @@ add_library(
     src/Config.cpp
     src/Logger.cpp
     src/Dataset.cpp
-    src/Message.cpp
     src/Wudaozi.cpp
 )
 

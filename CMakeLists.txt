@@ -24,7 +24,6 @@ endif()
 message(STATUS "当前模式: ${CMAKE_BUILD_TYPE}")
 message(STATUS "当前编译器: ${CMAKE_CXX_COMPILER_ID}")
 
-option(ENABLE_GUI  "编译界面" ON)
 option(ENABLE_TEST "打开测试" ON)
 
 option(BUILD_SHARED_LIBS "是否编译为共享库" OFF)
@@ -98,24 +97,17 @@ if(CMAKE_HOST_WIN32)
         ${CMAKE_PREFIX_PATH}
         deps/opencv
         deps/spdlog
-        deps/wxWidgets
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        file(GLOB OPENCV_DLLS    "deps/opencv/debug/bin/*.dll")
-        file(GLOB SPDLOG_DLLS    "deps/spdlog/debug/bin/*.dll")
-        file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/debug/bin/*.dll")
+        file(GLOB OPENCV_DLLS "deps/opencv/debug/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/debug/bin/*.dll")
     else()
-        file(GLOB OPENCV_DLLS    "deps/opencv/bin/*.dll")
-        file(GLOB SPDLOG_DLLS    "deps/spdlog/bin/*.dll")
-        file(GLOB WXWIDGETS_DLLS "deps/wxWidgets/bin/*.dll")
+        file(GLOB OPENCV_DLLS "deps/opencv/bin/*.dll")
+        file(GLOB SPDLOG_DLLS "deps/spdlog/bin/*.dll")
     endif()
 
     file(GLOB TORCH_DLLS "deps/libtorch/lib/*.dll")
-
-    find_package(wxWidgets CONFIG REQUIRED gl qa net core)
-elseif(CMAKE_HOST_UNIX)
-    find_package(wxWidgets REQUIRED gl qa net core)
 endif()
 
 find_package(CUDA)
@@ -133,7 +125,7 @@ find_package(Torch  CONFIG REQUIRED) # Torch需要排在OpenCV后面
 find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(core)
-add_subdirectory(client)
+add_subdirectory(cli)
 if(ENABLE_TEST)
     enable_testing()
     message(STATUS "编译测试")

@@ -99,13 +99,11 @@ VCPKG_DEFAULT_TRIPLET=x64-windows
 vcpkg install opencv:x64-windows
 vcpkg install spdlog:x64-windows
 vcpkg install libtorch:x64-windows
-vcpkg install wxwidgets:x64-windows
 
 # 导出依赖
-vcpkg export opencv    --zip
-vcpkg export spdlog    --zip
-vcpkg export libtorch  --zip
-vcpkg export wxwidgets --zip
+vcpkg export opencv   --zip
+vcpkg export spdlog   --zip
+vcpkg export libtorch --zip
 ```
 
 #### 编译命令

@@ -2,8 +2,6 @@
 
 #include <chrono>
 
-#include "lifuren/Message.hpp"
-
 #include "opencv2/core/utils/logger.hpp"
 
 #include "spdlog/spdlog.h"
@@ -12,41 +10,18 @@
 
 static size_t duration{ 0 }; // 系统运行持续时间
 
-// 消息日志
-template<typename M>
-class MessageLogger : public spdlog::sinks::base_sink<M> {
-
-protected:
-    void sink_it_(const spdlog::details::log_msg& msg) override {
-        spdlog::memory_buf_t buf;
-        spdlog::sinks::base_sink<M>::formatter_->format(msg, buf);
-        std::string message;
-        message.resize(buf.size());
-        std::copy_n(buf.data(), buf.size(), message.data());
-        lifuren::message::send_message(message.data());
-    }
-
-    void flush_() override {
-    }
-
-};
-
-using message_sink_mt = MessageLogger<std::mutex>;
-
 void lifuren::logger::init() {
     ::duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::vector<spdlog::sink_ptr> sinks{};
     #if defined(_DEBUG) || !defined(NDEBUG)
-    sinks.reserve(3);
+    sinks.reserve(2);
     auto stdoutColorSinkSPtr = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     sinks.push_back(stdoutColorSinkSPtr);
     #else
-    sinks.reserve(2);
+    sinks.reserve(1);
     #endif
     auto dailyFileSinkSPtr = std::make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/lifuren.log", 0, 0, false, 7);
     sinks.push_back(dailyFileSinkSPtr);
-    auto messageSinkSPtr = std::make_shared<message_sink_mt>();
-    sinks.push_back(messageSinkSPtr);
     auto logger = std::make_shared<spdlog::logger>("lifuren-logger", sinks.begin(), sinks.end());
     #if defined(_DEBUG) || !defined(NDEBUG)
     logger->set_level(spdlog::level::debug);

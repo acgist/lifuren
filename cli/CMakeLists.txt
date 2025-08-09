@@ -2,20 +2,12 @@ project(lifuren VERSION 1.0.0 LANGUAGES C CXX)
 
 # include(CPack)
 
-aux_source_directory(src/cli/ CLI_FILES)
+aux_source_directory(src/ CLI_FILES)
 
-if(ENABLE_GUI)
-    message(STATUS "编译界面")
-    add_definitions(-DLFR_ENABLE_GUI=true)
-    aux_source_directory(src/gui/ GUI_FILES)
-endif()
-    
 if(CMAKE_HOST_WIN32)
     add_executable(
         ${PROJECT_NAME}
-        src/Main.cpp
         ${CLI_FILES}
-        ${GUI_FILES}
         resources/win.rc
     )
     # /SUBSYSTEM:CONSOLE
@@ -29,31 +21,18 @@ if(CMAKE_HOST_WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:CONSOLE")
     else()
-        target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
+        target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:CONSOLE")
     endif()
 else()
     add_executable(
         ${PROJECT_NAME}
-        src/Main.cpp
         ${CLI_FILES}
-        ${GUI_FILES}
     )
-endif()
-
-if(CMAKE_HOST_UNIX)
-    # wx-config --cxxflags
-    message(STATUS "配置Linux GUI环境")
-    target_compile_definitions(${PROJECT_NAME} PUBLIC __WXGTK__)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC WXUSINGDLL)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64)
-    target_include_directories(${PROJECT_NAME} PUBLIC /usr/include/wx-3.2)
-    target_include_directories(${PROJECT_NAME} PUBLIC /usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.2)
 endif()
 
 target_link_libraries(
     ${PROJECT_NAME}
     lifurencore
-    ${wxWidgets_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_DIR})
@@ -83,16 +62,14 @@ if(CMAKE_HOST_WIN32)
         set(CMAKE_EXE_LINKER_FLAGS "/NODEFAULTLIB:MSVCRTD /entry:mainCRTStartup")
     endif()
 
-    install(FILES ${TORCH_DLLS}     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${OPENCV_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${SPDLOG_DLLS}    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-    install(FILES ${WXWIDGETS_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${TORCH_DLLS}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${OPENCV_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    install(FILES ${SPDLOG_DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}     $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS}    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${WXWIDGETS_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS}  $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPDLOG_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()

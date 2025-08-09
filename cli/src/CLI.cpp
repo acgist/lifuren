@@ -2,13 +2,11 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "spdlog/spdlog.h"
 
 #include "lifuren/File.hpp"
 #include "lifuren/Config.hpp"
-#include "lifuren/Message.hpp"
 #include "lifuren/Wudaozi.hpp"
 
 static void pred_image(const std::vector<std::string>&); // 预测图片
@@ -16,13 +14,11 @@ static void pred_video(const std::vector<std::string>&); // 预测视频
 static void train     (const std::vector<std::string>&); // 训练
 static void help(); // 帮助
 
-static void message_callback(const char*); // 消息回调
-
 bool lifuren::cli(const int argc, const char* const argv[]) {
     if(argc <= 1) {
+        ::help();
         return false;
     }
-    lifuren::message::register_message_callback(message_callback);
     std::vector<std::string> args;
     for(int i = 0; i < argc; ++i) {
         SPDLOG_DEBUG("命令参数：{} - {}", i, argv[i]);
@@ -41,10 +37,10 @@ bool lifuren::cli(const int argc, const char* const argv[]) {
     } else {
         ::help();
     }
-    lifuren::message::unregister_message_callback();
     return true;
 }
 
+// ./lifuren[.exe] image model_file image_path
 static void pred_image(const std::vector<std::string>& args) {
     if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
@@ -70,6 +66,7 @@ static void pred_image(const std::vector<std::string>& args) {
     }
 }
 
+// ./lifuren[.exe] video model_file image_file
 static void pred_video(const std::vector<std::string>& args) {
     if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
@@ -94,6 +91,7 @@ static void pred_video(const std::vector<std::string>& args) {
     }
 }
 
+// ./lifuren[.exe] train model_path dataset [ model_file ]
 static void train(const std::vector<std::string>& args) {
     if(args.size() < 2) {
         SPDLOG_WARN("缺少参数");
@@ -119,19 +117,11 @@ static void train(const std::vector<std::string>& args) {
 }
 
 static void help() {
-    std::cout << R"(
+    SPDLOG_INFO(R"(
 ./lifuren[.exe] 命令 [参数...]
 ./lifuren[.exe] train model_path dataset [ model_file ]
 ./lifuren[.exe] image model_file image_path
 ./lifuren[.exe] video model_file image_file
 ./lifuren[.exe] [?|help]
-)" << std::endl;
-}
-
-static void message_callback(const char* message) {
-    #if defined(_DEBUG) || !defined(NDEBUG)
-    // 测试时控制台日志已经打开
-    #else
-    std::cout << message << std::endl;
-    #endif
+)");
 }
