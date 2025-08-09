@@ -27,7 +27,7 @@ enum class TrainType {
 /**
  * 吴道子模型（视频生成）
  * 
- * pose_time_embedding + vnet = 视频生成
+ * vnet_time_embedding + vnet = 视频生成
  * inet_step_embedding + inet = 图片生成
  */
 class WudaoziImpl : public torch::nn::Module {
@@ -312,7 +312,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     if(!this->trainer) {
         return { false, {} };
     }
-    if(params.t0 > 250) {
+    if(params.n < 0 || params.n > 16 || params.t0 < 0 || params.t0 > 1000) {
         return { false, {} };
     }
     if(params.type == WudaoziType::RESET) {
