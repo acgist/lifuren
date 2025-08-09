@@ -7,7 +7,6 @@
 #include "opencv2/opencv.hpp"
 
 #include "lifuren/File.hpp"
-#include "lifuren/Layer.hpp"
 #include "lifuren/Dataset.hpp"
 #include "lifuren/Wudaozi.hpp"
 
@@ -127,8 +126,8 @@
     std::vector<int> steps{ 0, 10, 50, 100, 200, 999 };
     steps.resize(batch_images.size(0));
     auto batch_steps        = torch::tensor(steps).to(torch::kLong);
-    auto batch_bar_alpha    = lifuren::nn::wudaozi::bar_alpha.index({ batch_steps }).reshape({ -1, 1, 1, 1 });
-    auto batch_bar_beta     = lifuren::nn::wudaozi::bar_beta .index({ batch_steps }).reshape({ -1, 1, 1, 1 });
+    auto batch_bar_alpha    = lifuren::config::wudaozi::bar_alpha.index({ batch_steps }).reshape({ -1, 1, 1, 1 });
+    auto batch_bar_beta     = lifuren::config::wudaozi::bar_beta .index({ batch_steps }).reshape({ -1, 1, 1, 1 });
     auto batch_noises       = torch::randn_like(batch_images);
     auto batch_noise_images = batch_images * batch_bar_alpha + batch_noises * batch_bar_beta;
     cv::Mat output_image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 3, CV_8UC3);

@@ -13,18 +13,18 @@
 
 namespace lifuren {
 
-namespace nn::wudaozi {
+namespace config::wudaozi {
 
-    torch::Tensor alpha          = torch::sqrt(1.0 - 0.02 * torch::arange(1, lifuren::config::wudaozi::T + 1) / (double) lifuren::config::wudaozi::T);
-    torch::Tensor bar_alpha      = torch::cumprod(alpha, 0);
-    torch::Tensor bar_alpha_     = bar_alpha.index({ torch::indexing::Slice({ torch::indexing::None, torch::indexing::None, lifuren::config::wudaozi::stride }) });
-    torch::Tensor bar_alpha_pre_ = torch::pad(bar_alpha_.index({ torch::indexing::Slice(torch::indexing::None, -1) }), { 1, 0 }, "constant", 1);
-    torch::Tensor bar_beta       = torch::sqrt(1.0 - torch::pow(bar_alpha,      2));
-    torch::Tensor bar_beta_      = torch::sqrt(1.0 - torch::pow(bar_alpha_,     2));
-    torch::Tensor bar_beta_pre_  = torch::sqrt(1.0 - torch::pow(bar_alpha_pre_, 2));
-    torch::Tensor alpha_         = bar_alpha_ / bar_alpha_pre_;
-    torch::Tensor sigma_         = bar_beta_pre_ / bar_beta_ * torch::sqrt(1.0 - torch::pow(alpha_, 2)) * lifuren::config::wudaozi::eta;
-    torch::Tensor epsilon_       = bar_beta_ - alpha_ * torch::sqrt(torch::pow(bar_beta_pre_, 2) - torch::pow(sigma_, 2));
+    at::Tensor alpha          = torch::sqrt(1.0 - 0.02 * torch::arange(1, lifuren::config::wudaozi::T + 1) / (double) lifuren::config::wudaozi::T);
+    at::Tensor bar_alpha      = torch::cumprod(alpha, 0);
+    at::Tensor bar_alpha_     = bar_alpha.index({ torch::indexing::Slice({ torch::indexing::None, torch::indexing::None, lifuren::config::wudaozi::stride }) });
+    at::Tensor bar_alpha_pre_ = torch::pad(bar_alpha_.index({ torch::indexing::Slice(torch::indexing::None, -1) }), { 1, 0 }, "constant", 1);
+    at::Tensor bar_beta       = torch::sqrt(1.0 - torch::pow(bar_alpha,      2));
+    at::Tensor bar_beta_      = torch::sqrt(1.0 - torch::pow(bar_alpha_,     2));
+    at::Tensor bar_beta_pre_  = torch::sqrt(1.0 - torch::pow(bar_alpha_pre_, 2));
+    at::Tensor alpha_         = bar_alpha_ / bar_alpha_pre_;
+    at::Tensor sigma_         = bar_beta_pre_ / bar_beta_ * torch::sqrt(1.0 - torch::pow(alpha_, 2)) * lifuren::config::wudaozi::eta;
+    at::Tensor epsilon_       = bar_beta_ - alpha_ * torch::sqrt(torch::pow(bar_beta_pre_, 2) - torch::pow(sigma_, 2));
 
 };
 
@@ -70,16 +70,16 @@ private:
 
 public:
     WudaoziImpl(lifuren::config::ModelParams params = {}) : params(params), device(lifuren::get_device()) {
-        this->alpha          = this->register_buffer("alpha",          lifuren::nn::wudaozi::alpha         );
-        this->bar_alpha      = this->register_buffer("bar_alpha",      lifuren::nn::wudaozi::bar_alpha     );
-        this->bar_alpha_     = this->register_buffer("bar_alpha_",     lifuren::nn::wudaozi::bar_alpha_    );
-        this->bar_alpha_pre_ = this->register_buffer("bar_alpha_pre_", lifuren::nn::wudaozi::bar_alpha_pre_);
-        this->bar_beta       = this->register_buffer("bar_beta",       lifuren::nn::wudaozi::bar_beta      );
-        this->bar_beta_      = this->register_buffer("bar_beta_",      lifuren::nn::wudaozi::bar_beta_     );
-        this->bar_beta_pre_  = this->register_buffer("bar_beta_pre_",  lifuren::nn::wudaozi::bar_beta_pre_ );
-        this->alpha_         = this->register_buffer("alpha_",         lifuren::nn::wudaozi::alpha_        );
-        this->sigma_         = this->register_buffer("sigma_",         lifuren::nn::wudaozi::sigma_        );
-        this->epsilon_       = this->register_buffer("epsilon_",       lifuren::nn::wudaozi::epsilon_      );
+        this->alpha          = this->register_buffer("alpha",          lifuren::config::wudaozi::alpha         );
+        this->bar_alpha      = this->register_buffer("bar_alpha",      lifuren::config::wudaozi::bar_alpha     );
+        this->bar_alpha_     = this->register_buffer("bar_alpha_",     lifuren::config::wudaozi::bar_alpha_    );
+        this->bar_alpha_pre_ = this->register_buffer("bar_alpha_pre_", lifuren::config::wudaozi::bar_alpha_pre_);
+        this->bar_beta       = this->register_buffer("bar_beta",       lifuren::config::wudaozi::bar_beta      );
+        this->bar_beta_      = this->register_buffer("bar_beta_",      lifuren::config::wudaozi::bar_beta_     );
+        this->bar_beta_pre_  = this->register_buffer("bar_beta_pre_",  lifuren::config::wudaozi::bar_beta_pre_ );
+        this->alpha_         = this->register_buffer("alpha_",         lifuren::config::wudaozi::alpha_        );
+        this->sigma_         = this->register_buffer("sigma_",         lifuren::config::wudaozi::sigma_        );
+        this->epsilon_       = this->register_buffer("epsilon_",       lifuren::config::wudaozi::epsilon_      );
         int image_channels     =  3; // 图片输入维度
         int embedding_in_dims  =  8; // 嵌入输入维度
         int embedding_out_dims = 64; // 嵌入输出维度

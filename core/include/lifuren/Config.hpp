@@ -37,6 +37,12 @@
     }
 #endif
 
+namespace at {
+
+    class Tensor;
+
+}; // END OF torch
+
 namespace lifuren::config {
 
 /**
@@ -80,6 +86,17 @@ namespace wudaozi {
     const int   T      = 1000; // DDPM步数
     const int   stride = 4;    // DDIM步幅
     const float eta    = 1.0;  // DDIM随机
+
+    extern at::Tensor alpha;
+    extern at::Tensor bar_alpha;
+    extern at::Tensor bar_alpha_;
+    extern at::Tensor bar_alpha_pre_;
+    extern at::Tensor bar_beta;
+    extern at::Tensor bar_beta_;
+    extern at::Tensor bar_beta_pre_;
+    extern at::Tensor alpha_;
+    extern at::Tensor sigma_;
+    extern at::Tensor epsilon_;
 
 }; // END OF wudaozi
 
