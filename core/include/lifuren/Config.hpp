@@ -19,24 +19,6 @@
 #include <cstdlib>
 #include <cstdint>
 
-// 删除指针
-#ifndef LFR_DELETE_PTR
-#define LFR_DELETE_PTR(ptr) \
-    if(ptr != nullptr) {    \
-        delete ptr;         \
-        ptr = nullptr;      \
-    }
-#endif
-
-// 删除指针
-#ifndef LFR_DELETE_THIS_PTR
-#define LFR_DELETE_THIS_PTR(ptr) \
-    if(this->ptr != nullptr) {   \
-        delete this->ptr;        \
-        this->ptr = nullptr;     \
-    }
-#endif
-
 namespace at {
 
     class Tensor;
@@ -65,17 +47,7 @@ struct ModelParams {
 
 };
 
-#ifdef _WIN32
-const char* const CONFIG_PATH = "../config/config-win.yml";
-#else
-const char* const CONFIG_PATH = "../config/config.yml";
-#endif
-
-class Config;
-
 extern std::string base_dir; // 项目启动绝对路径
-
-extern lifuren::config::Config CONFIG; // 全局配置
 
 const std::string DATASET_TRAIN = "train"; // 训练数据集
 const std::string DATASET_VAL   = "val";   // 验证数据集
@@ -99,29 +71,6 @@ namespace wudaozi {
     extern at::Tensor epsilon_;
 
 }; // END OF wudaozi
-
-
-/**
- * 配置
- */
-class Config {
-
-public:
-    std::string tmp;     // 临时目录
-    std::string wudaozi; // 视频生成模型文件
-
-public:
-    /**
-     * @return 配置
-     */
-    static lifuren::config::Config loadFile();
-
-    /**
-     * @return 是否成功
-     */
-    static bool saveFile();
-
-};
 
 /**
  * @param argc 参数长度

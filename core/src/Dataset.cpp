@@ -31,7 +31,7 @@ lifuren::dataset::Dataset::Dataset(
     const std::vector<std::string>& suffix,
     const Transform transform
 ) : batch_size(batch_size), device(lifuren::get_device()) {
-    if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
+    if(!lifuren::file::is_directory(path)) {
         SPDLOG_WARN("无效的数据集：{}", path);
         return;
     }

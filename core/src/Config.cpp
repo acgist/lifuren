@@ -12,8 +12,6 @@
 
 std::string lifuren::config::base_dir = "";
 
-lifuren::config::Config lifuren::config::CONFIG{};
-
 static const char* const EMPTY_CHARS = " \t\r\n"; // 空白字符
 
 /**
@@ -30,56 +28,11 @@ inline std::string trim(const std::string& value) {
     return value.substr(index, jndex - index + 1);
 }
 
-lifuren::config::Config lifuren::config::Config::loadFile() {
-    const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_DEBUG("加载配置文件：{}", path);
-    lifuren::config::Config config;
-    std::ifstream stream;
-    stream.open(path);
-    if(!stream.is_open()) {
-        return config;
-    }
-    std::string line;
-    while(std::getline(stream, line)) {
-        auto index = line.find(':');
-        if(index == std::string::npos) {
-            continue;
-        }
-        auto label = ::trim(line.substr(0, index));
-        auto value = ::trim(line.substr(index + 1));
-        if(label == "tmp") {
-            config.tmp = value;
-        } else if(label == "wudaozi") {
-            config.wudaozi = value;
-        } else {
-            // -
-        }
-    }
-    stream.close();
-    return config;
-}
-
-bool lifuren::config::Config::saveFile() {
-    const std::string path = lifuren::config::baseFile(lifuren::config::CONFIG_PATH);
-    SPDLOG_INFO("保存配置文件：{}", path);
-    std::ofstream stream;
-    stream.open(path);
-    if(!stream.is_open()) {
-        return false;
-    }
-    stream << "lifuren: "   << '\n';
-    stream << "  tmp: "     << lifuren::config::CONFIG.tmp     << '\n';
-    stream << "  wudaozi: " << lifuren::config::CONFIG.wudaozi << '\n';
-    stream.close();
-    return true;
-}
-
 void lifuren::config::init(const int argc, const char* const argv[]) {
     if(argc > 0) {
         lifuren::config::base_dir = std::filesystem::absolute(std::filesystem::path(argv[0]).parent_path()).string();
     }
     SPDLOG_DEBUG("项目启动绝对路径：{}", lifuren::config::base_dir);
-    lifuren::config::CONFIG = lifuren::config::Config::loadFile();
 }
 
 std::string lifuren::config::baseFile(const std::string& path) {

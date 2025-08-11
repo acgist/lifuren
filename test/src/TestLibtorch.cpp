@@ -8,7 +8,7 @@
 #include "lifuren/Config.hpp"
 
 [[maybe_unused]] static void testJit() {
-    auto model = torch::jit::load(lifuren::file::join({ lifuren::config::CONFIG.tmp, "lifuren.pth" }).string());
+    auto model = torch::jit::load(lifuren::file::join({ tmp_directory, "lifuren.pth" }).string());
     std::vector<torch::jit::IValue> inputs;
     auto input = torch::randn({ 1 });
     inputs.push_back(std::move(input));

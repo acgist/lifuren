@@ -26,15 +26,6 @@ namespace lifuren::file {
 /**
  * @param path 文件路径
  * 
- * @return 文件是否存在
- */
-inline bool exists(const std::string& path) {
-    return std::filesystem::exists(std::filesystem::path(path));
-}
-
-/**
- * @param path 文件路径
- * 
  * @return 是否是文件
  */
 inline bool is_file(const std::string& path) {
@@ -55,43 +46,12 @@ inline bool is_directory(const std::string& path) {
  * 
  * @return 是否成功
  */
-inline bool create_directory(const std::string& path) {
-    std::filesystem::path file_path(path);
-    if(std::filesystem::exists(file_path)) {
-        return true;
-    }
-    return std::filesystem::create_directories(file_path);
-}
-
-/**
- * @param path 文件路径
- * 
- * @return 上级文件路径
- */
-inline std::string parent(const std::string& path) {
-    return std::filesystem::path(path).parent_path().string();
-}
-
-/**
- * @param path 目录路径
- * 
- * @return 是否成功
- */
-inline bool create_parent(const std::string& path) {
+inline bool create_parent_directory(const std::string& path) {
     auto parent = std::filesystem::path(path).parent_path();
     if(std::filesystem::exists(parent)) {
         return true;
     }
     return std::filesystem::create_directories(parent);
-}
-
-/**
- * @param path 文件路径
- * 
- * @return 文件大小
- */
-inline size_t file_size(const std::string& path) {
-    return std::filesystem::file_size(std::filesystem::path(path));
 }
 
 /**

@@ -140,7 +140,7 @@ bool lifuren::Trainer<P, M, D>::save(const std::string& path) {
         SPDLOG_WARN("模型保存失败：没有定义模型");
         return false;
     }
-    lifuren::file::create_parent(path);
+    lifuren::file::create_parent_directory(path);
     this->model->eval();
     this->model->to(torch::DeviceType::CPU);
     torch::save(model, path);
@@ -151,7 +151,7 @@ bool lifuren::Trainer<P, M, D>::save(const std::string& path) {
 
 template<typename P, typename M, typename D>
 bool lifuren::Trainer<P, M, D>::load(const std::string& path, const bool print_model) {
-    if(!lifuren::file::exists(path) || !lifuren::file::is_file(path)) {
+    if(!lifuren::file::is_file(path)) {
         SPDLOG_WARN("加载模型失败：{}", path);
         return false;
     }

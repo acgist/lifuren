@@ -109,7 +109,7 @@ static void train(const std::vector<std::string>& args) {
         .val_path   = lifuren::file::join({ dataset, lifuren::config::DATASET_VAL   }).string(),
         .test_path  = lifuren::file::join({ dataset, lifuren::config::DATASET_TEST  }).string(),
     };
-    if(lifuren::file::exists(model_file) && lifuren::file::is_file(model_file)) {
+    if(lifuren::file::is_file(model_file)) {
         client->load(model_file, params);
     }
     client->trainValAndTest(params);

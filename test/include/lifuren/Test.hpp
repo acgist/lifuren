@@ -20,6 +20,12 @@
 #include "lifuren/Config.hpp"
 #include "lifuren/Logger.hpp"
 
+#ifdef _WIN32
+const char* tmp_directory = "D:/tmp";
+#else
+const char* tmp_directory = "/tmp";
+#endif
+
 #ifndef LFR_TEST
 #define LFR_TEST(...)                                \
 int main(const int argc, const char* const argv[]) { \

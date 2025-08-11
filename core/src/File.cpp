@@ -38,7 +38,7 @@ void lifuren::file::list_file(std::vector<std::string>& vector, const std::strin
 }
 
 void lifuren::file::list_file(std::vector<std::string>& vector, const std::string& path, const std::function<bool(const std::string&)>& predicate) {
-    if(!lifuren::file::exists(path) || !lifuren::file::is_directory(path)) {
+    if(!lifuren::file::is_directory(path)) {
         SPDLOG_DEBUG("无效目录：{}", path);
         return;
     }

@@ -25,8 +25,8 @@
 
 namespace lifuren::logger {
 
-extern void init(); // 加载日志
-extern void stop(); // 关闭日志
+extern void init(); // 加载SPDLOG日志
+extern void stop(); // 关闭SPDLOG日志
 
 namespace opencv {
 

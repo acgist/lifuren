@@ -78,9 +78,7 @@ namespace lifuren {
  */
 extern torch::DeviceType get_device();
 
-}
-
-namespace lifuren::dataset {
+namespace dataset {
 
 // void(文件路径, 标签, 特征, 计算设备)
 using Transform = std::function<void(const std::string&, std::vector<torch::Tensor>&, std::vector<torch::Tensor>&, const torch::DeviceType&)>;
@@ -174,6 +172,8 @@ extern void tensor_to_mat(cv::Mat& image, const torch::Tensor& tensor);
  * @param batch_size 批次数量
  * @param path       数据集路径
  * 
+ * TODO: 分批加载
+ * 
  * feature = [ prev_frame, next_frame ]
  * label   = [ time ]
  * 
@@ -183,6 +183,8 @@ extern lifuren::dataset::RndDatasetLoader loadWudaoziDatasetLoader(const int wid
 
 } // END OF image
 
-} // END OF lifuren::dataset
+} // END OF dataset
+
+} // END OF lifuren
 
 #endif // END OF LFR_HEADER_CORE_DATASET_HPP

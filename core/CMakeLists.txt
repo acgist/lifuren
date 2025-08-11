@@ -36,13 +36,3 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/
 )
 install(DIRECTORY ${HEADER_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
-
-if(CMAKE_HOST_WIN32)
-    set(CONFIG_FILES "config/config-win.yml")
-else()
-    set(CONFIG_FILES "config/config.yml")
-endif()
-
-install(FILES ${CONFIG_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
-
-file(COPY ${CONFIG_FILES} DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/config)

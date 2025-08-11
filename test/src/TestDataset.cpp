@@ -8,7 +8,7 @@
 #include "lifuren/Dataset.hpp"
 
 [[maybe_unused]] static void testImage() {
-    auto image { cv::imread(lifuren::file::join({ lifuren::config::CONFIG.tmp, "image.jpg" }).string()) };
+    auto image { cv::imread(lifuren::file::join({ tmp_directory, "image.jpg" }).string()) };
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     cv::imshow("image", image);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image);
@@ -22,7 +22,7 @@
 [[maybe_unused]] static void testVideo() {
     cv::Mat src;
     cv::Mat dst;
-    cv::VideoCapture video(lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
+    cv::VideoCapture video(lifuren::file::join({ tmp_directory, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
     while(video.read(src) && video.read(dst)) {
         lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
@@ -37,7 +37,7 @@
         LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT,
         20,
         lifuren::file::join({
-            lifuren::config::CONFIG.tmp,
+            tmp_directory,
             "wudaozi",
             "train"
         }).string()

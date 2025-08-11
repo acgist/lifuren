@@ -170,13 +170,13 @@ public:
     
 public:
     void defineDataset() override {
-        if(lifuren::file::exists(this->params.train_path)) {
+        if(lifuren::file::is_directory(this->params.train_path)) {
             this->trainDataset = lifuren::dataset::image::loadWudaoziDatasetLoader(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, this->params.batch_size, this->params.train_path);
         }
-        if(lifuren::file::exists(this->params.val_path)) {
+        if(lifuren::file::is_directory(this->params.val_path)) {
             this->valDataset = lifuren::dataset::image::loadWudaoziDatasetLoader(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, this->params.batch_size, this->params.val_path);
         }
-        if(lifuren::file::exists(this->params.test_path)) {
+        if(lifuren::file::is_directory(this->params.test_path)) {
             this->testDataset = lifuren::dataset::image::loadWudaoziDatasetLoader(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, this->params.batch_size, this->params.test_path);
         }
     }
@@ -203,7 +203,7 @@ public:
                 auto result = this->model->pred_image(2 * 4, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0);
                 cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
                 lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
-                auto path = lifuren::file::join({ lifuren::config::CONFIG.tmp, "wudaozi", "pred", std::to_string(epoch) + ".jpg" }).string();
+                auto path = lifuren::file::join({ this->params.model_path, "pred_" + std::to_string(epoch) + ".jpg" }).string();
                 cv::imwrite(path, image);
                 SPDLOG_INFO("保存图片：{}", path);
             }
