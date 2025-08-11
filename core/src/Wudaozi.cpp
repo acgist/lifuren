@@ -132,20 +132,13 @@ public:
         torch::NoGradGuard no_grad_guard;
         return this->denoise(torch::randn({ n, 3, height, width }).to(this->device), t0);
     }
-    torch::Tensor pred_image(torch::Tensor images, int t0) {
-        torch::NoGradGuard no_grad_guard;
-        auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
-        auto batch_noises = torch::randn_like(images);
-        auto batch_noise_images = this->mark_noise(images, batch_steps, batch_noises);
-        return this->denoise(batch_noise_images, t0);
-    }
     torch::Tensor pred_image(torch::Tensor images, int t, int t0) {
         torch::NoGradGuard no_grad_guard;
         auto batch_times  = torch::tensor({ t  }).to(this->device).to(torch::kLong);
         auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         auto batch_noise_images = this->mark_noise(images, batch_steps, batch_noises);
-        return this->denoise(this->forward_vnet(batch_noise_images, batch_times), t0);
+        return this->denoise(batch_noise_images + this->forward_vnet(images, batch_times), t0);
     }
 };
 
@@ -223,8 +216,8 @@ public:
         }
         torch::Tensor vnet_loss, inet_loss;
         if(train_type == TrainType::VNET || train_type == TrainType::ALL) {
-            auto pred_vnet = this->model->forward_vnet(batch_prev_noise_images, batch_times);
-            vnet_loss = torch::mse_loss(pred_vnet, batch_next_noise_images);
+            auto pred_vnet = this->model->forward_vnet(batch_prev_images, batch_times);
+            vnet_loss = torch::mse_loss(pred_vnet, batch_next_noise_images - batch_prev_noise_images);
             this->vnet_loss += vnet_loss.template item<float>();
         }
         if(train_type == TrainType::INET || train_type == TrainType::ALL) {
@@ -244,9 +237,6 @@ public:
     torch::Tensor pred(int n) {
         return this->model->pred_image(n, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0);
     }
-    torch::Tensor pred(torch::Tensor feature, int t0) {
-        return this->model->pred_image(feature, t0);
-    }
     torch::Tensor pred(torch::Tensor feature, int t, int t0) {
         return this->model->pred_image(feature, t, t0);
     }
@@ -258,29 +248,12 @@ class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, lifure
 
 public:
     std::tuple<bool, std::string> pred(const lifuren::WudaoziParams& input) override;
-    std::tuple<bool, std::string> predReset(const std::string& file, int t0 = 100);
     std::tuple<bool, std::string> predImage(const std::string& path, int n  = 1);
     std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 100, int frame = 120);
 
 };
 
 }; // END OF lifuren
-
-template<>
-std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predReset(const std::string& file, int t0) {
-    auto image = cv::imread(file);
-    if(image.empty()) {
-        SPDLOG_INFO("打开文件失败：{}", file);
-        return { false, {} };
-    }
-    lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
-    auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(this->trainer->device);
-    auto result = this->trainer->pred(tensor, t0);
-    lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
-    const auto output = lifuren::file::modify_filename(file, ".jpg", "gen");
-    cv::imwrite(output, image);
-    return { true, output };
-}
 
 template<>
 std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::predImage(const std::string& path, int n) {
@@ -326,9 +299,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     if(params.n < 0 || params.n > 16 || params.t0 < 0 || params.t0 > lifuren::config::wudaozi::T / lifuren::config::wudaozi::stride) {
         return { false, {} };
     }
-    if(params.type == WudaoziType::RESET) {
-        return this->predReset(params.file, params.t0);
-    } else if(params.type == WudaoziType::IMAGE) {
+    if(params.type == WudaoziType::IMAGE) {
         return this->predImage(params.path, params.n);
     } else if(params.type == WudaoziType::VIDEO) {
         return this->predVideo(params.file, params.t0, params.n);

@@ -50,28 +50,12 @@
     client->load(lifuren::file::join({tmp_directory, "wudaozi", "wudaozi.pt"}).string());
     {
         auto [success, output] = client->pred({
-            .t0   = 150,
-            .file = lifuren::file::join({tmp_directory, "wudaozi", "train.jpg"}).string(),
-            .type = lifuren::WudaoziType::RESET
+            .n    = 4,
+            .path = lifuren::file::join({tmp_directory, "wudaozi"}).string(),
+            .type = lifuren::WudaoziType::IMAGE
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
-    // {
-    //     auto [success, output] = client->pred({
-    //         .t0   = 150,
-    //         .file = lifuren::file::join({tmp_directory, "wudaozi", "wudaozi.jpg"}).string(),
-    //         .type = lifuren::WudaoziType::RESET
-    //     });
-    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
-    // }
-    // {
-    //     auto [success, output] = client->pred({
-    //         .n    = 4,
-    //         .path = lifuren::file::join({tmp_directory, "wudaozi"}).string(),
-    //         .type = lifuren::WudaoziType::IMAGE
-    //     });
-    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
-    // }
     {
         auto [success, output] = client->pred({
             .n    = 24,
@@ -81,15 +65,15 @@
         });
         SPDLOG_INFO("输出结果：{} - {}", success, output);
     }
-    // {
-    //     auto [success, output] = client->pred({
-    //         .n    = 24,
-    //         .t0   = 100,
-    //         .file = lifuren::file::join({tmp_directory, "wudaozi", "wudaozi.jpg"}).string(),
-    //         .type = lifuren::WudaoziType::VIDEO
-    //     });
-    //     SPDLOG_INFO("输出结果：{} - {}", success, output);
-    // }
+    {
+        auto [success, output] = client->pred({
+            .n    = 24,
+            .t0   = 100,
+            .file = lifuren::file::join({tmp_directory, "wudaozi", "wudaozi.jpg"}).string(),
+            .type = lifuren::WudaoziType::VIDEO
+        });
+        SPDLOG_INFO("输出结果：{} - {}", success, output);
+    }
 }
 
 [[maybe_unused]] static void testPlay() {

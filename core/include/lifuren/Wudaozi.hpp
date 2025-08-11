@@ -22,8 +22,7 @@ namespace lifuren {
 
 enum class WudaoziType {
 
-    RESET, // 图片生成：图片加噪降噪
-    IMAGE, // 图片生成：图片随机降噪
+    IMAGE, // 图片生成
     VIDEO, // 视频生成
 
 };
