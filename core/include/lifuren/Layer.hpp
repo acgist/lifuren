@@ -90,15 +90,15 @@ public:
 TORCH_MODULE(Upsample);
 
 /**
- * 时间嵌入
+ * 步骤嵌入
  */
-class TimeEmbeddingImpl : public torch::nn::Module {
+class StepEmbeddingImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential time_embedding{ nullptr };
+    torch::nn::Sequential step_embedding{ nullptr };
 
 public:
-    TimeEmbeddingImpl(const int T, const int in, const int out) {
+    StepEmbeddingImpl(const int T, const int in, const int out) {
         SPDLOG_INFO("time embedding T = {} in = {} out = {}", T, in, out);
         auto pos = torch::arange(T).to(torch::kFloat32);
         auto embedding = torch::arange(0, in, 2).to(torch::kFloat32) / in * std::log(10000);
@@ -106,30 +106,30 @@ public:
         embedding = pos.unsqueeze(1) * embedding.unsqueeze(0);
         embedding = torch::stack({ torch::sin(embedding), torch::cos(embedding) }, -1);
         embedding = embedding.view({ T, in });
-        this->time_embedding = this->register_module("time_embedding", torch::nn::Sequential(
+        this->step_embedding = this->register_module("step_embedding", torch::nn::Sequential(
             torch::nn::Embedding::from_pretrained(embedding),
             torch::nn::Linear(in, out),
             torch::nn::SiLU(),
             torch::nn::Linear(out, out)
         ));
     }
-    ~TimeEmbeddingImpl() {
-        this->unregister_module("time_embedding");
+    ~StepEmbeddingImpl() {
+        this->unregister_module("step_embedding");
     }
 
 public:
     torch::Tensor forward(torch::Tensor input) {
-        return this->time_embedding->forward(input);
+        return this->step_embedding->forward(input);
     }
 
 };
 
-TORCH_MODULE(TimeEmbedding);
+TORCH_MODULE(StepEmbedding);
 
 /**
- * 位置嵌入
+ * 空间嵌入
  */
-using StepEmbedding = TimeEmbedding;
+using TimeEmbedding = StepEmbedding;
 
 /**
  * 自注意力

@@ -200,7 +200,7 @@ public:
         if(epoch % this->params.check_epoch == 1) {
             torch::NoGradGuard no_grad_guard;
             if(this->train_type == TrainType::INET || this->train_type == TrainType::ALL) {
-                auto result = this->model->pred_image(2 * 4, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0);
+                auto result = this->model->denoise(torch::randn({ 4, 3, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH }).repeat({2, 1, 1, 1}).to(this->device), 0);
                 cv::Mat image(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 4, CV_8UC3);
                 lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
                 auto path = lifuren::file::join({ this->params.model_path, "pred_" + std::to_string(epoch) + ".jpg" }).string();

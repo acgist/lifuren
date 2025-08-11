@@ -106,7 +106,7 @@
         lifuren::dataset::image::resize(frame_src, LFR_IMAGE_WIDTH * 1, LFR_IMAGE_HEIGHT * 1);
         lifuren::dataset::image::resize(frame_src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         lifuren::dataset::image::resize(frame_gen, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        frame_src.copyTo(frame(cv::Rect(0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+        frame_src.copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
         frame_gen.copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
         cv::imshow("frame", frame);
         if(cv::waitKey(60'000) == 27) {

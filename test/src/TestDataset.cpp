@@ -22,12 +22,19 @@
 [[maybe_unused]] static void testVideo() {
     cv::Mat src;
     cv::Mat dst;
+    cv::Mat frame(LFR_IMAGE_HEIGHT * 2, LFR_IMAGE_WIDTH * 8, CV_8UC3);
     cv::VideoCapture video(lifuren::file::join({ tmp_directory, "wudaozi", "all", "BV1Wy54zMEyK.mp4" }).string());
     while(video.read(src) && video.read(dst)) {
         lifuren::dataset::image::resize(src, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
         lifuren::dataset::image::resize(dst, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2);
-        cv::imshow("src", src);
-        cv::imshow("dst", dst);
+        cv::Mat diff = dst - src;
+        cv::Mat abs_diff;
+        cv::absdiff(src, dst, abs_diff);
+        src     .copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+        dst     .copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+        diff    .copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 4, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+        abs_diff.copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 6, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT * 2)));
+        cv::imshow("frame", frame);
         cv::waitKey(10000);
     }
 }
@@ -57,9 +64,10 @@
                 cv::waitKey();
             }
             lifuren::dataset::image::tensor_to_mat(clone, data);
+            cv::Mat diff = clone(cv::Rect(0, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT)) - clone(cv::Rect(LFR_IMAGE_WIDTH, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
             // 注意：等于复制共享数据
-            clone.copyTo(frame(cv::Rect(0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT)));
-            frame(cv::Rect(LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT)) = clone(cv::Rect(0, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT)) - clone(cv::Rect(LFR_IMAGE_WIDTH, 0, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
+            clone.copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 0, 0, LFR_IMAGE_WIDTH * 2, LFR_IMAGE_HEIGHT)));
+            diff .copyTo(frame(cv::Rect(LFR_IMAGE_WIDTH * 2, 0, LFR_IMAGE_WIDTH * 1, LFR_IMAGE_HEIGHT)));
             cv::imshow("frame", frame);
             if(cv::waitKey(10000) == 27) {
                 break;
@@ -72,6 +80,6 @@
 
 LFR_TEST(
     // testImage();
-    // testVideo();
-    testLoadWudaoziDatasetLoader();
+    testVideo();
+    // testLoadWudaoziDatasetLoader();
 );
