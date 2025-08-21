@@ -131,7 +131,6 @@ else()
     message(STATUS "忽略测试")
 endif()
 
-
 set(INSTALL_DOCUMENT "LICENSE" "README.md")
 set(INSTALL_RESOURCE "docs/resources/")
 

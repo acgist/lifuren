@@ -14,8 +14,8 @@
  * 
  * @version 1.0.0
  */
-#ifndef LFR_HEADER_CORE_MODEL_HPP
-#define LFR_HEADER_CORE_MODEL_HPP
+#ifndef LFR_HEADER_CORE_TRAINER_HPP
+#define LFR_HEADER_CORE_TRAINER_HPP
 
 #include <memory>
 #include <string>
@@ -337,4 +337,4 @@ inline void lifuren::Trainer<P, M, D>::evaluation(
     );
 }
 
-#endif // END OF LFR_HEADER_CORE_MODEL_HPP
+#endif // END OF LFR_HEADER_CORE_TRAINER_HPP

@@ -99,7 +99,7 @@ private:
 
 public:
     StepEmbeddingImpl(const int T, const int in, const int out) {
-        SPDLOG_INFO("time embedding T = {} in = {} out = {}", T, in, out);
+        SPDLOG_INFO("step embedding T = {} in = {} out = {}", T, in, out);
         auto pos = torch::arange(T).to(torch::kFloat32);
         auto embedding = torch::arange(0, in, 2).to(torch::kFloat32) / in * std::log(10000);
         embedding = torch::exp(-embedding);
@@ -125,11 +125,6 @@ public:
 };
 
 TORCH_MODULE(StepEmbedding);
-
-/**
- * 空间嵌入
- */
-using TimeEmbedding = StepEmbedding;
 
 /**
  * 自注意力
@@ -183,7 +178,7 @@ TORCH_MODULE(AttentionBlock);
 class ResidualBlockImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Sequential align    { nullptr };
+    torch::nn::Sequential justify  { nullptr };
     torch::nn::Linear     embedding{ nullptr };
     torch::nn::Sequential conv_1   { nullptr };
     torch::nn::Sequential conv_2   { nullptr };
@@ -192,11 +187,11 @@ public:
     ResidualBlockImpl(const int in_channels, const int out_channels, const int embedding_dims, const int num_groups = 32) {
         SPDLOG_INFO("residual block in_channels = {} out_channels = {} embedding_dims = {} num_groups = {}", in_channels, out_channels, embedding_dims, num_groups);
         if(in_channels == out_channels) {
-            this->align = this->register_module("align", torch::nn::Sequential(
+            this->justify = this->register_module("justify", torch::nn::Sequential(
                 torch::nn::Identity()
             ));
         } else {
-            this->align  = this->register_module("align", torch::nn::Sequential(
+            this->justify = this->register_module("justify", torch::nn::Sequential(
                 torch::nn::Conv2d(torch::nn::Conv2dOptions(in_channels, out_channels, { 1, 1 }))
             ));
         }
@@ -213,7 +208,7 @@ public:
         ));
     }
     ~ResidualBlockImpl() {
-        this->unregister_module("align");
+        this->unregister_module("justify");
         this->unregister_module("embedding");
         this->unregister_module("conv_1");
         this->unregister_module("conv_2");
@@ -221,7 +216,7 @@ public:
 
 public:
     torch::Tensor forward(torch::Tensor input, torch::Tensor step) {
-        input = this->align->forward(input);
+        input = this->justify->forward(input);
         auto output = this->conv_1->forward(input);
         output = output + this->embedding->forward(step).unsqueeze(-1).unsqueeze(-1);
         output = this->conv_2->forward(output);
@@ -231,6 +226,58 @@ public:
 };
 
 TORCH_MODULE(ResidualBlock);
+
+/**
+ * 时间嵌入
+ */
+class TimeEmbeddingImpl : public torch::nn::Module {
+
+private:
+    lifuren::nn::StepEmbedding  embedding{ nullptr };
+    torch::nn::Sequential       attn_conv{ nullptr };
+    lifuren::nn::ResidualBlock  attn_res { nullptr };
+    torch::nn::Sequential       flatten  { nullptr };
+
+public:
+    TimeEmbeddingImpl(
+        const int T, const int in, const int out, const int width, const int height,
+        const int scale = 8, const int num_heads = 8, const int channels = 32, const int num_groups = 32
+    ) {
+        SPDLOG_INFO(
+            "time embedding T = {} in = {} out = {} width = {} height = {} scale = {} num_heads = {} channels = {} num_groups = {}",
+            T, in, out, width, height, scale, num_heads, channels, num_groups
+        );
+        this->embedding = this->register_module("embedding", lifuren::nn::StepEmbedding(T, in, out));
+        this->attn_conv = this->register_module("attn_conv", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(3, channels, 3).padding(1)),
+            lifuren::nn::Downsample(channels, num_groups, scale),
+            lifuren::nn::AttentionBlock(channels, num_heads, width * height / scale / scale, channels / num_heads)
+        ));
+        this->attn_res = this->register_module("attn_res", lifuren::nn::ResidualBlock(channels, channels, out, num_groups));
+        this->flatten = this->register_module("flatten", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, 1, 3).padding(1)),
+            torch::nn::Flatten(torch::nn::FlattenOptions().start_dim(1)),
+            torch::nn::Linear(width * height / scale / scale, out)
+        ));
+    }
+    ~TimeEmbeddingImpl() {
+        this->unregister_module("embedding");
+        this->unregister_module("attn_conv");
+        this->unregister_module("attn_res");
+        this->unregister_module("flatten");
+    }
+
+public:
+    torch::Tensor forward(torch::Tensor input, torch::Tensor time) {
+        auto output = this->attn_conv->forward(input);
+        output = this->attn_res->forward(output, this->embedding->forward(time));
+        output = this->flatten->forward(output);
+        return output;
+    }
+
+};
+
+TORCH_MODULE(TimeEmbedding);
 
 /**
  * UNet
@@ -247,7 +294,7 @@ private:
 public:
     UNetImpl(
         const int width, const int height, const int channels, const int embedding_dims,
-        const int num_res = 2, const int num_groups = 32, const int num_heads = 8,
+        const int num_res = 2, const int num_heads = 8, const int num_groups = 32,
         const int min_down_pixel = 4, const int max_attn_pixel = 32,
         const std::vector<int>& scales = { 1, 2, 2, 4, 4 }
     ) {

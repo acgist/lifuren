@@ -106,7 +106,7 @@ public:
      * @param features   特征
      */
     Dataset(
-        size_t batch_size,
+        const size_t batch_size,
         std::vector<torch::Tensor>& labels,
         std::vector<torch::Tensor>& features
     );
@@ -121,7 +121,7 @@ public:
      * @param transform  文件转换函数
      */
     Dataset(
-        size_t batch_size,
+        const size_t batch_size,
         const std::string& path,
         const std::vector<std::string>& suffix,
         const Transform transform

@@ -30,7 +30,7 @@ enum class WudaoziType {
 struct WudaoziParams {
 
     int n  = 1;
-    int t0 = 150;
+    int t0 = 0; // 0 -> 250 = 模糊 -> 清晰
     std::string file = "";
     std::string path = "";
     WudaoziType type = WudaoziType::VIDEO;

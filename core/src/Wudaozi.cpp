@@ -85,7 +85,7 @@ public:
         int embedding_out_dims = 64; // 嵌入输出维度
         this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
         this->inet = this->register_module("inet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
-        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX,         embedding_in_dims, embedding_out_dims));
+        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX,         embedding_in_dims, embedding_out_dims, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
         this->inet_step_embedding = this->register_module("inet_step_embedding", lifuren::nn::StepEmbedding(lifuren::config::wudaozi::T, embedding_in_dims, embedding_out_dims));
     }
     ~WudaoziImpl() {
@@ -96,11 +96,11 @@ public:
     }
 
 public:
-    torch::Tensor forward_vnet(torch::Tensor image, torch::Tensor time) {
-        return this->vnet->forward(image, this->vnet_time_embedding->forward(time));
+    torch::Tensor forward_vnet(torch::Tensor noise, torch::Tensor time, torch::Tensor image) {
+        return this->vnet->forward(noise, this->vnet_time_embedding->forward(image, time));
     }
-    torch::Tensor forward_inet(torch::Tensor image, torch::Tensor step) {
-        return this->inet->forward(image, this->inet_step_embedding->forward(step));
+    torch::Tensor forward_inet(torch::Tensor noise, torch::Tensor step) {
+        return this->inet->forward(noise, this->inet_step_embedding->forward(step));
     }
     torch::Tensor mark_noise(const torch::Tensor& batch_images, const torch::Tensor& batch_steps, const torch::Tensor& batch_noises) {
         auto batch_bar_alpha = this->bar_alpha.index({ batch_steps }).reshape({ -1, 1, 1, 1 });
@@ -138,7 +138,7 @@ public:
         auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         auto batch_noise_images = this->mark_noise(images, batch_steps, batch_noises);
-        return this->denoise(batch_noise_images + this->forward_vnet(images, batch_times), t0);
+        return this->denoise(this->forward_vnet(batch_noise_images, batch_times, images), t0);
     }
 };
 
@@ -216,8 +216,8 @@ public:
         }
         torch::Tensor vnet_loss, inet_loss;
         if(train_type == TrainType::VNET || train_type == TrainType::ALL) {
-            auto pred_vnet = this->model->forward_vnet(batch_prev_images, batch_times);
-            vnet_loss = torch::mse_loss(pred_vnet, batch_next_noise_images - batch_prev_noise_images);
+            auto pred_vnet = this->model->forward_vnet(batch_prev_noise_images, batch_times, batch_prev_images);
+            vnet_loss = torch::mse_loss(pred_vnet, batch_next_noise_images);
             this->vnet_loss += vnet_loss.template item<float>();
         }
         if(train_type == TrainType::INET || train_type == TrainType::ALL) {
@@ -249,7 +249,7 @@ class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, lifure
 public:
     std::tuple<bool, std::string> pred(const lifuren::WudaoziParams& input) override;
     std::tuple<bool, std::string> predImage(const std::string& path, int n  = 1);
-    std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 100, int frame = 120);
+    std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 0, int frame = 120);
 
 };
 
@@ -296,7 +296,7 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     if(!this->trainer) {
         return { false, {} };
     }
-    if(params.n < 0 || params.n > 16 || params.t0 < 0 || params.t0 > lifuren::config::wudaozi::T / lifuren::config::wudaozi::stride) {
+    if(params.n < 0 || params.n > LFR_VIDEO_FRAME_MAX || params.t0 < 0 || params.t0 > lifuren::config::wudaozi::T / lifuren::config::wudaozi::stride) {
         return { false, {} };
     }
     if(params.type == WudaoziType::IMAGE) {

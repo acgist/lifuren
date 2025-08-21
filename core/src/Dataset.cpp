@@ -19,14 +19,14 @@ torch::DeviceType lifuren::get_device() {
 }
 
 lifuren::dataset::Dataset::Dataset(
-    size_t batch_size,
+    const size_t batch_size,
     std::vector<torch::Tensor>& labels,
     std::vector<torch::Tensor>& features
 ) : batch_size(batch_size), device(lifuren::get_device()), labels(std::move(labels)), features(std::move(features)) {
 }
 
 lifuren::dataset::Dataset::Dataset(
-    size_t batch_size,
+    const size_t batch_size,
     const std::string& path,
     const std::vector<std::string>& suffix,
     const Transform transform

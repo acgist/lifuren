@@ -100,6 +100,10 @@
 }
 
 [[maybe_unused]] static void testNoise() {
+    // std::cout << lifuren::config::wudaozi::alpha << std::endl;
+    // std::cout << lifuren::config::wudaozi::bar_alpha << std::endl;
+    // std::cout << lifuren::config::wudaozi::bar_alpha_ << std::endl;
+    std::cout << lifuren::config::wudaozi::bar_alpha_pre_ << std::endl;
     auto image { cv::imread(lifuren::file::join({ tmp_directory, "image.jpg" }).string()) };
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     cv::imshow("image", image);

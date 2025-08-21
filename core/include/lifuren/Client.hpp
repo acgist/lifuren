@@ -80,7 +80,7 @@ bool lifuren::ClientImpl<C, I, O, T>::load(const std::string& path, C params, bo
     }
     const auto ret = this->trainer->load(path);
     if(ret && train) {
-        return this->trainer->define(false, true, true);
+        return this->trainer->define(false);
     } else {
         return ret;
     }
