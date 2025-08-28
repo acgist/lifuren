@@ -99,6 +99,7 @@ public:
         }
         auto dataset = lifuren::dataset::Dataset(this->params.batch_size, labels, features).map(torch::data::transforms::Stack<>());
         this->trainDataset = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
+        this->valDataset   = torch::data::make_data_loader<LFT_RND_SAMPLER>(std::move(dataset), this->params.batch_size);
     }
     void defineOptimizer() override {
         torch::optim::AdamOptions optims;

@@ -140,10 +140,13 @@ inline void data_to_dataset(
     if(frame_tensor.size() >= LFR_VIDEO_FRAME_MIN) {
         SPDLOG_DEBUG("加载视频片段：{}", frame_tensor.size());
         frame += frame_tensor.size();
+        for(int i = 0; i < LFR_VIDEO_FRAME - 1; ++i) {
+            frame_tensor.insert(frame_tensor.begin(), torch::zeros_like(frame_tensor[0]));
+        }
         auto feature = torch::stack(frame_tensor, 0).clone();
-        for(size_t i = 0; i < frame_tensor.size() - 1; ++i) {
-            labels  .push_back(torch::tensor(static_cast<float>(i + 1)));
-            features.push_back(feature.slice(0, i, i + 2));
+        for(size_t i = 0; i < frame_tensor.size() - LFR_VIDEO_FRAME; ++i) {
+            labels  .push_back(feature.slice(0, i + LFR_VIDEO_FRAME, i + LFR_VIDEO_FRAME + 1));
+            features.push_back(feature.slice(0, i,                   i + LFR_VIDEO_FRAME + 0));
         }
     } else {
         SPDLOG_DEBUG("丢弃视频片段：{}", frame_tensor.size());

@@ -41,9 +41,6 @@ enum class TrainType {
 
 /**
  * 吴道子模型（视频生成）
- * 
- * vnet_time_embedding + vnet = 视频生成
- * inet_step_embedding + inet = 图片生成
  */
 class WudaoziImpl : public torch::nn::Module {
 
@@ -80,13 +77,16 @@ public:
         this->alpha_         = this->register_buffer("alpha_",         lifuren::config::wudaozi::alpha_        );
         this->sigma_         = this->register_buffer("sigma_",         lifuren::config::wudaozi::sigma_        );
         this->epsilon_       = this->register_buffer("epsilon_",       lifuren::config::wudaozi::epsilon_      );
-        int image_channels     =  3; // 图片输入维度
-        int embedding_in_dims  =  8; // 嵌入输入维度
-        int embedding_out_dims = 64; // 嵌入输出维度
-        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
-        this->inet = this->register_module("inet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, image_channels, embedding_out_dims));
-        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_VIDEO_FRAME_MAX,         embedding_in_dims, embedding_out_dims, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT));
-        this->inet_step_embedding = this->register_module("inet_step_embedding", lifuren::nn::StepEmbedding(lifuren::config::wudaozi::T, embedding_in_dims, embedding_out_dims));
+        int vnet_image_channels     =   3 * LFR_VIDEO_FRAME;
+        int inet_image_channels     =   3;
+        int vnet_embedding_in_dims  =   3 * LFR_VIDEO_FRAME;
+        int inet_embedding_in_dims  =   8;
+        int vnet_embedding_out_dims = 128;
+        int inet_embedding_out_dims =  64;
+        this->vnet = this->register_module("vnet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, vnet_image_channels, vnet_embedding_out_dims));
+        this->inet = this->register_module("inet", lifuren::nn::UNet(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, inet_image_channels, inet_embedding_out_dims));
+        this->vnet_time_embedding = this->register_module("vnet_time_embedding", lifuren::nn::TimeEmbedding(LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT, vnet_embedding_in_dims, vnet_embedding_out_dims));
+        this->inet_step_embedding = this->register_module("inet_step_embedding", lifuren::nn::StepEmbedding(lifuren::config::wudaozi::T,       inet_embedding_in_dims, inet_embedding_out_dims));
     }
     ~WudaoziImpl() {
         this->unregister_module("vnet");
@@ -96,8 +96,8 @@ public:
     }
 
 public:
-    torch::Tensor forward_vnet(torch::Tensor noise, torch::Tensor time, torch::Tensor image) {
-        return this->vnet->forward(noise, this->vnet_time_embedding->forward(image, time));
+    torch::Tensor forward_vnet(torch::Tensor noise, torch::Tensor image) {
+        return this->vnet->forward(noise.flatten(1, 2), this->vnet_time_embedding->forward(image.flatten(1, 2)));
     }
     torch::Tensor forward_inet(torch::Tensor noise, torch::Tensor step) {
         return this->inet->forward(noise, this->inet_step_embedding->forward(step));
@@ -105,7 +105,11 @@ public:
     torch::Tensor mark_noise(const torch::Tensor& batch_images, const torch::Tensor& batch_steps, const torch::Tensor& batch_noises) {
         auto batch_bar_alpha = this->bar_alpha.index({ batch_steps }).reshape({ -1, 1, 1, 1 });
         auto batch_bar_beta  = this->bar_beta .index({ batch_steps }).reshape({ -1, 1, 1, 1 });
-        return batch_images * batch_bar_alpha + batch_noises * batch_bar_beta;
+        if(batch_images.dim() == batch_noises.dim()) {
+            return batch_images * batch_bar_alpha + batch_noises * batch_bar_beta;
+        } else {
+            return batch_images * batch_bar_alpha.unsqueeze(1) + batch_noises.unsqueeze(1) * batch_bar_beta.unsqueeze(1);
+        }
     }
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> make_noise(const torch::Tensor& batch_images) {
         std::vector<int> steps(lifuren::config::wudaozi::T);
@@ -132,13 +136,12 @@ public:
         torch::NoGradGuard no_grad_guard;
         return this->denoise(torch::randn({ n, 3, height, width }).to(this->device), t0);
     }
-    torch::Tensor pred_image(torch::Tensor images, int t, int t0) {
+    torch::Tensor pred_image(torch::Tensor images, int t0) {
         torch::NoGradGuard no_grad_guard;
-        auto batch_times  = torch::tensor({ t  }).to(this->device).to(torch::kLong);
         auto batch_steps  = torch::tensor({ t0 }).to(this->device).to(torch::kLong);
         auto batch_noises = torch::randn_like(images);
         auto batch_noise_images = this->mark_noise(images, batch_steps, batch_noises);
-        return this->denoise(this->forward_vnet(batch_noise_images, batch_times, images), t0);
+        return this->denoise(this->forward_vnet(batch_noise_images, images), t0);
     }
 };
 
@@ -203,25 +206,24 @@ public:
         }
     }
     void loss(torch::Tensor& feature, torch::Tensor& label, torch::Tensor& /*pred*/, torch::Tensor& loss) override {
-        torch::Tensor batch_times, batch_steps, batch_noises,
+        torch::Tensor batch_steps, batch_noises,
             batch_prev_images, batch_prev_noise_images,
             batch_next_images, batch_next_noise_images;
         {
             torch::NoGradGuard no_grad_guard;
-            batch_times = label.to(torch::kLong).to(this->device);
-            batch_prev_images = feature.slice(1, 0, 1).squeeze(1).to(this->device);
-            batch_next_images = feature.slice(1, 1, 2).squeeze(1).to(this->device);
-            std::tie(batch_prev_noise_images, batch_steps, batch_noises) = this->model->make_noise(batch_prev_images);
-            batch_next_noise_images = this->model->mark_noise(batch_next_images, batch_steps, batch_noises);
+            batch_prev_images = feature.to(this->device);
+            batch_next_images = label.squeeze(1).to(this->device);
+            std::tie(batch_next_noise_images, batch_steps, batch_noises) = this->model->make_noise(batch_next_images);
+            batch_prev_noise_images = this->model->mark_noise(batch_prev_images, batch_steps, batch_noises);
         }
         torch::Tensor vnet_loss, inet_loss;
         if(train_type == TrainType::VNET || train_type == TrainType::ALL) {
-            auto pred_vnet = this->model->forward_vnet(batch_prev_noise_images, batch_times, batch_prev_images);
+            auto pred_vnet = this->model->forward_vnet(batch_prev_noise_images, batch_prev_images);
             vnet_loss = torch::mse_loss(pred_vnet, batch_next_noise_images);
             this->vnet_loss += vnet_loss.template item<float>();
         }
         if(train_type == TrainType::INET || train_type == TrainType::ALL) {
-            auto pred_inet = this->model->forward_inet(batch_prev_noise_images, batch_steps);
+            auto pred_inet = this->model->forward_inet(batch_next_noise_images, batch_steps);
             inet_loss = torch::mse_loss(pred_inet, batch_noises);
             this->inet_loss += inet_loss.template item<float>();
         }
@@ -237,8 +239,8 @@ public:
     torch::Tensor pred(int n) {
         return this->model->pred_image(n, LFR_IMAGE_HEIGHT, LFR_IMAGE_WIDTH, 0);
     }
-    torch::Tensor pred(torch::Tensor feature, int t, int t0) {
-        return this->model->pred_image(feature, t, t0);
+    torch::Tensor pred(torch::Tensor feature, int t0) {
+        return this->model->pred_image(feature, t0);
     }
 
 };
@@ -281,11 +283,18 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
     lifuren::dataset::image::resize(image, LFR_IMAGE_WIDTH, LFR_IMAGE_HEIGHT);
     writer.write(image);
     auto tensor = lifuren::dataset::image::mat_to_tensor(image).unsqueeze(0).to(this->trainer->device);
+    std::vector<torch::Tensor> vector;
+    for(int i = 0; i < LFR_VIDEO_FRAME - 1; ++i) {
+        vector.push_back(torch::zeros_like(tensor));
+    }
+    vector.push_back(tensor);
     for(int i = 0; i < frame; ++i) {
         SPDLOG_DEBUG("当前帧数：{}", i);
-        auto result = this->trainer->pred(tensor, i % LFR_VIDEO_FRAME_MAX, t0);
+        auto result = this->trainer->pred(torch::stack(vector, 1).clone(), t0);
         lifuren::dataset::image::tensor_to_mat(image, result.to(torch::kFloat32).to(torch::kCPU));
         writer.write(image);
+        vector.push_back(result);
+        vector.erase(vector.begin());
     }
     writer.release();
     return { true, output };

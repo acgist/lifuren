@@ -59,6 +59,7 @@
 #define LFR_IMAGE_HEIGHT     256 // 高度
 #define LFR_VIDEO_FPS         24 // 帧率
 #define LFR_VIDEO_DIFF        30 // 上下文切换差异
+#define LFR_VIDEO_FRAME        5 // 前置帧数
 #define LFR_VIDEO_FRAME_MIN   24 // 最小帧数
 #define LFR_VIDEO_FRAME_MAX  240 // 最大帧数
 #define LFR_VIDEO_FRAME_STEP   2 // 帧数间隔（抽帧）

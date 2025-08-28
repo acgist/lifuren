@@ -15,8 +15,8 @@
     client->trainValAndTest({
         .lr          = 0.0002F, // 0.01F
         .grad_clip   = 10.0,
-        .batch_size  = 10,
-        .epoch_size  = 16,
+        .batch_size  = 20,
+        .epoch_size  = 32,
         .check_point = true,
         .model_name  = "wudaozi",
         .model_path  = lifuren::file::join({tmp_directory, "wudaozi", "checkpoint"                  }).string(),
@@ -32,7 +32,7 @@
     client->load(lifuren::file::join({tmp_directory, "wudaozi", "checkpoint", "wudaozi.checkpoint.31.ckpt"}).string(), {
         .lr          = 0.0001F, // 0.01F
         .grad_clip   = 10.0,
-        .batch_size  = 10,
+        .batch_size  = 20,
         .epoch_size  = 128,
         .check_point = true,
         .model_name  = "wudaozi",
@@ -77,8 +77,8 @@
 }
 
 [[maybe_unused]] static void testPlay() {
-    cv::VideoCapture video    (lifuren::file::join({tmp_directory, "wudaozi", "wudaozi.mp4"    }).string());
-    cv::VideoCapture video_gen(lifuren::file::join({tmp_directory, "wudaozi", "wudaozi_gen.mp4"}).string());
+    cv::VideoCapture video    (lifuren::file::join({tmp_directory, "wudaozi", "train.mp4"    }).string());
+    cv::VideoCapture video_gen(lifuren::file::join({tmp_directory, "wudaozi", "train_gen.mp4"}).string());
     if(!video.isOpened() || !video_gen.isOpened()) {
         SPDLOG_WARN("打开视频失败");
         return;
@@ -126,9 +126,9 @@
 }
 
 LFR_TEST(
-    testTrain();
+    // testTrain();
     // testTuning();
-    testPred();
-    // testPlay();
+    // testPred();
+    testPlay();
     // testNoise();
 );
