@@ -108,7 +108,7 @@ void lifuren::dataset::image::tensor_to_mat(cv::Mat& image, const torch::Tensor&
         auto image_tensor = tensor.add(1.0).div(2.0).mul(255.0).permute({ 1, 2, 0 }).to(torch::kByte).contiguous();
         std::memcpy(image.data, reinterpret_cast<char*>(image_tensor.data_ptr()), image.total() * image.elemSize());
     } else if(tensor.dim() == 4) {
-        // int N  = tensor.size(0);
+//      int N  = tensor.size(0);
         int C  = tensor.size(1);
         int H  = tensor.size(2);
         int W  = tensor.size(3);

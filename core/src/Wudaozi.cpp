@@ -179,7 +179,7 @@ public:
     void defineOptimizer() override {
         torch::optim::AdamWOptions options;
         options.lr(this->params.lr);
-        options.weight_decay(0.0001);
+        // options.weight_decay(0.0001);
         this->optimizer = std::make_unique<torch::optim::AdamW>(this->model->parameters(), options);
     }
     void val(const size_t epoch) override {
@@ -251,7 +251,7 @@ class WudaoziClientImpl : public ClientImpl<lifuren::config::ModelParams, lifure
 public:
     std::tuple<bool, std::string> pred(const lifuren::WudaoziParams& input) override;
     std::tuple<bool, std::string> predImage(const std::string& path, int n  = 1);
-    std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 0, int frame = 120);
+    std::tuple<bool, std::string> predVideo(const std::string& file, int t0 = 100, int frame = 120);
 
 };
 
@@ -303,9 +303,6 @@ std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer
 template<>
 std::tuple<bool, std::string> lifuren::WudaoziClientImpl<lifuren::WudaoziTrainer>::pred(const lifuren::WudaoziParams& params) {
     if(!this->trainer) {
-        return { false, {} };
-    }
-    if(params.n < 0 || params.n > LFR_VIDEO_FRAME_MAX || params.t0 < 0 || params.t0 > lifuren::config::wudaozi::T / lifuren::config::wudaozi::stride) {
         return { false, {} };
     }
     if(params.type == WudaoziType::IMAGE) {

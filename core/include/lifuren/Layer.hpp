@@ -35,7 +35,7 @@ public:
     DownsampleImpl(const int channels, const int num_groups = 16, const int ratio_kernel_size = 2) {
         SPDLOG_INFO("downsample channels = {} num_groups = {} ratio_kernel_size = {}", channels, num_groups, ratio_kernel_size);
         this->downsample = this->register_module("downsample", torch::nn::Sequential(
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, ratio_kernel_size).stride(ratio_kernel_size)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, ratio_kernel_size).stride(ratio_kernel_size).bias(false)),
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, channels)),
             torch::nn::SiLU()
         ));
@@ -89,9 +89,8 @@ TORCH_MODULE(Upsample);
 class AttentionBlockImpl : public torch::nn::Module {
 
 private:
-    torch::nn::GroupNorm          norm{ nullptr };
-    torch::nn::Conv2d             qkv { nullptr };
-    torch::nn::Conv2d             proj{ nullptr };
+    torch::nn::Sequential         qkv { nullptr };
+    torch::nn::Sequential         proj{ nullptr };
     torch::nn::MultiheadAttention attn{ nullptr };
 
 public:
@@ -100,14 +99,22 @@ public:
             "attention block channels = {} num_heads = {} embedding_dims = {} num_groups = {} dropout = {:.1f}",
             channels, num_heads, embedding_dims, num_groups, dropout
         );
-        // num_groups = channels / num_heads;
-        this->norm = this->register_module("norm", torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, channels)));
-        this->qkv  = this->register_module("qkv",  torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels * 3, 1)));
-        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(torch::nn::MultiheadAttentionOptions(embedding_dims, num_heads).dropout(dropout)));
-        this->proj = this->register_module("proj", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 1)));
+        const int qkv_channels = channels * 3;
+        this->qkv = this->register_module("qkv", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, qkv_channels, 1).bias(false)),
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, qkv_channels)),
+            torch::nn::SiLU()
+        ));
+        this->attn = this->register_module("attn", torch::nn::MultiheadAttention(
+            torch::nn::MultiheadAttentionOptions(embedding_dims, num_heads).dropout(dropout))
+        );
+        this->proj = this->register_module("proj", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, channels, 1).bias(false)),
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, channels)),
+            torch::nn::SiLU()
+        ));
     }
     ~AttentionBlockImpl() {
-        this->unregister_module("norm");
         this->unregister_module("qkv");
         this->unregister_module("attn");
         this->unregister_module("proj");
@@ -119,7 +126,7 @@ public:
 //      const int C = input.size(1);
         const int H = input.size(2);
         const int W = input.size(3);
-        auto qkv = this->qkv->forward(this->norm->forward(input)).reshape({ N, -1, H * W }).permute({ 1, 0, 2 }).chunk(3, 0);
+        auto qkv = this->qkv->forward(input).reshape({ N, -1, H * W }).permute({ 1, 0, 2 }).chunk(3, 0);
         auto q   = qkv[0];
         auto k   = qkv[1];
         auto v   = qkv[2];
@@ -156,22 +163,22 @@ public:
             ));
         } else {
             this->justify = this->register_module("justify", torch::nn::Sequential(
-                torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, { 1, 1 }))
+                torch::nn::Conv2d(torch::nn::Conv2dOptions(in, out, { 1, 1 }).bias(false))
             ));
         }
         this->embedding = this->register_module("embedding", torch::nn::Sequential(
-            // TODO: Batch Norm?
-            torch::nn::Linear(torch::nn::LinearOptions(embedding_dims, out)),
+            torch::nn::Linear(torch::nn::LinearOptions(embedding_dims, out).bias(false)),
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, out)),
             torch::nn::SiLU()
         ));
         this->conv_1 = this->register_module("conv_1", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3).padding(1).bias(false)),
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, out)),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3).padding(1)),
             torch::nn::SiLU()
         ));
         this->conv_2 = this->register_module("conv_2", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3).padding(1).bias(false)),
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, out)),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(out, out, 3).padding(1)),
             torch::nn::SiLU()
         ));
     }
@@ -183,12 +190,12 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor step) {
-        input = this->justify->forward(input);
-        auto output = this->conv_1->forward(input);
+    torch::Tensor forward(const torch::Tensor& input, const torch::Tensor& step) {
+        auto result = this->justify->forward(input);
+        auto output = this->conv_1->forward(result);
         output = output + this->embedding->forward(step).unsqueeze(-1).unsqueeze(-1);
         output = this->conv_2->forward(output);
-        return output + input;
+        return output + result;
     }
 
 };
@@ -217,7 +224,6 @@ public:
             torch::nn::Linear(in, out),
             torch::nn::SiLU(),
             torch::nn::Linear(out, out)
-            // TODO: norm ?
         ));
     }
     ~StepEmbeddingImpl() {
@@ -225,7 +231,7 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input) {
+    torch::Tensor forward(const torch::Tensor& input) {
         return this->step_embedding->forward(input);
     }
 
@@ -254,13 +260,15 @@ public:
         const int out_channels   = 3;
         const int embedding_dims = width * height / scale / scale;
         this->time_embedding = this->register_module("time_embedding", torch::nn::Sequential(
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(in, channels, 3).padding(1)),
-            lifuren::nn::Downsample(channels, num_groups, scale),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(in, channels, scale).stride(scale).bias(false)),
             lifuren::nn::AttentionBlock(channels, num_heads, embedding_dims, num_groups),
-            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, out_channels, 3).padding(1)),
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, out_channels, 3).padding(1).bias(false)),
+            torch::nn::BatchNorm2d(torch::nn::BatchNorm2dOptions(out_channels)),
+            torch::nn::SiLU(),
             torch::nn::Flatten(torch::nn::FlattenOptions().start_dim(1)),
-            torch::nn::Linear(embedding_dims * out_channels, out)
-            // TODO: norm
+            torch::nn::Linear(embedding_dims * out_channels, out),
+            torch::nn::SiLU(),
+            torch::nn::Linear(out, out)
         ));
     }
     ~TimeEmbeddingImpl() {
@@ -268,7 +276,7 @@ public:
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input) {
+    torch::Tensor forward(const torch::Tensor& input) {
         return this->time_embedding->forward(input);
     }
 
@@ -282,7 +290,7 @@ TORCH_MODULE(TimeEmbedding);
 class UNetImpl : public torch::nn::Module {
 
 private:
-    torch::nn::Conv2d     head          { nullptr };
+    torch::nn::Sequential head          { nullptr };
     torch::nn::ModuleDict encoder_blocks{ nullptr };
     torch::nn::ModuleDict mixture_blocks{ nullptr };
     torch::nn::ModuleDict decoder_blocks{ nullptr };
@@ -377,10 +385,14 @@ public:
             }
             ++index;
         }
-        this->head = this->register_module("head", torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, base_channels, 3).padding(1)));
         this->encoder_blocks = this->register_module("encoder", torch::nn::ModuleDict(encoder_blocks));
         this->mixture_blocks = this->register_module("mixture", torch::nn::ModuleDict(mixture_blocks));
         this->decoder_blocks = this->register_module("decoder", torch::nn::ModuleDict(decoder_blocks));
+        this->head = this->register_module("head", torch::nn::Sequential(
+            torch::nn::Conv2d(torch::nn::Conv2dOptions(channels, base_channels, 3).padding(1).bias(false)),
+            torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, base_channels)),
+            torch::nn::SiLU()
+        ));
         this->tail = this->register_module("tail", torch::nn::Sequential(
             torch::nn::GroupNorm(torch::nn::GroupNormOptions(num_groups, current_channels)),
             torch::nn::SiLU(),
@@ -389,55 +401,55 @@ public:
     }
     ~UNetImpl() {
         this->unregister_module("head");
+        this->unregister_module("tail");
         this->unregister_module("encoder");
         this->unregister_module("mixture");
         this->unregister_module("decoder");
-        this->unregister_module("tail");
     }
 
 public:
-    torch::Tensor forward(torch::Tensor input, torch::Tensor step) {
+    torch::Tensor forward(const torch::Tensor& input, const torch::Tensor& step) {
         std::vector<torch::Tensor> mix;
-        input = this->head(input);
-        mix.push_back(input);
-        for (const auto& item: this->encoder_blocks->items()) {
+        auto output = this->head->forward(input);
+        mix.push_back(output);
+        for (const auto& item : this->encoder_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
-                mix.push_back(input);
+                output = layer->as<lifuren::nn::ResidualBlock>()->forward(output, step);
+                mix.push_back(output);
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
+                output = layer->as<lifuren::nn::AttentionBlock>()->forward(output);
             } else if (typeid(*layer) == typeid(lifuren::nn::DownsampleImpl)) {
-                input = layer->as<lifuren::nn::Downsample>()->forward(input);
+                output = layer->as<lifuren::nn::Downsample>()->forward(output);
             } else {
                 // -
             }
         }
-        for (const auto& item: this->mixture_blocks->items()) {
+        for (const auto& item : this->mixture_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
+                output = layer->as<lifuren::nn::ResidualBlock>()->forward(output, step);
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
+                output = layer->as<lifuren::nn::AttentionBlock>()->forward(output);
             } else {
                 // -
             }
         }
-        for (const auto& item: this->decoder_blocks->items()) {
+        for (const auto& item : this->decoder_blocks->items()) {
             auto layer = item.second;
             if (typeid(*layer) == typeid(lifuren::nn::UpsampleImpl)) {
-                input = layer->as<lifuren::nn::Upsample>()->forward(input);
+                output = layer->as<lifuren::nn::Upsample>()->forward(output);
             } else if (typeid(*layer) == typeid(lifuren::nn::ResidualBlockImpl)) {
-                input = torch::concat({ input, mix.back() }, 1); // input = input + mix.back();
-                input = layer->as<lifuren::nn::ResidualBlock>()->forward(input, step);
+                output = torch::concat({ output, mix.back() }, 1); // output = output + mix.back();
+                output = layer->as<lifuren::nn::ResidualBlock>()->forward(output, step);
                 mix.pop_back();
             } else if (typeid(*layer) == typeid(lifuren::nn::AttentionBlockImpl)) {
-                input = layer->as<lifuren::nn::AttentionBlock>()->forward(input);
+                output = layer->as<lifuren::nn::AttentionBlock>()->forward(output);
             } else {
                 // -
             }
         }
-        return this->tail->forward(input);
+        return this->tail->forward(output);
     }
 
 };
